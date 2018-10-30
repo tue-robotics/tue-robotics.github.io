@@ -40,7 +40,8 @@ Each of those accepts a robot-parameter, which is an instance of a Robot-subclas
 When the state machines execute, they call methods of RobotParts (eg. a Base, Arm, Head, Worldmodel etc), 
 which in turn tap into the ROS [Action Servers](http://wiki.ros.org/actionlib#Client-Server_Interaction), [Services](http://wiki.ros.org/ROS/Tutorials/UnderstandingServicesParams#ROS_Services) and [Topics](http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics) of the robot.
 
-In short, the robot_skills provide an abstract, mostly ROS-independent interface to the actual robot. 
+In short, the robot_skills provide an abstract, mostly ROS-independent interface to the actual robot.
+This way, we don't need to instantiate a lot of clients to ROS actions and services etc in the actual in the higher layers.  
 
 A major component in our robots is the worldmodel, called [ED](https://github.com/tue-robotics/ed) (Environment Descriptor).
 We use this to get a symbolic representation of the world. ED Keeps track of objects and uses various plugins to e.g. recognize objects.
