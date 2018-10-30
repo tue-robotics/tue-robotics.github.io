@@ -57,3 +57,5 @@ These planners talk with the hardware interface components, that use EtherCAT to
 
 That is all published on the joint_states-topic. 
 The robot_state_publisher than uses that to publish TF-frames so we can see where different parts of the robot are and so that relative positions can be calculated etc.
+
+The hardware interface components also contain various controllers and a supervisor. 
