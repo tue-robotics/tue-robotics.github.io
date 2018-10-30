@@ -17,7 +17,11 @@ On Amigo, we use [dragonfly_speech_recognition](https://github.com/tue-robotics/
 This also uses the grammar (as describer below) to aid in speech recognition. 
 The grammar restricts what the STT can hear and thus the result is always something the robot can at least parse.
 
-The text gets published to a ROS topic and then read by the 
+Because we want to be able to both talk to the robot and text with it, each taing turns or even falling back from one modality to another, we use the [HMI](https://github.com/tue-robotics/hmi). 
+The Human Machine Interface provides a client that the GPSR's conversation_engine uses. This client is connected to several servers that implement some way for the robot to ask the user a question. 
+This can thus be voice (via STT)or text (via Telegram or Slack) or some mock interface for testing. 
+
+The text is eventually read by the 
 [conversation_engine](https://github.com/tue-robotics/conversation_engine). 
 This interprets the command using the [grammar_parser](https://github.com/tue-robotics/grammar_parser).
 The result of the parsing is an action description that gets sent to the [action_server](https://github.com/tue-robotics/action_server). 
