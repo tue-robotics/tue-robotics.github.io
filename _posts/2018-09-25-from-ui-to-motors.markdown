@@ -56,6 +56,6 @@ Another action-server is provided by [MoveIt](https://moveit.ros.org/) to comman
 These planners talk with the hardware interface components, that use EtherCAT to interface with the motors and encoders to send references and read back what the various joint really did.
 
 That is all published on the joint_states-topic. 
-The robot_state_publisher than uses that to publish TF-frames so we can see where different parts of the robot are and so that relative positions can be calculated etc.
+The robot_state_publisher than uses that to publish [TF-frames](http://wiki.ros.org/tf) so we can see where different parts of the robot are and so that relative positions can be calculated etc.
 
 The hardware interface components also contain various controllers and a supervisor. 
