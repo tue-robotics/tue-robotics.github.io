@@ -39,7 +39,7 @@ which in turn tap into the ROS [Action Servers](http://wiki.ros.org/actionlib#Cl
 In short, the robot_skills provide an abstract, mostly ROS-independent interface to the actual robot. 
 
 A major component in our robots is the worldmodel, called [ED](https://github.com/tue-robotics/ed) (Environment Descriptor).
-We use this to get a symbolic view on the world. ED Keeps track of objects and uses various plugins to e.g. recognize objects.
+We use this to get a symbolic representation of the world. ED Keeps track of objects and uses various plugins to e.g. recognize objects.
 ED also prvides a maps for the robot to localize itself and variosu other tasks. 
 
 There are several action_servers ont he robot, for example for navigation. 
