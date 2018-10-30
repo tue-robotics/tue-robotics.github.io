@@ -45,7 +45,7 @@ This way, we don't need to instantiate a lot of clients to ROS actions and servi
 
 A major component in our robots is the worldmodel, called [ED](https://github.com/tue-robotics/ed) (Environment Descriptor).
 We use this to get a symbolic representation of the world. ED Keeps track of objects and uses various plugins to e.g. recognize objects.
-ED also prvides a maps for the robot to localize itself and various other tasks. 
+ED, through the [ed_localization](https://github.com/tue-robotics/ed_localization.git)-plugin, also provides a maps for the robot to localize itself (over a map-topic like the standard ROS map server) and various other tasks. 
 
 There are several action_servers ont he robot, for example for navigation. 
 ROS robots typoically use move_base but we have a more advanced version called [cb_base_navigation](https://github.com/tue-robotics/cb_base_navigation), which does Constraint Based navigation.
