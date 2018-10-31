@@ -19,7 +19,7 @@ The grammar restricts what the STT can hear and thus the result is always someth
 
 Because we want to be able to both talk to the robot and text with it, each taing turns or even falling back from one modality to another, we use the [HMI](https://github.com/tue-robotics/hmi). 
 The Human Machine Interface provides a client that the GPSR's conversation_engine uses. This client is connected to several servers that implement some way for the robot to ask the user a question. 
-This can thus be voice (via STT)or text (via Telegram or Slack) or some mock interface for testing. 
+This can thus be voice (via STT) or text (via Telegram or Slack) or some mock interface for testing. 
 
 The text is eventually read by the 
 [conversation_engine](https://github.com/tue-robotics/conversation_engine). 
