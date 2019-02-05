@@ -55,7 +55,7 @@ Another action-server is provided by [MoveIt](https://moveit.ros.org/) to comman
 
 These planners talk with the hardware interface components, that use EtherCAT to interface with the motors and encoders to send references and read back what the various joint really did.
 
-That is all published on the joint_states-topic. 
-The robot_state_publisher than uses that to publish [TF-frames](http://wiki.ros.org/tf) so we can see where different parts of the robot are and so that relative positions can be calculated etc.
+That is all published on the joint_states-topic. This lists, for each joint in the robot, what position it is in, what velocity it is moving at and what effort (in N or Nm) that requires. Together with the robot's URDF model, this is used by the [robot_state_publisher](https://wiki.ros.org/action/fullsearch/urdf/Tutorials/Using%20urdf%20with%20robot_state_publisher) to publish the full state of the robot. 
+The robot_state_publisher publishes [TF-frames](http://wiki.ros.org/tf) so we can see where different parts of the robot are and so that relative positions can be calculated etc.
 
 The hardware interface components also contain various controllers and a supervisor. 
