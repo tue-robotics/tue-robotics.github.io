@@ -7,7 +7,7 @@ date:   2018-09-25 21:55:00
 How do commands given to the robot get translated into motor commands? 
 
 There are several layers to this, as you can see in 
-[software-architecture.html](https://github.com/tue-robotics/tue-robotics.github.io/blob/master/software-architecture.html).
+[software-architecture](https://tue-robotics.github.io/software-architecture).
 When you use [Telegram](https://telegram.org/) to chat with the robot, 
 your text command first gets sent to the servers of Telegram, 
 which passes the message on to our [telegram_ros](https://github.com/tue-robotics/telegram_ros) node. That node implements a [Telegram Bot](https://core.telegram.org/bots)
