@@ -6,10 +6,11 @@ install:
   - source <(wget -O - https://raw.githubusercontent.com/tue-robotics/tue-env/master/installer/bootstrap.bash)
   - git -C ~/.tue checkout feature/ros_deps
   - tue-get install tue-documentation-github --no-ros-deps --doc-depend --branch=fix/docs
+  - tue-get install python_orocos-kdl # Needs to be installed fully as it needs to be build to generate docs
   - export ROS_PACKAGE_PATH=""
 
 script:
-  - tue-make python_orocos_kdl
+  - tue-make python_orocos_kdl # Needs to be build to generate docs
   - tue-make-documentation
 
 before_deploy:
