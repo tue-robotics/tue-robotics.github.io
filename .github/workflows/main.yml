@@ -1,0 +1,44 @@
+name: Deployment
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 4 * * *'
+
+jobs:
+  deployment:
+    name: deployment
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install
+        run: |
+          source <(wget -O - https://raw.githubusercontent.com/tue-robotics/tue-env/master/installer/bootstrap.bash) || true
+          tue-get install tue-documentation-github --no-ros-deps --doc-depend
+          MSG_PKGS=($(./.ci/get_message_packages.py base_local_planner costmap_2d)) # Skip base_local_planner and costmap_2d as these take too much time
+          echo "MSG_PKGS= ${MSG_PKGS[@]}"
+          MSG_TARGETS=(${MSG_PKGS[@]/#/ros-})
+          tue-get install ros-python_orocos_kdl ${MSG_TARGETS[@]} # Needs to be installed fully as it needs to be build to generate docs
+          export ROS_PACKAGE_PATH=""
+      - name: Script
+        run: |
+          source ~/.tue/setup.bash
+          tue-make --no-status python_orocos_kdl ${MSG_PKGS[@]} # Needs to be build to generate docs
+          source ~/.tue/setup.bash # Source the workspace
+          tue-make-documentation --no-status
+      - name: Before Deploy
+        if: ${{ (github.event_name == 'schedule' || github.event_name == 'push') && github.ref == 'refs/heads/master' }}
+        run: |
+          source ~/.tue/setup.bash
+          cp -r $TUE_SYSTEM_DIR/docs .
+      - name: Deploy
+        if: ${{ (github.event_name == 'schedule' || github.event_name == 'push') && github.ref == 'refs/heads/master' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          destination_dir: .
+          exclude_assets: '.github,.ci'
+          enable_jekyll: true
+          force_orphan: true
