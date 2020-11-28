@@ -6,6 +6,10 @@ on:
   schedule:
     - cron: '0 4 * * *'
 
+defaults:
+  run:
+    shell: bash --noprofile --norc -o pipefail {0}
+
 jobs:
   deployment:
     name: deployment
@@ -14,13 +18,13 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install
         run: |
-          source <(wget -O - https://raw.githubusercontent.com/tue-robotics/tue-env/master/installer/bootstrap.bash) || true
+          source <(wget -O - https://raw.githubusercontent.com/tue-robotics/tue-env/master/installer/bootstrap.bash)
+          git -C ~/.tue checkout broken_pipe
           tue-get install tue-documentation-github --no-ros-deps --doc-depend
           MSG_PKGS=($(./.ci/get_message_packages.py base_local_planner costmap_2d)) # Skip base_local_planner and costmap_2d as these take too much time
           echo "MSG_PKGS= ${MSG_PKGS[@]}"
           MSG_TARGETS=(${MSG_PKGS[@]/#/ros-})
           tue-get install ros-python_orocos_kdl ${MSG_TARGETS[@]} # Needs to be installed fully as it needs to be build to generate docs
-          export ROS_PACKAGE_PATH=""
       - name: Script
         run: |
           source ~/.tue/setup.bash
