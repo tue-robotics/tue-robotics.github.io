@@ -86,8 +86,13 @@ docker exec -t tue-env bash -c 'sudo apt-get update -qq'
 echo -e "\e[35m\e[1m tue-get install tue-documentation-github --no-ros-deps --doc-depend\e[0m"
 docker exec -t tue-env bash -c 'source ~/.bashrc; tue-get install tue-documentation-github --no-ros-deps --doc-depend'
 
-echo -e "\e[35m\e[1m ${BASEDIR}/get_message_packages.py base_local_planner costmap_2d\e[0m"
-MSG_PKGS=($("${BASEDIR}"/get_message_packages.py base_local_planner costmap_2d)) # Skip base_local_planner and costmap_2d as these take too much time
+DOCKER_HOME=$(docker exec -t tue-env bash -c 'source ~/.bashrc; echo "$HOME"' | tr -d '\r')
+
+echo -e "\e[35m\e[1m docker cp ${BASEDIR}/get_message_packages.py tue-env:${DOCKER_HOME}\e[0m"
+docker cp "${BASEDIR}"/get_message_packages.py tue-env:"${DOCKER_HOME}"
+
+echo -e "\e[35m\e[1m ~/get_message_packages.py base_local_planner costmap_2d\e[0m"
+MSG_PKGS=($(docker exec -t tue-env bash -c 'source ~/.bashrc; ${HOME}/get_message_packages.py base_local_planner costmap_2d' | tr -d '\r')) # Skip base_local_planner and costmap_2d as these take too much time
 MSG_TARGETS=(${MSG_PKGS[@]/#/ros-})
 echo -e "\e[35m\e[1m MSG_PKGS= " "${MSG_PKGS[@]}" "\e[0m"
 
