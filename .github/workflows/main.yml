@@ -21,6 +21,8 @@ jobs:
           GITHUB_REF=${GITHUB_REF#refs/heads/}
           GITHUB_REF=${GITHUB_REF#refs/tags/}
           BRANCH=${GITHUB_BASE_REF:-${GITHUB_REF}}
+          mkdir -p ${HOME}/.ssh
+          ssh-keyscan -t rsa -H "github.com" 2>&1 | tee -a "${HOME}"/.ssh/known_hosts
           .ci/install.bash --branch=$BRANCH
       - name: Script
         run: .ci/script.bash
