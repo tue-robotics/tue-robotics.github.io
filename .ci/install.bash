@@ -80,6 +80,9 @@ then
     docker exec -t tue-env bash -c "eval $(ssh-agent -s)"
 fi
 
+# Refresh the apt cache in the docker image
+docker exec -t tue-env bash -c 'sudo apt-get update -qq'
+
 echo -e "\e[35m\e[1m tue-get install tue-documentation-github --no-ros-deps --doc-depend\e[0m"
 docker exec -t tue-env bash -c 'source ~/.bashrc; tue-get install tue-documentation-github --no-ros-deps --doc-depend'
 
