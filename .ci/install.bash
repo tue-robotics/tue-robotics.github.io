@@ -81,22 +81,26 @@ then
 fi
 
 echo -e "\e[35m\e[1m tue-get install tue-documentation-github --no-ros-deps --doc-depend\e[0m"
-docker exec -t tue-env bash -c 'source ~/.bashrc; tue-get install tue-documentation-github --no-ros-deps --doc-depend'
+docker exec tue-env bash -c 'source ~/.bashrc; tue-get install tue-documentation-github --no-ros-deps --doc-depend'
 
 DOCKER_HOME=$(docker exec -t tue-env bash -c 'source ~/.bashrc; echo "$HOME"' | tr -d '\r')
 
-echo -e "\e[35m\e[1m docker cp ${BASEDIR}/get_message_packages.py tue-env:${DOCKER_HOME}\e[0m"
-docker cp "${BASEDIR}"/get_message_packages.py tue-env:"${DOCKER_HOME}"
+echo -e "\e[35m\e[1m docker cp ${BASEDIR}/get_install_build_packages.py tue-env:${DOCKER_HOME}\e[0m"
+docker cp "${BASEDIR}"/get_install_build_packages.py tue-env:"${DOCKER_HOME}"
 
 echo -e "\e[35m\e[1m ~/get_message_packages.py base_local_planner costmap_2d\e[0m"
-MSG_PKGS=($(docker exec -t tue-env bash -c 'source ~/.bashrc; ${HOME}/get_message_packages.py base_local_planner costmap_2d' | tr -d '\r')) # Skip base_local_planner and costmap_2d as these take too much time
-MSG_TARGETS=(${MSG_PKGS[@]/#/ros-})
-echo -e "\e[35m\e[1m MSG_PKGS= " "${MSG_PKGS[@]}" "\e[0m"
+eval "$(docker exec -t tue-env bash -c 'source ~/.bashrc; ${HOME}/get_install_build_packages.py base_local_planner costmap_2d' | tr -d '\r')" # Skip base_local_planner and costmap_2d as these take too much time
+INSTALL_BUILD_TARGETS=(${INSTALL_BUILD_PKGS[@]/#/ros-})
+echo -e "\e[35m\e[1m INSTALL_BUILD_PKGS=" "${INSTALL_BUILD_PKGS[*]}" "\e[0m"
+echo -e "\e[35m\e[1m BUILD_PKGS=" "${BUILD_PKGS[*]}" "\e[0m"
 
-echo -e "\e[35m\e[1m tue-get install ros-python_orocos_kdl " "${MSG_TARGETS[@]}" "\e[0m"
+echo -e "\e[35m\e[1m tue-get install ros-python_orocos_kdl" "${INSTALL_BUILD_TARGETS[*]}" "\e[0m"
 # shellcheck disable=SC2145
-docker exec -t tue-env bash -c "source ~/.bashrc; tue-get install ros-python_orocos_kdl ${MSG_TARGETS[@]}" # Needs to be installed fully as it needs to be build to generate docs
+docker exec tue-env bash -c "source ~/.bashrc; tue-get install ros-python_orocos_kdl ${INSTALL_BUILD_TARGETS[*]}" # Needs to be installed fully as it needs to be build to generate docs
 
-echo -e "\e[35m\e[1m tue-make --no-status python_orocos_kdl " "${MSG_PKGS[@]}" "\e[0m"
+echo -e '\e[35m\e[1m catkin config --workspace $TUE_SYSTEM_DIR --blacklist ed \e[0m'
+docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --blacklist ed' # It is an exec-depend of ed_object_models, but we don't need to build it
+
+echo -e "\e[35m\e[1m tue-make --no-status python_orocos_kdl" "${INSTALL_BUILD_PKGS[*]}" "${BUILD_PKGS[*]}" "\e[0m"
 # shellcheck disable=SC2145
-docker exec -t tue-env bash -c "source ~/.bashrc; tue-make --no-status python_orocos_kdl ${MSG_PKGS[@]}" # Needs to be build to generate docs
+docker exec -t tue-env bash -c "source ~/.bashrc; tue-make --no-status python_orocos_kdl ${INSTALL_BUILD_PKGS[*]} ${BUILD_PKGS[*]}" # Needs to be build to generate docs
