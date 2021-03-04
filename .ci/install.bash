@@ -81,7 +81,7 @@ then
 fi
 
 echo -e "\e[35m\e[1m tue-get install tue-documentation-github --no-ros-deps --doc-depend\e[0m"
-docker exec -t tue-env bash -c 'source ~/.bashrc; tue-get install tue-documentation-github --no-ros-deps --doc-depend'
+docker exec tue-env bash -c 'source ~/.bashrc; tue-get install tue-documentation-github --no-ros-deps --doc-depend'
 
 DOCKER_HOME=$(docker exec -t tue-env bash -c 'source ~/.bashrc; echo "$HOME"' | tr -d '\r')
 
@@ -96,7 +96,7 @@ echo -e "\e[35m\e[1m BUILD_PKGS=" "${BUILD_PKGS[*]}" "\e[0m"
 
 echo -e "\e[35m\e[1m tue-get install ros-python_orocos_kdl" "${INSTALL_BUILD_TARGETS[*]}" "\e[0m"
 # shellcheck disable=SC2145
-docker exec -t tue-env bash -c "source ~/.bashrc; tue-get install ros-python_orocos_kdl ${INSTALL_BUILD_TARGETS[*]}" # Needs to be installed fully as it needs to be build to generate docs
+docker exec tue-env bash -c "source ~/.bashrc; tue-get install ros-python_orocos_kdl ${INSTALL_BUILD_TARGETS[*]}" # Needs to be installed fully as it needs to be build to generate docs
 
 echo -e '\e[35m\e[1m catkin config --workspace $TUE_SYSTEM_DIR --blacklist ed \e[0m'
 docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --blacklist ed' # It is an exec-depend of ed_object_models, but we don't need to build it
