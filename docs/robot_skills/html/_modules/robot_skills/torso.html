@@ -1,0 +1,438 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.torso &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.torso</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.torso</h1><div class="highlight"><pre>
+<span></span><span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">from</span> <span class="nn">actionlib_msgs.msg</span> <span class="k">import</span> <span class="n">GoalStatus</span>
+<span class="kn">import</span> <span class="nn">control_msgs.msg</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">trajectory_msgs.msg</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.robot_part</span> <span class="k">import</span> <span class="n">RobotPart</span>
+
+
+<div class="viewcode-block" id="Torso"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso">[docs]</a><span class="k">class</span> <span class="nc">Torso</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="n">get_joint_states</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        constructor</span>
+
+<span class="sd">        :param robot_name: robot_name</span>
+<span class="sd">        :param tf_listener: tf_server.TFClient()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Torso</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="n">tf_listener</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/torso/joint_names&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arm_joint_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/arm/joint_names&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_configurations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/torso/default_configurations&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_tolerance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;/skills/torso/default_tolerance&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lower_limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_configurations</span><span class="p">[</span><span class="s1">&#39;lower_limit&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upper_limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_configurations</span><span class="p">[</span><span class="s1">&#39;upper_limit&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Init action client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ac_move_torso</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_simple_action_client</span><span class="p">(</span><span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/body/joint_trajectory_action&#39;</span><span class="p">,</span>
+                                                              <span class="n">control_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">FollowJointTrajectoryAction</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscribe_hardware_status</span><span class="p">(</span><span class="s1">&#39;spindle&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_joint_states</span> <span class="o">=</span> <span class="n">get_joint_states</span>
+
+<div class="viewcode-block" id="Torso.close"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancels all active goals for the torso</span>
+<span class="sd">        :return: no return</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Torso cancelling all goals on close&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Torso cancelling all goals on close. Rospy is already deleted.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ac_move_torso</span><span class="o">.</span><span class="n">cancel_all_goals</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Torso.send_goal"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso.send_goal">[docs]</a>    <span class="k">def</span> <span class="nf">send_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a named joint goal (pose) defined in the parameter default_configurations to the torso</span>
+
+<span class="sd">        :param configuration: name of configuration, configuration should be loaded as parameter</span>
+<span class="sd">        :param timeout: timeout in seconds; in case of 0.0, not waiting for motion done</span>
+<span class="sd">        :param tolerance: list of position tolerances with the length equal to the number of joints</span>
+<span class="sd">        :return: True or False, False in case of nonexistent configuration or failed execution</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">configuration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_configurations</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_goal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_configurations</span><span class="p">[</span><span class="n">configuration</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s1">&#39;Default configuration </span><span class="si">{0}</span><span class="s1"> does not exist&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configuration</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Torso._send_goal"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso._send_goal">[docs]</a>    <span class="k">def</span> <span class="nf">_send_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">torso_pos</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="p">[],</span> <span class="n">start_time</span><span class="o">=</span><span class="mf">1.5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a joint goal to the torso</span>
+
+<span class="sd">        :param torso_pos: list of joint positions with the length equal to the number of joints</span>
+<span class="sd">        :param timeout: timeout in seconds; in case of 0.0, not waiting for motion done</span>
+<span class="sd">        :param tolerance: list of position tolerances with the length equal to the number of joints</span>
+<span class="sd">        :return: True or False, False in case of nonexistent configuration or failed execution</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">torso_pos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">torso_pos</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Send torso goal </span><span class="si">{0}</span><span class="s2">, timeout = </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">torso_pos</span><span class="p">,</span> <span class="n">timeout</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">torso_pos</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span>
+                <span class="s1">&#39;Length of desired torso pos </span><span class="si">{0}</span><span class="s1"> does not correspond with number of joints </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">torso_pos</span><span class="p">),</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="sd">&#39;&#39;&#39; Check limits &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">torso_pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">lower_limit</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="n">torso_pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">upper_limit</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Desired position </span><span class="si">{0}</span><span class="s2"> for joint </span><span class="si">{1}</span><span class="s2"> exceeds limits [</span><span class="si">{2}</span><span class="s2">, </span><span class="si">{3}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">torso_pos</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                                                                                    <span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                                                                                    <span class="bp">self</span><span class="o">.</span><span class="n">lower_limit</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                                                                                    <span class="bp">self</span><span class="o">.</span><span class="n">upper_limit</span><span class="p">[</span>
+                                                                                                        <span class="n">i</span><span class="p">]))</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">torso_goal</span> <span class="o">=</span> <span class="n">control_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">FollowJointTrajectoryGoal</span><span class="p">()</span>
+        <span class="n">torso_goal_point</span> <span class="o">=</span> <span class="n">trajectory_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">JointTrajectoryPoint</span><span class="p">()</span>
+        <span class="n">torso_goal</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">joint_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">)</span>
+        <span class="n">torso_goal_point</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="n">torso_pos</span>
+        <span class="n">torso_goal_point</span><span class="o">.</span><span class="n">time_from_start</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="o">.</span><span class="n">from_sec</span><span class="p">(</span><span class="n">start_time</span><span class="p">)</span>
+        <span class="n">torso_goal</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torso_goal_point</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">)):</span>
+            <span class="n">goal_tolerance</span> <span class="o">=</span> <span class="n">control_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">JointTolerance</span><span class="p">()</span>
+            <span class="n">goal_tolerance</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tolerance</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">):</span>
+                <span class="n">goal_tolerance</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">tolerance</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">goal_tolerance</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_tolerance</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">torso_goal</span><span class="o">.</span><span class="n">goal_tolerance</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">goal_tolerance</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Sending torso_goal: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">torso_goal</span><span class="p">))</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>  <span class="c1"># This is dangerous now we are changing the Ts of the TrajectoryActionLib</span>
+
+        <span class="c1"># This is necessary: the rtt_actionlib in the hardware seems</span>
+        <span class="c1"># to only have a queue size of 1 and runs at 1000 hz. This</span>
+        <span class="c1"># means that if two goals are send approximately at the same</span>
+        <span class="c1"># time (e.g. an arm goal and a torso goal), one of the two</span>
+        <span class="c1"># goals probably won&#39;t make it. This sleep makes sure the</span>
+        <span class="c1"># goals will always arrive in different update hooks in the</span>
+        <span class="c1"># hardware TrajectoryActionLib server.</span>
+
+        <span class="c1"># Fill with required joint names (desired in hardware / gazebo impl)</span>
+        <span class="n">current_joint_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_joint_states</span><span class="p">()</span>
+        <span class="n">missing_joint_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm_joint_names</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">]</span>
+        <span class="c1"># This bit is needed because in some robots some joints are part of both arm(s) and torso.</span>
+        <span class="c1"># Thus both need to be controlled.</span>
+        <span class="c1"># In robots where these are disjoint sets (arm and torso joints do not overlap), missing_joint_names will be</span>
+        <span class="c1"># empty and thus no change is incurred.</span>
+        <span class="c1"># To fix this the entire concept of separate joint groups should be kicked out</span>
+        <span class="n">torso_goal</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">joint_names</span> <span class="o">+=</span> <span class="n">missing_joint_names</span>
+        <span class="n">torso_goal</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">positions</span> <span class="o">+=</span> <span class="p">[</span><span class="n">current_joint_state</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">missing_joint_names</span><span class="p">]</span>
+        <span class="n">torso_goal</span><span class="o">.</span><span class="n">goal_tolerance</span> <span class="o">+=</span> <span class="p">[</span><span class="n">control_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">JointTolerance</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+            <span class="n">position</span><span class="o">=</span><span class="n">goal_tolerance</span><span class="o">.</span><span class="n">position</span>
+        <span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">missing_joint_names</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ac_move_torso</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">torso_goal</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">timeout</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Torso.high"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso.high">[docs]</a>    <span class="k">def</span> <span class="nf">high</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends the torso to its upper limit</span>
+
+<span class="sd">        :return: True or False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_goal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">upper_limit</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Torso.medium"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso.medium">[docs]</a>    <span class="k">def</span> <span class="nf">medium</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends the torso to the middle position of each joint</span>
+
+<span class="sd">        :return: True or False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># ToDo: make nice</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">)):</span>
+            <span class="n">goal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower_limit</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">upper_limit</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">lower_limit</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_goal</span><span class="p">(</span><span class="n">goal</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Torso.low"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso.low">[docs]</a>    <span class="k">def</span> <span class="nf">low</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends the torso to its lower limit</span>
+
+<span class="sd">        :return: True or False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_goal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower_limit</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Torso.selfreset"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso.selfreset">[docs]</a>    <span class="k">def</span> <span class="nf">selfreset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends the torso to the reset pose</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="s1">&#39;reset&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Torso.cancel_goal"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso.cancel_goal">[docs]</a>    <span class="k">def</span> <span class="nf">cancel_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancels all active goals for the torso; Doing the same as close()</span>
+
+<span class="sd">        :return: no return</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ac_move_torso</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span></div>
+        <span class="c1"># return True</span>
+
+<div class="viewcode-block" id="Torso.wait_for_motion_done"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso.wait_for_motion_done">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_motion_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Waits until all action clients are done</span>
+
+<span class="sd">        :param timeout: double with time (defaults to 10.0 seconds)</span>
+<span class="sd">        :param cancel: bool specifying whether goals should be cancelled if timeout is exceeded</span>
+<span class="sd">        :return: bool indicates whether motion was done (True if reached, False otherwise)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ac_move_torso</span><span class="o">.</span><span class="n">gh</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ac_move_torso</span><span class="o">.</span><span class="n">wait_for_result</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ac_move_torso</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span> <span class="o">==</span> <span class="n">GoalStatus</span><span class="o">.</span><span class="n">SUCCEEDED</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Torso target reached&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Reaching torso target failed&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cancel</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Torso: cancelling all goals (1)&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+                <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Torso.wait"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Please use wait_for_motion_done instead&quot;</span><span class="p">,</span> <span class="ne">Warning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Torso.get_position"><a class="viewcode-back" href="../../api/robot_skills/torso/index.html#robot_skills.torso.Torso.get_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current joint positions</span>
+
+<span class="sd">        :return: list of current positions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># return self.current_position.position</span>
+        <span class="n">joint_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_joint_states</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">joint_states</span><span class="p">[</span><span class="n">joint_name</span><span class="p">]</span> <span class="k">for</span> <span class="n">joint_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">]</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

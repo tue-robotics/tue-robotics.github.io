@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="bodypart__resetter_8py" kind="file" language="Python">
+    <compoundname>bodypart_resetter.py</compoundname>
+    <innernamespace refid="namespacebodypart__resetter">bodypart_resetter</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacebodypart__resetter" refkind="compound"><highlight class="comment">#!/usr/bin/python</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="stringliteral">&quot;&quot;&quot;Bodypart<sp/>resetter</highlight></codeline>
+<codeline lineno="4"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="5"><highlight class="stringliteral">Usage:</highlight></codeline>
+<codeline lineno="6"><highlight class="stringliteral"><sp/><sp/>bodypart_resetter<sp/>&lt;robot&gt;<sp/>&lt;bodypart&gt;<sp/>&lt;timeout&gt;</highlight></codeline>
+<codeline lineno="7"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="8"><highlight class="stringliteral">Examples:</highlight></codeline>
+<codeline lineno="9"><highlight class="stringliteral"><sp/><sp/>bodypart_resetter<sp/>sergio<sp/>base<sp/>2</highlight></codeline>
+<codeline lineno="10"><highlight class="stringliteral"><sp/><sp/>bodypart_resetter<sp/>amigo<sp/>base<sp/>10</highlight></codeline>
+<codeline lineno="11"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>rospy</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>sys</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>time</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>diagnostic_msgs.msg<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>DiagnosticArray<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>Status</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>std_msgs.msg<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>UInt8MultiArray<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>Command</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>docopt<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>docopt</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20" refid="namespacebodypart__resetter_1a8907a9a8bebd4600ad160a49d428a12b" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacebodypart__resetter_1a18f7086a7ffea0a6fe50f6034e92c29e" kindref="member">callback</ref>(data):</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">global</highlight><highlight class="normal"><sp/>pub,<sp/>bodypart,<sp/>timeout,<sp/>pub_topic</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>index<sp/>=<sp/>0</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>status<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>data.status:</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>status.name<sp/>==<sp/>bodypart<sp/></highlight><highlight class="keywordflow">and</highlight><highlight class="normal"><sp/>status.level<sp/>==<sp/>4<sp/></highlight><highlight class="keywordflow">and</highlight><highlight class="normal"><sp/>status.message<sp/>==<sp/></highlight><highlight class="stringliteral">&apos;homed&apos;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logwarn(</highlight><highlight class="stringliteral">&quot;%s<sp/>error<sp/>detected&quot;</highlight><highlight class="normal">,<sp/>bodypart)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>time.sleep(timeout)</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pub.publish(Command(data=[index,<sp/>24]))</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.loginfo(</highlight><highlight class="stringliteral">&quot;Sending<sp/>reset<sp/>command<sp/>to<sp/>topic<sp/>%s<sp/>for<sp/>bodypart<sp/>%s&quot;</highlight><highlight class="normal">,<sp/>pub_topic,<sp/>bodypart)</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>time.sleep(1)</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pub.publish(Command(data=[index,<sp/>22]))</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.loginfo(</highlight><highlight class="stringliteral">&quot;Sending<sp/>start<sp/>command<sp/>to<sp/>topic<sp/>%s<sp/>for<sp/>bodypart<sp/>%s&quot;</highlight><highlight class="normal">,<sp/>pub_topic,<sp/>bodypart)</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sys.exit()</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>index<sp/>+=<sp/>1</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&apos;__main__&apos;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="namespacebodypart__resetter_1a853b86c144f4a32043a8d008dceede1c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>sys.argv<sp/>=<sp/>[<sp/>v<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>v<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>sys.argv<sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>v[0]<sp/>!=<sp/></highlight><highlight class="stringliteral">&quot;_&quot;</highlight><highlight class="normal"><sp/>]</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39" refid="namespacebodypart__resetter_1af5121e3ea5dbc4d02e14183ff9cbcf33" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>arguments<sp/>=<sp/>docopt(__doc__)</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41" refid="namespacebodypart__resetter_1af6c4299dce0d1d68957641b444ca138e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>sub_topic<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;/%s/hardware_status&quot;</highlight><highlight class="normal">%arguments[</highlight><highlight class="stringliteral">&quot;&lt;robot&gt;&quot;</highlight><highlight class="normal">]</highlight></codeline>
+<codeline lineno="42" refid="namespacebodypart__resetter_1a7826d00d41e7a7a6902807982452c298" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>pub_topic<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;/%s/dashboard_ctrlcmds&quot;</highlight><highlight class="normal">%arguments[</highlight><highlight class="stringliteral">&quot;&lt;robot&gt;&quot;</highlight><highlight class="normal">]</highlight></codeline>
+<codeline lineno="43" refid="namespacebodypart__resetter_1a371b1a2235442df842e5406efd365546" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>bodypart<sp/>=<sp/>arguments[</highlight><highlight class="stringliteral">&quot;&lt;bodypart&gt;&quot;</highlight><highlight class="normal">]</highlight></codeline>
+<codeline lineno="44" refid="namespacebodypart__resetter_1a906b5f4ca7ae0885eb7af31881e69d3c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>timeout<sp/>=<sp/>int(arguments[</highlight><highlight class="stringliteral">&quot;&lt;timeout&gt;&quot;</highlight><highlight class="normal">])</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.init_node(</highlight><highlight class="stringliteral">&quot;bodypart_resetter_%s_%s&quot;</highlight><highlight class="normal">%(arguments[</highlight><highlight class="stringliteral">&quot;&lt;robot&gt;&quot;</highlight><highlight class="normal">],<sp/>bodypart))</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.loginfo(</highlight><highlight class="stringliteral">&quot;Initialized<sp/>bodypart<sp/>resetter<sp/>that<sp/>listens<sp/>to<sp/>%s<sp/>and<sp/>publishes<sp/>to<sp/>%s<sp/>with<sp/>timeout<sp/>%d<sp/>for<sp/>bodypart<sp/>%s&quot;</highlight><highlight class="normal">,<sp/>sub_topic,<sp/>pub_topic,<sp/>timeout,<sp/>bodypart)</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="namespacebodypart__resetter_1a2008cb8a5a6f9d01dc6df14c47611f31" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>pub<sp/>=<sp/>rospy.Publisher(pub_topic,<sp/>Command,<sp/>queue_size=1)</highlight></codeline>
+<codeline lineno="51" refid="namespacebodypart__resetter_1a99b652dcde8cbd892cdc83ea77c6ce10" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.Subscriber(sub_topic,<sp/>Status,<sp/>callback,<sp/>queue_size=1)</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.spin()</highlight></codeline>
+    </programlisting>
+    <location file="src/robot_launch_files/bodypart_resetter.py"/>
+  </compounddef>
+</doxygen>

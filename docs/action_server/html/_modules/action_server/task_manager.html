@@ -1,0 +1,362 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>action_server.task_manager &mdash; action_server 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> action_server
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">action_server</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>action_server.task_manager</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for action_server.task_manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">from</span> <span class="nn">action_factory</span> <span class="k">import</span> <span class="n">ActionFactory</span>
+<span class="kn">from</span> <span class="nn">actions.action</span> <span class="k">import</span> <span class="n">ConfigurationResult</span><span class="p">,</span> <span class="n">ConfigurationData</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The TaskManager sets up a state machine according to a task recipe and executes it.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="TaskManager"><a class="viewcode-back" href="../../api/action_server/task_manager/index.html#action_server.task_manager.TaskManager">[docs]</a><span class="k">class</span> <span class="nc">TaskManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task_string</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_factory</span> <span class="o">=</span> <span class="n">ActionFactory</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_sequence</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active_action</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TaskManager.get_actions"><a class="viewcode-back" href="../../api/action_server/task_manager/index.html#action_server.task_manager.TaskManager.get_actions">[docs]</a>    <span class="k">def</span> <span class="nf">get_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_factory</span><span class="o">.</span><span class="n">get_action_names</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TaskManager.clear"><a class="viewcode-back" href="../../api/action_server/task_manager/index.html#action_server.task_manager.TaskManager.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task_string</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_sequence</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active_action</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="TaskManager.get_action_from_context"><a class="viewcode-back" href="../../api/action_server/task_manager/index.html#action_server.task_manager.TaskManager.get_action_from_context">[docs]</a>    <span class="k">def</span> <span class="nf">get_action_from_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="c1"># TODO: The content of &#39;context&#39; should be thought out better.</span>
+        <span class="n">action_name</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_factory</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">action_name</span><span class="p">)()</span></div>
+
+<div class="viewcode-block" id="TaskManager.recursive_configure"><a class="viewcode-back" href="../../api/action_server/task_manager/index.html#action_server.task_manager.TaskManager.recursive_configure">[docs]</a>    <span class="k">def</span> <span class="nf">recursive_configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">configuration_data</span><span class="p">):</span>
+        <span class="n">preconditions_met</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">action_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List of configured actions</span>
+        <span class="n">configuration_result</span> <span class="o">=</span> <span class="n">ConfigurationResult</span><span class="p">()</span>
+
+        <span class="c1"># Try configuring the action until all of its preconditions are met</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">preconditions_met</span><span class="p">:</span>
+            <span class="n">configuration_result</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span> <span class="n">configuration_data</span><span class="p">)</span>
+
+            <span class="c1"># If context is required, we will need to configure an action prior to the current one</span>
+            <span class="k">if</span> <span class="n">configuration_result</span><span class="o">.</span><span class="n">required_context</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;More context required: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configuration_result</span><span class="o">.</span><span class="n">required_context</span><span class="p">))</span>
+
+                <span class="c1"># We derive the required action from the required context</span>
+                <span class="c1"># TODO: Using postconditions of actions, we could infer what kind of prior action is necessary</span>
+                <span class="n">prior_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_action_from_context</span><span class="p">(</span><span class="n">configuration_result</span><span class="o">.</span><span class="n">required_context</span><span class="p">)</span>
+
+                <span class="c1"># Configure the prior action using the same recursive strategy</span>
+                <span class="n">prior_config_data</span> <span class="o">=</span> <span class="n">ConfigurationData</span><span class="p">(</span><span class="n">configuration_result</span><span class="o">.</span><span class="n">required_context</span><span class="p">)</span>
+                <span class="n">prior_action_list</span><span class="p">,</span> <span class="n">prior_action_config_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recursive_configure</span><span class="p">(</span><span class="n">prior_action</span><span class="p">,</span>
+                                                                                         <span class="n">prior_config_data</span><span class="p">)</span>
+
+                <span class="c1"># Add all of the resulting actions from this configuration to the action list</span>
+                <span class="n">action_list</span> <span class="o">+=</span> <span class="n">prior_action_list</span>
+
+                <span class="c1"># If configuration did not succeed, we need to stop and report what went wrong there.</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">prior_action_config_result</span><span class="o">.</span><span class="n">succeeded</span><span class="p">:</span>
+                    <span class="n">configuration_result</span> <span class="o">=</span> <span class="n">prior_action_config_result</span>
+                    <span class="k">break</span>
+
+                <span class="c1"># Add the resulting context to the context of the current action, to get ahead in its configuration</span>
+                <span class="n">configuration_data</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prior_action_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+
+            <span class="c1"># If configuration succeeded and no more context is required, we can append the current action to the list</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">configuration_result</span><span class="o">.</span><span class="n">succeeded</span><span class="p">:</span>
+                    <span class="n">action_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Configuration succeeded!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">preconditions_met</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Return the list of configured actions and the current configuration result</span>
+        <span class="k">return</span> <span class="n">action_list</span><span class="p">,</span> <span class="n">configuration_result</span></div>
+
+<div class="viewcode-block" id="TaskManager.set_up_state_machine"><a class="viewcode-back" href="../../api/action_server/task_manager/index.html#action_server.task_manager.TaskManager.set_up_state_machine">[docs]</a>    <span class="k">def</span> <span class="nf">set_up_state_machine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipe</span><span class="p">):</span>
+        <span class="n">configuration_result</span> <span class="o">=</span> <span class="n">ConfigurationResult</span><span class="p">()</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">instruction</span> <span class="ow">in</span> <span class="n">recipe</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">action_name</span> <span class="o">=</span> <span class="n">instruction</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">configuration_result</span>
+
+            <span class="c1"># Set up the action</span>
+            <span class="n">Action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_factory</span><span class="o">.</span><span class="n">get_action</span><span class="p">(</span><span class="n">action_name</span><span class="p">)</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">Action</span><span class="p">()</span>
+
+            <span class="n">config_data</span> <span class="o">=</span> <span class="n">ConfigurationData</span><span class="p">(</span><span class="n">instruction</span><span class="p">,</span> <span class="n">configuration_result</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+
+            <span class="c1"># Try to configure the action</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">action_list</span><span class="p">,</span> <span class="n">configuration_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recursive_configure</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">config_data</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># if the action crashes, assume that the other actions in the sequence become invalid,</span>
+                <span class="c1"># so clear the action sequence before re-raising the exception</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;Action configuration crashed, requesting preempt of action sequence&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">request_preempt</span><span class="p">()</span>
+                <span class="k">raise</span>
+
+            <span class="c1"># If action configuration succeeded, append configured action to action sequence</span>
+            <span class="k">if</span> <span class="n">configuration_result</span><span class="o">.</span><span class="n">succeeded</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_action_sequence</span> <span class="o">+=</span> <span class="n">action_list</span>
+            <span class="c1"># If action configuration failed, return the configuration result, specifying what went wrong</span>
+            <span class="k">elif</span> <span class="n">configuration_result</span><span class="o">.</span><span class="n">missing_field</span><span class="p">:</span>
+                <span class="n">configuration_result</span><span class="o">.</span><span class="n">missing_field</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{}</span><span class="s2">].&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">configuration_result</span><span class="o">.</span><span class="n">missing_field</span>
+                <span class="k">return</span> <span class="n">configuration_result</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">configuration_result</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">configuration_result</span></div>
+
+<div class="viewcode-block" id="TaskManager.get_next_action_name"><a class="viewcode-back" href="../../api/action_server/task_manager/index.html#action_server.task_manager.TaskManager.get_next_action_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_action_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_sequence</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_sequence</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="TaskManager.execute_next_action"><a class="viewcode-back" href="../../api/action_server/task_manager/index.html#action_server.task_manager.TaskManager.execute_next_action">[docs]</a>    <span class="k">def</span> <span class="nf">execute_next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_sequence</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active_action</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># if the action crashes, assume that the other actions in the sequence become invalid,</span>
+            <span class="c1"># so clear the action sequence before re-raising the exception</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;Action execution crashed, requesting preempt of action sequence&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">request_preempt</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_sequence</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="TaskManager.request_preempt"><a class="viewcode-back" href="../../api/action_server/task_manager/index.html#action_server.task_manager.TaskManager.request_preempt">[docs]</a>    <span class="k">def</span> <span class="nf">request_preempt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_sequence</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active_action</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_active_action</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Cancelling action failed:</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,472 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.startup &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.startup</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.startup</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># System</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Event</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">from</span> <span class="nn">geometry_msgs.msg</span> <span class="k">import</span> <span class="n">Quaternion</span><span class="p">,</span> <span class="n">PolygonStamped</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">from</span> <span class="nn">sensor_msgs.msg</span> <span class="k">import</span> <span class="n">LaserScan</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">quaternion_msg_to_kdl_rotation</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">check_ebutton</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">human_interaction</span>
+<span class="kn">from</span> <span class="nn">.navigation</span> <span class="k">import</span> <span class="n">ForceDrive</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">utility</span>
+
+
+<div class="viewcode-block" id="StartChallengeRobust"><a class="viewcode-back" href="../../api/robot_smach_states/startup/index.html#robot_smach_states.startup.StartChallengeRobust">[docs]</a><span class="k">class</span> <span class="nc">StartChallengeRobust</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize, wait for the door to be opened and drive inside</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">initial_pose</span><span class="p">,</span> <span class="n">use_entry_points</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">door</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialization method</span>
+
+<span class="sd">        :param robot: (Robot)</span>
+<span class="sd">        :param initial_pose: (str) identifies the (waypoint) entity to be used as initial pose. For testing purposes,</span>
+<span class="sd">            a tuple(float, float, float) representing x, y and yaw in map frame can be used.</span>
+<span class="sd">        :param use_entry_points: (bool) (not yet implemented)</span>
+<span class="sd">        :param door: (bool) indicates whether to wait for a door to open and whether to &#39;force-drive&#39; inside</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Done&quot;</span><span class="p">,</span> <span class="s2">&quot;Aborted&quot;</span><span class="p">,</span> <span class="s2">&quot;Failed&quot;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="s2">&quot;speech&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_entry_points</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Use entry points is not yet implemented in StartChallengeRobust/EnterArena&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;NOTIFY_EBUTTON&quot;</span><span class="p">,</span>
+                                   <span class="n">check_ebutton</span><span class="o">.</span><span class="n">NotifyEButton</span><span class="p">(</span><span class="n">robot</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;succeeded&quot;</span><span class="p">:</span> <span class="s2">&quot;INITIALIZE&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;INITIALIZE&quot;</span><span class="p">,</span>
+                                   <span class="n">utility</span><span class="o">.</span><span class="n">Initialize</span><span class="p">(</span><span class="n">robot</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;initialized&quot;</span><span class="p">:</span> <span class="s2">&quot;INSTRUCT_WAIT_FOR_DOOR&quot;</span> <span class="k">if</span> <span class="n">door</span> <span class="k">else</span> <span class="s2">&quot;WAIT_FOR_LOCAL_PLANNER&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;abort&quot;</span><span class="p">:</span> <span class="s2">&quot;Aborted&quot;</span><span class="p">})</span>
+
+            <span class="c1"># We wait till the  local planner is ready before starting the challenge,</span>
+            <span class="c1"># otherwise the robot will not drive.</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;WAIT_FOR_LOCAL_PLANNER&quot;</span><span class="p">,</span>
+                                   <span class="n">WaitForLocalPlanner</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ready&quot;</span><span class="p">:</span> <span class="s2">&quot;INIT_POSE&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="s2">&quot;Aborted&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;INSTRUCT_WAIT_FOR_DOOR&quot;</span><span class="p">,</span>
+                                   <span class="n">human_interaction</span><span class="o">.</span><span class="n">Say</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Hi there, I will now wait until the door is opened&quot;</span><span class="p">,</span>
+                                                                 <span class="s2">&quot;I&#39;m waiting for the door&quot;</span><span class="p">],</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spoken&quot;</span><span class="p">:</span> <span class="s2">&quot;WAIT_FOR_DOOR&quot;</span><span class="p">})</span>
+
+            <span class="c1"># Start laser sensor that may change the state of the door if the door is open:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;WAIT_FOR_DOOR&quot;</span><span class="p">,</span>
+                                   <span class="n">WaitForDoorOpen</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;closed&quot;</span><span class="p">:</span> <span class="s2">&quot;DOOR_CLOSED&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;open&quot;</span><span class="p">:</span> <span class="s2">&quot;DOOR_OPEN&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;DOOR_CLOSED&quot;</span><span class="p">,</span>
+                                   <span class="n">human_interaction</span><span class="o">.</span><span class="n">Say</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Door is closed, please open the door&quot;</span><span class="p">,</span>
+                                                                 <span class="s2">&quot;I&#39;d start, if only you&#39;d let me in&quot;</span><span class="p">,</span>
+                                                                 <span class="s2">&quot;Please let me in&quot;</span><span class="p">]),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spoken&quot;</span><span class="p">:</span> <span class="s2">&quot;WAIT_FOR_DOOR&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;DOOR_OPEN&quot;</span><span class="p">,</span>
+                                   <span class="n">human_interaction</span><span class="o">.</span><span class="n">Say</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="s2">&quot;Door is open!&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spoken&quot;</span><span class="p">:</span> <span class="s2">&quot;INIT_POSE&quot;</span><span class="p">})</span>
+
+            <span class="c1"># Initial pose is set after opening door, otherwise snapmap will fail if door is still closed and initial</span>
+            <span class="c1"># pose is set, since it is thinks the robot is standing in front of a wall if door is closed and</span>
+            <span class="c1"># localization can(/will) be messed up.</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;INIT_POSE&#39;</span><span class="p">,</span>
+                                   <span class="n">utility</span><span class="o">.</span><span class="n">SetInitialPose</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">initial_pose</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;ENTER_ROOM&#39;</span> <span class="k">if</span> <span class="n">door</span> <span class="k">else</span> <span class="s2">&quot;Done&quot;</span><span class="p">,</span>
+                                                <span class="s1">&#39;preempted&#39;</span><span class="p">:</span> <span class="s1">&#39;Aborted&#39;</span><span class="p">,</span>
+                                                <span class="c1"># This transition will never happen at the moment.</span>
+                                                <span class="c1"># It should never go to aborted.</span>
+                                                <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;ENTER_ROOM&#39;</span> <span class="k">if</span> <span class="n">door</span> <span class="k">else</span> <span class="s2">&quot;Done&quot;</span><span class="p">})</span>
+
+            <span class="c1"># Enter the arena with force drive as back-up</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;ENTER_ROOM&#39;</span><span class="p">,</span>
+                                   <span class="n">EnterArena</span><span class="p">(</span><span class="n">robot</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="s2">&quot;Done&quot;</span><span class="p">})</span></div>
+
+
+<span class="c1"># Enter the arena with force drive as back-up</span>
+<div class="viewcode-block" id="EnterArena"><a class="viewcode-back" href="../../api/robot_smach_states/startup/index.html#robot_smach_states.startup.EnterArena">[docs]</a><span class="k">class</span> <span class="nc">EnterArena</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enter the arena by force driving through the door</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="c1"># If the door is open, amigo will say that it goes to the registration table</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;THROUGH_DOOR&quot;</span><span class="p">,</span>
+                                   <span class="n">human_interaction</span><span class="o">.</span><span class="n">Say</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;I will start my task now&quot;</span><span class="p">,</span> <span class="s2">&quot;Let&#39;s rock and roll!&quot;</span><span class="p">,</span>
+                                                                 <span class="s2">&quot;Let&#39;s kick some ass!&quot;</span><span class="p">],</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spoken&quot;</span><span class="p">:</span> <span class="s2">&quot;FORCE_DRIVE_THROUGH_DOOR&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;FORCE_DRIVE_THROUGH_DOOR&#39;</span><span class="p">,</span>
+                                   <span class="n">ForceDrive</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="s2">&quot;done&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="WaitForDoorOpen"><a class="viewcode-back" href="../../api/robot_smach_states/startup/index.html#robot_smach_states.startup.WaitForDoorOpen">[docs]</a><span class="k">class</span> <span class="nc">WaitForDoorOpen</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait till the average distance in front of the robot is bigger than 1 meter. Only point in front of the middle</span>
+<span class="sd">        are taken into account</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param timeout: timeout for waiting till the door is opened</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;closed&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="c1"># ToDo Loy: Keeping all of these is quite ugly. Would a ring buffer or collections.deque suffice?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distances</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">door_open</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+
+<div class="viewcode-block" id="WaitForDoorOpen.avg"><a class="viewcode-back" href="../../api/robot_smach_states/startup/index.html#robot_smach_states.startup.WaitForDoorOpen.avg">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">avg</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        return the mean of the element of a list. NaNs are ignored</span>
+
+<span class="sd">        :param lst: list of numbers</span>
+<span class="sd">        :return: mean of the elements</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">lst</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">point</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WaitForDoorOpen.process_scan"><a class="viewcode-back" href="../../api/robot_smach_states/startup/index.html#robot_smach_states.startup.WaitForDoorOpen.process_scan">[docs]</a>    <span class="k">def</span> <span class="nf">process_scan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">laser_upside_down</span><span class="p">,</span> <span class="n">laser_yaw</span><span class="p">,</span> <span class="n">door_open</span><span class="p">,</span> <span class="n">scan_msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        callback function checking the distance of the laser points in front of the robot.</span>
+
+<span class="sd">        :param laser_upside_down: (int) 1 as normal, -1 as upside down</span>
+<span class="sd">        :param laser_yaw: yaw angle of the laser</span>
+<span class="sd">        :param door_open: Event to be set when ready</span>
+<span class="sd">        :param scan_msg: sensor_msgs.msg.LaserScan</span>
+<span class="sd">        :return: no return</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">number_beams</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scan_msg</span><span class="o">.</span><span class="n">ranges</span><span class="p">)</span>
+        <span class="n">front_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">laser_upside_down</span><span class="o">*</span><span class="n">laser_yaw</span> <span class="o">-</span> <span class="n">scan_msg</span><span class="o">.</span><span class="n">angle_min</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">scan_msg</span><span class="o">.</span><span class="n">angle_increment</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">front_index</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">front_index</span> <span class="o">&gt;</span> <span class="n">number_beams</span> <span class="o">-</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Base laser can&#39;t see in front of the robot&quot;</span><span class="p">)</span>
+
+        <span class="n">ranges_at_center</span> <span class="o">=</span> <span class="n">scan_msg</span><span class="o">.</span><span class="n">ranges</span><span class="p">[</span><span class="n">front_index</span> <span class="o">-</span> <span class="mi">2</span><span class="p">:</span><span class="n">front_index</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># Get some points around the middle</span>
+        <span class="n">distance_to_door</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="n">ranges_at_center</span><span class="p">)</span>  <span class="c1"># and the average of the middle range</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;AVG distance: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">distance_to_door</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distances</span> <span class="o">+=</span> <span class="p">[</span><span class="n">distance_to_door</span><span class="p">]</span>  <span class="c1"># store all distances</span>
+
+        <span class="n">avg_distance_now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:])</span>  <span class="c1"># And the latest 5</span>
+
+        <span class="k">if</span> <span class="n">avg_distance_now</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Distance to door is more than a meter&quot;</span><span class="p">)</span>
+            <span class="n">door_open</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>  <span class="c1"># Then set a threading Event that execute is waiting for.</span></div>
+
+<div class="viewcode-block" id="WaitForDoorOpen.execute"><a class="viewcode-back" href="../../api/robot_smach_states/startup/index.html#robot_smach_states.startup.WaitForDoorOpen.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Waiting for door...&quot;</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">Quaternion</span><span class="p">()</span>
+        <span class="n">_</span><span class="p">,</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">tf_listener</span><span class="o">.</span><span class="n">lookupTransform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base_link_frame</span><span class="p">,</span>
+                                                                          <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/base_laser&#39;</span><span class="p">,</span>
+                                                                          <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">laser_rotation</span> <span class="o">=</span> <span class="n">quaternion_msg_to_kdl_rotation</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">laser_upside_down</span> <span class="o">=</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">copysign</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">laser_rotation</span><span class="o">.</span><span class="n">GetRPY</span><span class="p">()[</span><span class="mi">0</span><span class="p">]))</span>  <span class="c1"># -1 normal, 1 upside down</span>
+        <span class="n">laser_yaw</span> <span class="o">=</span> <span class="n">laser_rotation</span><span class="o">.</span><span class="n">GetRPY</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="n">door_open</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+        <span class="n">laser_sub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">laser_topic</span><span class="p">,</span> <span class="n">LaserScan</span><span class="p">,</span>
+                                     <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_scan</span><span class="p">,</span> <span class="n">laser_upside_down</span><span class="p">,</span> <span class="n">laser_yaw</span><span class="p">,</span> <span class="n">door_open</span><span class="p">))</span>
+
+        <span class="n">opened_before_timout</span> <span class="o">=</span> <span class="n">door_open</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Unregistering laser listener and clearing data&quot;</span><span class="p">)</span>
+        <span class="n">laser_sub</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distances</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">opened_before_timout</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Door is open&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;open&quot;</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Timed out with door still closed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;closed&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="WaitForLocalPlanner"><a class="viewcode-back" href="../../api/robot_smach_states/startup/index.html#robot_smach_states.startup.WaitForLocalPlanner">[docs]</a><span class="k">class</span> <span class="nc">WaitForLocalPlanner</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wait till a valid footprint message from the local planner is received. A footprint is valid if it contains at least</span>
+<span class="sd">    3 points. If no valid message is received within the timeout, &quot;timeout&quot; is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :type robot: robot</span>
+<span class="sd">        :param timeout: timeout</span>
+<span class="sd">        :type timeout: (float, int)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ready&quot;</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+
+<div class="viewcode-block" id="WaitForLocalPlanner.msg_cb"><a class="viewcode-back" href="../../api/robot_smach_states/startup/index.html#robot_smach_states.startup.WaitForLocalPlanner.msg_cb">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">msg_cb</span><span class="p">(</span><span class="n">ready_event</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="c1"># type: (Event, PolygonStamped) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Footprint message callback</span>
+
+<span class="sd">        :param ready_event: Event to set when ready</span>
+<span class="sd">        :type ready_event: Event</span>
+<span class="sd">        :param msg: footprint message</span>
+<span class="sd">        :type msg: PolygonStamped</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Valid footprint received&quot;</span><span class="p">)</span>
+            <span class="n">ready_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="WaitForLocalPlanner.execute"><a class="viewcode-back" href="../../api/robot_smach_states/startup/index.html#robot_smach_states.startup.WaitForLocalPlanner.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Waiting for local planner footprint&quot;</span><span class="p">)</span>
+        <span class="n">footprint_topic</span> <span class="o">=</span> <span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/local_planner/local_costmap/robot_footprint/footprint_stamped&quot;</span><span class="o">.</span>\
+            <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">)</span>
+
+        <span class="n">ready_event</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+
+        <span class="n">footprint_sub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="n">footprint_topic</span><span class="p">,</span> <span class="n">PolygonStamped</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">msg_cb</span><span class="p">,</span> <span class="n">ready_event</span><span class="p">))</span>
+
+        <span class="n">ready_before_timeout</span> <span class="o">=</span> <span class="n">ready_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Unregistering footprint subscriber&quot;</span><span class="p">)</span>
+        <span class="n">footprint_sub</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">ready_before_timeout</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Local Planner is ready&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;ready&quot;</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Local Planner not ready during timeout&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;timeout&quot;</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

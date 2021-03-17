@@ -1,0 +1,568 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.world_model &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.world_model</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.world_model</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">PyKDL</span> <span class="k">as</span> <span class="nn">kdl</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.classification_result</span> <span class="k">import</span> <span class="n">ClassificationResult</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">Entity</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">VectorStamped</span>
+<span class="kn">from</span> <span class="nn">.navigation</span> <span class="k">import</span> <span class="n">NavigateToObserve</span><span class="p">,</span> <span class="n">NavigateToSymbolic</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="k">import</span> <span class="n">designators</span> <span class="k">as</span> <span class="n">ds</span>
+<span class="kn">from</span> <span class="nn">.rise</span> <span class="k">import</span> <span class="n">RiseForInspect</span>
+
+
+<div class="viewcode-block" id="_color_info"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model._color_info">[docs]</a><span class="k">def</span> <span class="nf">_color_info</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[92m&#39;</span> <span class="o">+</span> <span class="n">string</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[0m&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="look_at_segmentation_area"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.look_at_segmentation_area">[docs]</a><span class="k">def</span> <span class="nf">look_at_segmentation_area</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Has a robot look at a certain object and possibly a volume</span>
+
+<span class="sd">    :param robot: robot object</span>
+<span class="sd">    :param entity: entity to look at</span>
+<span class="sd">    :param volume: string indicating the specific volume to look at (e.g., &#39;on_top_on&#39; or &#39;shelf3&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Determine the height of the head target</span>
+    <span class="c1"># Start with a default</span>
+
+    <span class="c1"># Check if we have areas: use these</span>
+    <span class="k">if</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">entity</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>
+        <span class="n">search_volume</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">volumes</span><span class="p">[</span><span class="n">volume</span><span class="p">]</span>
+        <span class="n">x_obj</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">search_volume</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">search_volume</span><span class="o">.</span><span class="n">max_corner</span><span class="o">.</span><span class="n">x</span><span class="p">())</span>
+        <span class="n">y_obj</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">search_volume</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="n">search_volume</span><span class="o">.</span><span class="n">max_corner</span><span class="o">.</span><span class="n">y</span><span class="p">())</span>
+        <span class="n">z_obj</span> <span class="o">=</span> <span class="n">search_volume</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()</span>
+        <span class="n">lookat_pos_map</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span> <span class="o">*</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">x_obj</span><span class="p">,</span> <span class="n">y_obj</span><span class="p">,</span> <span class="n">z_obj</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">lookat_pos_map</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">lookat_pos_map</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">lookat_pos_map</span><span class="o">.</span><span class="n">z</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Look at the top of the entity to inspect</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">+</span> <span class="n">entity</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">z_max</span>
+
+    <span class="c1"># Point the head at the right direction</span>
+    <span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="s2">&quot;/map&quot;</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Make sure the spindle is at the appropriate height if we are AMIGO</span>
+    <span class="k">if</span> <span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">==</span> <span class="s2">&quot;amigo&quot;</span><span class="p">:</span>
+        <span class="c1"># Send spindle goal to bring head to a suitable location</span>
+        <span class="c1"># Correction for standard height: with a table heigt of 0.76 a spindle position</span>
+        <span class="c1"># of 0.35 is desired, hence offset = 0.76-0.35 = 0.41</span>
+        <span class="c1"># Minimum: 0.15 (to avoid crushing the arms), maximum 0.4</span>
+        <span class="n">spindle_target</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="mf">0.41</span><span class="p">,</span> <span class="n">robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">upper_limit</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="n">robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">_send_goal</span><span class="p">([</span><span class="n">spindle_target</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+
+    <span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="UpdateEntityPose"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.UpdateEntityPose">[docs]</a><span class="k">class</span> <span class="nc">UpdateEntityPose</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Look at an entity and updates its pose. This assumes the robot is already in front of the object &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">entity_designator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param entity_designator: EdEntityDesignator indicating the object for which the pose should be updated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entity_designator</span> <span class="o">=</span> <span class="n">entity_designator</span>
+
+<div class="viewcode-block" id="UpdateEntityPose.execute"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.UpdateEntityPose.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Looks at the entity and updates its pose using the update kinect service &quot;&quot;&quot;</span>
+        <span class="c1"># Start by looking at the entity</span>
+        <span class="n">entity_to_inspect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">look_at_segmentation_area</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span> <span class="n">entity_to_inspect</span><span class="p">)</span>
+
+        <span class="c1"># This is needed because the head is not entirely still when the look_at_point function finishes</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="c1"># Inspect &#39;on top of&#39; the entity</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">update_kinect</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_to_inspect</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+        <span class="c1"># Return</span>
+        <span class="k">return</span> <span class="s2">&quot;done&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="UpdateDestEntityPoseWithSrcEntity"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.UpdateDestEntityPoseWithSrcEntity">[docs]</a><span class="k">class</span> <span class="nc">UpdateDestEntityPoseWithSrcEntity</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Update the pose of an entity from another entity&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">src_entity_designator</span><span class="p">,</span> <span class="n">dst_entity_designator</span><span class="p">,</span>
+                 <span class="n">dst_entity_type</span><span class="o">=</span><span class="s2">&quot;waypoint&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param src_entity_designator: (EdEntityDesignator) indicating the object from which the pose should be selected</span>
+<span class="sd">        :param dst_entity_designator: (EdEntityDesignator) indicating the object of which the pose must be updated</span>
+<span class="sd">        :param dst_entity_type: (str) Destination entity type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UpdateDestEntityPoseWithSrcEntity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">src_entity_designator</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">dst_entity_designator</span><span class="p">,</span> <span class="n">Entity</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_src_entity_designator</span> <span class="o">=</span> <span class="n">src_entity_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dst_entity_designator</span> <span class="o">=</span> <span class="n">dst_entity_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dst_entity_type</span> <span class="o">=</span> <span class="n">dst_entity_type</span>
+
+<div class="viewcode-block" id="UpdateDestEntityPoseWithSrcEntity.execute"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.UpdateDestEntityPoseWithSrcEntity.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Looks at the entity and updates its pose using the update kinect service &quot;&quot;&quot;</span>
+        <span class="n">src_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_src_entity_designator</span><span class="p">,</span> <span class="s1">&#39;resolve&#39;</span><span class="p">)</span> <span class="k">else</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_src_entity_designator</span>
+
+        <span class="n">dst_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dst_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dst_entity_designator</span><span class="p">,</span> <span class="s1">&#39;resolve&#39;</span><span class="p">)</span> <span class="k">else</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dst_entity_designator</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">src_entity</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span><span class="n">src_entity</span><span class="o">.</span><span class="n">id</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">dst_entity</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dst_entity</span><span class="p">,</span> <span class="n">Entity</span><span class="p">):</span>
+            <span class="n">dst_id</span> <span class="o">=</span> <span class="n">dst_entity</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dst_id</span> <span class="o">=</span> <span class="n">dst_entity</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">update_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">dst_id</span><span class="p">,</span>
+                                     <span class="n">frame_stamped</span><span class="o">=</span><span class="n">src_entity</span><span class="o">.</span><span class="n">pose</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;done&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="SegmentObjects"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.SegmentObjects">[docs]</a><span class="k">class</span> <span class="nc">SegmentObjects</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Look at an entity and segment objects within the area desired.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">segmented_entity_ids_designator</span><span class="p">,</span> <span class="n">entity_to_inspect_designator</span><span class="p">,</span>
+                 <span class="n">segmentation_area</span><span class="o">=</span><span class="s2">&quot;on_top_of&quot;</span><span class="p">,</span> <span class="n">unknown_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">filter_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param segmented_entity_ids_designator: designator that is used to store the segmented objects</span>
+<span class="sd">        :param entity_to_inspect_designator: EdEntityDesignator indicating the (furniture) object to inspect</span>
+<span class="sd">        :param segmentation_area: string defining where the objects are w.r.t. the entity, default = on_top_of</span>
+<span class="sd">        :param unknown_threshold: Entities whose classification score is lower than this float are not marked with a type</span>
+<span class="sd">        :param filter_threshold: Entities whose classification score is lower than this float are ignored</span>
+<span class="sd">            (i.e. are not added to the segmented_entity_ids_designator)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unknown_threshold</span> <span class="o">=</span> <span class="n">unknown_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_threshold</span> <span class="o">=</span> <span class="n">filter_threshold</span>
+
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_resolve_type</span><span class="p">(</span><span class="n">entity_to_inspect_designator</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_to_inspect_designator</span> <span class="o">=</span> <span class="n">entity_to_inspect_designator</span>
+
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">segmentation_area</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">segmentation_area</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segmentation_area_des</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">VariableDesignator</span><span class="p">(</span><span class="n">segmentation_area</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">segmentation_area</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">Designator</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">segmentation_area_des</span> <span class="o">=</span> <span class="n">segmentation_area</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;This shouldn&#39;t happen. Wrong types should have raised an exception earlier&quot;</span><span class="p">)</span>
+
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_resolve_type</span><span class="p">(</span><span class="n">segmented_entity_ids_designator</span><span class="p">,</span> <span class="p">[</span><span class="n">ClassificationResult</span><span class="p">])</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">is_writeable</span><span class="p">(</span><span class="n">segmented_entity_ids_designator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segmented_entity_ids_designator</span> <span class="o">=</span> <span class="n">segmented_entity_ids_designator</span>
+
+<div class="viewcode-block" id="SegmentObjects.execute"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.SegmentObjects.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">entity_to_inspect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_to_inspect_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">segmentation_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segmentation_area_des</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">entity_to_inspect</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="s1">&#39;room&#39;</span><span class="p">):</span>
+            <span class="n">look_at_segmentation_area</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span> <span class="n">entity_to_inspect</span><span class="p">,</span> <span class="n">segmentation_area</span><span class="p">)</span>
+
+            <span class="c1"># This is needed because the head is not entirely still when the look_at_point function finishes</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="c1"># Inspect &#39;on top of&#39; the entity</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">update_kinect</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">segmentation_area</span><span class="p">,</span> <span class="n">entity_to_inspect</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="n">segmented_object_ids</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">new_ids</span> <span class="o">+</span> <span class="n">res</span><span class="o">.</span><span class="n">updated_ids</span>
+
+        <span class="k">if</span> <span class="n">segmented_object_ids</span><span class="p">:</span>
+            <span class="n">_color_info</span><span class="p">(</span><span class="s2">&quot;&gt;&gt; Segmented </span><span class="si">%d</span><span class="s2"> objects!&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">segmented_object_ids</span><span class="p">))</span>
+
+            <span class="c1"># Classify and update IDs</span>
+            <span class="n">object_classifications</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">classify</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="n">segmented_object_ids</span><span class="p">,</span> <span class="n">unknown_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">unknown_threshold</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">object_classifications</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">object_classifications</span><span class="p">):</span>
+                    <span class="n">_color_info</span><span class="p">(</span><span class="s2">&quot;   - Object </span><span class="si">{}</span><span class="s2"> is a &#39;</span><span class="si">{}</span><span class="s2">&#39; (ID: </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_threshold</span><span class="p">:</span>
+                    <span class="n">over_threshold</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">object_classifications</span> <span class="k">if</span>
+                                      <span class="n">obj</span><span class="o">.</span><span class="n">probability</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_threshold</span><span class="p">]</span>
+
+                    <span class="n">dropped</span> <span class="o">=</span> <span class="p">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">probability</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">object_classifications</span> <span class="k">if</span>
+                               <span class="n">obj</span><span class="o">.</span><span class="n">probability</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_threshold</span><span class="p">}</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Dropping </span><span class="si">{ln}</span><span class="s2"> entities due to low class. score (&lt; </span><span class="si">{th}</span><span class="s2">): </span><span class="si">{dropped}</span><span class="s2">&quot;</span>
+                                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">th</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_threshold</span><span class="p">,</span> <span class="n">dropped</span><span class="o">=</span><span class="n">dropped</span><span class="p">,</span> <span class="n">ln</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">dropped</span><span class="p">)))</span>
+
+                    <span class="n">object_classifications</span> <span class="o">=</span> <span class="n">over_threshold</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">segmented_entity_ids_designator</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">object_classifications</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;    Classification failed, this should not happen!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;&gt;&gt; Tried to segment but no objects found&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Cancel the head goal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="s1">&#39;done&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="CheckEmpty"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.CheckEmpty">[docs]</a><span class="k">class</span> <span class="nc">CheckEmpty</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether a volume of an entity is filled</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">segmented_entity_ids_designator</span><span class="p">,</span> <span class="n">entity_designator</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param segmented_entity_ids_designator: designator containing the segmented objects in the volume</span>
+<span class="sd">        :param entity_designator: EdEntityDesignator indicating the (furniture) object to check</span>
+<span class="sd">        :param volume: string defining which volume of the entity is checked</span>
+<span class="sd">        :param threshold: float [m^3] indicating the free volume above which the area is considered partially_occupied.</span>
+<span class="sd">            (None means any entities filling the volume will result in &#39;occupied&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;occupied&quot;</span><span class="p">,</span> <span class="s2">&quot;partially_occupied&quot;</span><span class="p">,</span> <span class="s2">&quot;empty&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seen_entities_des</span> <span class="o">=</span> <span class="n">segmented_entity_ids_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_des</span> <span class="o">=</span> <span class="n">entity_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+
+<div class="viewcode-block" id="CheckEmpty.execute"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.CheckEmpty.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entity_des</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>  <span class="c1"># type: Entity</span>
+        <span class="n">seen_entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seen_entities_des</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">seen_entities</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
+                <span class="n">vol</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">volumes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">volume</span><span class="p">]</span>  <span class="c1"># type: Volume</span>
+                <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">seen_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">seen_entity</span> <span class="ow">in</span> <span class="n">seen_entities</span><span class="p">]</span>
+                <span class="n">occupied_space</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">)</span>
+                <span class="n">remaining_space</span> <span class="o">=</span> <span class="n">vol</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">occupied_space</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Occupied space is </span><span class="si">{}</span><span class="s1">, remaining space is </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">occupied_space</span><span class="p">,</span> <span class="n">remaining_space</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">remaining_space</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="s1">&#39;partially_occupied&#39;</span>
+            <span class="k">return</span> <span class="s1">&#39;occupied&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;empty&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="Inspect"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.Inspect">[docs]</a><span class="k">class</span> <span class="nc">Inspect</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to navigate to a(n) (furniture) object and segment the objects on top of it.</span>
+<span class="sd">    Note that when inspecting a high entity the robot will end the Inspect in a high position.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">entityDes</span><span class="p">,</span> <span class="n">objectIDsDes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">searchArea</span><span class="o">=</span><span class="s2">&quot;on_top_of&quot;</span><span class="p">,</span> <span class="n">navigation_area</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">unknown_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">filter_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param entityDes: EdEntityDesignator indicating the (furniture) object to inspect</span>
+<span class="sd">        :param objectIDsDes: designator that is used to store the segmented objects</span>
+<span class="sd">        :param searchArea: string defining where the objects are w.r.t. the entity, default = on_top_of</span>
+<span class="sd">        :param navigation_area: string identifying the inspection area. If provided, NavigateToSymbolic is used.</span>
+<span class="sd">            If left empty, NavigateToObserve is used.</span>
+<span class="sd">        :param unknown_threshold: Entities whose classification score is lower than this float are not marked with a type</span>
+<span class="sd">        :param filter_threshold: Entities whose classification score is lower than this float are ignored</span>
+<span class="sd">            (i.e. are not added to the segmented_entity_ids_designator)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">objectIDsDes</span><span class="p">:</span>
+            <span class="n">objectIDsDes</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">VariableDesignator</span><span class="p">([],</span> <span class="n">resolve_type</span><span class="o">=</span><span class="p">[</span><span class="n">ClassificationResult</span><span class="p">])</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">navigation_area</span><span class="p">:</span>
+                <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;NAVIGATE_TO_INSPECT&#39;</span><span class="p">,</span> <span class="n">NavigateToSymbolic</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="p">{</span><span class="n">entityDes</span><span class="p">:</span> <span class="n">navigation_area</span><span class="p">},</span>
+                                                                                 <span class="n">entityDes</span><span class="p">),</span>
+                                       <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;unreachable&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;goal_not_defined&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;arrived&#39;</span><span class="p">:</span> <span class="s1">&#39;RISE&#39;</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;NAVIGATE_TO_INSPECT&#39;</span><span class="p">,</span> <span class="n">NavigateToObserve</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">entityDes</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span>
+                                       <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;unreachable&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;goal_not_defined&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;arrived&#39;</span><span class="p">:</span> <span class="s1">&#39;RISE&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;RISE&#39;</span><span class="p">,</span> <span class="n">RiseForInspect</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">entityDes</span><span class="p">,</span> <span class="n">searchArea</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;SEGMENT&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;SEGMENT&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;SEGMENT&#39;</span><span class="p">,</span>
+                                   <span class="n">SegmentObjects</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">objectIDsDes</span><span class="o">.</span><span class="n">writeable</span><span class="p">,</span> <span class="n">entityDes</span><span class="p">,</span> <span class="n">searchArea</span><span class="p">,</span>
+                                                  <span class="n">unknown_threshold</span><span class="o">=</span><span class="n">unknown_threshold</span><span class="p">,</span>
+                                                  <span class="n">filter_threshold</span><span class="o">=</span><span class="n">filter_threshold</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;done&#39;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="CheckVolumeEmpty"><a class="viewcode-back" href="../../api/robot_smach_states/world_model/index.html#robot_smach_states.world_model.CheckVolumeEmpty">[docs]</a><span class="k">class</span> <span class="nc">CheckVolumeEmpty</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">entity_des</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="s2">&quot;on_top_of&quot;</span><span class="p">,</span> <span class="n">volume_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param entity_des: EdEntityDesignator indicating the (furniture) object to check</span>
+<span class="sd">        :param volume: string defining volume of the entity to be checked, default = on_top_of</span>
+<span class="sd">        :param volume_threshold: float [m^3] indicating the free volume above which the area is considered partially_occupied.</span>
+<span class="sd">            (None means any entities filling the volume will result in &#39;occupied&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;empty&#39;</span><span class="p">,</span> <span class="s1">&#39;occupied&#39;</span><span class="p">,</span>  <span class="s1">&#39;partially_occupied&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="n">seen_entities_des</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">VariableDesignator</span><span class="p">([],</span> <span class="n">resolve_type</span><span class="o">=</span><span class="p">[</span><span class="n">ClassificationResult</span><span class="p">])</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;INSPECT&#39;</span><span class="p">,</span>
+                                   <span class="n">Inspect</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">entity_des</span><span class="p">,</span> <span class="n">searchArea</span><span class="o">=</span><span class="n">volume</span><span class="p">,</span> <span class="n">objectIDsDes</span><span class="o">=</span><span class="n">seen_entities_des</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="s2">&quot;CHECK&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="s2">&quot;failed&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;CHECK&#39;</span><span class="p">,</span>
+                                   <span class="n">CheckEmpty</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">seen_entities_des</span><span class="p">,</span> <span class="n">entity_des</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">volume_threshold</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;empty&#39;</span><span class="p">:</span> <span class="s1">&#39;empty&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;partially_occupied&#39;</span><span class="p">:</span> <span class="s1">&#39;partially_occupied&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;occupied&#39;</span><span class="p">:</span> <span class="s1">&#39;occupied&#39;</span><span class="p">})</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="kn">from</span> <span class="nn">robot_skills</span> <span class="k">import</span> <span class="n">get_robot_from_argv</span>
+    <span class="kn">from</span> <span class="nn">robot_smach_states.util.designators</span> <span class="k">import</span> <span class="n">EdEntityDesignator</span>
+
+    <span class="kn">from</span> <span class="nn">robocup_knowledge</span> <span class="k">import</span> <span class="n">knowledge_loader</span>
+
+    <span class="n">common</span> <span class="o">=</span> <span class="n">knowledge_loader</span><span class="o">.</span><span class="n">load_knowledge</span><span class="p">(</span><span class="s2">&quot;common&quot;</span><span class="p">)</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;inspect_test&#39;</span><span class="p">)</span>
+
+    <span class="n">robot</span> <span class="o">=</span> <span class="n">get_robot_from_argv</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">Inspect</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span> <span class="n">entityDes</span><span class="o">=</span><span class="n">EdEntityDesignator</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;display_cabinet&quot;</span><span class="p">),</span>
+                 <span class="n">navigation_area</span><span class="o">=</span><span class="s2">&quot;in_front_of&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sm</span><span class="o">.</span><span class="n">execute</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

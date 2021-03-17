@@ -1,0 +1,511 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.manipulation.manipulation &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.manipulation.manipulation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.manipulation.manipulation</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">ed_msgs.msg</span> <span class="k">import</span> <span class="n">EntityInfo</span>
+<span class="kn">from</span> <span class="nn">robot_skills.arm.arms</span> <span class="k">import</span> <span class="n">PublicArm</span>
+<span class="kn">from</span> <span class="nn">robot_skills.arm.gripper</span> <span class="k">import</span> <span class="n">GripperState</span>
+<span class="kn">from</span> <span class="nn">..human_interaction.human_interaction</span> <span class="k">import</span> <span class="n">Say</span>
+<span class="kn">from</span> <span class="nn">..reset</span> <span class="k">import</span> <span class="n">ResetPart</span>
+<span class="kn">from</span> <span class="nn">..utility</span> <span class="k">import</span> <span class="n">LockDesignator</span><span class="p">,</span> <span class="n">UnlockDesignator</span>
+<span class="kn">from</span> <span class="nn">..util.designators</span> <span class="k">import</span> <span class="n">check_type</span><span class="p">,</span> <span class="n">LockingDesignator</span>
+
+
+<div class="viewcode-block" id="ArmToJointConfig"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.ArmToJointConfig">[docs]</a><span class="k">class</span> <span class="nc">ArmToJointConfig</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">arm_designator</span><span class="p">,</span> <span class="n">configuration</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Put arm of robot in some joint configuration</span>
+
+<span class="sd">        :param robot: robot to execute state with</span>
+<span class="sd">        :param arm_designator: designator that resolves to arm to put in given configuration</span>
+<span class="sd">        :param configuration: joint configuration to put arm in</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="n">check_type</span><span class="p">(</span><span class="n">arm_designator</span><span class="p">,</span> <span class="n">PublicArm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="n">arm_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">configuration</span>
+
+<div class="viewcode-block" id="ArmToJointConfig.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.ArmToJointConfig.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">arm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">arm</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve arm&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+        <span class="k">if</span> <span class="n">arm</span><span class="o">.</span><span class="n">send_joint_goal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span>
+        <span class="k">return</span> <span class="s2">&quot;failed&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="HandOverTo"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.HandOverTo">[docs]</a><span class="k">class</span> <span class="nc">HandOverTo</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">arm_designator</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handover the object in arm to a human.</span>
+
+<span class="sd">        :param robot: robot to execute state with</span>
+<span class="sd">        :param arm_designator: designator that resolves to arm holding an object</span>
+<span class="sd">        :param timeout: float time the operation may take</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="n">check_type</span><span class="p">(</span><span class="n">arm_designator</span><span class="p">,</span> <span class="n">PublicArm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="n">arm_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+
+<div class="viewcode-block" id="HandOverTo.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.HandOverTo.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">arm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">arm</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve arm&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="n">object_in_arm</span> <span class="o">=</span> <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">occupied_by</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">object_in_arm</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Unoccupied arm sent to HandOverToHuman, arm should be occupied when entering this state.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Please take the object from my gripper.&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">attempt</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">arm</span><span class="o">.</span><span class="n">handover_detector</span><span class="o">.</span><span class="n">handover_to_human</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Please take it from my gripper.&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">attempt</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">update_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">object_in_arm</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;remove&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I will open my gripper now.&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">)</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+
+        <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">occupied_by</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="HandoverFromHuman"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.HandoverFromHuman">[docs]</a><span class="k">class</span> <span class="nc">HandoverFromHuman</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    State that enables low level grab reflex. Besides a robot object, needs</span>
+<span class="sd">    an arm and an entity to grab, which is either one from ed through the</span>
+<span class="sd">    grabbed_entity_designator or it is made up in the</span>
+<span class="sd">    CloseGripperOnHandoverToRobot state and given the grabbed_entity_label</span>
+<span class="sd">    as id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">arm_designator</span><span class="p">,</span> <span class="n">grabbed_entity_label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">grabbed_entity_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+                 <span class="n">arm_configuration</span><span class="o">=</span><span class="s2">&quot;handover_to_human&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hold up hand to accept an object and close hand once something is inserted</span>
+
+<span class="sd">        :param robot: Robot with which to execute this behavior</span>
+<span class="sd">        :param arm_designator: ArmDesignator resolving to arm accept item into</span>
+<span class="sd">        :param grabbed_entity_label: What ID to give a dummy item in case no grabbed_entity_designator is supplied</span>
+<span class="sd">        :param grabbed_entity_designator: EntityDesignator resolving to the accepted item. Can be a dummy</span>
+<span class="sd">        :param timeout: How long to hold hand over before closing without anything</span>
+<span class="sd">        :param arm_configuration: Which pose to put arm in when holding hand up for the item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">])</span>
+
+        <span class="n">check_type</span><span class="p">(</span><span class="n">arm_designator</span><span class="p">,</span> <span class="n">PublicArm</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">grabbed_entity_designator</span> <span class="ow">and</span> <span class="n">grabbed_entity_label</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;No grabbed entity label or grabbed entity designator given&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;POSE&#39;</span><span class="p">,</span> <span class="n">ArmToJointConfig</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">arm_designator</span><span class="p">,</span> <span class="n">arm_configuration</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;OPEN_BEFORE_INSERT&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;OPEN_BEFORE_INSERT&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;OPEN_BEFORE_INSERT&#39;</span><span class="p">,</span> <span class="n">SetGripper</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">arm_designator</span><span class="p">,</span>
+                                                                    <span class="n">gripperstate</span><span class="o">=</span><span class="n">GripperState</span><span class="o">.</span><span class="n">OPEN</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;SAY&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;SAY&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;SAY&#39;</span><span class="p">,</span> <span class="n">Say</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="s1">&#39;Please hand over the object by pushing it gently in my gripper&#39;</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;spoken&#39;</span><span class="p">:</span> <span class="s1">&#39;CLOSE_AFTER_INSERT&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;CLOSE_AFTER_INSERT&#39;</span><span class="p">,</span>
+                                   <span class="n">CloseGripperOnHandoverToRobot</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">arm_designator</span><span class="p">,</span>
+                                                                 <span class="n">grabbed_entity_label</span><span class="o">=</span><span class="n">grabbed_entity_label</span><span class="p">,</span>
+                                                                 <span class="n">grabbed_entity_designator</span><span class="o">=</span><span class="n">grabbed_entity_designator</span><span class="p">,</span>
+                                                                 <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;succeeded&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;timeout&#39;</span><span class="p">:</span> <span class="s1">&#39;timeout&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="HandoverToHuman"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.HandoverToHuman">[docs]</a><span class="k">class</span> <span class="nc">HandoverToHuman</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">arm_designator</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        State to hand over the object in the arm to a human operator</span>
+
+<span class="sd">        :param robot: robot to execute state with</span>
+<span class="sd">        :param arm_designator: designator that resolves to arm holding the object</span>
+<span class="sd">        :param timeout: float amount of time the procedure may take</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="c1"># A designator can resolve to a different item every time its resolved. We don&#39;t want that here, so lock</span>
+        <span class="n">check_type</span><span class="p">(</span><span class="n">arm_designator</span><span class="p">,</span> <span class="n">PublicArm</span><span class="p">)</span>
+        <span class="n">locked_arm</span> <span class="o">=</span> <span class="n">LockingDesignator</span><span class="p">(</span><span class="n">arm_designator</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;LOCK_ARM&quot;</span><span class="p">,</span> <span class="n">LockDesignator</span><span class="p">(</span><span class="n">locked_arm</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;locked&#39;</span><span class="p">:</span> <span class="s1">&#39;SPINDLE_MEDIUM&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;SPINDLE_MEDIUM&quot;</span><span class="p">,</span> <span class="n">ResetPart</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">robot</span><span class="o">.</span><span class="n">torso</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;MOVE_HUMAN_HANDOVER_JOINT_GOAL&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;MOVE_HUMAN_HANDOVER_JOINT_GOAL&quot;</span><span class="p">,</span> <span class="n">ArmToJointConfig</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">locked_arm</span><span class="p">,</span>
+                                                                                      <span class="s1">&#39;handover_to_human&#39;</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;SAY_DETECT_HANDOVER&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;SAY_DETECT_HANDOVER&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;SAY_DETECT_HANDOVER&quot;</span><span class="p">,</span> <span class="n">Say</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;I will handover the object now&quot;</span>
+                                                                      <span class="s2">&quot;Please take it from my gripper.&quot;</span><span class="p">]),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;spoken&#39;</span><span class="p">:</span> <span class="s1">&#39;DETECT_HANDOVER&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;DETECT_HANDOVER&quot;</span><span class="p">,</span> <span class="n">HandOverTo</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">locked_arm</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;SAY_CLOSE_NOW_GRIPPER&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;SAY_CLOSE_NOW_GRIPPER&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;SAY_CLOSE_NOW_GRIPPER&quot;</span><span class="p">,</span> <span class="n">Say</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;I will close my gripper now&quot;</span><span class="p">]),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;spoken&#39;</span><span class="p">:</span> <span class="s1">&#39;CLOSE_GRIPPER_HANDOVER&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;CLOSE_GRIPPER_HANDOVER&#39;</span><span class="p">,</span> <span class="n">SetGripper</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">locked_arm</span><span class="p">,</span>
+                                                                        <span class="n">gripperstate</span><span class="o">=</span><span class="n">GripperState</span><span class="o">.</span><span class="n">CLOSE</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;RESET_ARM&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;RESET_ARM&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;RESET_ARM&#39;</span><span class="p">,</span> <span class="n">ArmToJointConfig</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">locked_arm</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;UNLOCK_ARM&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;UNLOCK_ARM&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;UNLOCK_ARM&quot;</span><span class="p">,</span> <span class="n">UnlockDesignator</span><span class="p">(</span><span class="n">locked_arm</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;unlocked&#39;</span><span class="p">:</span> <span class="s1">&#39;succeeded&#39;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="CloseGripperOnHandoverToRobot"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.CloseGripperOnHandoverToRobot">[docs]</a><span class="k">class</span> <span class="nc">CloseGripperOnHandoverToRobot</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">arm_designator</span><span class="p">,</span> <span class="n">grabbed_entity_label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">grabbed_entity_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        State to wait until the operator pushes an object into the gripper</span>
+
+<span class="sd">        :param robot: robot to execute state with</span>
+<span class="sd">        :param arm_designator: designator that resolves to arm receiving the object</span>
+<span class="sd">        :param grabbed_entity_label: label to assign the dummy entity representing the received object</span>
+<span class="sd">                                    (use this ore grabbed_entity_designator)</span>
+<span class="sd">        :param grabbed_entity_designator: designator resolving to the entity which will be received</span>
+<span class="sd">                                    (use this ore grabbed_entity_designator)</span>
+<span class="sd">        :param timeout: float amount of time the procedure may take</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="n">arm_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">item_label</span> <span class="o">=</span> <span class="n">grabbed_entity_label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">item_designator</span> <span class="o">=</span> <span class="n">grabbed_entity_designator</span>
+
+<div class="viewcode-block" id="CloseGripperOnHandoverToRobot.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.CloseGripperOnHandoverToRobot.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">arm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">arm</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve arm&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">item_designator</span><span class="p">:</span>
+            <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">occupied_by</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">item_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">item_label</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">handed_entity</span> <span class="o">=</span> <span class="n">EntityInfo</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">item_label</span><span class="p">)</span>
+                <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">occupied_by</span> <span class="o">=</span> <span class="n">handed_entity</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;No grabbed entity designator and no label for dummy entity given&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="k">if</span> <span class="n">arm</span><span class="o">.</span><span class="n">handover_detector</span><span class="o">.</span><span class="n">handover_to_robot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>
+            <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;succeeded&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Eventhough no force is felt the gripper will close&quot;</span><span class="p">)</span>
+            <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;timeout&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="SetGripper"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.SetGripper">[docs]</a><span class="k">class</span> <span class="nc">SetGripper</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">arm_designator</span><span class="p">,</span> <span class="n">gripperstate</span><span class="o">=</span><span class="n">GripperState</span><span class="o">.</span><span class="n">OPEN</span><span class="p">,</span> <span class="n">grab_entity_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instruct the gripper</span>
+
+<span class="sd">        :param robot: robot to execute state with</span>
+<span class="sd">        :param arm_designator: designator that resolves to arm corresponding to the gripper</span>
+<span class="sd">        :param gripperstate: desired state of the gripper</span>
+<span class="sd">        :param grab_entity_designator: Designator resolving to the entity to be attached to the gripper</span>
+<span class="sd">        :param timeout: float amount of time the procedure may take</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="n">check_type</span><span class="p">(</span><span class="n">arm_designator</span><span class="p">,</span> <span class="n">PublicArm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="n">arm_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gripperstate</span> <span class="o">=</span> <span class="n">gripperstate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grab_entity_designator</span> <span class="o">=</span> <span class="n">grab_entity_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+
+<div class="viewcode-block" id="SetGripper.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.SetGripper.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">arm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">arm</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve arm&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="c1"># If needs attaching to gripper, the grab_entity_designator is used</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grab_entity_designator</span><span class="p">:</span>
+            <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grab_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">entity</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grab_entity_designator</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gripperstate</span> <span class="o">!=</span> <span class="n">GripperState</span><span class="o">.</span><span class="n">OPEN</span><span class="p">:</span>
+                <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">occupied_by</span> <span class="o">=</span> <span class="n">entity</span>
+
+        <span class="k">if</span> <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gripperstate</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;failed&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="TorsoToUserPos"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.TorsoToUserPos">[docs]</a><span class="k">class</span> <span class="nc">TorsoToUserPos</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">torso_pos</span><span class="p">,</span> <span class="n">time_out</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        State to set the pose of the torso</span>
+
+<span class="sd">        :param robot: robot to execute state with</span>
+<span class="sd">        :param torso_pos: float desired position of the torso</span>
+<span class="sd">        :param time_out: float amount of time the procedure may take</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">torso_pos</span> <span class="o">=</span> <span class="n">torso_pos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_out</span> <span class="o">=</span> <span class="n">time_out</span>
+
+<div class="viewcode-block" id="TorsoToUserPos.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/manipulation/index.html#robot_smach_states.manipulation.manipulation.TorsoToUserPos.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">torso_pos</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time_out</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;failed&#39;</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

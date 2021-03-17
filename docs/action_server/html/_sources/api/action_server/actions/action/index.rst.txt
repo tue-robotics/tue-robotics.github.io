@@ -1,0 +1,115 @@
+:mod:`action_server.actions.action`
+===================================
+
+.. py:module:: action_server.actions.action
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   action_server.actions.action.ConfigurationData
+   action_server.actions.action.ConfigurationResult
+   action_server.actions.action.ActionResult
+   action_server.actions.action.Action
+
+
+
+.. py:class:: ConfigurationData(semantics, context=None)
+
+
+
+   The ConfigurationData class defines the input data structure for configuration of an action.
+
+   :param semantics: Dictionary of the following structure: {'action': <action-name>, 'param1': <param-value>}.
+   :param context: Dictionary of parameter names to context provided by previous actions.
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+
+.. py:class:: ConfigurationResult(succeeded=False, context=None)
+
+
+
+   The ConfigurationResult class defines the data structure that is returned by the configure() methods of actions
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+
+.. py:class:: ActionResult(succeeded=False, message='')
+
+
+
+   The ActionResult class defines the data structure that is returned by the run() methods of actions.
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+
+.. py:class:: Action
+
+
+
+   The Action class defines the interface of actions that can be configured and started by the task_manager.
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: _check_parameters(self, config)
+
+
+   .. method:: _check_skills(self, robot)
+
+
+   .. method:: configure(self, robot, config)
+
+      Configure the action with a robot and configuration data
+
+      :param robot: The robot to use for this action
+      :type robot: Robot
+      :param config: The configuration data. Contains semantics from input and implied context from previous tasks.
+      :type config: ConfigurationData
+      :return: The result of configuration
+      :rtype: ConfigurationResult
+
+
+   .. method:: _configure(self, robot, config)
+
+
+   .. method:: start(self)
+
+      Runs the execution of the action. Blocks until the action is finished or canceled.
+
+      :return: ActionResult
+
+
+   .. method:: _start(self)
+
+
+   .. method:: cancel(self)
+
+      Cancels the execution of the action.
+
+
+   .. method:: _cancel(self)
+
+
+   .. method:: get_name(self)
+
+
+

@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['arma_5faligned',['arma_aligned',['../compiler__setup_8hpp.html#a470ffba45511242ebfc0b0d96f6542e6',1,'compiler_setup.hpp']]],
+  ['arma_5fatlas',['arma_atlas',['../compiler__setup_8hpp.html#a13cc580635bcf4a6d4567324958caf8f',1,'compiler_setup.hpp']]],
+  ['arma_5fblas_5funderscore',['ARMA_BLAS_UNDERSCORE',['../config_8hpp.html#a8ee8bf0ab9fffce465ca2b7100b67a1e',1,'config.hpp']]],
+  ['arma_5fcold',['arma_cold',['../compiler__setup_8hpp.html#a030bbcdda782e56c9b0d044e8660e8cf',1,'compiler_setup.hpp']]],
+  ['arma_5fconst',['arma_const',['../compiler__setup_8hpp.html#ae4316944c60a234cf9265e79597a2205',1,'compiler_setup.hpp']]],
+  ['arma_5fdeprecated',['arma_deprecated',['../compiler__setup_8hpp.html#a4561e76d97b89dd09603ef619af4934a',1,'compiler_setup.hpp']]],
+  ['arma_5ffortran',['arma_fortran',['../compiler__setup_8hpp.html#a9d21917337c0fef422ef482154ee8a9b',1,'compiler_setup.hpp']]],
+  ['arma_5ffortran2_5fnoprefix',['arma_fortran2_noprefix',['../compiler__setup_8hpp.html#aedd27ad46f3a41d4049618cabcab2eb4',1,'compiler_setup.hpp']]],
+  ['arma_5ffortran2_5fprefix',['arma_fortran2_prefix',['../compiler__setup_8hpp.html#ae61f6635660fba9224e4eeac727995f9',1,'compiler_setup.hpp']]],
+  ['arma_5ffortran_5fnoprefix',['arma_fortran_noprefix',['../compiler__setup_8hpp.html#a55323687275a6db9e74fd52c9cb242d8',1,'compiler_setup.hpp']]],
+  ['arma_5ffortran_5fprefix',['arma_fortran_prefix',['../compiler__setup_8hpp.html#a9e059ff2ccd6c4ec1716c30ca750f319',1,'compiler_setup.hpp']]],
+  ['arma_5fhot',['arma_hot',['../compiler__setup_8hpp.html#ac744b33a68de1a5865f4fc59a1982a53',1,'compiler_setup.hpp']]],
+  ['arma_5fignore',['arma_ignore',['../compiler__setup_8hpp.html#a7217d518908b0e58734b12610b2c5d69',1,'compiler_setup.hpp']]],
+  ['arma_5fincfile_5fwrap',['ARMA_INCFILE_WRAP',['../compiler__setup_8hpp.html#a34e92cceab7f8c68ad94f05344f8be10',1,'compiler_setup.hpp']]],
+  ['arma_5finline',['arma_inline',['../compiler__setup_8hpp.html#a7df385ae8f58eeedce93c4a93344b5a8',1,'compiler_setup.hpp']]],
+  ['arma_5fmat_5fprealloc',['ARMA_MAT_PREALLOC',['../config_8hpp.html#a90a784e74a486b273a9bd34db1fe359c',1,'config.hpp']]],
+  ['arma_5fprint_5flogic_5ferrors',['ARMA_PRINT_LOGIC_ERRORS',['../config_8hpp.html#aa004062e57e4d55090c0104095dae3d9',1,'config.hpp']]],
+  ['arma_5fprint_5fruntime_5ferrors',['ARMA_PRINT_RUNTIME_ERRORS',['../config_8hpp.html#aac5da57cbce1a32a121ccedf9ac5449a',1,'config.hpp']]],
+  ['arma_5fpure',['arma_pure',['../compiler__setup_8hpp.html#a6a76038475a08e92cc58e41505907fd1',1,'compiler_setup.hpp']]],
+  ['arma_5fwarn_5funused',['arma_warn_unused',['../compiler__setup_8hpp.html#a99597b36f59c789b9e2d53f4d3178c6f',1,'compiler_setup.hpp']]]
+];

@@ -1,0 +1,515 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>action_server.actions.find &mdash; action_server 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> action_server
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">action_server</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>action_server.actions.find</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for action_server.actions.find</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">action</span> <span class="k">import</span> <span class="n">Action</span><span class="p">,</span> <span class="n">ConfigurationData</span>
+
+<span class="kn">from</span> <span class="nn">entity_description</span> <span class="k">import</span> <span class="n">resolve_entity_description</span>
+
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">from</span> <span class="nn">robot_smach_states.human_interaction</span> <span class="k">import</span> <span class="n">FindPersonInRoom</span>
+<span class="kn">from</span> <span class="nn">robot_smach_states.navigation</span> <span class="k">import</span> <span class="n">NavigateToWaypoint</span>
+<span class="kn">from</span> <span class="nn">robot_smach_states.navigation</span> <span class="k">import</span> <span class="n">Find</span> <span class="k">as</span> <span class="n">StatesFind</span>
+<span class="kn">from</span> <span class="nn">robot_smach_states.util.designators</span> <span class="k">import</span> <span class="n">EdEntityDesignator</span><span class="p">,</span> <span class="n">VariableDesignator</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">Entity</span>
+
+<span class="kn">import</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">as</span> <span class="nn">kdl</span>
+
+
+<div class="viewcode-block" id="Find"><a class="viewcode-back" href="../../../api/action_server/actions/find/index.html#action_server.actions.find.Find">[docs]</a><span class="k">class</span> <span class="nc">Find</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Find class implements the action to find an object or person at a specified location.</span>
+
+<span class="sd">    Parameters to pass to the configure() method are:</span>
+<span class="sd">     - `location` (required): location to find the object (room or pre-existing world model entity)</span>
+<span class="sd">     - `object` (required): the object to find.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Action</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># TODO: change this to a python dictionary schema</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_field_prompts</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s2">&quot; What exactly would you like me to find? &quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_skills</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="s1">&#39;speech&#39;</span><span class="p">]</span>  <span class="c1"># ToDO: Still calls rightArm directly</span>
+
+<div class="viewcode-block" id="Find._point_at_person"><a class="viewcode-back" href="../../../api/action_server/actions/find/index.html#action_server.actions.find.Find._point_at_person">[docs]</a>    <span class="k">def</span> <span class="nf">_point_at_person</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">):</span>
+        <span class="n">pose_base_link_kdl</span> <span class="o">=</span> <span class="n">person</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/base_link&#39;</span><span class="p">,</span>
+                                                        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="n">pose_base_link</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">kdl_frame_stamped_to_pose_stamped_msg</span><span class="p">(</span><span class="n">pose_base_link_kdl</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">pose_base_link</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pose_base_link</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span>
+
+        <span class="n">th</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">vth</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">force_drive</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">copysign</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span> <span class="o">*</span> <span class="n">vth</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">th</span> <span class="o">/</span> <span class="n">vth</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I will point at you now.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_ground_in_front_of_robot</span><span class="p">(</span><span class="n">distance</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">rightArm</span><span class="o">.</span><span class="n">_send_joint_trajectory</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;You&#39;re right there!&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">rightArm</span><span class="o">.</span><span class="n">send_joint_goal</span><span class="p">(</span><span class="s1">&#39;reset&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Find.Semantics"><a class="viewcode-back" href="../../../api/action_server/actions/find/index.html#action_server.actions.find.Find.Semantics">[docs]</a>    <span class="k">class</span> <span class="nc">Semantics</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_location</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Find.Semantics.__repr__"><a class="viewcode-back" href="../../../api/action_server/actions/find/index.html#action_server.actions.find.Find.Semantics.__repr__">[docs]</a>        <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="Find._parse_semantics"><a class="viewcode-back" href="../../../api/action_server/actions/find/index.html#action_server.actions.find.Find._parse_semantics">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_semantics</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">):</span>
+        <span class="n">semantics</span> <span class="o">=</span> <span class="n">Find</span><span class="o">.</span><span class="n">Semantics</span><span class="p">()</span>
+
+        <span class="n">semantics</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;source-location&#39;</span> <span class="ow">in</span> <span class="n">semantics_dict</span><span class="p">:</span>
+            <span class="n">semantics</span><span class="o">.</span><span class="n">source_location</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">[</span><span class="s1">&#39;source-location&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">semantics</span></div>
+
+<div class="viewcode-block" id="Find.Context"><a class="viewcode-back" href="../../../api/action_server/actions/find/index.html#action_server.actions.find.Find.Context">[docs]</a>    <span class="k">class</span> <span class="nc">Context</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Find._parse_context"><a class="viewcode-back" href="../../../api/action_server/actions/find/index.html#action_server.actions.find.Find._parse_context">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_context</span><span class="p">(</span><span class="n">context_dict</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">Find</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;location&#39;</span> <span class="ow">in</span> <span class="n">context_dict</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">context_dict</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">context</span></div>
+
+<div class="viewcode-block" id="Find._configure"><a class="viewcode-back" href="../../../api/action_server/actions/find/index.html#action_server.actions.find.Find._configure">[docs]</a>    <span class="k">def</span> <span class="nf">_configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span> <span class="o">=</span> <span class="n">Find</span><span class="o">.</span><span class="n">_parse_semantics</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_context</span> <span class="o">=</span> <span class="n">Find</span><span class="o">.</span><span class="n">_parse_context</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="c1"># Check if we know the source location</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_context</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_context</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_context</span><span class="o">.</span><span class="n">location</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; Where should I look for the </span><span class="si">{}</span><span class="s2">?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; Where should I look for the </span><span class="si">{}</span><span class="s2">?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">missing_field</span> <span class="o">=</span> <span class="s1">&#39;source-location&#39;</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; Where should I look for the </span><span class="si">{}</span><span class="s2">?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">missing_field</span> <span class="o">=</span> <span class="s1">&#39;source-location&#39;</span>
+            <span class="k">return</span>
+
+        <span class="c1"># We can now assume we know the source location</span>
+        <span class="c1"># Set up context about the found entity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Check if we need to find a person or an object</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;person&#39;</span><span class="p">:</span>
+            <span class="c1"># If no source-location is specified, check if a location is specified in the object spec</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">location</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_context</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_context</span><span class="o">.</span><span class="n">location</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; Where should I look for </span><span class="si">{}</span><span class="s2">?&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">missing_field</span> <span class="o">=</span> <span class="s2">&quot;source-location&quot;</span>
+                    <span class="k">return</span>
+
+            <span class="c1"># if we need to find the person near a furniture object, get the room where it is located</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">location_rooms</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">get_room</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+            <span class="c1"># person in room</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;someone&#39;</span>
+                <span class="n">discard_other_labels</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">discard_other_labels</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span> <span class="o">=</span> <span class="n">VariableDesignator</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">Entity</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_find_state_machines</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">FindPersonInRoom</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                 <span class="n">discard_other_labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span><span class="o">.</span><span class="n">writeable</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;designator&#39;</span><span class="p">:</span> <span class="n">EdEntityDesignator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span> <span class="o">=</span> <span class="n">EdEntityDesignator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">][</span><span class="s1">&#39;designator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># TODO: Robocup hack to make sure the robot moves to the found person</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_navigation_state_machine</span> <span class="o">=</span> <span class="n">NavigateToWaypoint</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span>
+                <span class="n">waypoint_designator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span><span class="p">,</span>
+                <span class="n">radius</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">look_at_designator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># We need to find an object</span>
+        <span class="c1"># we need to navigate to all pieces of furniture and inspect all of their inspection areas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_areas</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nav_areas</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">location_rooms</span><span class="p">:</span>
+            <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">get_locations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">location</span> <span class="ow">in</span> <span class="n">locations</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_areas</span><span class="p">[</span><span class="n">location</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">get_inspect_areas</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_nav_areas</span><span class="p">[</span><span class="n">location</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">get_inspect_position</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_areas</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">get_inspect_areas</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nav_areas</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">get_inspect_position</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="c1"># Set up the designator with the object description</span>
+        <span class="n">entity_description</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">category</span><span class="p">}</span>
+        <span class="n">description_designator</span> <span class="o">=</span> <span class="n">VariableDesignator</span><span class="p">(</span><span class="n">entity_description</span><span class="p">)</span>
+
+        <span class="n">location_designator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_find_state_machines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span> <span class="o">=</span> <span class="n">VariableDesignator</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">Entity</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">loc</span><span class="p">,</span> <span class="n">areas</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_areas</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">location_designator</span> <span class="o">=</span> <span class="n">EdEntityDesignator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">loc</span><span class="p">)</span>
+            <span class="n">nav_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nav_areas</span><span class="p">[</span><span class="n">loc</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">:</span>
+                <span class="n">area_designator</span> <span class="o">=</span> <span class="n">VariableDesignator</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+
+                <span class="n">navigation_area_designator</span> <span class="o">=</span> <span class="n">VariableDesignator</span><span class="p">(</span><span class="n">nav_area</span><span class="p">)</span>
+
+                <span class="c1"># Set up the Find state machine</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Setting up state machine with loc = </span><span class="si">{}</span><span class="s2">, area = </span><span class="si">{}</span><span class="s2">, nav_area = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span>
+                                                                                                        <span class="n">nav_area</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_find_state_machines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">StatesFind</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span> <span class="n">knowledge</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="p">,</span>
+                                                            <span class="n">source_entity_designator</span><span class="o">=</span><span class="n">location_designator</span><span class="p">,</span>
+                                                            <span class="n">description_designator</span><span class="o">=</span><span class="n">description_designator</span><span class="p">,</span>
+                                                            <span class="n">area_name</span><span class="o">=</span><span class="n">area_designator</span><span class="p">,</span>
+                                                            <span class="n">navigation_area</span><span class="o">=</span><span class="n">navigation_area_designator</span><span class="p">,</span>
+                                                            <span class="n">found_entity_designator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;designator&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span><span class="p">,</span>
+                                                 <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                                 <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">category</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;designator&#39;</span><span class="p">:</span> <span class="n">location_designator</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Find._start"><a class="viewcode-back" href="../../../api/action_server/actions/find/index.html#action_server.actions.find.Find._start">[docs]</a>    <span class="k">def</span> <span class="nf">_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">fsm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_state_machines</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">fsm</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+            <span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span>
+
+            <span class="k">if</span> <span class="n">res</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;found&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;person&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I found </span><span class="si">{}</span><span class="s2"> at the </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                                                                            <span class="n">location</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I found </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">location</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I found a person at the </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I found a person. &quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_point_at_person</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_navigation_state_machine</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Hi there!&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Hey, I found a </span><span class="si">{}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="k">if</span>
+                                                                         <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="k">else</span>
+                                                                         <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">category</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I found a </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="k">if</span>
+                                                                           <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="k">else</span>
+                                                                           <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">category</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">return</span>
+            <span class="k">elif</span> <span class="n">res</span> <span class="o">==</span> <span class="s1">&#39;not_found&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;person&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot; I don&#39;t see anyone here. &quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I don&#39;t see what I am looking for here.&quot;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I couldn&#39;t find </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> the </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span>
+                    <span class="k">else</span> <span class="s2">&quot;a &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="k">else</span>
+                    <span class="s2">&quot;a &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">category</span><span class="p">,</span>
+                    <span class="s2">&quot;in&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">location_rooms</span> <span class="k">else</span> <span class="s2">&quot;at&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot; I&#39;m unable to inspect the </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I was unable to inspect the </span><span class="si">{}</span><span class="s2"> to find </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="s2">&quot;a &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="k">if</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="k">else</span> <span class="s2">&quot;a &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">category</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Find._cancel"><a class="viewcode-back" href="../../../api/action_server/actions/find/index.html#action_server.actions.find.Find._cancel">[docs]</a>    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;find_test&#39;</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+    <span class="n">robot_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;amigo&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.amigo</span> <span class="k">import</span> <span class="n">Amigo</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">elif</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;sergio&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.sergio</span> <span class="k">import</span> <span class="n">Sergio</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.mockbot</span> <span class="k">import</span> <span class="n">Mockbot</span> <span class="k">as</span> <span class="n">Robot</span>
+
+    <span class="n">robot</span> <span class="o">=</span> <span class="n">Robot</span><span class="p">()</span>
+
+    <span class="n">action</span> <span class="o">=</span> <span class="n">Find</span><span class="p">()</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigurationData</span><span class="p">({</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;find&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;source-location&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;cabinet&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;area&#39;</span><span class="p">:</span> <span class="s1">&#39;on_top_of&#39;</span><span class="p">},</span>
+                                <span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;coke&#39;</span><span class="p">}})</span>
+
+    <span class="n">action</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigurationData</span><span class="p">({</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;find&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;source-location&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;livingroom&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;area&#39;</span><span class="p">:</span> <span class="s1">&#39;in&#39;</span><span class="p">},</span>
+                                <span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;person&#39;</span><span class="p">}})</span>
+
+    <span class="n">action</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

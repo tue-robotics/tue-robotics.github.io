@@ -1,0 +1,374 @@
+:mod:`robot_skills.arm.arms`
+============================
+
+.. py:module:: robot_skills.arm.arms
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.arm.arms.GripperTypes
+   robot_skills.arm.arms.PseudoObjects
+   robot_skills.arm.arms.PublicArm
+   robot_skills.arm.arms.Arm
+
+
+
+.. py:class:: GripperTypes
+
+   Bases: :class:`object`
+
+   The most base type
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. attribute:: PINCH
+      :annotation: = gripper-type-pinch
+
+      
+
+   .. attribute:: PARALLEL
+      :annotation: = gripper-type-parallel
+
+      
+
+   .. attribute:: SUCTION
+      :annotation: = gripper-type-suction
+
+      
+
+   .. attribute:: GRASPING
+      :annotation: = pseudo-gripper-type-any-grasping-will-do
+
+      
+
+   .. attribute:: NONE
+      :annotation: = pseudo-gripper-type-no-gripper
+
+      
+
+
+.. py:class:: PseudoObjects
+
+   Bases: :class:`object`
+
+   The most base type
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. attribute:: ANY
+      :annotation: = pseudo-object-saying-any-object-will-do
+
+      
+
+   .. attribute:: EMPTY
+      :annotation: = pseudo-object-saying-lack-of-object-will-do
+
+      
+
+
+.. py:class:: PublicArm(arm, available_gripper_types, default_gripper_type, has_occupied_by, allow_force_sensor, available_joint_goals, available_joint_trajectories)
+
+   Bases: :class:`object`
+
+   Public arm interface, also checks a challenge doesn't try to use more than it asked for.
+
+   THE ARM SHOULD NEVER ALLOW ANYTHING THAT WAS NOT ASKED FOR IN THE CONSTRUCTOR!
+
+
+   :ivar _arm: Private link to the real arm.
+   :vartype _arm: Arm
+
+   :ivar default_gripper_type: Gripper type to use if the user didn't provide one.
+   :vartpe default_gripper_type: str or None
+
+   :ivar _available_gripper_types: Gripper types that may be used.
+   :vartype _available_gripper_types: set of str (the GripperTypes.* constants)
+
+   :ivar _has_occupied_by: Whether the arm supports 'occupied_by' calls.
+   :vartype _has_occupied_by: bool
+
+   :ivar _allow_force_sensor: Whether use of the force sensor is allowed.
+   :vartype _allow_force_sensor: bool
+
+   :ivar _available_joint_goals: Joint goals that may be used.
+   :vartype _available_joint_goals: set of str
+
+   :ivar _available_joint_trajectories: Joint trajectories that may be used.
+   :vartype _available_joint_trajectories: set of str
+
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: has_occupied_by(self)
+
+      Test whether the arm supports 'occupied_by' calls.
+
+
+   .. method:: occupied_by(self)
+
+      !Deprecated: use arm.gripper.occupied_by instead!
+      Query the object currently held by the arm.
+
+
+   .. method:: has_joint_goal(self, configuration)
+
+      Query whether the provided joint goal exists for the arm.
+
+
+   .. method:: send_joint_goal(self, configuration, timeout=5.0, max_joint_vel=0.7)
+
+
+   .. method:: has_joint_trajectory(self, configuration)
+
+      Query whether the provided joint trajectory exists for the arm.
+
+
+   .. method:: send_joint_trajectory(self, configuration, timeout=5, max_joint_vel=0.7)
+
+
+   .. method:: send_goal(self, frameStamped, timeout=30, pre_grasp=False, first_joint_pos_only=False, allowed_touch_objects=None)
+
+
+   .. method:: gripper(self)
+
+
+   .. method:: handover_detector(self)
+
+
+   .. method:: has_gripper_type(self, gripper_type=None)
+
+      Query whether the arm has the provided specific type of gripper.
+
+      :param gripper_type: Optional type of gripper to test.
+      :type  gripper_type: str or None
+
+
+   .. method:: has_force_sensor(self)
+
+
+   .. method:: move_down_until_force_sensor_edge_up(self, timeout=10, retract_distance=0.01)
+
+
+   .. method:: send_gripper_goal(self, state, timeout=5.0, gripper_type=None, max_torque=0.1)
+
+      Tell the gripper to perform a motion.
+      :param state: New state of the gripper.
+      :type state: str (GripperState)
+      :param timeout: Amount of time available to reach the goal, default is 5
+      :type timeout: float
+      :param gripper_type: Optional type of gripper to perform the action.
+      :type gripper_type: str
+      :param max_torque: How much torque [Nm] to apply
+      :return: succes
+      :rtype: bool
+
+
+   .. method:: handover_to_human(self, timeout=10, gripper_type=None)
+
+
+   .. method:: handover_to_robot(self, timeout=10, gripper_type=None)
+
+
+   .. method:: wait_for_motion_done(self, timeout=10.0, cancel=False, gripper_type=None)
+
+
+   .. method:: cancel_goals(self)
+
+      Cancels the currently active grasp-precompute and joint-trajectory-action goals
+      :return: no return
+
+
+   .. method:: close(self)
+
+
+   .. method:: reset(self)
+
+
+   .. method:: selfreset(self)
+
+
+   .. method:: base_offset(self)
+
+      Retrieves the 'optimal' position of an object w.r.t. the base link of a
+      robot for this arm to grasp it.
+
+      :return: Position of an object w.r.t. the base link of a robot.
+      :rtype: kdl Vector
+
+
+   .. method:: _test_die(self, cond, feature, hint='')
+
+      Test the condition, if it fails, die with an assertion error explaining what is wrong.
+
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+
+.. py:class:: Arm(robot_name, tf_listener, get_joint_states, side)
+
+   Bases: :class:`robot_skills.robot_part.RobotPart`
+
+   A single arm can be either left or right, extends Arms:
+   Use left or right to get arm while running from the python console
+
+   Examples:
+   >>> left.send_goal(0.265, 1, 0.816, 0, 0, 0, 60)  # doctest: +SKIP
+   or Equivalently:
+   >>> left.send_goal(px=0.265, py=1, pz=0.816, yaw=0, pitch=0, roll=0, time_out=60, pre_grasp=False, frame_id='/amigo/base_link')  # doctest: +SKIP
+
+   constructor
+
+   :param robot_name: robot_name
+   :param tf_listener: tf_server.TFClient()
+   :param get_joint_states: get_joint_states function for getting the last joint states
+   :param side: left or right
+
+   .. method:: collect_gripper_types(self, gripper_type)
+
+      Query the arm for having the proper gripper type and collect the types that fulfill the
+      requirement.
+
+      :param gripper_type: Wanted type of the gripper. May be a pseudo gripper type.
+      :return: Collection gripper types at the arm that meet the requirements.
+
+
+   .. method:: _has_specific_gripper_types(self, gripper_type)
+
+      Verify whether the arm as the given type of specific gripper.
+
+      :param gripper_type: Type of gripper to check for. Must not be a pseudo gripper type.
+      :return: Gripper types that match the requirement.
+
+
+   .. method:: has_joint_goal(self, configuration)
+
+      Query the arm for having a given joint goal.
+
+      :param configuration: name of jint goal to check.
+      :return: Whether the joint goal is available.
+
+
+   .. method:: has_joint_trajectory(self, configuration)
+
+      Query the arm for having a given joint trajectory.
+
+      :param configuration: name of jint trajectory to check.
+      :return: Whether the joint trajectory is available.
+
+
+   .. method:: cancel_goals(self)
+
+      Cancels the currently active grasp-precompute and joint-trajectory-action goals
+      :return: no return
+
+
+   .. method:: close(self)
+
+      Cancels all active goals for the arm and the gripper
+      :return: no return
+
+
+   .. method:: send_goal(self, frameStamped, timeout=30, pre_grasp=False, first_joint_pos_only=False, allowed_touch_objects=None)
+
+      Send a arm to a goal:
+
+      Using a combination of position and orientation: a kdl.Frame. A time
+      out time_out. pre_grasp means go to an offset that is normally needed
+      for things such as grasping. You can also specify the frame_id which
+      defaults to base_link
+
+      :param frameStamped: A FrameStamped to move the arm's end effector to
+      :param timeout: timeout in seconds; In case of 0.0, goal is executed without feedback and waiting
+      :param pre_grasp: Bool to use pre_grasp or not
+      :param first_joint_pos_only: Bool to only execute first joint position of whole trajectory
+      :param allowed_touch_objects: List of object names in the worldmodel, which are allowed to be touched
+      :return: True of False
+
+
+   .. method:: send_joint_goal(self, configuration, timeout=5.0, max_joint_vel=0.7)
+
+      Send a named joint goal (pose) defined in the parameter default_configurations to the arm
+      :param configuration:(str) name of configuration, configuration should be loaded as parameter
+      :param timeout:(secs) timeout in seconds
+      :param max_joint_vel:(int,float,[int]) speed the robot can have when getting to the desired configuration
+      :return: True or False, False in case of nonexistent configuration or failed execution
+
+
+   .. method:: send_joint_trajectory(self, configuration, timeout=5.0, max_joint_vel=0.7)
+
+      Send a named joint trajectory (sequence of poses) defined in the default_trajectories to the arm
+
+      :param configuration:(str) name of configuration, configuration should be loaded as parameter
+      :param timeout:(secs) timeout in seconds
+      :param max_joint_vel:(int,float,[int]) speed the robot can have when getting to the desired configuration
+      :return: True or False, False in case of nonexistent configuration or failed execution
+
+
+   .. method:: selfreset(self)
+
+      Put the arm into the 'reset' pose
+
+      :return: True or False
+
+
+   .. method:: _send_joint_trajectory(self, joints_references, max_joint_vel=0.7, timeout=rospy.Duration(5))
+
+      Low level method that sends a array of joint references to the arm.
+
+      If timeout is defined, it will wait for timeout*len(joints_reference) seconds for the
+      completion of the actionlib goal. It will return True as soon as possible when the goal
+      succeeded. On timeout, it will return False.
+
+      :param joints_references:[str] list of joint configurations,
+          which should be a list of the length equal to the number of joints to be moved
+      :param max_joint_vel:(int,float,[int], [float]) speed the robot can have when getting to the desired
+          configuration. A single value can be given, which will be used for all joints, or a list of values can be given
+          in which the order has to agree with the joints according to the joints_references.
+      :param timeout:(secs) timeout for each joint configuration in rospy.Duration(seconds); timeout of 0.0 is not
+          allowed
+      :return: True or False
+
+
+   .. method:: wait_for_motion_done(self, timeout=10.0, cancel=False)
+
+      Waits until all action clients are done
+
+      :param timeout: timeout in seconds; in case 0.0, no sensible output is provided, just False
+      :param cancel: bool specifying whether goals should be cancelled
+          if timeout is exceeded
+      :return: bool indicates whether motion was done (True if reached, False otherwise)
+
+
+   .. method:: base_offset(self)
+
+      Retrieves the 'optimal' position of an object w.r.t. the base link of a
+      robot for this arm to grasp it.
+
+      :return: Position of an object w.r.t. the base link of a robot.
+      :rtype: kdl Vector
+
+
+   .. method:: _publish_marker(self, goal, color, ns='')
+
+      Publish markers for visualisation
+      :param goal: tue_manipulation_msgs.msg.GraspPrecomputeGoal
+      :param color: list of rgb colors (0.0-1.0)
+      :param ns: namespace
+      :return: no return
+
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+

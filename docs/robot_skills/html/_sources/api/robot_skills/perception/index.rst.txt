@@ -1,0 +1,116 @@
+:mod:`robot_skills.perception`
+==============================
+
+.. py:module:: robot_skills.perception
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.perception.Perception
+
+
+
+.. py:class:: Perception(robot_name, tf_listener, image_topic=None, projection_srv=None, camera_base_ns='')
+
+   Bases: :class:`robot_skills.robot_part.RobotPart`
+
+   Base class for robot parts
+
+   Constructor
+
+   :param robot_name: string with robot name
+   :param tf_listener: tf listener object
+
+   .. method:: close(self)
+
+
+   .. method:: _image_cb(self, image)
+
+
+   .. method:: get_image(self, timeout=5)
+
+
+   .. method:: project_roi(self, roi, frame_id=None)
+
+      Projects a region of interest of a depth image to a 3D Point. Hereto, a service is used
+
+      :param roi: sensor_msgs/RegionOfInterest
+      :param frame_id: if specified, the result is transformed into this frame id
+      :return: VectorStamped object
+
+
+   .. method:: project_rois(self, rois)
+
+
+   .. method:: _get_faces(self, image=None)
+
+
+   .. method:: learn_person(self, name='operator')
+
+
+   .. method:: detect_faces(self, image=None, stamp=False)
+
+      Snap an image with the camera and return the recognized faces.
+
+      :param image: image to use for recognition
+      :type image: sensor_msgs/Image
+      :param stamp: Return recognitions and stamp
+      :type stamp: bool
+      :return: recognitions of the faces
+      :rtype: list[image_recognition_msgs/Recognition]
+
+
+   .. staticmethod:: get_best_face_recognition(recognitions, desired_label, probability_threshold=4.0)
+
+      Returns the Recognition with the highest probability of having the desired_label.
+      Assumes that the probability distributions in Recognition are already sorted by probability (descending, highest first)
+
+      :param recognitions: The recognitions to select the best one with desired_label from
+      :type recognitions: list[image_recognition_msgs/Recognition]
+      :param desired_label: what label to look for in the recognitions
+      :type desired_label: str
+      :param probability_threshold: only accept recognitions with probability higher than threshold
+      :type probability_threshold: double
+      :return: the best recognition matching the given desired_label
+      :rtype image_recognition_msgs/Recognition
+
+
+   .. method:: clear_face(self)
+
+      clearing all faces from the OpenFace node.
+
+      :return: no return
+
+
+   .. method:: get_face_properties(self, faces=None, image=None)
+
+      Get the face properties of all faces or in an image. If faces is provided, image is ignored. If both aren't
+      provided, an image is collected.
+
+      :param faces: images of all faces
+      :type faces: list[sensor_msgs/Image]
+      :param image: image containing the faces
+      :type image: sensor_msgs/Image
+      :return: list of face properties
+      :rtype: list[image_recognition_msgs/FaceProperties]
+
+
+   .. method:: get_rgb_depth_caminfo(self, timeout=5)
+
+      Get an rgb image and and depth image, along with camera info for the depth camera.
+      The returned tuple can serve as input for world_model_ed.ED.detect_people.
+
+      :param timeout: How long to wait until the images are all collected.
+      :return: tuple(rgb, depth, depth_info) or a None if no images could be gathered.
+
+
+   .. method:: detect_person_3d(self, rgb, depth, depth_info)
+
+
+

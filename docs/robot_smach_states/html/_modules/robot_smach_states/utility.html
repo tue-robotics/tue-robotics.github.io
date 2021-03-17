@@ -1,0 +1,664 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.utility &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.utility</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.utility</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+<span class="kn">import</span> <span class="nn">std_msgs.msg</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">.util.designators</span> <span class="k">import</span> <span class="n">check_type</span><span class="p">,</span> <span class="n">is_writeable</span><span class="p">,</span> <span class="n">LockingDesignator</span>
+<span class="kn">from</span> <span class="nn">.util.robocup_recorder</span> <span class="k">import</span> <span class="n">start_robocup_recorder</span>
+
+
+<div class="viewcode-block" id="Initialize"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.Initialize">[docs]</a><span class="k">class</span> <span class="nc">Initialize</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resets the robot (arms, torso, head, etc.) and checks if the tf listener works correctly</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialization</span>
+
+<span class="sd">        :param robot: (Robot)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_robocup_recorder</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">)</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;initialized&#39;</span><span class="p">,</span> <span class="s1">&#39;abort&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+<div class="viewcode-block" id="Initialize.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.Initialize.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="c1"># Check if TF link between /map and /base_link is set</span>
+        <span class="c1"># If not error at initialize in stead of during first navigate execution</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;TF link between /map and /base_link is checked. &quot;</span>
+                      <span class="s2">&quot;If it takes longer than a second, probably an error. Do a restart!!!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span>
+
+        <span class="k">return</span> <span class="s1">&#39;initialized&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="SetInitialPose"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.SetInitialPose">[docs]</a><span class="k">class</span> <span class="nc">SetInitialPose</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets the initial pose for correct localization</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">init_position</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialization</span>
+
+<span class="sd">        :param robot: (Robot)</span>
+<span class="sd">        :param init_position: (str) identifies the (waypoint) entity to be used as initial pose. For testing purposes,</span>
+<span class="sd">            a tuple(float, float, float) representing x, y and yaw in map frame can be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="s2">&quot;preempted&quot;</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init_position</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init_position</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">init_position</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> \
+            <span class="s2">&quot;Use a string or a tuple of length 3 (x, y, yaw) to initialize the SetInitialPose&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_position</span> <span class="o">=</span> <span class="n">init_position</span>
+
+<div class="viewcode-block" id="SetInitialPose.location_2d"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.SetInitialPose.location_2d">[docs]</a>    <span class="k">def</span> <span class="nf">location_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the 2D location from a string identifying an wm entity</span>
+
+<span class="sd">        :param location: (str) identifies the entity</span>
+<span class="sd">        :return: tuple(float, float, float) x, y, yaw in map frame</span>
+<span class="sd">        :raises: Exception</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">location_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">location</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">location_entity</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;SetInitialPose: ED entity &#39;&quot;</span> <span class="o">+</span> <span class="n">location</span> <span class="o">+</span> <span class="s2">&quot;&#39; does not exist.&quot;</span><span class="p">)</span>
+
+        <span class="n">rz</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">location_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">GetEulerZYX</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">location_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">location_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">rz</span></div>
+
+<div class="viewcode-block" id="SetInitialPose.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.SetInitialPose.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_position</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location_2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_position</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_position</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># Tuple or list</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Initial pose </span><span class="si">{0}</span><span class="s2"> could not be set&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_position</span><span class="p">))</span>
+            <span class="k">return</span> <span class="s2">&quot;error&quot;</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Set initial pose to </span><span class="si">{0}</span><span class="s1">, </span><span class="si">{1}</span><span class="s1">, </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">phi</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">set_initial_pose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+
+        <span class="c1"># Reset costmap: costmap is obviously entirely off if the localization was wrong before giving the initial pose</span>
+        <span class="c1"># self.robot.base.reset_costmap()</span>
+        <span class="c1"># Wait 0.5 s just to be sure</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="s2">&quot;done&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="Trigger"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.Trigger">[docs]</a><span class="k">class</span> <span class="nc">Trigger</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">trigger</span><span class="p">,</span> <span class="n">topic</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;triggered&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span> <span class="o">=</span> <span class="n">trigger</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">std_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Trigger.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.Trigger.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">std_msgs</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s1">&#39;triggered&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="WaitForTriggerTimeout"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitForTriggerTimeout">[docs]</a><span class="k">class</span> <span class="nc">WaitForTriggerTimeout</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Same as WaitForTrigger with timeout</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">triggers</span><span class="p">,</span> <span class="n">topic</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">outcomes</span><span class="o">=</span><span class="n">triggers</span><span class="o">+</span><span class="p">[</span><span class="s1">&#39;preempted&#39;</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span> <span class="o">=</span> <span class="n">triggers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Get the ~private namespace parameters from command line or launch file.</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">std_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;topic: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WaitForTriggerTimeout.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitForTriggerTimeout.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;timeout&#39;</span></div>
+
+<div class="viewcode-block" id="WaitForTriggerTimeout.callback"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitForTriggerTimeout.callback">[docs]</a>    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># Simply print out values in our custom message.</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;trigger received: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s1">&#39;wrong trigger received: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="WaitForTrigger"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitForTrigger">[docs]</a><span class="k">class</span> <span class="nc">WaitForTrigger</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This state will block execution until a suitable trigger command is received on the channel /trigger</span>
+<span class="sd">    It will receive std_msgs.String and will compare it to the strings in the array that is given.</span>
+
+<span class="sd">    Example to wait for one of the strings &#39;allow&#39; or &#39;deny&#39; (could be sent from a gui):</span>
+
+<span class="sd">        WaitForTrigger(robot, [&#39;allow&#39;, &#39;deny&#39;], &quot;/trigger&quot;),</span>
+<span class="sd">                       transitions={    &#39;allow&#39;:     &#39;DO_SOMETHING&#39;,</span>
+<span class="sd">                                        &#39;deny&#39;:      &#39;DO_SOMETHING&#39;,</span>
+<span class="sd">                                        &#39;preempted&#39;: &#39;failed&#39;})</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">triggers</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">outcomes</span><span class="o">=</span><span class="n">triggers</span><span class="o">+</span><span class="p">[</span><span class="s1">&#39;preempted&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span> <span class="o">=</span> <span class="n">triggers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Get the ~private namespace parameters from command line or launch file.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="n">rate</span>
+        <span class="n">topic</span> <span class="o">=</span> <span class="n">topic</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">std_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;topic: /</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;rate:  </span><span class="si">%d</span><span class="s1"> Hz&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WaitForTrigger.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitForTrigger.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">rate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;preempted&#39;</span></div>
+
+<div class="viewcode-block" id="WaitForTrigger.callback"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitForTrigger.callback">[docs]</a>    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># Simply print out values in our custom message.</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">triggers</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;trigger received: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trigger_received</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s1">&#39;wrong trigger received: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="WaitTime"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitTime">[docs]</a><span class="k">class</span> <span class="nc">WaitTime</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">waittime</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;waited&#39;</span><span class="p">,</span><span class="s1">&#39;preempted&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span> <span class="o">=</span> <span class="n">waittime</span>
+
+<div class="viewcode-block" id="WaitTime.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitTime.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">total_sleep</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sleep_interval</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+        <span class="k">while</span> <span class="n">total_sleep</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep_interval</span><span class="p">)</span>
+            <span class="n">total_sleep</span> <span class="o">+=</span> <span class="n">sleep_interval</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;WaitTime preempted at </span><span class="si">{0}</span><span class="s1"> of </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_sleep</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">service_preempt</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s1">&#39;preempted&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;waited&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="WaitCondition"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitCondition">[docs]</a><span class="k">class</span> <span class="nc">WaitCondition</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wait until a condition is satisfied, possible on a robot.</span>
+<span class="sd">    When the condtion is satisfied, the value that matched the condition is stored in the userdata.</span>
+<span class="sd">    The callback must return that value or something that evaluates to False otherwise.</span>
+<span class="sd">    The arguments to the callback are userdata, robot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">condition_callback</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;satisfied&#39;</span><span class="p">,</span> <span class="s1">&#39;timed_out&#39;</span><span class="p">,</span> <span class="s1">&#39;preempted&#39;</span><span class="p">],</span>
+                             <span class="n">output_keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;trigger_value&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">condition_callback</span> <span class="o">=</span> <span class="n">condition_callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+
+<div class="viewcode-block" id="WaitCondition.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitCondition.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="n">starttime</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+            <span class="n">cb_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">condition_callback</span><span class="p">(</span><span class="n">userdata</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cb_output</span><span class="p">:</span>
+                <span class="n">userdata</span><span class="o">.</span><span class="n">trigger_value</span> <span class="o">=</span> <span class="n">cb_output</span>
+                <span class="k">return</span> <span class="s2">&quot;satisfied&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">service_preempt</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;preempted&quot;</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;timed_out&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="SetTimeMarker"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.SetTimeMarker">[docs]</a><span class="k">class</span> <span class="nc">SetTimeMarker</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">designator</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="n">is_writeable</span><span class="p">(</span><span class="n">designator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">designator</span> <span class="o">=</span> <span class="n">designator</span>
+
+<div class="viewcode-block" id="SetTimeMarker.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.SetTimeMarker.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">designator</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="k">return</span> <span class="s2">&quot;done&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="WaitForDesignator"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitForDesignator">[docs]</a><span class="k">class</span> <span class="nc">WaitForDesignator</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Waits for a given designator to answer. It will retry to resolve the designator a given number of times, with</span>
+<span class="sd">    given sleep intervals (in seconds)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">designator</span><span class="p">,</span> <span class="n">attempts</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sleep_interval</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;success&#39;</span><span class="p">,</span><span class="s1">&#39;failed&#39;</span><span class="p">]):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">designator</span> <span class="o">=</span> <span class="n">designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attempts</span> <span class="o">=</span> <span class="n">attempts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_interval</span> <span class="o">=</span> <span class="n">sleep_interval</span>
+
+<div class="viewcode-block" id="WaitForDesignator.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.WaitForDesignator.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="n">counter</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">attempts</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;WaitForDesignator: waiting </span><span class="si">{0}</span><span class="s2">/</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">counter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attempts</span><span class="p">))</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;success&quot;</span>
+
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_interval</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;failed&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="LockDesignator"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.LockDesignator">[docs]</a><span class="k">class</span> <span class="nc">LockDesignator</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locking_designator</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;locked&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locking_designator</span> <span class="o">=</span> <span class="n">locking_designator</span>
+
+<div class="viewcode-block" id="LockDesignator.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.LockDesignator.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locking_designator</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;locking_designator </span><span class="si">{1}</span><span class="s2"> is now locked to </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">locking_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">())[:</span><span class="mi">10</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">locking_designator</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s1">&#39;locked&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="UnlockDesignator"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.UnlockDesignator">[docs]</a><span class="k">class</span> <span class="nc">UnlockDesignator</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locking_designator</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;unlocked&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locking_designator</span> <span class="o">=</span> <span class="n">locking_designator</span>
+
+<div class="viewcode-block" id="UnlockDesignator.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.UnlockDesignator.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;locking_designator </span><span class="si">{1}</span><span class="s2"> is going to unlock from </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">locking_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">())[:</span><span class="mi">10</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">locking_designator</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locking_designator</span><span class="o">.</span><span class="n">unlock</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s1">&#39;unlocked&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="CheckBool"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.CheckBool">[docs]</a><span class="k">class</span> <span class="nc">CheckBool</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provide a different transition based on a boolean designator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check_designator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param check_designator: designator resolving to True or False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CheckBool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+        <span class="n">check_type</span><span class="p">(</span><span class="n">check_designator</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_designator</span> <span class="o">=</span> <span class="n">check_designator</span>
+
+<div class="viewcode-block" id="CheckBool.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.CheckBool.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_designator</span><span class="p">,</span> <span class="s2">&quot;resolve&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_designator</span>
+        <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;true&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;false&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="ToggleBool"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.ToggleBool">[docs]</a><span class="k">class</span> <span class="nc">ToggleBool</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Toggle a boolean designator from True to False and from False to True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check_designator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param check_designator: boolean designator to be toggled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ToggleBool</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">])</span>
+        <span class="n">is_writeable</span><span class="p">(</span><span class="n">check_designator</span><span class="p">)</span>
+        <span class="n">check_type</span><span class="p">(</span><span class="n">check_designator</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_designator</span> <span class="o">=</span> <span class="n">check_designator</span>
+
+<div class="viewcode-block" id="ToggleBool.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.ToggleBool.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_designator</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_designator</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;done&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="ResolveArm"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.ResolveArm">[docs]</a><span class="k">class</span> <span class="nc">ResolveArm</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arm</span><span class="p">,</span> <span class="n">state_machine</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Resolves, if possible, an arm for a state machine taking into account all the arm requirements</span>
+
+<span class="sd">        :param arm: lockable arm designator</span>
+<span class="sd">        :param state_machine: used state machine</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arm</span><span class="p">,</span> <span class="n">LockingDesignator</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;No locking arm designator is given, which is required&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arm</span> <span class="o">=</span> <span class="n">arm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span> <span class="o">=</span> <span class="n">state_machine</span>
+
+<div class="viewcode-block" id="ResolveArm.execute"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.ResolveArm.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">arm_requirements</span> <span class="o">=</span> <span class="n">collect_arm_requirements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_machine</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">arm_requirements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm</span><span class="o">.</span><span class="n">to_be_locked</span><span class="o">.</span><span class="n">arm_properties</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">arm_requirements</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">arm_requirements</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">arm</span><span class="o">.</span><span class="n">to_be_locked</span><span class="o">.</span><span class="n">arm_properties</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">val</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">arm</span><span class="o">.</span><span class="n">to_be_locked</span><span class="o">.</span><span class="n">arm_properties</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arm</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerror</span><span class="p">(</span><span class="s2">&quot;Didn&#39;t find an arm&quot;</span><span class="p">)</span>  <span class="c1"># ToDo: improve error message</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;succeeded&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="check_arm_requirements"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.check_arm_requirements">[docs]</a><span class="k">def</span> <span class="nf">check_arm_requirements</span><span class="p">(</span><span class="n">state_machine</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if the robot has an arm that meets the requirements of all children states of this state machine</span>
+
+<span class="sd">    :param state_machine: The state machine for which the requirements have to be checked</span>
+<span class="sd">    :param robot: Robot to use</span>
+<span class="sd">    :return: Check whether an arm is available that satisfies the requirements of the state machine</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arm_requirements</span> <span class="o">=</span> <span class="n">collect_arm_requirements</span><span class="p">(</span><span class="n">state_machine</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">robot</span><span class="o">.</span><span class="n">get_arm</span><span class="p">(</span><span class="o">**</span><span class="n">arm_requirements</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>\
+            <span class="s2">&quot;None of the available arms meets all this state machine&#39;s requirements: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arm_requirements</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Getting arm requirements failed, arm requirements: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arm_requirements</span><span class="p">))</span>
+        <span class="k">raise</span></div>
+
+
+<div class="viewcode-block" id="collect_arm_requirements"><a class="viewcode-back" href="../../api/robot_smach_states/utility/index.html#robot_smach_states.utility.collect_arm_requirements">[docs]</a><span class="k">def</span> <span class="nf">collect_arm_requirements</span><span class="p">(</span><span class="n">state_machine</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Collects all requirements on the arm of this specific state machine</span>
+
+<span class="sd">    :param state_machine: State (machine) for which the requirements need to be collected</span>
+<span class="sd">    :return: All arm requirements of the state machine</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">update_requirements</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks the input state for arm requirements and updates the current arm requirements if necessary</span>
+
+<span class="sd">        :param state: Smach state of which arm requirements should be checked against the current arm requirements</span>
+<span class="sd">        :return: current arm requirements, updated (if necessary) given the input state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">arm_requirements</span><span class="p">:</span>
+                <span class="n">arm_requirements</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">arm_requirements</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                        <span class="n">arm_requirements</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span>
+
+    <span class="c1"># Check arm requirements</span>
+    <span class="n">arm_requirements</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state_machine</span><span class="p">,</span> <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">state_machine</span><span class="p">,</span> <span class="s2">&quot;REQUIRED_ARM_PROPERTIES&quot;</span><span class="p">):</span>
+            <span class="n">update_requirements</span><span class="p">(</span><span class="n">state_machine</span><span class="o">.</span><span class="n">REQUIRED_ARM_PROPERTIES</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state_machine</span><span class="p">,</span> <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">child_state</span> <span class="ow">in</span> <span class="n">state_machine</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+
+            <span class="c1"># Check if the child_state is a state_machine (must be done before checking for arm properties!)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child_state</span><span class="p">,</span> <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+                <span class="n">child_sm_arm_requirements</span> <span class="o">=</span> <span class="n">collect_arm_requirements</span><span class="p">(</span><span class="n">child_state</span><span class="p">)</span>
+                <span class="n">update_requirements</span><span class="p">(</span><span class="n">child_sm_arm_requirements</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">child_state</span><span class="p">,</span> <span class="s2">&quot;REQUIRED_ARM_PROPERTIES&quot;</span><span class="p">):</span>
+                <span class="n">update_requirements</span><span class="p">(</span><span class="n">child_state</span><span class="o">.</span><span class="n">REQUIRED_ARM_PROPERTIES</span><span class="p">)</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;These are the collected arm requirements:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arm_requirements</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">arm_requirements</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

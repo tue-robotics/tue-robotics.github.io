@@ -1,0 +1,225 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="common_8h" kind="file" language="C++">
+    <compoundname>common.h</compoundname>
+    <includes local="no">ANN/ANN.h</includes>
+    <includes local="no">vocabulary_tree/simple_kmeans.h</includes>
+    <includes local="no">vocabulary_tree/vocabulary_tree.h</includes>
+    <includes local="no">vocabulary_tree/database.h</includes>
+    <includes local="no">vocabulary_tree/tree_builder.h</includes>
+    <includes local="no">siftfast/siftfast.h</includes>
+    <includedby refid="odu__finder_8cpp" local="yes">odu_finder.cpp</includedby>
+    <includedby refid="odu__finder_8h" local="yes">odu_finder.h</includedby>
+    <incdepgraph>
+      <node id="137">
+        <label>vocabulary_tree/vocabulary_tree.h</label>
+      </node>
+      <node id="135">
+        <label>ANN/ANN.h</label>
+      </node>
+      <node id="136">
+        <label>vocabulary_tree/simple_kmeans.h</label>
+      </node>
+      <node id="140">
+        <label>siftfast/siftfast.h</label>
+      </node>
+      <node id="134">
+        <label>common.h</label>
+        <link refid="common_8h"/>
+        <childnode refid="135" relation="include">
+        </childnode>
+        <childnode refid="136" relation="include">
+        </childnode>
+        <childnode refid="137" relation="include">
+        </childnode>
+        <childnode refid="138" relation="include">
+        </childnode>
+        <childnode refid="139" relation="include">
+        </childnode>
+        <childnode refid="140" relation="include">
+        </childnode>
+      </node>
+      <node id="138">
+        <label>vocabulary_tree/database.h</label>
+      </node>
+      <node id="139">
+        <label>vocabulary_tree/tree_builder.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="143">
+        <label>odu_finder.h</label>
+        <link refid="odu__finder_8h"/>
+        <childnode refid="142" relation="include">
+        </childnode>
+        <childnode refid="144" relation="include">
+        </childnode>
+      </node>
+      <node id="144">
+        <label>odu_finder_module.cpp</label>
+        <link refid="odu__finder__module_8cpp"/>
+      </node>
+      <node id="142">
+        <label>odu_finder.cpp</label>
+        <link refid="odu__finder_8cpp"/>
+      </node>
+      <node id="141">
+        <label>common.h</label>
+        <link refid="common_8h"/>
+        <childnode refid="142" relation="include">
+        </childnode>
+        <childnode refid="143" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classodu__finder_1_1KeypointExt" prot="public">odu_finder::KeypointExt</innerclass>
+    <innernamespace refid="namespaceodu__finder">odu_finder</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*<sp/></highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2010,<sp/>Dejan<sp/>Pangercic<sp/>&lt;dejan.pangercic@cs.tum.edu&gt;,</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>Vladimir<sp/>Haltakov<sp/>&lt;vladimir.haltakov@gmail.com&gt;</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>Redistribution<sp/>and<sp/>use<sp/>in<sp/>source<sp/>and<sp/>binary<sp/>forms,<sp/>with<sp/>or<sp/>without</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>modification,<sp/>are<sp/>permitted<sp/>provided<sp/>that<sp/>the<sp/>following<sp/>conditions<sp/>are<sp/>met:</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>*<sp/>Redistributions<sp/>of<sp/>source<sp/>code<sp/>must<sp/>retain<sp/>the<sp/>above<sp/>copyright</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following<sp/>disclaimer.</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>*<sp/>Redistributions<sp/>in<sp/>binary<sp/>form<sp/>must<sp/>reproduce<sp/>the<sp/>above<sp/>copyright</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following<sp/>disclaimer<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>documentation<sp/>and/or<sp/>other<sp/>materials<sp/>provided<sp/>with<sp/>the<sp/>distribution.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>*<sp/>Neither<sp/>the<sp/>name<sp/>of<sp/>Willow<sp/>Garage,<sp/>Inc.<sp/>nor<sp/>the<sp/>names<sp/>of<sp/>its</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>contributors<sp/>may<sp/>be<sp/>used<sp/>to<sp/>endorse<sp/>or<sp/>promote<sp/>products<sp/>derived<sp/>from</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>this<sp/>software<sp/>without<sp/>specific<sp/>prior<sp/>written<sp/>permission.</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/>THIS<sp/>SOFTWARE<sp/>IS<sp/>PROVIDED<sp/>BY<sp/>THE<sp/>COPYRIGHT<sp/>HOLDERS<sp/>AND<sp/>CONTRIBUTORS<sp/>&quot;AS<sp/>IS&quot;</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/>AND<sp/>ANY<sp/>EXPRESS<sp/>OR<sp/>IMPLIED<sp/>WARRANTIES,<sp/>INCLUDING,<sp/>BUT<sp/>NOT<sp/>LIMITED<sp/>TO,<sp/>THE</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/>IMPLIED<sp/>WARRANTIES<sp/>OF<sp/>MERCHANTABILITY<sp/>AND<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*<sp/>ARE<sp/>DISCLAIMED.<sp/>IN<sp/>NO<sp/>EVENT<sp/>SHALL<sp/>THE<sp/>COPYRIGHT<sp/>OWNER<sp/>OR<sp/>CONTRIBUTORS<sp/>BE</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/>LIABLE<sp/>FOR<sp/>ANY<sp/>DIRECT,<sp/>INDIRECT,<sp/>INCIDENTAL,<sp/>SPECIAL,<sp/>EXEMPLARY,<sp/>OR</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/>CONSEQUENTIAL<sp/>DAMAGES<sp/>(INCLUDING,<sp/>BUT<sp/>NOT<sp/>LIMITED<sp/>TO,<sp/>PROCUREMENT<sp/>OF</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/>SUBSTITUTE<sp/>GOODS<sp/>OR<sp/>SERVICES;<sp/>LOSS<sp/>OF<sp/>USE,<sp/>DATA,<sp/>OR<sp/>PROFITS;<sp/>OR<sp/>BUSINESS</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*<sp/>INTERRUPTION)<sp/>HOWEVER<sp/>CAUSED<sp/>AND<sp/>ON<sp/>ANY<sp/>THEORY<sp/>OF<sp/>LIABILITY,<sp/>WHETHER<sp/>IN</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/>CONTRACT,<sp/>STRICT<sp/>LIABILITY,<sp/>OR<sp/>TORT<sp/>(INCLUDING<sp/>NEGLIGENCE<sp/>OR<sp/>OTHERWISE)</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/>*<sp/>ARISING<sp/>IN<sp/>ANY<sp/>WAY<sp/>OUT<sp/>OF<sp/>THE<sp/>USE<sp/>OF<sp/>THIS<sp/>SOFTWARE,<sp/>EVEN<sp/>IF<sp/>ADVISED<sp/>OF<sp/>THE</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*<sp/>POSSIBILITY<sp/>OF<sp/>SUCH<sp/>DAMAGE.</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>ODU_FINDER_COMMON_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ODU_FINDER_COMMON_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ANN/ANN.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vocabulary_tree/simple_kmeans.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vocabulary_tree/vocabulary_tree.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vocabulary_tree/database.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vocabulary_tree/tree_builder.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vocabulary_tree/simple_kmeans.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;siftfast/siftfast.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/>*<sp/>Define<sp/>standard<sp/>C<sp/>methods<sp/>and<sp/>C++<sp/>classes<sp/>that<sp/>are<sp/>common<sp/>to<sp/>all<sp/>methods</highlight></codeline>
+<codeline lineno="43"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="namespaceodu__finder" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceodu__finder" kindref="compound">odu_finder</ref></highlight></codeline>
+<codeline lineno="45"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="namespaceodu__finder_1aa1e642c864b5652d9e98ce2b4b74e9a5" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="namespaceodu__finder_1aa1e642c864b5652d9e98ce2b4b74e9a5" kindref="member">logsig</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x)<sp/></highlight></codeline>
+<codeline lineno="48"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1.0<sp/>/<sp/>(1.0<sp/>+<sp/>exp(-x));</highlight></codeline>
+<codeline lineno="50"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="namespaceodu__finder_1a5eba045026b398bb6620a054430fe70a" refkind="member"><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceodu__finder_1a5eba045026b398bb6620a054430fe70a" kindref="member">cluster_points</ref>(ANNpointArray<sp/>points,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>points_count,</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;int&gt;</ref>&amp;<sp/>membership,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r_max<sp/>=</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>600.0f,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r_min<sp/>=<sp/>200.0f,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>A<sp/>=<sp/>800.0f,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>K<sp/>=<sp/>0.02f)</highlight></codeline>
+<codeline lineno="66"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>adaptive<sp/>radius<sp/>calculation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(see<sp/>paper<sp/>Fast<sp/>and<sp/>Robust<sp/>Object<sp/>Detection<sp/>in<sp/>Household<sp/>Environments</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Using<sp/>Vocabulary<sp/>Trees<sp/>with<sp/>SIFT<sp/>Descriptors<sp/>by<sp/>Pangercic<sp/>and<sp/>Haltakov)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>radius<sp/>=<sp/>(1<sp/>-<sp/><ref refid="namespaceodu__finder_1aa1e642c864b5652d9e98ce2b4b74e9a5" kindref="member">logsig</ref>((points_count<sp/>-<sp/>A)<sp/>*<sp/>K))<sp/>*<sp/>(r_max<sp/>-<sp/>r_min)<sp/>+<sp/>r_min;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//radius<sp/>=<sp/>(1-logsig((points_count-800.0)/50.0))*300<sp/>+<sp/>300;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//printf(&quot;\n\n<sp/>NEW<sp/>RADIUS<sp/>=<sp/>%f\n\n&quot;,<sp/>radius);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>ANNidxArray<sp/>nnIdx<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>ANNidx[points_count];</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/>ANNdistArray<sp/>dists<sp/>=<sp/>new<sp/>ANNdist[points_count];</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>ANNkd_tree*<sp/>kdTree<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>ANNkd_tree(points,<sp/>points_count,<sp/>2);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>membership.<ref refid="cpp/container/vector/assign" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">assign</ref>(points_count,<sp/>-1);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>last_unassigned_id<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>current_cluster<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(last_unassigned_id<sp/>&lt;<sp/>points_count)</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;int&gt;</ref><sp/>points_stack;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>points_stack.<ref refid="cpp/container/vector/push_back" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">push_back</ref>(last_unassigned_id);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(points_stack.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//printf(&quot;STACK<sp/>SIZE<sp/>=<sp/>%d\n&quot;,<sp/>points_stack.size());</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>current_point_id<sp/>=<sp/>points_stack.<ref refid="cpp/container/vector/back" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">back</ref>();</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>points_stack.<ref refid="cpp/container/vector/pop_back" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">pop_back</ref>();</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>membership[current_point_id]<sp/>=<sp/>current_cluster;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>points_found<sp/>=<sp/>kdTree-&gt;annkFRSearch(points[current_point_id],</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>radius,<sp/>points_count,<sp/>nnIdx);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//printf(&quot;Neighbours<sp/>found<sp/>=<sp/>%d\n&quot;,<sp/>points_found);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>newPointsCount<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>points_found;<sp/>++i)</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(membership[nnIdx[i]]<sp/>==<sp/>-1)</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++newPointsCount;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(newPointsCount<sp/>&gt;<sp/>3)</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>points_found;<sp/>++i)</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(membership[nnIdx[i]]<sp/>==<sp/>-1)</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>points_stack.<ref refid="cpp/container/vector/push_back" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">push_back</ref>(nnIdx[i]);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++current_cluster;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++last_unassigned_id;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(last_unassigned_id<sp/>&lt;<sp/>points_count</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>membership[last_unassigned_id]<sp/>!=<sp/>-1)</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++last_unassigned_id;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">[]<sp/>nnIdx;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//delete<sp/>[]<sp/>dists;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>kdTree;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>annClose();</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>current_cluster;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123" refid="classodu__finder_1_1KeypointExt" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classodu__finder_1_1KeypointExt" kindref="compound">KeypointExt</ref><sp/></highlight></codeline>
+<codeline lineno="124"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="126" refid="classodu__finder_1_1KeypointExt_1a6581386b11480894665db56cf3e56ca1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>Keypoint<sp/><ref refid="classodu__finder_1_1KeypointExt_1a6581386b11480894665db56cf3e56ca1" kindref="member">keypoint</ref>;</highlight></codeline>
+<codeline lineno="127" refid="classodu__finder_1_1KeypointExt_1a9b687b8d4d6b851e79c3ec1baf789739" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>vt::Word<sp/><ref refid="classodu__finder_1_1KeypointExt_1a9b687b8d4d6b851e79c3ec1baf789739" kindref="member">word</ref>;</highlight></codeline>
+<codeline lineno="128" refid="classodu__finder_1_1KeypointExt_1a8884ac91fbddac1f67c237475a91a186" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classodu__finder_1_1KeypointExt_1a8884ac91fbddac1f67c237475a91a186" kindref="member">cluster</ref>;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130" refid="classodu__finder_1_1KeypointExt_1a24aece3bf4b74944709b32899f47fb30" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classodu__finder_1_1KeypointExt_1a24aece3bf4b74944709b32899f47fb30" kindref="member">KeypointExt</ref>(Keypoint<sp/>keypoint,<sp/>vt::Word<sp/>word,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>cluster<sp/>=<sp/>0):</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>keypoint(keypoint),</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>word(word),</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cluster(cluster)</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>{}</highlight></codeline>
+<codeline lineno="135"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137" refid="namespaceodu__finder_1a1cad67a6d865e5270ffee1256f586c37" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceodu__finder_1a1cad67a6d865e5270ffee1256f586c37" kindref="member">compare_keypoint_ext</ref>(<ref refid="classodu__finder_1_1KeypointExt" kindref="compound">KeypointExt</ref>*<sp/>k1,<sp/><ref refid="classodu__finder_1_1KeypointExt" kindref="compound">KeypointExt</ref>*<sp/>k2)<sp/></highlight></codeline>
+<codeline lineno="138"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(k1-&gt;<ref refid="classodu__finder_1_1KeypointExt_1a9b687b8d4d6b851e79c3ec1baf789739" kindref="member">word</ref><sp/>&lt;<sp/>k2-&gt;<ref refid="classodu__finder_1_1KeypointExt_1a9b687b8d4d6b851e79c3ec1baf789739" kindref="member">word</ref>);</highlight></codeline>
+<codeline lineno="140"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142" refid="namespaceodu__finder_1ac4856f13950b6c6872dc883b4c197e3c" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceodu__finder_1ac4856f13950b6c6872dc883b4c197e3c" kindref="member">compare_pairs</ref>(<ref refid="cpp/utility/pair" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::pair&lt;uint32_t, float&gt;</ref><sp/>p1,<sp/><ref refid="cpp/utility/pair" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::pair&lt;uint32_t, float&gt;</ref><sp/>p2)<sp/></highlight></codeline>
+<codeline lineno="143"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(p1.<ref refid="cpp/utility/pair" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">second</ref><sp/>&gt;<sp/>p2.<ref refid="cpp/utility/pair" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">second</ref>);</highlight></codeline>
+<codeline lineno="145"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147" refid="namespaceodu__finder_1aafa85d0b8bf97b7432a38b2c905b0372" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceodu__finder_1aafa85d0b8bf97b7432a38b2c905b0372" kindref="member">compare_pairs2</ref>(<ref refid="cpp/utility/pair" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::pair&lt;std::string, int&gt;</ref><sp/>p1,<sp/><ref refid="cpp/utility/pair" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::pair&lt;std::string, int&gt;</ref><sp/>p2)<sp/></highlight></codeline>
+<codeline lineno="148"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(p1.<ref refid="cpp/utility/pair" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">second</ref><sp/>&gt;<sp/>p2.<ref refid="cpp/utility/pair" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">second</ref>);</highlight></codeline>
+<codeline lineno="150"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/>//#ifndef<sp/>ODU_FINDER_COMMON_H_</highlight></codeline>
+    </programlisting>
+    <location file="plugins/odu_finder/common.h"/>
+  </compounddef>
+</doxygen>

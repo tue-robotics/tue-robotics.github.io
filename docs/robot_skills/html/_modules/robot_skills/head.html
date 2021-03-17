@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.head &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.head</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.head</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">from</span> <span class="nn">geometry_msgs.msg</span> <span class="k">import</span> <span class="n">PointStamped</span>
+<span class="kn">from</span> <span class="nn">head_ref_msgs.msg</span> <span class="k">import</span> <span class="n">HeadReferenceAction</span><span class="p">,</span> <span class="n">HeadReferenceGoal</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.robot_part</span> <span class="k">import</span> <span class="n">RobotPart</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">kdl_vector_stamped_to_point_stamped</span><span class="p">,</span> <span class="n">VectorStamped</span>
+
+
+<div class="viewcode-block" id="Head"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head">[docs]</a><span class="k">class</span> <span class="nc">Head</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Head</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_head_ref_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_simple_action_client</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">robot_name</span><span class="o">+</span><span class="s2">&quot;/head_ref/action_server&quot;</span><span class="p">,</span>
+                                                                    <span class="n">HeadReferenceAction</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_at_setpoint</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscribe_hardware_status</span><span class="p">(</span><span class="s1">&#39;head&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Head.close"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_head_ref_action</span><span class="o">.</span><span class="n">cancel_all_goals</span><span class="p">()</span></div>
+
+    <span class="c1"># -- Helpers --</span>
+
+<div class="viewcode-block" id="Head.selfreset"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head.selfreset">[docs]</a>    <span class="k">def</span> <span class="nf">selfreset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset head position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reset_goal</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="o">+</span><span class="s2">&quot;/base_link&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">reset_goal</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Head.look_at_ground_in_front_of_robot"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head.look_at_ground_in_front_of_robot">[docs]</a>    <span class="k">def</span> <span class="nf">look_at_ground_in_front_of_robot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">distance</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="o">+</span><span class="s2">&quot;/base_link&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">goal</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Head.look_down"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head.look_down">[docs]</a>    <span class="k">def</span> <span class="nf">look_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gives a target at z = 1.0 at 1 m in front of the robot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="o">+</span><span class="s2">&quot;/base_link&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">goal</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Head.look_up"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head.look_up">[docs]</a>    <span class="k">def</span> <span class="nf">look_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gives a target at z = 1.0 at 1 m in front of the robot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="o">+</span><span class="s2">&quot;/base_link&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">goal</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Head.look_at_standing_person"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head.look_at_standing_person">[docs]</a>    <span class="k">def</span> <span class="nf">look_at_standing_person</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gives a target at z = 1.75 at 1 m in front of the robot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/base_link&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">goal</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+
+    <span class="c1"># -- Functionality --</span>
+
+<div class="viewcode-block" id="Head.look_at_point"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head.look_at_point">[docs]</a>    <span class="k">def</span> <span class="nf">look_at_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector_stamped</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pan_vel</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">tilt_vel</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vector_stamped</span><span class="p">,</span> <span class="n">VectorStamped</span><span class="p">)</span>
+        <span class="n">point_stamped</span> <span class="o">=</span> <span class="n">kdl_vector_stamped_to_point_stamped</span><span class="p">(</span><span class="n">vector_stamped</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setHeadReferenceGoal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pan_vel</span><span class="p">,</span> <span class="n">tilt_vel</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="n">point_stamped</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Head.cancel_goal"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head.cancel_goal">[docs]</a>    <span class="k">def</span> <span class="nf">cancel_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_head_ref_action</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_at_setpoint</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Head.wait_for_motion_done"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head.wait_for_motion_done">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_motion_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_at_setpoint</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">starttime</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span><span class="p">:</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">timeout</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_setpoint</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="c1"># ---- INTERFACING THE NODE ---</span>
+
+<div class="viewcode-block" id="Head._setHeadReferenceGoal"><a class="viewcode-back" href="../../api/robot_skills/head/index.html#robot_skills.head.Head._setHeadReferenceGoal">[docs]</a>    <span class="k">def</span> <span class="nf">_setHeadReferenceGoal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">goal_type</span><span class="p">,</span> <span class="n">pan_vel</span><span class="p">,</span> <span class="n">tilt_vel</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="n">point_stamped</span><span class="o">=</span><span class="n">PointStamped</span><span class="p">(),</span> <span class="n">pan</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tilt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                              <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span> <span class="o">=</span> <span class="n">HeadReferenceGoal</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span><span class="o">.</span><span class="n">goal_type</span> <span class="o">=</span> <span class="n">goal_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Executives get prio 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span><span class="o">.</span><span class="n">pan_vel</span> <span class="o">=</span> <span class="n">pan_vel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span><span class="o">.</span><span class="n">tilt_vel</span> <span class="o">=</span> <span class="n">tilt_vel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span><span class="o">.</span><span class="n">target_point</span> <span class="o">=</span> <span class="n">point_stamped</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span><span class="o">.</span><span class="n">pan</span> <span class="o">=</span> <span class="n">pan</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span><span class="o">.</span><span class="n">tilt</span> <span class="o">=</span> <span class="n">tilt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">end_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_head_ref_action</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_goal</span><span class="p">,</span> <span class="n">done_cb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__doneCallback</span><span class="p">,</span> <span class="n">feedback_cb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__feedbackCallback</span><span class="p">)</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">timeout</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Waiting for </span><span class="si">%d</span><span class="s2"> seconds to reach target ...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="ow">not</span> <span class="p">((</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_at_setpoint</span><span class="p">):</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__feedbackCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_at_setpoint</span> <span class="o">=</span> <span class="n">feedback</span><span class="o">.</span><span class="n">at_setpoint</span>
+
+    <span class="k">def</span> <span class="nf">__doneCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terminal_state</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_at_setpoint</span> <span class="o">=</span> <span class="kc">False</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

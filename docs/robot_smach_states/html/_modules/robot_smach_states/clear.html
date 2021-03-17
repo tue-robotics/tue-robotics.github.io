@@ -1,0 +1,344 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.clear &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.clear</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.clear</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.arm</span> <span class="k">import</span> <span class="n">arms</span>
+<span class="kn">from</span> <span class="nn">robot_skills.classification_result</span> <span class="k">import</span> <span class="n">ClassificationResult</span>
+
+<span class="kn">from</span> <span class="nn">.manipulation.grab</span> <span class="k">import</span> <span class="n">Grab</span>
+<span class="kn">from</span> <span class="nn">.manipulation.place</span> <span class="k">import</span> <span class="n">EmptySpotDesignator</span><span class="p">,</span> <span class="n">Place</span>
+<span class="kn">from</span> <span class="nn">.world_model</span> <span class="k">import</span> <span class="n">Inspect</span>
+<span class="kn">from</span> <span class="nn">.util.designators</span> <span class="k">import</span> <span class="n">EdEntityDesignator</span><span class="p">,</span> <span class="n">EntityByIdDesignator</span><span class="p">,</span>\
+    <span class="n">UnoccupiedArmDesignator</span><span class="p">,</span> <span class="n">VariableDesignator</span>
+
+
+<div class="viewcode-block" id="SelectEntity"><a class="viewcode-back" href="../../api/robot_smach_states/clear/index.html#robot_smach_states.clear.SelectEntity">[docs]</a><span class="k">class</span> <span class="nc">SelectEntity</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">entitity_classifications_designator</span><span class="p">,</span> <span class="n">selected_entity_designator</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;entity_selected&quot;</span><span class="p">,</span> <span class="s2">&quot;no_entities_left&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entity_classifications_designator</span> <span class="o">=</span> <span class="n">entitity_classifications_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_selected_entity_designator</span> <span class="o">=</span> <span class="n">selected_entity_designator</span>
+
+<div class="viewcode-block" id="SelectEntity.execute"><a class="viewcode-back" href="../../api/robot_smach_states/clear/index.html#robot_smach_states.clear.SelectEntity.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+
+        <span class="c1"># Try to pop item from entities_ids_designator</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">entity_classification</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_classifications_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I cleaned everything up! Isn&#39;t that awesome?&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;no_entities_left&quot;</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;We have selected the entity with id </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">entity_classification</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_selected_entity_designator</span><span class="o">.</span><span class="n">id_</span> <span class="o">=</span> <span class="n">entity_classification</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="k">return</span> <span class="s2">&quot;entity_selected&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="isitclear"><a class="viewcode-back" href="../../api/robot_smach_states/clear/index.html#robot_smach_states.clear.isitclear">[docs]</a><span class="k">class</span> <span class="nc">isitclear</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if there are entities on the object in the world model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">robot</span><span class="p">,</span>
+                 <span class="n">objectIDsDes</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;clear&#39;</span><span class="p">,</span> <span class="s1">&#39;not_clear&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_object_designator</span> <span class="o">=</span> <span class="n">objectIDsDes</span>
+
+<div class="viewcode-block" id="isitclear.execute"><a class="viewcode-back" href="../../api/robot_smach_states/clear/index.html#robot_smach_states.clear.isitclear.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_object_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">():</span>
+            <span class="k">return</span> <span class="s1">&#39;not_clear&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;clear&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="Clear"><a class="viewcode-back" href="../../api/robot_smach_states/clear/index.html#robot_smach_states.clear.Clear">[docs]</a><span class="k">class</span> <span class="nc">Clear</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">source_navArea</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="n">target_navArea</span><span class="p">,</span> <span class="n">target_placeArea</span><span class="o">=</span><span class="s2">&quot;on_top_of&quot;</span><span class="p">,</span> <span class="n">source_searchArea</span><span class="o">=</span><span class="s2">&quot;on_top_of&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let the given robot move to a location and remove all entities from that table one at a time</span>
+
+<span class="sd">        :param robot: Robot to use</span>
+<span class="sd">        :param source_location: Location which will be cleared</span>
+<span class="sd">        :param target_location: Location where the objects will be placed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Check types or designator resolve types</span>
+        <span class="c1">#check_type(source_location, Entity)</span>
+        <span class="c1">#check_type(target_location, Entity)</span>
+
+        <span class="n">segmented_entities_designator</span> <span class="o">=</span> <span class="n">VariableDesignator</span><span class="p">([],</span> <span class="n">resolve_type</span><span class="o">=</span><span class="p">[</span><span class="n">ClassificationResult</span><span class="p">])</span>
+        <span class="n">selected_entity_designator</span> <span class="o">=</span> <span class="n">EntityByIdDesignator</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="s2">&quot;TBD&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;selected_entity_designator&#39;</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="n">arm_des</span> <span class="o">=</span> <span class="n">UnoccupiedArmDesignator</span><span class="p">(</span>
+            <span class="n">robot</span><span class="p">,</span>
+            <span class="n">arm_properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;required_trajectories&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;prepare_place&quot;</span><span class="p">,</span> <span class="s2">&quot;prepare_grasp&quot;</span><span class="p">],</span>
+                            <span class="s2">&quot;required_goals&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;carrying_pose&quot;</span><span class="p">],</span>
+                            <span class="s2">&quot;required_gripper_types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">arms</span><span class="o">.</span><span class="n">GripperTypes</span><span class="o">.</span><span class="n">GRASPING</span><span class="p">]})</span><span class="o">.</span><span class="n">lockable</span><span class="p">()</span>
+        <span class="n">arm_des</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
+
+        <span class="n">place_position</span> <span class="o">=</span> <span class="n">EmptySpotDesignator</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">EdEntityDesignator</span><span class="p">(</span>
+                                             <span class="n">robot</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">target_location</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                                             <span class="n">arm_des</span><span class="p">,</span>
+                                             <span class="n">area</span><span class="o">=</span><span class="s2">&quot;on_top_of&quot;</span>
+                                             <span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;INSPECT_SOURCE_ENTITY&#39;</span><span class="p">,</span>
+                                   <span class="n">Inspect</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="n">objectIDsDes</span><span class="o">=</span><span class="n">segmented_entities_designator</span><span class="p">,</span>
+                                           <span class="n">searchArea</span><span class="o">=</span><span class="n">source_searchArea</span><span class="p">,</span> <span class="n">navigation_area</span><span class="o">=</span><span class="n">source_navArea</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;DETERMINE_IF_CLEAR&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">}</span>
+                                   <span class="p">)</span>
+
+            <span class="c1">#smach.StateMachine.add(&#39;DETERMINE_IF_CLEAR&#39;,</span>
+            <span class="c1">#                       isitclear(robot=robot,</span>
+            <span class="c1">#                                 objectIDsDes=segmented_entities_designator),</span>
+            <span class="c1">#                       transitions={&#39;clear&#39;: &#39;done&#39;,</span>
+            <span class="c1">#                                    &#39;not_clear&#39;: &#39;failed&#39;})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;DETERMINE_IF_CLEAR&#39;</span><span class="p">,</span>
+                                   <span class="n">SelectEntity</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">segmented_entities_designator</span><span class="p">,</span> <span class="n">selected_entity_designator</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;no_entities_left&#39;</span><span class="p">:</span> <span class="s1">&#39;done&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;entity_selected&#39;</span><span class="p">:</span> <span class="s1">&#39;GRAB&#39;</span><span class="p">}</span>
+                                   <span class="p">)</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GRAB&#39;</span><span class="p">,</span>
+                                   <span class="n">Grab</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">selected_entity_designator</span><span class="p">,</span> <span class="n">arm_des</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;INSPECT_TARGET&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">}</span>
+                                   <span class="p">)</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;INSPECT_TARGET&#39;</span><span class="p">,</span>
+                                   <span class="n">Inspect</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="n">searchArea</span><span class="o">=</span><span class="n">target_placeArea</span><span class="p">,</span>
+                                           <span class="n">navigation_area</span><span class="o">=</span><span class="n">target_navArea</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;PLACE&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">}</span>
+                                   <span class="p">)</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;PLACE&#39;</span><span class="p">,</span>
+                                   <span class="n">Place</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">selected_entity_designator</span><span class="p">,</span> <span class="n">place_position</span><span class="p">,</span> <span class="n">arm_des</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;INSPECT_SOURCE_ENTITY&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">}</span>
+                                   <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

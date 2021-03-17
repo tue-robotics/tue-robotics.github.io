@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>action_server.test_tools &mdash; action_server 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> action_server
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">action_server</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>action_server.test_tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for action_server.test_tools</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">nose.tools</span> <span class="k">import</span> <span class="n">nottest</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="kn">from</span> <span class="nn">grammar_parser.cfgparser</span> <span class="k">import</span> <span class="n">CFGParser</span><span class="p">,</span> <span class="n">Conjunct</span><span class="p">,</span> <span class="n">Option</span><span class="p">,</span> <span class="n">Rule</span>
+<span class="kn">from</span> <span class="nn">action_server.actions.action</span> <span class="k">import</span> <span class="n">ConfigurationResult</span>
+<span class="kn">from</span> <span class="nn">action_server.task_manager</span> <span class="k">import</span> <span class="n">TaskManager</span>
+
+<span class="n">TMTestResult</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;TMTestResult&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;recipe&quot;</span><span class="p">,</span> <span class="s2">&quot;config_result&quot;</span><span class="p">])</span>
+
+
+<span class="c1"># This &#39;nottest&#39; decorator is necessary because it prevents nose from running this as a</span>
+<span class="c1"># testcase (which would happen because this method is imported in unit testfiles)</span>
+<div class="viewcode-block" id="test_grammar"><a class="viewcode-back" href="../../api/action_server/test_tools/index.html#action_server.test_tools.test_grammar">[docs]</a><span class="nd">@nottest</span>
+<span class="k">def</span> <span class="nf">test_grammar</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">grammar_target</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tests grammars against the capabilities of the action server, to be used in unit tests of challenges.</span>
+
+<span class="sd">    Based on the actions rule, it recursively determines a viable option (e.g., &#39;go to the couch_table&#39;), parses</span>
+<span class="sd">    this using the CFGParser and tries to configure the task manager based on the parse result. All results (even</span>
+<span class="sd">    if the configuration step with the task manager raises an exception) are stored in a result dict. Eventually,</span>
+<span class="sd">    all positive results are printed and if negative results have occurred, an AssertionError is raised with a</span>
+<span class="sd">    message containing all failed options.</span>
+
+<span class="sd">    :param robot: Robot object. N.B.: robot.ed should contain the relevant entities</span>
+<span class="sd">    :param grammar: grammar that is used</span>
+<span class="sd">    :param grammar_target: top level grammar_target of the grammar</span>
+<span class="sd">    :raises: AssertionError if the test has failed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create variables</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">CFGParser</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">grammar</span><span class="p">)</span>
+    <span class="n">task_manager</span> <span class="o">=</span> <span class="n">TaskManager</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">)</span>
+    <span class="n">actions_rule</span> <span class="o">=</span> <span class="n">_find_actions_rule</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">grammar_target</span><span class="p">)</span>
+
+    <span class="n">test_results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">assert</span> <span class="n">actions_rule</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> \
+        <span class="s2">&quot;There are no options in the actions rule. Therefore, there doesn&#39;t seem anything to test: that can&#39;t be right&quot;</span>
+    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">actions_rule</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>  <span class="c1"># type: Option</span>
+
+        <span class="n">result_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># For each conjunct, we want to have a viable option</span>
+        <span class="k">for</span> <span class="n">conjunct</span> <span class="ow">in</span> <span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">:</span>  <span class="c1"># type: Conjunct</span>
+            <span class="n">result_str</span> <span class="o">+=</span> <span class="n">_resolve_conjunct</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">conjunct</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">result_str</span> <span class="o">=</span> <span class="n">result_str</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>  <span class="c1"># type: str</span>
+
+        <span class="c1"># Now, we can parse the result string to get the action description</span>
+        <span class="n">actions_definition</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_raw</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">grammar_target</span><span class="p">,</span>
+            <span class="n">words</span><span class="o">=</span><span class="n">result_str</span><span class="p">,</span>
+        <span class="p">)</span>  <span class="c1"># type: dict</span>
+        <span class="k">assert</span> <span class="s2">&quot;actions&quot;</span> <span class="ow">in</span> <span class="n">actions_definition</span><span class="p">,</span> <span class="s2">&quot;&#39;actions&#39; not in actions definition, don&#39;t know what to do&quot;</span>
+
+        <span class="c1"># Test the action description with the task manager</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">test_result</span> <span class="o">=</span> <span class="n">task_manager</span><span class="o">.</span><span class="n">set_up_state_machine</span><span class="p">(</span>
+                <span class="n">recipe</span><span class="o">=</span><span class="n">actions_definition</span><span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">],</span>
+            <span class="p">)</span>  <span class="c1"># type: ConfigurationResult</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_traceback</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+            <span class="n">tb</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_traceback</span><span class="p">)))</span>
+            <span class="n">test_result</span> <span class="o">=</span> <span class="n">ConfigurationResult</span><span class="p">()</span>
+            <span class="n">test_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Configuration crashed: </span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">tb</span><span class="p">)</span>
+        <span class="n">test_results</span><span class="p">[</span><span class="n">result_str</span><span class="p">]</span> <span class="o">=</span> <span class="n">TMTestResult</span><span class="p">(</span><span class="n">actions_definition</span><span class="p">[</span><span class="s2">&quot;actions&quot;</span><span class="p">],</span> <span class="n">test_result</span><span class="p">)</span>
+
+    <span class="n">failed_test_results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">action</span><span class="p">,</span> <span class="n">test_result</span> <span class="ow">in</span> <span class="n">test_results</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">test_result</span><span class="o">.</span><span class="n">config_result</span><span class="o">.</span><span class="n">succeeded</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Configuration of &#39;</span><span class="si">{}</span><span class="s2">&#39; succeeded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">action</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">test_result</span><span class="o">.</span><span class="n">config_result</span><span class="o">.</span><span class="n">message</span> <span class="ow">and</span> <span class="n">test_result</span><span class="o">.</span><span class="n">config_result</span><span class="o">.</span><span class="n">missing_field</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Configuration of &#39;</span><span class="si">{}</span><span class="s2">&#39; did not succeed due to missing information (</span><span class="si">{}</span><span class="s2">): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">action</span><span class="p">,</span> <span class="n">test_result</span><span class="o">.</span><span class="n">config_result</span><span class="o">.</span><span class="n">missing_field</span><span class="p">,</span> <span class="n">test_result</span><span class="o">.</span><span class="n">config_result</span><span class="o">.</span><span class="n">message</span>
+            <span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">failed_test_results</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_result</span>
+
+    <span class="n">error_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">for</span> <span class="n">action</span><span class="p">,</span> <span class="n">test_result</span> <span class="ow">in</span> <span class="n">failed_test_results</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="n">error_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Configuration of action &#39;</span><span class="si">{}</span><span class="s2">&#39; failed.</span><span class="se">\n\t</span><span class="s2">Recipe: </span><span class="si">{}</span><span class="se">\n\t</span><span class="s2">Error: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">action</span><span class="p">,</span>
+            <span class="n">test_result</span><span class="o">.</span><span class="n">recipe</span><span class="p">,</span>
+            <span class="n">test_result</span><span class="o">.</span><span class="n">config_result</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">failed_test_results</span><span class="p">,</span> <span class="n">error_str</span></div>
+
+
+<div class="viewcode-block" id="_resolve_conjunct"><a class="viewcode-back" href="../../api/action_server/test_tools/index.html#action_server.test_tools._resolve_conjunct">[docs]</a><span class="k">def</span> <span class="nf">_resolve_conjunct</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="c1"># type: (CFGParser, str) -&gt; str</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursive method that tries to resolve a conjunct, i.e., to find an option</span>
+
+<span class="sd">    :param parser: CFGParser containing the grammar</span>
+<span class="sd">    :param target: grammar_target to look for</span>
+<span class="sd">    :return: option string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">target</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">rule</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>  <span class="c1"># type: Rule</span>
+    <span class="c1"># For now, take the first available option</span>
+    <span class="c1"># This makes sure that, e.g., we don&#39;t test both</span>
+    <span class="c1"># &quot;go to the couch table&quot; and &quot;go to the dinner table&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1"># If we want to make this method entirely recursive (from the root of the grammar), we might want to cook up</span>
+    <span class="c1"># something more generic.</span>
+    <span class="n">option</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># type: Option</span>
+
+    <span class="k">for</span> <span class="n">conjunct</span> <span class="ow">in</span> <span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">:</span>  <span class="c1"># type: Conjunct</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">conjunct</span><span class="o">.</span><span class="n">is_variable</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="n">conjunct</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="n">_resolve_conjunct</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">conjunct</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="_find_actions_rule"><a class="viewcode-back" href="../../api/action_server/test_tools/index.html#action_server.test_tools._find_actions_rule">[docs]</a><span class="k">def</span> <span class="nf">_find_actions_rule</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">grammar_target</span><span class="p">):</span>
+    <span class="c1"># type: (CFGParser, str) -&gt; Rule</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the &#39;rule&#39; in the grammar defining the actions</span>
+
+<span class="sd">    :param parser: CFGParser containing the grammar</span>
+<span class="sd">    :param grammar_target: top level target of the grammar</span>
+<span class="sd">    :return: &#39;Rule&#39; (part of the grammar) containing all actions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ToDo: Should we make everything recursive???</span>
+
+    <span class="c1"># Rule corresponding to the grammar grammar_target</span>
+    <span class="n">root_rule</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">grammar_target</span><span class="p">]</span>  <span class="c1"># type: Rule</span>
+
+    <span class="c1"># In principle, a list of actions can be provided to the actions server</span>
+    <span class="c1"># Therefore, we need to take to steps to list all actions</span>
+    <span class="c1"># I.e., the following actions_list_target refers to the grammar grammar_target</span>
+    <span class="c1"># containing a list of actions</span>
+    <span class="n">actions_list_target</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">root_rule</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>  <span class="c1"># type: Option</span>
+        <span class="k">if</span> <span class="s2">&quot;actions&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">option</span><span class="o">.</span><span class="n">lsemantic</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">actions_list_target</span> <span class="o">=</span> <span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># type: str# This is too hardcoded</span>
+        <span class="k">break</span>
+
+    <span class="k">assert</span> <span class="n">actions_list_target</span><span class="p">,</span> <span class="s2">&quot;Cannot derive actions from grammar&quot;</span>
+    <span class="n">actions_list_rule</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">actions_list_target</span><span class="p">]</span>  <span class="c1"># type: Rule</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions_list_rule</span><span class="o">.</span><span class="n">options</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> \
+        <span class="s2">&quot;Don&#39;t know how to continue if the actions list rule has multiple options&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions_list_rule</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> \
+        <span class="s2">&quot;Don&#39;t know how to continue if the actions options list rule has multiple conjunctions&quot;</span>
+
+    <span class="c1"># Now, we need to get all separate options</span>
+    <span class="n">actions_target</span> <span class="o">=</span> <span class="n">actions_list_rule</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># type: str</span>
+
+    <span class="n">actions_rule</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">actions_target</span><span class="p">]</span>  <span class="c1"># type: Rule</span>
+    <span class="k">return</span> <span class="n">actions_rule</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

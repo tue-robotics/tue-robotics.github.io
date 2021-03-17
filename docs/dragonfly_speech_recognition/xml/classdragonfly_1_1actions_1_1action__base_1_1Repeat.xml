@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classdragonfly_1_1actions_1_1action__base_1_1Repeat" kind="class" language="Python" prot="public">
+    <compoundname>dragonfly::actions::action_base::Repeat</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">object</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classdragonfly_1_1actions_1_1action__base_1_1Repeat_1ab3e1435e2d5cb1bba5e49bf5abb8e69f" prot="private" static="no" mutable="no">
+        <type></type>
+        <definition>dragonfly.actions.action_base.Repeat::_count</definition>
+        <argsstring></argsstring>
+        <name>_count</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/actions/action_base.py" line="287" column="1" bodyfile="src/dragonfly_speech_recognition/dragonfly/dragonfly/actions/action_base.py" bodystart="287" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdragonfly_1_1actions_1_1action__base_1_1Repeat_1a14907d2d161a677190458e734960104c" prot="private" static="no" mutable="no">
+        <type></type>
+        <definition>dragonfly.actions.action_base.Repeat::_extra</definition>
+        <argsstring></argsstring>
+        <name>_extra</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/actions/action_base.py" line="289" column="1" bodyfile="src/dragonfly_speech_recognition/dragonfly/dragonfly/actions/action_base.py" bodystart="289" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdragonfly_1_1actions_1_1action__base_1_1Repeat_1a66b5d58209308a9709420f7123cfa3b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>def</type>
+        <definition>def dragonfly.actions.action_base.Repeat.__init__</definition>
+        <argsstring>(self, count=None, extra=None)</argsstring>
+        <name>__init__</name>
+        <param>
+          <type>self</type>
+          <defname>self</defname>
+        </param>
+        <param>
+          <type>count</type>
+          <defname>count</defname>
+          <defval>None</defval>
+        </param>
+        <param>
+          <type>extra</type>
+          <defname>extra</defname>
+          <defval>None</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/actions/action_base.py" line="286" column="1" bodyfile="src/dragonfly_speech_recognition/dragonfly/dragonfly/actions/action_base.py" bodystart="286" bodyend="290"/>
+      </memberdef>
+      <memberdef kind="function" id="classdragonfly_1_1actions_1_1action__base_1_1Repeat_1a9cc8895e9d5a4d19d2051925e5a37fa9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>def</type>
+        <definition>def dragonfly.actions.action_base.Repeat.factor</definition>
+        <argsstring>(self, data=None)</argsstring>
+        <name>factor</name>
+        <param>
+          <type>self</type>
+          <defname>self</defname>
+        </param>
+        <param>
+          <type>data</type>
+          <defname>data</defname>
+          <defval>None</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/actions/action_base.py" line="291" column="1" bodyfile="src/dragonfly_speech_recognition/dragonfly/dragonfly/actions/action_base.py" bodystart="291" bodyend="307"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><verbatim>    Action repeat factor.
+
+    Integer Repeat factors ignore any supply data::
+
+        &gt;&gt;&gt; integer = Repeat(3)
+        &gt;&gt;&gt; integer.factor()
+        3
+        &gt;&gt;&gt; integer.factor({&quot;foo&quot;: 4})  # Non-related data is ignored.
+        3
+
+    Named Repeat factors retrieved their factor-value from the
+    supplied data::
+
+        &gt;&gt;&gt; named = Repeat(extra=&quot;foo&quot;)
+        &gt;&gt;&gt; named.factor()
+        Traceback (most recent call last):
+          ...
+        ActionError: No extra repeat factor found for name &apos;foo&apos; (&apos;NoneType&apos; object is unsubscriptable)
+        &gt;&gt;&gt; named.factor({&quot;foo&quot;: 4})
+        4
+
+    Repeat factors with both integer count and named extra values set
+    combined (add) these together to determine their factor-value::
+
+        &gt;&gt;&gt; combined = Repeat(count=3, extra=&quot;foo&quot;)
+        &gt;&gt;&gt; combined.factor()
+        Traceback (most recent call last):
+          ...
+        ActionError: No extra repeat factor found for name &apos;foo&apos; (&apos;NoneType&apos; object is unsubscriptable)
+        &gt;&gt;&gt; combined.factor({&quot;foo&quot;: 4}) # Combined factors 3 + 4 = 7.
+        7</verbatim> </para>    </detaileddescription>
+    <inheritancegraph>
+      <node id="1466">
+        <label>object</label>
+      </node>
+      <node id="1465">
+        <label>dragonfly.actions.action_base.Repeat</label>
+        <link refid="classdragonfly_1_1actions_1_1action__base_1_1Repeat"/>
+        <childnode refid="1466" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1468">
+        <label>object</label>
+      </node>
+      <node id="1467">
+        <label>dragonfly.actions.action_base.Repeat</label>
+        <link refid="classdragonfly_1_1actions_1_1action__base_1_1Repeat"/>
+        <childnode refid="1468" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/actions/action_base.py" line="250" column="1" bodyfile="src/dragonfly_speech_recognition/dragonfly/dragonfly/actions/action_base.py" bodystart="250" bodyend="307"/>
+    <listofallmembers>
+      <member refid="classdragonfly_1_1actions_1_1action__base_1_1Repeat_1a66b5d58209308a9709420f7123cfa3b0" prot="public" virt="non-virtual"><scope>dragonfly::actions::action_base::Repeat</scope><name>__init__</name></member>
+      <member refid="classdragonfly_1_1actions_1_1action__base_1_1Repeat_1ab3e1435e2d5cb1bba5e49bf5abb8e69f" prot="private" virt="non-virtual"><scope>dragonfly::actions::action_base::Repeat</scope><name>_count</name></member>
+      <member refid="classdragonfly_1_1actions_1_1action__base_1_1Repeat_1a14907d2d161a677190458e734960104c" prot="private" virt="non-virtual"><scope>dragonfly::actions::action_base::Repeat</scope><name>_extra</name></member>
+      <member refid="classdragonfly_1_1actions_1_1action__base_1_1Repeat_1a9cc8895e9d5a4d19d2051925e5a37fa9" prot="public" virt="non-virtual"><scope>dragonfly::actions::action_base::Repeat</scope><name>factor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

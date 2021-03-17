@@ -1,0 +1,106 @@
+:mod:`robot_smach_states.startup`
+=================================
+
+.. py:module:: robot_smach_states.startup
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_smach_states.startup.StartChallengeRobust
+   robot_smach_states.startup.EnterArena
+   robot_smach_states.startup.WaitForDoorOpen
+   robot_smach_states.startup.WaitForLocalPlanner
+
+
+
+.. py:class:: StartChallengeRobust(robot, initial_pose, use_entry_points=False, door=True)
+
+   Bases: :class:`smach.StateMachine`
+
+   Initialize, wait for the door to be opened and drive inside
+
+   Initialization method
+
+   :param robot: (Robot)
+   :param initial_pose: (str) identifies the (waypoint) entity to be used as initial pose. For testing purposes,
+       a tuple(float, float, float) representing x, y and yaw in map frame can be used.
+   :param use_entry_points: (bool) (not yet implemented)
+   :param door: (bool) indicates whether to wait for a door to open and whether to 'force-drive' inside
+
+
+.. py:class:: EnterArena(robot)
+
+   Bases: :class:`smach.StateMachine`
+
+   Enter the arena by force driving through the door
+
+   :param robot: robot object
+
+
+.. py:class:: WaitForDoorOpen(robot, timeout)
+
+   Bases: :class:`smach.State`
+
+   Wait till the average distance in front of the robot is bigger than 1 meter. Only point in front of the middle
+   are taken into account
+
+   :param robot: robot object
+   :param timeout: timeout for waiting till the door is opened
+
+   .. staticmethod:: avg(lst)
+
+      return the mean of the element of a list. NaNs are ignored
+
+      :param lst: list of numbers
+      :return: mean of the elements
+
+
+   .. method:: process_scan(self, laser_upside_down, laser_yaw, door_open, scan_msg)
+
+      callback function checking the distance of the laser points in front of the robot.
+
+      :param laser_upside_down: (int) 1 as normal, -1 as upside down
+      :param laser_yaw: yaw angle of the laser
+      :param door_open: Event to be set when ready
+      :param scan_msg: sensor_msgs.msg.LaserScan
+      :return: no return
+
+
+   .. method:: execute(self, userdata=None)
+
+
+
+.. py:class:: WaitForLocalPlanner(robot, timeout)
+
+   Bases: :class:`smach.State`
+
+   Wait till a valid footprint message from the local planner is received. A footprint is valid if it contains at least
+   3 points. If no valid message is received within the timeout, "timeout" is returned.
+
+   Constructor
+
+   :param robot: robot object
+   :type robot: robot
+   :param timeout: timeout
+   :type timeout: (float, int)
+
+   .. staticmethod:: msg_cb(ready_event, msg)
+
+      Footprint message callback
+
+      :param ready_event: Event to set when ready
+      :type ready_event: Event
+      :param msg: footprint message
+      :type msg: PolygonStamped
+
+
+   .. method:: execute(self, userdate=None)
+
+
+

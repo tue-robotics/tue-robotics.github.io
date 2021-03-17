@@ -1,0 +1,186 @@
+:mod:`robot_skills.world_model_ed`
+==================================
+
+.. py:module:: robot_skills.world_model_ed
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.world_model_ed.Navigation
+   robot_skills.world_model_ed.ED
+
+
+
+.. py:class:: Navigation(robot_name, tf_listener)
+
+   Bases: :class:`robot_skills.robot_part.RobotPart`
+
+   .. method:: get_position_constraint(self, entity_id_area_name_map)
+
+
+
+.. py:class:: ED(robot_name, tf_listener)
+
+   Bases: :class:`robot_skills.robot_part.RobotPart`
+
+   .. method:: wait_for_connections(self, timeout, log_failing_connections=True)
+
+      Waits for the connections until they are connected
+
+      :param timeout: timeout in seconds
+      :param log_failing_connections: (bool) whether to log errors if not connected. This is useful when checking
+          multiple robot parts in a loop
+      :return: bool indicating whether all connections are connected
+
+
+   .. method:: get_entities(self, type='', center_point=VectorStamped(), radius=float('inf'), id='', ignore_z=False)
+
+      Get entities via Simple Query interface
+
+      :param type: Type of entity
+      :param center_point: Point from which radius is measured
+      :param radius: Distance between center_point and entity
+      :param id: ID of entity
+      :param ignore_z: Consider only the distance in the X,Y plane for the radius from center_point
+
+
+   .. method:: get_closest_entity(self, type='', center_point=None, radius=float('inf'))
+
+
+   .. method:: get_closest_room(self, center_point=None, radius=float('inf'))
+
+
+   .. method:: get_closest_laser_entity(self, type='', center_point=VectorStamped(), radius=float('inf'), ignore_z=False)
+
+      Get the closest entity detected by the laser. The ID's of such entities are postfixed with '-laser'
+      For the rest, this works exactly like get_closest_entity
+
+      :param type: What type of entities to filter on
+      :param center_point: combined with radius. Around which point to search for entities
+      :param radius: how far from the center_point to look (in meters)
+      :param ignore_z: Consider only the distance in the X,Y plane for the radius from center_point criterium.
+      :return: list of Entity
+
+
+   .. method:: get_entity(self, id)
+
+
+   .. method:: get_entity_info(self, id)
+
+
+   .. method:: selfreset(self, keep_all_shapes=True)
+
+
+   .. method:: update_entity(self, id, type=None, frame_stamped=None, flags=None, add_flags=None, remove_flags=None, action=None)
+
+      Updates entity
+
+      :param id: entity id
+      :param type: entity type
+      :param frame_stamped: If specified, the entity is updated to be at this FrameStamped
+      :param flags: (OBSOLETE, use add_flags and remove_flags): (list of) dict(s) containing key 'add' or 'remove' and value of the flag to set,  e.g., 'perception'
+      :param add_flags: list of flags which will be added to the specified entity
+      :param remove_flags: list of flags which will removed from the specified entity
+      :param action: update_action, e.g. remove
+
+
+   .. method:: remove_entity(self, id)
+
+      Removes entity with the provided id to the world model
+
+      :param id: string with the ID of the entity to remove
+
+
+   .. method:: lock_entities(self, lock_ids, unlock_ids)
+
+
+   .. method:: get_closest_possible_person_entity(self, center_point=VectorStamped(), radius=float('inf'))
+
+      Returns the 'possible_human' entity closest to a certain center point.
+
+      :param center_point: (VectorStamped) indicating where the human should be close to
+      :param radius: (float) radius to look for possible humans
+      :return: (Entity) entity (if found), None otherwise
+
+
+   .. method:: update_kinect(self, area_description='', background_padding=0)
+
+      Update ED based on kinect (depth) images
+
+      :param area_description: An entity id or area description, e.g. "a08d537e-e051-11e5-a34e-6cc217ec9f41" or "on_top_of cabinet-11"
+      :param background_padding: The maximum distance to which kinect data points are associated to existing objects (in meters).
+             Or, in other words: the padding that is added to existing objects before they are removed from the point cloud
+      :return: Update result
+
+
+   .. method:: classify(self, ids, types=None, unknown_threshold=0.0)
+
+      Classifies the entities with the given IDs
+
+      :param ids: list with IDs
+      :type ids: List[str]
+      :param types: list with types to identify
+      :type: types: List[str]
+      :param unknown_threshold: objects with a probability lower than this unknown_threshold are not set as a type
+      :type unknown_threshold: float
+      :return: List of classification results
+      :rtype: List[ClassificationResult]
+
+
+   .. method:: save_image(self, path='', path_suffix='', filename='')
+
+
+   .. method:: mesh_entity_in_view(self, id, type='')
+
+
+   .. method:: get_full_id(self, short_id)
+
+      Get an entity's full ID based on the first characters of its ID like you can do with git hashes
+
+
+   .. method:: ray_trace(self, pose)
+
+      Performs a ray trace
+
+      :param pose: geometry_msg PoseStamped. Position is the origin of ray. x-axis is pointing in the ray direction
+      :return: RayTraceResult. This struct contains intersection_point (geometry_msgs/PoseStamped) and entity_id
+          (string)
+
+
+   .. method:: _transform_center_point_to_map(self, pointstamped)
+
+
+   .. method:: _publish_marker(self, center_point, radius)
+
+
+   .. method:: sync_furniture_poses(self)
+
+      Syncs the furniture poses of the world model to disc. Hereto, it
+      i) gets all entities and filters these on being furniture
+      ii) loads the current ed object models file
+      iii) iterates over the furniture object entities (i) and the data in the dict (ii). If the IDs match, the pose
+           of (ii) is updated with the pose of (i)
+      iv) dump the updated dict to the models file
+
+
+   .. method:: detect_people(self, rgb, depth, cam_info)
+
+      Detect people in the given color message, depth image aided by the depth camera's camera info
+
+      :param rgb: Color image
+      :type rgb: sensor_msgs/Image
+      :param depth: Depth image
+      :type depth: sensor_msgs/Image
+      :param cam_info: CamInfo for the camera that recorded the depth image.
+      :type cam_info: sensor_msgs/CamInfo
+      :return: bool success and a list strings with the IDs of the detected persons
+      :rtype: (bool, [str])
+
+
+

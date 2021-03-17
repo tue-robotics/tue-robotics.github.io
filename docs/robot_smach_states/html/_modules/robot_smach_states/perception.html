@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.perception &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.perception</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.perception</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">Entity</span>
+
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">VectorStamped</span>
+<span class="kn">from</span> <span class="nn">.state</span> <span class="k">import</span> <span class="n">State</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="k">import</span> <span class="n">designators</span> <span class="k">as</span> <span class="n">ds</span>
+
+
+<div class="viewcode-block" id="LookAtEntity"><a class="viewcode-back" href="../../api/robot_smach_states/perception/index.html#robot_smach_states.perception.LookAtEntity">[docs]</a><span class="k">class</span> <span class="nc">LookAtEntity</span><span class="p">(</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">keep_following</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">waittime</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+
+        <span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">locals</span><span class="p">(),</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="LookAtEntity.run"><a class="viewcode-back" href="../../api/robot_smach_states/perception/index.html#robot_smach_states.perception.LookAtEntity.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">keep_following</span><span class="p">,</span> <span class="n">waittime</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">keep_following</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Look at stuff: keep_following is obsolete&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">entity</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+
+        <span class="c1"># Entities define their own frame, so there is no need to transform the pose to /map.</span>
+        <span class="c1"># That would be equivalent to defining coordinates 0,0,0 in its own frame, so that is what we do here.</span>
+        <span class="c1"># The added benefit is that the entity&#39;s frame actually moves because the entity is tracked.</span>
+        <span class="c1"># This makes the head track the entity</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Look at </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">vs</span><span class="p">)))</span>
+        <span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">vs</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">waittime</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;succeeded&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="LookAtArea"><a class="viewcode-back" href="../../api/robot_smach_states/perception/index.html#robot_smach_states.perception.LookAtArea">[docs]</a><span class="k">class</span> <span class="nc">LookAtArea</span><span class="p">(</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to look at the center point of a specific area of an entity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">waittime</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param entity: EdEntityDesignator with the area to look at</span>
+<span class="sd">        :param area: string with the area to look at</span>
+<span class="sd">        :param waittime: (optional) waittime (in seconds) between giving a head target and returning</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+
+        <span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">locals</span><span class="p">(),</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="LookAtArea.run"><a class="viewcode-back" href="../../api/robot_smach_states/perception/index.html#robot_smach_states.perception.LookAtArea.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">waittime</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">entity</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+
+        <span class="c1"># Entities define their own frame, so there is no need to transform the pose to /map.</span>
+        <span class="c1"># That would be equivalent to defining coordinates 0,0,0 in its own frame, so that is what we do here.</span>
+        <span class="c1"># The added benefit is that the entity&#39;s frame actually moves because the entity is tracked.</span>
+        <span class="c1"># This makes the head track the entity</span>
+        <span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">entity</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="k">if</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">entity</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>
+            <span class="n">cp</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">volumes</span><span class="p">[</span><span class="n">area</span><span class="p">]</span><span class="o">.</span><span class="n">center_point</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">cp</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">cp</span><span class="o">.</span><span class="n">z</span><span class="p">(),</span> <span class="n">frame_id</span><span class="p">)</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Look at </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">vs</span><span class="p">)))</span>
+
+            <span class="c1"># This is awefully hardcoded for AMIGO!!! (TODO)</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">vs</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">z</span><span class="p">()</span><span class="o">-</span><span class="mf">0.55</span><span class="p">))</span>
+            <span class="n">robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">_send_goal</span><span class="p">([</span><span class="n">height</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="n">robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">waittime</span><span class="p">))</span>
+            <span class="k">return</span> <span class="s2">&quot;succeeded&quot;</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Cannot find </span><span class="si">{0}</span><span class="s2"> in </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;failed&quot;</span></div></div>
+
+
+<span class="c1"># Testing</span>
+<div class="viewcode-block" id="setup_statemachine"><a class="viewcode-back" href="../../api/robot_smach_states/perception/index.html#robot_smach_states.perception.setup_statemachine">[docs]</a><span class="k">def</span> <span class="nf">setup_statemachine</span><span class="p">(</span><span class="n">robot</span><span class="p">):</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">EntityByIdDesignator</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;hallway_couch&#39;</span><span class="p">)</span>
+
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Done&#39;</span><span class="p">,</span> <span class="s1">&#39;Aborted&#39;</span><span class="p">])</span>
+    <span class="k">with</span> <span class="n">sm</span><span class="p">:</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;TEST&#39;</span><span class="p">,</span>
+                               <span class="n">LookAtEntity</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">entity</span><span class="p">),</span>
+                               <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;Done&#39;</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">sm</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">robot_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please provide robot name as argument.&quot;</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;manipulation_exec&#39;</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">robot_smach_states.util.startup</span> <span class="k">import</span> <span class="n">startup</span>
+    <span class="n">startup</span><span class="p">(</span><span class="n">setup_statemachine</span><span class="p">,</span> <span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

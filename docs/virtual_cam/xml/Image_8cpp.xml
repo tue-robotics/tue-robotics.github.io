@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="Image_8cpp" kind="file" language="C++">
+    <compoundname>Image.cpp</compoundname>
+    <includes refid="Image_8h" local="yes">virtual_cam/Image.h</includes>
+    <includes local="no">sensor_msgs/image_encodings.h</includes>
+    <incdepgraph>
+      <node id="19">
+        <label>sensor_msgs/CameraInfo.h</label>
+      </node>
+      <node id="23">
+        <label>boost/foreach.hpp</label>
+      </node>
+      <node id="18">
+        <label>sensor_msgs/Image.h</label>
+      </node>
+      <node id="24">
+        <label>cv_bridge/cv_bridge.h</label>
+      </node>
+      <node id="20">
+        <label>fstream</label>
+        <link refid="cpp/header/fstream" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="25">
+        <label>sensor_msgs/image_encodings.h</label>
+      </node>
+      <node id="15">
+        <label>Image.cpp</label>
+        <link refid="Image_8cpp"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>rosbag/view.h</label>
+      </node>
+      <node id="17">
+        <label>ros/ros.h</label>
+      </node>
+      <node id="16">
+        <label>virtual_cam/Image.h</label>
+        <link refid="Image_8h"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>rosbag/bag.h</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="Image_8h" kindref="compound">virtual_cam/Image.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sensor_msgs/image_encodings.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5" refid="classImage_1aef42a0cacc6cfa54955053823dc3a906" refkind="member"><highlight class="normal"><ref refid="classImage" kindref="compound">Image</ref><sp/><ref refid="classImage_1aef42a0cacc6cfa54955053823dc3a906" kindref="member">Image::loadFromFile</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref>&amp;<sp/><ref refid="save_8cpp_1a3a1a90139c2c8ab1fca0ea8b1790b7b2" kindref="member">filename</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Load<sp/>input<sp/>bag<sp/>file</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"><sp/><sp/><sp/><sp/>rosbag::Bag<sp/>bag_in;</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/>bag_in.open(filename,<sp/>rosbag::bagmode::Read);</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Get<sp/>topics<sp/>and<sp/>time<sp/>from<sp/>input<sp/>bag<sp/>file</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>rosbag::View<sp/>view(bag_in);</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classImage" kindref="compound">Image</ref><sp/>image;</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>BOOST_FOREACH(rosbag::MessageInstance<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>m,<sp/>view)<sp/>{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(m.getTopic()<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;rgb&quot;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image.<ref refid="classImage_1aac107b201c52d799cd3647144ebbbe0c" kindref="member">rgb_msg_</ref><sp/>=<sp/>*m.instantiate&lt;sensor_msgs::Image&gt;();</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv_bridge::CvImagePtr<sp/>img_ptr<sp/>=<sp/>cv_bridge::toCvCopy(image.<ref refid="classImage_1aac107b201c52d799cd3647144ebbbe0c" kindref="member">rgb_msg_</ref>,<sp/>sensor_msgs::image_encodings::BGR8);</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image.<ref refid="classImage_1a8dcbcd8ec2cfb2fcd033d6b1f04dd6f2" kindref="member">rgb_image_</ref><sp/>=<sp/>img_ptr-&gt;image;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(cv_bridge::Exception&amp;<sp/>e)<sp/>{</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ROS_ERROR(</highlight><highlight class="stringliteral">&quot;cv_bridge<sp/>exception:<sp/>%s&quot;</highlight><highlight class="normal">,<sp/>e.what());</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(m.getTopic()<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;depth&quot;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image.<ref refid="classImage_1aa9c59ff0afda409f2181aea1af5656ba" kindref="member">depth_msg_</ref><sp/>=<sp/>*m.instantiate&lt;sensor_msgs::Image&gt;();</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv_bridge::CvImagePtr<sp/>depth_img_ptr<sp/>=<sp/>cv_bridge::toCvCopy(image.<ref refid="classImage_1aa9c59ff0afda409f2181aea1af5656ba" kindref="member">depth_msg_</ref>,<sp/></highlight><highlight class="stringliteral">&quot;32FC1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image.<ref refid="classImage_1a78b5124fe005b354f9515eba428087ea" kindref="member">depth_image_</ref><sp/>=<sp/>depth_img_ptr-&gt;image;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(cv_bridge::Exception&amp;<sp/>e)<sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ROS_ERROR(</highlight><highlight class="stringliteral">&quot;cv_bridge<sp/>exception:<sp/>%s&quot;</highlight><highlight class="normal">,<sp/>e.what());</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(m.getTopic()<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;mask&quot;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image.<ref refid="classImage_1ac2c01c3f39e231f7db2b045d3fdf5377" kindref="member">mask_msg_</ref><sp/>=<sp/>*m.instantiate&lt;sensor_msgs::Image&gt;();</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv_bridge::CvImagePtr<sp/>depth_img_ptr<sp/>=<sp/>cv_bridge::toCvCopy(image.<ref refid="classImage_1ac2c01c3f39e231f7db2b045d3fdf5377" kindref="member">mask_msg_</ref>,<sp/>sensor_msgs::image_encodings::TYPE_8UC1);</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image.<ref refid="classImage_1a7c8a00929b449a131338cbb89f1896d8" kindref="member">mask_image_</ref><sp/>=<sp/>depth_img_ptr-&gt;image;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(cv_bridge::Exception&amp;<sp/>e)<sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ROS_ERROR(</highlight><highlight class="stringliteral">&quot;cv_bridge<sp/>exception:<sp/>%s&quot;</highlight><highlight class="normal">,<sp/>e.what());</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(m.getTopic()<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;camera_info&quot;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image.<ref refid="classImage_1a8e141740cbed1c9b3cf0279951293e84" kindref="member">cam_info</ref><sp/>=<sp/>*m.instantiate&lt;sensor_msgs::CameraInfo&gt;();</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>image;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="classImage_1a58edd1c45b4faeb5f789b0d036d02313" refkind="member"><highlight class="normal"><ref refid="classImage_1a58edd1c45b4faeb5f789b0d036d02313" kindref="member">Image::Image</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="classImage_1a0294f63700543e11c0f0da85601c7ae5" refkind="member"><highlight class="normal"><ref refid="classImage_1a0294f63700543e11c0f0da85601c7ae5" kindref="member">Image::~Image</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="53"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55" refid="classImage_1a75ad508e1f83d5e48355de98c625ad00" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classImage_1a75ad508e1f83d5e48355de98c625ad00" kindref="member">Image::saveToFile</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref>&amp;<sp/><ref refid="save_8cpp_1a3a1a90139c2c8ab1fca0ea8b1790b7b2" kindref="member">filename</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//ros::Time<sp/>time<sp/>=<sp/>ros::Time::now();</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>ros::Time<sp/>time(13000000);<sp/></highlight><highlight class="comment">//<sp/>todo<sp/>find<sp/>current<sp/>time<sp/>without<sp/>having<sp/>to<sp/>initialize<sp/>ROS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>rosbag::Bag<sp/><ref refid="save_8cpp_1acff053aa6be9be42ddf9a5b8692da5ad" kindref="member">bag_out</ref>;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>bag_out.open(filename,<sp/>rosbag::bagmode::Write);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classImage_1a8dcbcd8ec2cfb2fcd033d6b1f04dd6f2" kindref="member">rgb_image_</ref>.cols<sp/>&gt;<sp/>0<sp/>)<sp/>{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv_bridge::CvImage<sp/>cvi;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.header.stamp<sp/>=<sp/>time;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.header.frame_id<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.encoding<sp/>=<sp/>sensor_msgs::image_encodings::BGR8;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.image<sp/>=<sp/><ref refid="classImage_1a8dcbcd8ec2cfb2fcd033d6b1f04dd6f2" kindref="member">rgb_image_</ref>;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.toImageMsg(<ref refid="classImage_1aac107b201c52d799cd3647144ebbbe0c" kindref="member">rgb_msg_</ref>);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bag_out.write(</highlight><highlight class="stringliteral">&quot;rgb&quot;</highlight><highlight class="normal">,<sp/>time,<sp/><ref refid="classImage_1aac107b201c52d799cd3647144ebbbe0c" kindref="member">rgb_msg_</ref>);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classImage_1a78b5124fe005b354f9515eba428087ea" kindref="member">depth_image_</ref>.cols<sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv_bridge::CvImage<sp/>cvi;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.header.stamp<sp/>=<sp/>time;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.header.frame_id<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.encoding<sp/>=<sp/>sensor_msgs::image_encodings::TYPE_32FC1;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.image<sp/>=<sp/><ref refid="classImage_1a78b5124fe005b354f9515eba428087ea" kindref="member">depth_image_</ref>;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.toImageMsg(<ref refid="classImage_1aa9c59ff0afda409f2181aea1af5656ba" kindref="member">depth_msg_</ref>);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bag_out.write(</highlight><highlight class="stringliteral">&quot;depth&quot;</highlight><highlight class="normal">,<sp/>time,<sp/><ref refid="classImage_1aa9c59ff0afda409f2181aea1af5656ba" kindref="member">depth_msg_</ref>);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classImage_1a7c8a00929b449a131338cbb89f1896d8" kindref="member">mask_image_</ref>.cols<sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv_bridge::CvImage<sp/>cvi;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.header.stamp<sp/>=<sp/>time;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.header.frame_id<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.encoding<sp/>=<sp/>sensor_msgs::image_encodings::TYPE_8UC1;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.image<sp/>=<sp/><ref refid="classImage_1a7c8a00929b449a131338cbb89f1896d8" kindref="member">mask_image_</ref>;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cvi.toImageMsg(<ref refid="classImage_1ac2c01c3f39e231f7db2b045d3fdf5377" kindref="member">mask_msg_</ref>);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bag_out.write(</highlight><highlight class="stringliteral">&quot;mask&quot;</highlight><highlight class="normal">,<sp/>time,<sp/><ref refid="classImage_1ac2c01c3f39e231f7db2b045d3fdf5377" kindref="member">mask_msg_</ref>);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classImage_1a8e141740cbed1c9b3cf0279951293e84" kindref="member">cam_info</ref>.header.stamp<sp/>=<sp/>time;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classImage_1a8e141740cbed1c9b3cf0279951293e84" kindref="member">cam_info</ref>.header.frame_id<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classImage_1a8e141740cbed1c9b3cf0279951293e84" kindref="member">cam_info</ref>.width<sp/>=<sp/><ref refid="classImage_1a8dcbcd8ec2cfb2fcd033d6b1f04dd6f2" kindref="member">rgb_image_</ref>.cols;<sp/></highlight><highlight class="comment">//<sp/>todo:<sp/>check<sp/>if<sp/>size<sp/>of<sp/>all<sp/>modes<sp/>(rgb,<sp/>depth,<sp/>...)<sp/>is<sp/>equal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classImage_1a8e141740cbed1c9b3cf0279951293e84" kindref="member">cam_info</ref>.height<sp/>=<sp/><ref refid="classImage_1a8dcbcd8ec2cfb2fcd033d6b1f04dd6f2" kindref="member">rgb_image_</ref>.rows;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>bag_out.write(</highlight><highlight class="stringliteral">&quot;camera_info&quot;</highlight><highlight class="normal">,<sp/>time,<sp/><ref refid="classImage_1a8e141740cbed1c9b3cf0279951293e84" kindref="member">cam_info</ref>);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="classImage_1a3d9fbb1e46e7f8b3bf5838369e556303" refkind="member"><highlight class="normal">cv::Mat<sp/><ref refid="classImage_1a3d9fbb1e46e7f8b3bf5838369e556303" kindref="member">Image::getDepthImage</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classImage_1a78b5124fe005b354f9515eba428087ea" kindref="member">depth_image_</ref>;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103" refid="classImage_1ad6731de441076d74bc437b38c28048d9" refkind="member"><highlight class="normal">cv::Mat<sp/><ref refid="classImage_1ad6731de441076d74bc437b38c28048d9" kindref="member">Image::getRGBImage</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classImage_1a8dcbcd8ec2cfb2fcd033d6b1f04dd6f2" kindref="member">rgb_image_</ref>;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107" refid="classImage_1aebffda6231c19b4e4962aee6bd42345e" refkind="member"><highlight class="normal">cv::Mat<sp/><ref refid="classImage_1aebffda6231c19b4e4962aee6bd42345e" kindref="member">Image::getMaskImage</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classImage_1a7c8a00929b449a131338cbb89f1896d8" kindref="member">mask_image_</ref>;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111" refid="classImage_1a08f1860f7730f5bd78d0e7d6d31b0a4d" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classImage_1a08f1860f7730f5bd78d0e7d6d31b0a4d" kindref="member">Image::setDepthImage</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>image)<sp/>{</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classImage_1a78b5124fe005b354f9515eba428087ea" kindref="member">depth_image_</ref><sp/>=<sp/>image;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115" refid="classImage_1a80e84d4bb2436c766e39956e91948e5d" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classImage_1a80e84d4bb2436c766e39956e91948e5d" kindref="member">Image::setRGBImage</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>image)<sp/>{</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classImage_1a8dcbcd8ec2cfb2fcd033d6b1f04dd6f2" kindref="member">rgb_image_</ref><sp/>=<sp/>image;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119" refid="classImage_1aefdddbae822768505aa070bbd5e71b9c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classImage_1aefdddbae822768505aa070bbd5e71b9c" kindref="member">Image::setMaskImage</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>image)<sp/>{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classImage_1a7c8a00929b449a131338cbb89f1896d8" kindref="member">mask_image_</ref><sp/>=<sp/>image;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="src/Image.cpp"/>
+  </compounddef>
+</doxygen>

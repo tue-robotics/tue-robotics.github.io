@@ -1,0 +1,123 @@
+:mod:`robot_skills.arm.grasp_sensor`
+====================================
+
+.. py:module:: robot_skills.arm.grasp_sensor
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.arm.grasp_sensor.GripperMeasurement
+   robot_skills.arm.grasp_sensor.GraspSensor
+
+
+
+.. py:class:: GripperMeasurement(distance)
+
+   Bases: :class:`object`
+
+   Class holding measurements from the distance sensor on the grippers
+
+   Constructor
+
+   :param distance: float with measured distance
+
+   .. attribute:: EMPTY
+      :annotation: = -1
+
+      
+
+   .. attribute:: UNKNOWN
+      :annotation: = 0
+
+      
+
+   .. attribute:: HOLDING
+      :annotation: = 1
+
+      
+
+   .. method:: _is_recent(self)
+
+      Checks if the sensor data is recent
+
+      :return: bool True if recent, i.e., measurement is less than GRASP_SENSOR_TIMEOUT old, False otherwise
+
+
+   .. method:: distance(self)
+
+      Returns the measured distance. If the measurement is too old or the distance is outside of of the provided
+      limits, NaN is returned
+
+      :return: float with distance if valid, NaN otherwise
+
+
+   .. method:: is_holding(self)
+
+      Returns if the gripper is holding anything based on the measurement, i.e., if the measurement is recent and
+      the value is between the lower limit and the sensor threshold
+
+      :return: bool if holding
+
+
+   .. method:: is_unknown(self)
+
+      Returns if the state is unknown, i.e., either the measurement is outdated or the distance is less than the
+      limit
+
+      :return: bool if unknown
+
+
+   .. method:: is_empty(self)
+
+      Returns if the gripper is empty, i.e., the measurement is recent and the value is greater than the threshold
+
+      :return: bool if holding
+
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+
+.. py:class:: GraspSensor(robot_name, tf_listener, side)
+
+   Bases: :class:`robot_skills.robot_part.RobotPart`
+
+   Sensor to detect whether or not the robot is holding an object.
+
+   constructor
+
+   :param robot_name: robot_name
+   :param tf_listener: tf_server.TFClient()
+   :param side: left or right arm of the robot.
+
+   .. method:: object_in_gripper_measurement(self)
+
+      Returns whether the gripper is empty, holding an object or if this is unknown
+
+      :return: latest GripperMeasurement
+
+
+   .. method:: grasp_sensor_distance(self)
+
+      Returns the sensor distance. If no recent measurement is available or the measurement is outside bounds
+      and hence unreliable, NaN is returned
+
+      :return: float with distance
+
+
+   .. method:: _grasp_sensor_callback(self, msg)
+
+      Callback function for grasp sensor messages
+
+      :param msg: std_msgs.msg.Float32MultiArray
+
+
+

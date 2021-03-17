@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['rank_5fv',['rank_v',['http://en.cppreference.com/w/cpp/types/rank.html',1,'std::rank_v()'],['http://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::rank_v()']]],
+  ['ratio_5fequal_5fv',['ratio_equal_v',['http://en.cppreference.com/w/cpp/numeric/ratio/ratio_equal.html',1,'std::ratio_equal_v()'],['http://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_equal_v()']]],
+  ['ratio_5fgreater_5fequal_5fv',['ratio_greater_equal_v',['http://en.cppreference.com/w/cpp/numeric/ratio/ratio_greater_equal.html',1,'std::ratio_greater_equal_v()'],['http://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_greater_equal_v()']]],
+  ['ratio_5fgreater_5fv',['ratio_greater_v',['http://en.cppreference.com/w/cpp/numeric/ratio/ratio_greater.html',1,'std::ratio_greater_v()'],['http://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_greater_v()']]],
+  ['ratio_5fless_5fequal_5fv',['ratio_less_equal_v',['http://en.cppreference.com/w/cpp/numeric/ratio/ratio_less_equal.html',1,'std::ratio_less_equal_v()'],['http://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_less_equal_v()']]],
+  ['ratio_5fless_5fv',['ratio_less_v',['http://en.cppreference.com/w/cpp/numeric/ratio/ratio_less.html',1,'std::ratio_less_v()'],['http://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_less_v()']]],
+  ['ratio_5fnot_5fequal_5fv',['ratio_not_equal_v',['http://en.cppreference.com/w/cpp/numeric/ratio/ratio_not_equal.html',1,'std::ratio_not_equal_v()'],['http://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_not_equal_v()']]],
+  ['recognitionfailure',['RecognitionFailure',['../namespacedragonfly_1_1test_1_1infrastructure.html#a03b6b2467991f0680129089bcaff3d47',1,'dragonfly::test::infrastructure']]],
+  ['records',['records',['../classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler.html#a25662673616aadf273fa4ed88be3a70d',1,'dragonfly::test::test_timer::CapturingHandler']]],
+  ['release',['release',['../namespaceconf.html#aee93453546a31f4e76999ebaadf6e356',1,'conf.release()'],['../namespacesetup.html#ad77f19986040c3ae6e5fb2a98a350b79',1,'setup.release()']]],
+  ['rem',['rem',['http://en.cppreference.com/w/cpp/numeric/math/div.html',1,'std::div_t::rem()'],['http://en.cppreference.com/w/cpp/numeric/math/div.html',1,'std::imaxdiv_t::rem()'],['http://en.cppreference.com/w/cpp/numeric/math/div.html',1,'std::ldiv_t::rem()'],['http://en.cppreference.com/w/cpp/numeric/math/div.html',1,'std::lldiv_t::rem()']]],
+  ['repetition',['Repetition',['../namespacedragonfly_1_1grammar_1_1elements.html#ae5ca132f0f9ddff970a697aab8b29c25',1,'dragonfly::grammar::elements']]],
+  ['res',['res',['../namespacedragonfly_1_1windows_1_1monitor.html#abe60589a9ca387e28b881405f9f546f2',1,'dragonfly::windows::monitor']]],
+  ['restart_5fserver',['restart_server',['../classdragonfly__speech__recognition_1_1hmi__server__dragonfly__client_1_1HMIServerDragonflyClient.html#a51b2ed139e81464fc9378ac1d6888ddd',1,'dragonfly_speech_recognition::hmi_server_dragonfly_client::HMIServerDragonflyClient']]],
+  ['restore',['restore',['../classdragonfly_1_1windows_1_1window_1_1Window.html#a3c8b8d11a00e720a644f94cbb2afcd52',1,'dragonfly::windows::window::Window']]],
+  ['result',['result',['../namespacetest__grammar.html#a9d381af7a8cfeb711be63d2642ca3ad8',1,'test_grammar']]],
+  ['results',['results',['../classdragonfly_1_1grammar_1_1state_1_1Node.html#aa1247371cf4d0b533ec22e30b4350195',1,'dragonfly::grammar::state::Node']]],
+  ['rsemantic',['rsemantic',['../classsrc_1_1grammar__parser_1_1cfgparser_1_1Conjunct.html#ad4da7c4496ed4758e5bdc11a7a66d08f',1,'src::grammar_parser::cfgparser::Conjunct']]],
+  ['rule',['Rule',['../namespacedragonfly_1_1grammar_1_1elements.html#ad0eac300642301684a4fdcaee09508d4',1,'dragonfly.grammar.elements.Rule()'],['../namespacesrc_1_1grammar__parser_1_1cfgparser.html#a676669bed8caec8a6f189fcb3e7765b8',1,'src.grammar_parser.cfgparser.rule()']]],
+  ['ruleref',['RuleRef',['../namespacedragonfly_1_1grammar_1_1elements.html#a5d4d45a901b5d0af7417f2f6f695678e',1,'dragonfly::grammar::elements']]],
+  ['rules',['rules',['../classsrc_1_1grammar__parser_1_1cfgparser_1_1CFGParser.html#a676d2c9c57ddd99bafb2b86802d67f3e',1,'src.grammar_parser.cfgparser.CFGParser.rules()'],['../namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar.html#a3b469be121b8ead229ad28e8815a05ef',1,'dragonfly_speech_recognition.get_dragonfly_grammar.RULES()']]],
+  ['rulewrap',['RuleWrap',['../namespacedragonfly_1_1grammar_1_1elements.html#ae1e5941b197b66edc33ece9090951592',1,'dragonfly::grammar::elements']]]
+];

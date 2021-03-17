@@ -1,0 +1,135 @@
+:mod:`robot_smach_states.navigation.follow_operator`
+====================================================
+
+.. py:module:: robot_smach_states.navigation.follow_operator
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.follow_operator.FollowOperator
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.follow_operator.vector_stampeds_to_point_stampeds
+   robot_smach_states.navigation.follow_operator.frame_stampeds_to_pose_stampeds
+   robot_smach_states.navigation.follow_operator.setup_statemachine
+
+
+.. function:: vector_stampeds_to_point_stampeds(vector_stampeds)
+
+
+.. function:: frame_stampeds_to_pose_stampeds(frame_stampeds)
+
+
+.. py:class:: FollowOperator(robot, ask_follow=True, learn_face=True, operator_radius=1, lookat_radius=1.2, timeout=1.0, start_timeout=10, operator_timeout=20, distance_threshold=None, lost_timeout=60, lost_distance=0.8, operator_id_des=VariableDesignator(resolve_type=str), standing_still_timeout=20, operator_standing_still_timeout=3.0, replan=False)
+
+   Bases: :class:`smach.State`
+
+   Constructor
+
+   :param robot: robot object
+   :param ask_follow:
+   :param learn_face:
+   :param operator_radius:
+   :param lookat_radius:
+   :param timeout:
+   :param start_timeout:
+   :param operator_timeout:
+   :param distance_threshold:
+   :param lost_timeout: How long to look for the operator when we lost him/her?
+   :param lost_distance:
+   :param operator_id_des:
+   :param standing_still_timeout:
+   :param operator_standing_still_timeout:
+   :param replan:
+
+   .. method:: _operator_standing_still_for_x_seconds(self, timeout)
+
+      Check whether the operator is standing still for X seconds
+
+      :param timeout: how many seconds must the operator be standing still before returning True
+      :type timeout: float
+      :return: bool indicating whether the operator has been standing still for longer than timeout seconds
+
+
+   .. method:: _standing_still_for_x_seconds(self, timeout)
+
+      Check whether the robot is standing still for X seconds
+
+      :param timeout: how many seconds must the robot be standing still before returning True
+      :type timeout: float
+      :return: bool indicating whether the robot has been standing still for longer than timeout seconds
+
+
+   .. method:: _register_operator(self)
+
+      Robots looks at the operator and asks whether the operator should follow.
+      If he says yes, then set self._operator.
+      Also adds the operator to the breadcrumb list
+
+
+   .. method:: _update_breadcrumb_path(self)
+
+      If the last breadcrumb is less than a threshold away, replace
+      the last breadcrumb with the latest operator position; otherwise
+      just add it.
+
+
+   .. method:: _backup_register(self)
+
+      This only happens when the operator was just registered, and never tracked
+
+
+   .. method:: _track_operator(self)
+
+      Sets self._operator_distance if we have an operator and otherwise set self._operator_distance to the
+      distance to the last operator
+
+
+   .. method:: _visualize_breadcrumbs(self)
+
+
+   .. method:: _visualize_plan(self, path)
+
+
+   .. method:: _update_navigation(self)
+
+      Set the navigation plan to match the breadcrumbs collected into self._breadcrumbs.
+      This list has all the Entity's of where the operator has been
+
+
+   .. method:: _recover_operator(self)
+
+
+   .. method:: _turn_towards_operator(self)
+
+
+   .. method:: _replan(self)
+
+
+   .. method:: _check_end_criteria(self)
+
+
+   .. method:: execute(self, userdata=None)
+
+
+
+.. function:: setup_statemachine(robot)
+
+
+.. data:: robot_name
+   
+
+   
+

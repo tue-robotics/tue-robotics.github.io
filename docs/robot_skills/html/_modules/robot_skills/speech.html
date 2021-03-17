@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.speech &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.speech</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.speech</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.robot_part</span> <span class="k">import</span> <span class="n">RobotPart</span>
+<span class="kn">from</span> <span class="nn">text_to_speech.srv</span> <span class="k">import</span> <span class="n">Speak</span><span class="p">,</span> <span class="n">SpeakRequest</span>
+
+
+<div class="viewcode-block" id="Speech"><a class="viewcode-back" href="../../api/robot_skills/speech/index.html#robot_skills.speech.Speech">[docs]</a><span class="k">class</span> <span class="nc">Speech</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Interface to TTS-module&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="n">pre_hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">post_hook</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Speech</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_speech_service</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/text_to_speech/speak&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">Speak</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pre_hook</span> <span class="o">=</span> <span class="n">pre_hook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_hook</span> <span class="o">=</span> <span class="n">post_hook</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_language</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;text_to_speech/language&#39;</span><span class="p">,</span> <span class="s1">&#39;us&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_voice</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;text_to_speech/voice&#39;</span><span class="p">,</span> <span class="s1">&#39;kyle&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_character</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;text_to_speech/character&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_emotion</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;text_to_speech/emotion&#39;</span><span class="p">,</span> <span class="s1">&#39;neutral&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Speech.close"><a class="viewcode-back" href="../../api/robot_skills/speech/index.html#robot_skills.speech.Speech.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Speech.speak"><a class="viewcode-back" href="../../api/robot_skills/speech/index.html#robot_skills.speech.Speech.speak">[docs]</a>    <span class="k">def</span> <span class="nf">speak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sentence</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">personality</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">voice</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mood</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a sentence to the text to speech module.</span>
+<span class="sd">        You can set language, personality, voice and mood for the Philips TTS.</span>
+<span class="sd">        When block=False, this method returns immediately.</span>
+<span class="sd">        With the replace-dictionary, you can specify which characters to replace with what. By default, it replace</span>
+<span class="sd">        underscores with spaces.</span>
+
+<span class="sd">        :param sentence: string with sentence to pronounce</span>
+<span class="sd">        :param language: string with language to speak. Philips TTS supports English (us) Dutch (nl)</span>
+<span class="sd">        :param personality: string indicating the personality. Supported are Default, Man, OldMan, OldWoman, Boy,</span>
+<span class="sd">            YoungGirl, Robot, Giant, Dwarf, Alien</span>
+<span class="sd">        :param voice: string indicating the voice to speak with. In English, &quot;kyle&quot; (default), &quot;gregory&quot; (French</span>
+<span class="sd">            accent) and &quot;carlos&quot; (Spanish accent) are supported. The Dutch voices are &quot;david&quot; and &quot;marjolijn&quot;</span>
+<span class="sd">        :param mood: string indicating the emotion. Supported are: Neutral, Friendly, Angry, Furious, Drill, Scared,</span>
+<span class="sd">            Emotional, Weepy, Excited, Surprised, Sad, Disgusted, Whisper.</span>
+<span class="sd">        :param block: bool to indicate whether this function should return immediately or if it should block until the</span>
+<span class="sd">            sentence has been spoken</span>
+<span class="sd">        :param replace: dictionary with replacement stuff</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ToDo: replace personality by character and mood by emotion. Furthermore, change the order of the arguments.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">language</span><span class="p">:</span>
+            <span class="n">language</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_language</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">voice</span><span class="p">:</span>
+            <span class="n">voice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_voice</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">personality</span><span class="p">:</span>
+            <span class="n">personality</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_character</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mood</span><span class="p">:</span>
+            <span class="n">mood</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_emotion</span>
+        <span class="k">if</span> <span class="n">replace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">replace</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pre_hook</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pre_hook</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">orig</span><span class="p">,</span> <span class="n">replacement</span> <span class="ow">in</span> <span class="n">replace</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">sentence</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="n">replacement</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># ToDo: test this. This just seems utterly wrong</span>
+            <span class="k">if</span> <span class="n">language</span> <span class="o">==</span> <span class="s1">&#39;nl&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">personality</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;david&#39;</span><span class="p">,</span> <span class="s1">&#39;marjolijn&#39;</span><span class="p">]):</span>
+                <span class="n">personality</span> <span class="o">=</span> <span class="s1">&#39;marjolijn&#39;</span>  <span class="c1"># kyle doesn&#39;t work for NL</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[1;32m&#39;&quot;</span> <span class="o">+</span> <span class="n">sentence</span> <span class="o">+</span> <span class="s2">&quot;&#39;</span><span class="se">\x1b</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+            <span class="c1"># The funny stuff around sentence is for coloring the output text in the console</span>
+
+            <span class="n">req</span> <span class="o">=</span> <span class="n">SpeakRequest</span><span class="p">()</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">language</span>      <span class="o">=</span> <span class="n">language</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">voice</span>         <span class="o">=</span> <span class="n">voice</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">character</span>     <span class="o">=</span> <span class="n">personality</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">emotion</span>       <span class="o">=</span> <span class="n">mood</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">sentence</span>      <span class="o">=</span> <span class="n">sentence</span>
+            <span class="n">req</span><span class="o">.</span><span class="n">blocking_call</span> <span class="o">=</span> <span class="n">block</span>
+            <span class="n">resp1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_speech_service</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">resp1</span><span class="o">.</span><span class="n">error_msg</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Service call failed: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Something went seriously wrong: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_post_hook</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_post_hook</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

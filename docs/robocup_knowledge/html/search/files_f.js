@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['challenge_5fdemo_2epy',['challenge_demo.py',['../siza__demo_2challenge__demo_8py.html',1,'']]],
+  ['challenge_5fgpsr_2epy',['challenge_gpsr.py',['../siza__demo_2challenge__gpsr_8py.html',1,'']]],
+  ['challenge_5frips_2epy',['challenge_rips.py',['../siza__demo_2challenge__rips_8py.html',1,'']]],
+  ['challenge_5fspr_2epy',['challenge_spr.py',['../siza__demo_2challenge__spr_8py.html',1,'']]],
+  ['common_2epy',['common.py',['../siza__demo_2common_8py.html',1,'']]],
+  ['r5cop_5fdemo_2epy',['r5cop_demo.py',['../siza__demo_2r5cop__demo_8py.html',1,'']]],
+  ['scoped_5fallocator',['scoped_allocator',['http://en.cppreference.com/w/cpp/header/scoped_allocator.html',1,'']]],
+  ['set',['set',['http://en.cppreference.com/w/cpp/header/set.html',1,'']]],
+  ['setup_2epy',['setup.py',['../setup_8py.html',1,'']]],
+  ['shared_5fmutex',['shared_mutex',['http://en.cppreference.com/w/cpp/header/shared_mutex.html',1,'']]],
+  ['siza_5fdemo_2epy',['siza_demo.py',['../siza__demo_8py.html',1,'']]],
+  ['sstream',['sstream',['http://en.cppreference.com/w/cpp/header/sstream.html',1,'']]],
+  ['stack',['stack',['http://en.cppreference.com/w/cpp/header/stack.html',1,'']]],
+  ['stdexcept',['stdexcept',['http://en.cppreference.com/w/cpp/header/stdexcept.html',1,'']]],
+  ['streambuf',['streambuf',['http://en.cppreference.com/w/cpp/header/streambuf.html',1,'']]],
+  ['string',['string',['http://en.cppreference.com/w/cpp/header/string.html',1,'']]],
+  ['string_5fview',['string_view',['http://en.cppreference.com/w/cpp/header/string_view.html',1,'']]],
+  ['strstream',['strstream',['http://en.cppreference.com/w/cpp/header/strstream.html',1,'']]],
+  ['system_5ferror',['system_error',['http://en.cppreference.com/w/cpp/header/system_error.html',1,'']]]
+];

@@ -1,0 +1,657 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.navigation.follow_operator2_0 &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.navigation.follow_operator2_0</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.navigation.follow_operator2_0</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">hmi</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">geometry_msgs</span>  <span class="c1"># Only used for publishing markers</span>
+<span class="kn">import</span> <span class="nn">geometry_msgs.msg</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+<span class="kn">from</span> <span class="nn">visualization_msgs.msg</span> <span class="k">import</span> <span class="n">Marker</span>
+
+<span class="c1"># TU/e</span>
+<span class="kn">from</span> <span class="nn">cb_base_navigation_msgs.msg</span> <span class="k">import</span> <span class="n">PositionConstraint</span><span class="p">,</span> <span class="n">OrientationConstraint</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util</span> <span class="k">import</span> <span class="n">kdl_conversions</span>
+<span class="kn">from</span> <span class="nn">..human_interaction.learn_operator</span> <span class="k">import</span> <span class="n">LearnOperator</span>
+
+
+<div class="viewcode-block" id="CrumbWaypoint"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator2_0/index.html#robot_smach_states.navigation.follow_operator2_0.CrumbWaypoint">[docs]</a><span class="k">class</span> <span class="nc">CrumbWaypoint</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crumb</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crumb</span> <span class="o">=</span> <span class="n">crumb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waypoint</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="CrumbWaypoint.__repr__"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator2_0/index.html#robot_smach_states.navigation.follow_operator2_0.CrumbWaypoint.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crumb</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waypoint</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div></div>
+
+
+<div class="viewcode-block" id="Track"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator2_0/index.html#robot_smach_states.navigation.follow_operator2_0.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">_buffer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor</span>
+
+<span class="sd">        :param robot: robot object (amigo, sergio)</span>
+<span class="sd">        :param _buffer:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;track&#39;</span><span class="p">,</span> <span class="s1">&#39;no_track&#39;</span><span class="p">,</span> <span class="s1">&#39;aborted&#39;</span><span class="p">],</span>
+                             <span class="n">input_keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;operator_track_in&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># fix this magic number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/follow_operator/operator_position&#39;</span> <span class="o">%</span> <span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span>
+                                             <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb_distance</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">_buffer</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Track.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator2_0/index.html#robot_smach_states.navigation.follow_operator2_0.Track.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; A concurrent state in which the breadcrumbs, that are made in the other concurrent state, are followed.</span>
+
+
+<span class="sd">        :return: track if the operator is followed flawlessly</span>
+<span class="sd">                 no track if the operator is lost</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">userdata</span><span class="o">.</span><span class="n">operator_track_in</span><span class="p">:</span>
+            <span class="n">operator</span> <span class="o">=</span> <span class="n">userdata</span><span class="o">.</span><span class="n">operator_track_in</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="n">operator</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Distance to goal: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getDistanceToGoal</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getDistanceToGoal</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">2.5</span><span class="p">:</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;You seem to be in a hurry, is there ice cream in the groceries?&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;Not so fast!&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;Please slow down.&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;Why are you in such a hurry to leave me, don&#39;t you like me?&quot;</span><span class="p">]</span>
+            <span class="n">sentence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sentence</span> <span class="o">==</span> <span class="n">options</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">mood</span><span class="o">=</span><span class="s1">&#39;Sad&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Your butt is looking wonderful!&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;Let&#39;s get your groceries!&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;I&#39;m happy you are back, I was so lonely while you were shopping&quot;</span><span class="p">]</span>
+            <span class="n">sentence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sentence</span> <span class="o">==</span> <span class="n">options</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">voice</span><span class="o">=</span><span class="s1">&#39;gregory&#39;</span><span class="p">,</span> <span class="n">mood</span><span class="o">=</span><span class="s1">&#39;Excited&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Trying to get operator with id: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">operator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Could not find operator&quot;</span><span class="p">)</span>
+            <span class="n">_entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entities</span><span class="p">()</span>
+            <span class="n">_laser_entity_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">_entities</span> <span class="k">if</span> <span class="s2">&quot;laser&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Available laser IDs: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_laser_entity_ids</span><span class="p">))</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Crucial sleep! Do not remove!</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="p">:</span>
+                <span class="n">operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">operator</span><span class="p">:</span>
+                <span class="n">options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Don&#39;t move, I&#39;m losing you.&quot;</span><span class="p">,</span>
+                           <span class="s2">&quot;Where did you go? Please stay where you are and I will find you.&quot;</span><span class="p">,</span>
+                           <span class="s2">&quot;Oh no I lost you for a second, please stay where you are and I will come and find you!&quot;</span><span class="p">]</span>
+                <span class="n">sentence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>  <span class="c1"># why is this here?</span>
+                <span class="k">return</span> <span class="s1">&#39;no_track&#39;</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;track&#39;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Found operator with id: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">operator</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;track&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="FollowBread"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator2_0/index.html#robot_smach_states.navigation.follow_operator2_0.FollowBread">[docs]</a><span class="k">class</span> <span class="nc">FollowBread</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">_buffer</span><span class="p">,</span> <span class="n">operator_radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">lookat_radius</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param robot: robot object (amigo, sergio)</span>
+<span class="sd">        :param _buffer: the buffer deque that is made in the track state</span>
+<span class="sd">        :param operator_radius: the assumed radius of the operator for position constraint</span>
+<span class="sd">        :param lookat_radius: all breadcrumbs within the lookat_radius are deleted</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;follow_bread&#39;</span><span class="p">,</span> <span class="s1">&#39;no_follow_bread_ask_finalize&#39;</span><span class="p">,</span> <span class="s1">&#39;no_follow_bread_recovery&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_radius</span> <span class="o">=</span> <span class="n">operator_radius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lookat_radius</span> <span class="o">=</span> <span class="n">lookat_radius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb_distance</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span>
+                <span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/global_planner/visualization/markers/breadcrumbs&#39;</span> <span class="o">%</span> <span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">Marker</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_operator</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">_buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># ros_plan = []</span>
+
+<div class="viewcode-block" id="FollowBread.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator2_0/index.html#robot_smach_states.navigation.follow_operator2_0.FollowBread.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; A concurrent state machine which follows and afterwards deletes breadcrumbs from the buffer variable</span>
+
+<span class="sd">        :return: follow_bread if the list of breadcrumbs is not empty</span>
+<span class="sd">                 no_follow_bread_ask_finalize if the single remaining breadcrumb is the operator</span>
+<span class="sd">                 no_follow_bread_recovery if buffer is completely empty</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+                <span class="k">return</span> <span class="s1">&#39;aborted&#39;</span>
+            <span class="n">crumb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">crumb</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span>
+                <span class="n">crumb</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb_distance</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CrumbWaypoint</span><span class="p">(</span><span class="n">crumb</span><span class="p">))</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Self._breadcrumb length: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="p">)))</span>
+
+        <span class="c1"># We don&#39;t want to base this on distance since that relies on the operator behavior</span>
+        <span class="c1"># if self._robot.base.local_planner.getDistanceToGoal() &gt; 0.65:  # 2.0:  # len(buffer) &gt; 5:</span>
+        <span class="c1">#     self._have_followed = True</span>
+
+        <span class="n">robot_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">crumb</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;no_follow_bread_recovery&#39;</span>
+        <span class="c1">#</span>
+        <span class="c1"># if self._operator:</span>
+        <span class="c1">#     operator = self._robot.ed.get_entity(id=self._operator.id)</span>
+
+        <span class="c1"># while True:  # Should be timer, I think</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">semantics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">hmi</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">grammar</span><span class="o">=</span><span class="s2">&quot;T[true] -&gt; </span><span class="si">%s</span><span class="s2"> stop&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">semantics</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;no_follow_bread_ask_finalize&#39;</span>
+        <span class="k">except</span> <span class="n">hmi</span><span class="o">.</span><span class="n">TimeoutException</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;[HMC] Listening timeout&quot;</span><span class="p">)</span>
+
+        <span class="c1"># return &#39;no_follow_bread_ask_finalize&#39;</span>
+
+        <span class="c1"># if operator:</span>
+        <span class="c1">#     rospy.loginfo(&quot;Distance to operator: {}&quot;.format(operator.distance_to_2d(robot_position.p)))</span>
+        <span class="c1">#     if self._have_followed and operator.distance_to_2d(robot_position.p) &lt; 1.0:</span>
+        <span class="c1">#         self._have_followed = False</span>
+        <span class="c1">#         return &#39;no_follow_bread_ask_finalize&#39;</span>
+
+        <span class="c1"># self._breadcrumb = [crwp for crwp in self._breadcrumb</span>
+        <span class="c1">#                     if crwp.crumb.distance_to_2d(robot_position.p) &gt; self._lookat_radius]</span>
+
+        <span class="n">current_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">crumb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">crumb</span><span class="o">.</span><span class="n">crumb</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">robot_position</span><span class="o">.</span><span class="n">p</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lookat_radius</span><span class="p">:</span>
+                <span class="n">current_index</span> <span class="o">=</span> <span class="n">i</span>
+
+        <span class="c1"># throw away all breadcrumbs before where we are</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="p">[</span><span class="n">current_index</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span>
+        <span class="n">previous_point</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">p</span>
+        <span class="n">operator_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span>
+
+        <span class="sd">&#39;&#39;&#39; Define end goal constraint, solely based on the (old) operator position &#39;&#39;&#39;</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">PositionConstraint</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="s2">&quot;(x-</span><span class="si">%f</span><span class="s2">)^2 + (y-</span><span class="si">%f</span><span class="s2">)^2 &lt; </span><span class="si">%f</span><span class="s2">^2&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">operator_position</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">operator_position</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">_operator_radius</span><span class="p">)</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">OrientationConstraint</span><span class="p">()</span>
+        <span class="n">o</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="o">.</span><span class="n">id</span>
+        <span class="sd">&#39;&#39;&#39; Calculate global plan from robot position, through breadcrumbs, to the operator &#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">crumb_waypoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="p">:</span>
+            <span class="n">crumb</span> <span class="o">=</span> <span class="n">crumb_waypoint</span><span class="o">.</span><span class="n">crumb</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">crumb</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">previous_point</span>
+            <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">diff</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="n">crumb</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">previous_point</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">length</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dx_norm</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">/</span> <span class="n">length</span>
+                <span class="n">dy_norm</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">/</span> <span class="n">length</span>
+                <span class="n">yaw</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">previous_point</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dx_norm</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">previous_point</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dy_norm</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span>
+                    <span class="n">kdl_pose</span> <span class="o">=</span> <span class="n">kdl_conversions</span><span class="o">.</span><span class="n">kdl_frame_stamped_from_XYZRPY</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span class="n">yaw</span><span class="p">)</span>
+                    <span class="n">crumb_waypoint</span><span class="o">.</span><span class="n">waypoint</span> <span class="o">=</span> <span class="n">kdl_conversions</span><span class="o">.</span><span class="n">kdl_frame_stamped_to_pose_stamped_msg</span><span class="p">(</span><span class="n">kdl_pose</span><span class="p">)</span>
+            <span class="n">previous_point</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">crumb</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ros_plan</span> <span class="o">=</span> <span class="p">[</span><span class="n">crwp</span><span class="o">.</span><span class="n">waypoint</span> <span class="k">for</span> <span class="n">crwp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">checkPlan</span><span class="p">(</span><span class="n">ros_plan</span><span class="p">):</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Breadcrumb plan is blocked, removing blocked points&quot;</span><span class="p">)</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Breadcrumbs before removing blocked points: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ros_plan</span><span class="p">)))</span>
+                <span class="n">ros_plan</span> <span class="o">=</span> <span class="p">[</span><span class="n">crwp</span><span class="o">.</span><span class="n">waypoint</span> <span class="k">for</span> <span class="n">crwp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">checkPlan</span><span class="p">([</span><span class="n">crwp</span><span class="o">.</span><span class="n">waypoint</span><span class="p">])]</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Breadcrumbs length after removing blocked points: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ros_plan</span><span class="p">)))</span>
+
+            <span class="c1"># if the new ros plan is empty, we do have an operator but there are no breadcrumbs that we can reach</span>
+            <span class="c1"># if not ros_plan:</span>
+            <span class="c1">#     return &#39;no_follow_bread_recovery&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;no_follow_bread_recovery&#39;</span>
+
+        <span class="n">buffer_msg</span> <span class="o">=</span> <span class="n">Marker</span><span class="p">()</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">Marker</span><span class="o">.</span><span class="n">POINTS</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;/map&quot;</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">Marker</span><span class="o">.</span><span class="n">DELETEALL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">buffer_msg</span><span class="p">)</span>
+
+        <span class="n">buffer_msg</span> <span class="o">=</span> <span class="n">Marker</span><span class="p">()</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">Marker</span><span class="o">.</span><span class="n">POINTS</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;/map&quot;</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># buffer_msg.lifetime = rospy.Time(1)</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">buffer_msg</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">Marker</span><span class="o">.</span><span class="n">ADD</span>
+
+        <span class="k">for</span> <span class="n">crumb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb</span><span class="p">:</span>
+            <span class="n">buffer_msg</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">crumb</span><span class="o">.</span><span class="n">waypoint</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">buffer_msg</span><span class="p">)</span>
+
+        <span class="c1"># line_strip = Marker()</span>
+        <span class="c1"># line_strip.type = Marker.LINE_STRIP</span>
+        <span class="c1"># line_strip.scale.x = 0.05</span>
+        <span class="c1"># line_strip.header.frame_id = &quot;/map&quot;</span>
+        <span class="c1"># line_strip.header.stamp = rospy.Time.now()</span>
+        <span class="c1"># line_strip.color.a = 1</span>
+        <span class="c1"># line_strip.color.r = 0</span>
+        <span class="c1"># line_strip.color.g = 1</span>
+        <span class="c1"># line_strip.color.b = 1</span>
+        <span class="c1"># line_strip.id = 0</span>
+        <span class="c1"># line_strip.action = Marker.ADD</span>
+        <span class="c1">#</span>
+        <span class="c1"># for crwp in ros_plan:</span>
+        <span class="c1">#     line_strip.points.append(crwp)</span>
+
+        <span class="c1">#self._plan_marker_pub.publish(line_strip)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">setPlan</span><span class="p">(</span><span class="n">ros_plan</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s1">&#39;follow_bread&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="Recovery"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator2_0/index.html#robot_smach_states.navigation.follow_operator2_0.Recovery">[docs]</a><span class="k">class</span> <span class="nc">Recovery</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">lost_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">lost_distance</span><span class="o">=</span><span class="mf">0.8</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param robot: robot object (amigo, sergio)</span>
+<span class="sd">        :param lost_timeout: time allowed to take to find the operator</span>
+<span class="sd">        :param lost_distance: radius in which to find the laser entity of the operator based on the converted location</span>
+<span class="sd">                              from the RGBD image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Failed&#39;</span><span class="p">,</span> <span class="s1">&#39;follow&#39;</span><span class="p">],</span>
+                             <span class="n">output_keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;recovered_operator&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_name</span> <span class="o">=</span> <span class="s2">&quot;operator&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lost_timeout</span> <span class="o">=</span> <span class="n">lost_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lost_distance</span> <span class="o">=</span> <span class="n">lost_distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_face_pos_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/follow_operator/operator_detected_face&#39;</span> <span class="o">%</span> <span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span>
+                                             <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Recovery.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator2_0/index.html#robot_smach_states.navigation.follow_operator2_0.Recovery.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: Failed: when taking too long, can&#39;t transform RGBD image to point or when preempt requested</span>
+<span class="sd">                 follow: When successfully recovered operator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">, please look at me while I am looking for you&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_name</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="n">look_distance</span> <span class="o">=</span> <span class="mf">2.0</span>
+        <span class="n">look_angles</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span>
+                       <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span>
+                       <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span>
+                       <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">2.3</span><span class="p">,</span>
+                       <span class="mf">0.0</span><span class="p">,</span>
+                       <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span>
+                       <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span>
+                       <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">2.3</span><span class="p">]</span>
+        <span class="n">head_goals</span> <span class="o">=</span> <span class="p">[</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">look_distance</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span>
+                                                    <span class="n">y</span><span class="o">=</span><span class="n">look_distance</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="n">z</span><span class="o">=</span><span class="mf">1.7</span><span class="p">,</span>
+                                                    <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">%s</span><span class="s2">/base_link&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">look_angles</span><span class="p">]</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lost_timeout</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+                <span class="k">return</span> <span class="s1">&#39;Failed&#39;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">head_goals</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">head_goals</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+            <span class="n">raw_detections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">detect_faces</span><span class="p">()</span>
+            <span class="n">best_detection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">get_best_face_recognition</span><span class="p">(</span><span class="n">raw_detections</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">,</span> <span class="n">probability_threshold</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;best_detection = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_detection</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">best_detection</span><span class="p">:</span>
+                <span class="n">roi</span> <span class="o">=</span> <span class="n">best_detection</span><span class="o">.</span><span class="n">roi</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">operator_pos_kdl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">project_roi</span><span class="p">(</span><span class="n">roi</span><span class="o">=</span><span class="n">roi</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;map&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;head.project_roi failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="s1">&#39;Failed&#39;</span>
+                <span class="n">operator_pos_ros</span> <span class="o">=</span> <span class="n">kdl_conversions</span><span class="o">.</span><span class="n">kdl_vector_stamped_to_point_stamped</span><span class="p">(</span><span class="n">operator_pos_kdl</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_face_pos_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">operator_pos_ros</span><span class="p">)</span>
+
+                <span class="n">recovered_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_closest_laser_entity</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lost_distance</span><span class="p">,</span>
+                                                                             <span class="n">center_point</span><span class="o">=</span><span class="n">operator_pos_kdl</span><span class="p">,</span>
+                                                                             <span class="n">ignore_z</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">recovered_operator</span><span class="p">:</span>
+                    <span class="nb">print</span>
+                    <span class="s2">&quot;Found one!&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span> <span class="o">=</span> <span class="n">recovered_operator</span><span class="o">.</span><span class="n">id</span>
+                    <span class="nb">print</span>
+                    <span class="s2">&quot;Recovered operator id: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="n">recovered_operator</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;There you are! Go ahead, I&#39;ll follow you again&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_time_started</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="n">userdata</span><span class="o">.</span><span class="n">recovered_operator</span> <span class="o">=</span> <span class="n">recovered_operator</span>
+                    <span class="k">return</span> <span class="s1">&#39;follow&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span>
+                    <span class="s2">&quot;Could not find an entity </span><span class="si">{}</span><span class="s2"> meter near </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lost_distance</span><span class="p">,</span> <span class="n">operator_pos_kdl</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s1">&#39;Failed&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="FollowOperator2"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator2_0/index.html#robot_smach_states.navigation.follow_operator2_0.FollowOperator2">[docs]</a><span class="k">class</span> <span class="nc">FollowOperator2</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param robot: robot object (amigo, sergio)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Done&#39;</span><span class="p">,</span> <span class="s1">&#39;Failed&#39;</span><span class="p">,</span> <span class="s1">&#39;Aborted&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">userdata</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;LEARN_OPERATOR&#39;</span><span class="p">,</span> <span class="n">LearnOperator</span><span class="p">(</span><span class="n">robot</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;CON_FOLLOW&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;Failed&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;aborted&#39;</span><span class="p">:</span> <span class="s1">&#39;Aborted&#39;</span>
+                                                <span class="p">},</span>
+                                   <span class="n">remapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;operator_learn_in&#39;</span><span class="p">:</span> <span class="s1">&#39;operator&#39;</span><span class="p">,</span> <span class="s1">&#39;operator_learn_out&#39;</span><span class="p">:</span> <span class="s1">&#39;operator&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;RECOVERY&#39;</span><span class="p">,</span> <span class="n">Recovery</span><span class="p">(</span><span class="n">robot</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Failed&#39;</span><span class="p">:</span> <span class="s1">&#39;Failed&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;follow&#39;</span><span class="p">:</span> <span class="s1">&#39;CON_FOLLOW&#39;</span><span class="p">},</span>
+                                   <span class="n">remapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;recovered_operator&#39;</span><span class="p">:</span> <span class="s1">&#39;operator&#39;</span><span class="p">})</span>
+
+            <span class="n">sm_con</span> <span class="o">=</span> <span class="n">smach</span><span class="o">.</span><span class="n">Concurrence</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;recover_operator&#39;</span><span class="p">,</span> <span class="s1">&#39;ask_finalize&#39;</span><span class="p">,</span> <span class="s1">&#39;keep_following&#39;</span><span class="p">,</span> <span class="s1">&#39;Aborted&#39;</span><span class="p">],</span>
+                                       <span class="n">default_outcome</span><span class="o">=</span><span class="s1">&#39;keep_following&#39;</span><span class="p">,</span>
+                                       <span class="n">outcome_map</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ask_finalize&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;FOLLOWBREAD&#39;</span><span class="p">:</span> <span class="s1">&#39;no_follow_bread_ask_finalize&#39;</span><span class="p">,</span>
+                                                                     <span class="s1">&#39;TRACK&#39;</span><span class="p">:</span> <span class="s1">&#39;track&#39;</span><span class="p">},</span>
+                                                    <span class="s1">&#39;recover_operator&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;FOLLOWBREAD&#39;</span><span class="p">:</span> <span class="s1">&#39;no_follow_bread_recovery&#39;</span><span class="p">,</span>
+                                                                         <span class="s1">&#39;TRACK&#39;</span><span class="p">:</span> <span class="s1">&#39;no_track&#39;</span><span class="p">},</span>
+                                                    <span class="s1">&#39;Aborted&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;TRACK&#39;</span><span class="p">:</span> <span class="s1">&#39;aborted&#39;</span><span class="p">}},</span>
+                                       <span class="n">input_keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">])</span>
+
+            <span class="n">_buffer</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">()</span>
+            <span class="n">sm_con</span><span class="o">.</span><span class="n">userdata</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">with</span> <span class="n">sm_con</span><span class="p">:</span>
+                <span class="n">smach</span><span class="o">.</span><span class="n">Concurrence</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;TRACK&#39;</span><span class="p">,</span> <span class="n">Track</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">_buffer</span><span class="p">),</span> <span class="n">remapping</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;operator_track_in&#39;</span><span class="p">:</span> <span class="s1">&#39;operator&#39;</span><span class="p">})</span>
+
+                <span class="n">smach</span><span class="o">.</span><span class="n">Concurrence</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;FOLLOWBREAD&#39;</span><span class="p">,</span> <span class="n">FollowBread</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">_buffer</span><span class="p">))</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;CON_FOLLOW&#39;</span><span class="p">,</span> <span class="n">sm_con</span><span class="p">,</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;recover_operator&#39;</span><span class="p">:</span> <span class="s1">&#39;RECOVERY&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;ask_finalize&#39;</span><span class="p">:</span> <span class="s1">&#39;Done&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;keep_following&#39;</span><span class="p">:</span> <span class="s1">&#39;CON_FOLLOW&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;Aborted&#39;</span><span class="p">:</span> <span class="s1">&#39;Aborted&#39;</span><span class="p">})</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="kn">from</span> <span class="nn">robot_skills</span> <span class="k">import</span> <span class="n">get_robot_from_argv</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;test_follow_operator&#39;</span><span class="p">)</span>
+    <span class="n">robot</span> <span class="o">=</span> <span class="n">get_robot_from_argv</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">FollowOperator2</span><span class="p">(</span><span class="n">robot</span><span class="p">)</span>
+    <span class="n">sm</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

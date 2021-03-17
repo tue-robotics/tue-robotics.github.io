@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>action_server.actions.action &mdash; action_server 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> action_server
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">action_server</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>action_server.actions.action</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for action_server.actions.action</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">rospy</span>
+
+<span class="kn">from</span> <span class="nn">robot_skills.robot</span> <span class="k">import</span> <span class="n">Robot</span>
+<span class="kn">from</span> <span class="nn">robocup_knowledge</span> <span class="k">import</span> <span class="n">load_knowledge</span>
+
+
+<div class="viewcode-block" id="ConfigurationData"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.ConfigurationData">[docs]</a><span class="k">class</span> <span class="nc">ConfigurationData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ConfigurationData class defines the input data structure for configuration of an action.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semantics</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param semantics: Dictionary of the following structure: {&#39;action&#39;: &lt;action-name&gt;, &#39;param1&#39;: &lt;param-value&gt;}.</span>
+<span class="sd">        :param context: Dictionary of parameter names to context provided by previous actions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semantics</span> <span class="o">=</span> <span class="n">semantics</span>
+        <span class="k">if</span> <span class="n">context</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="ConfigurationData.__repr__"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.ConfigurationData.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;ConfigurationData(semantics=</span><span class="si">{}</span><span class="s2">, context=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ConfigurationResult"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.ConfigurationResult">[docs]</a><span class="k">class</span> <span class="nc">ConfigurationResult</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ConfigurationResult class defines the data structure that is returned by the configure() methods of actions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">succeeded</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">context</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="n">succeeded</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">required_context</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">missing_field</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">missing_skill</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<div class="viewcode-block" id="ConfigurationResult.__repr__"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.ConfigurationResult.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;ConfigurationResult(succeeded=</span><span class="si">{}</span><span class="s2">, context=</span><span class="si">{}</span><span class="s2">, required_context=</span><span class="si">{}</span><span class="s2">, missing_field=</span><span class="si">{}</span><span class="s2">, &quot;</span> \
+               <span class="s2">&quot;missing_skill=</span><span class="si">{}</span><span class="s2">, message=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">succeeded</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">required_context</span><span class="p">,</span>
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">missing_field</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">missing_skill</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ActionResult"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.ActionResult">[docs]</a><span class="k">class</span> <span class="nc">ActionResult</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ActionResult class defines the data structure that is returned by the run() methods of actions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">succeeded</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="n">succeeded</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+
+<div class="viewcode-block" id="ActionResult.__repr__"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.ActionResult.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;ActionResult(succeeded=</span><span class="si">%s</span><span class="s2">, message=</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">succeeded</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Action"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.Action">[docs]</a><span class="k">class</span> <span class="nc">Action</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Action class defines the interface of actions that can be configured and started by the task_manager.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span> <span class="o">=</span> <span class="n">ConfigurationResult</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span> <span class="o">=</span> <span class="n">ActionResult</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_field_prompts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_passed_knowledge</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_skills</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span> <span class="o">=</span> <span class="n">load_knowledge</span><span class="p">(</span><span class="s1">&#39;common&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Action._check_parameters"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.Action._check_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">_check_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required_field_prompts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Missing required parameter </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">missing_field</span> <span class="o">=</span> <span class="n">k</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required_passed_knowledge</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Missing required context </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">missing_field</span> <span class="o">=</span> <span class="n">k</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Action._check_skills"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.Action._check_skills">[docs]</a>    <span class="k">def</span> <span class="nf">_check_skills</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">skill</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required_skills</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">skill</span><span class="p">):</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Robot </span><span class="si">{}</span><span class="s2"> does not have attribute &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">skill</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">missing_skill</span> <span class="o">=</span> <span class="n">skill</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I am missing the required skill </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">skill</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Action.configure"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.Action.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Configure the action with a robot and configuration data</span>
+
+<span class="sd">        :param robot: The robot to use for this action</span>
+<span class="sd">        :type robot: Robot</span>
+<span class="sd">        :param config: The configuration data. Contains semantics from input and implied context from previous tasks.</span>
+<span class="sd">        :type config: ConfigurationData</span>
+<span class="sd">        :return: The result of configuration</span>
+<span class="sd">        :rtype: ConfigurationResult</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span> <span class="o">=</span> <span class="n">ConfigurationResult</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ConfigurationData</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Action: the specified config should be ConfigurationData! I received: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; Something&#39;s wrong with my wiring. I&#39;m so sorry, but I cannot do this. &quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Configuring action </span><span class="si">{}</span><span class="s2"> with semantics </span><span class="si">{}</span><span class="s2"> and context </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span>
+                      <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">Robot</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Action: the specified robot should be a Robot! I received: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">robot</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I don&#39;t know what to say. I&#39;m having an identity crisis. I&#39;m so sorry. &quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_parameters</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_skills</span><span class="p">(</span><span class="n">robot</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configure</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Resulting context = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span></div>
+
+<div class="viewcode-block" id="Action._configure"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.Action._configure">[docs]</a>    <span class="k">def</span> <span class="nf">_configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement me in </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="Action.start"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.Action.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the execution of the action. Blocks until the action is finished or canceled.</span>
+
+<span class="sd">        :return: ActionResult</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Starting executing of action </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span></div>
+
+<div class="viewcode-block" id="Action._start"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.Action._start">[docs]</a>    <span class="k">def</span> <span class="nf">_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement me in </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="Action.cancel"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.Action.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancels the execution of the action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Canceling executing of action </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cancel</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Action._cancel"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.Action._cancel">[docs]</a>    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement me in </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="Action.get_name"><a class="viewcode-back" href="../../../api/action_server/actions/action/index.html#action_server.actions.action.Action.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

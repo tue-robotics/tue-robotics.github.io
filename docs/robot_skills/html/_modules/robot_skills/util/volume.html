@@ -1,0 +1,505 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.util.volume &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.util.volume</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.util.volume</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">PyKDL</span> <span class="k">as</span> <span class="nn">kdl</span>
+<span class="kn">from</span> <span class="nn">.kdl_conversions</span> <span class="k">import</span> <span class="n">point_msg_to_kdl_vector</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="nb">abs</span>
+
+
+<div class="viewcode-block" id="Volume"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.Volume">[docs]</a><span class="k">class</span> <span class="nc">Volume</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Represents an volume of an entity</span>
+
+<span class="sd">    Points are defined relative to the object they belong to</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">center_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the center of the Volume&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_center_point</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Volume._calc_center_point"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.Volume._calc_center_point">[docs]</a>    <span class="k">def</span> <span class="nf">_calc_center_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_calc_center_point must be implemented by subclasses. &quot;</span>
+                                  <span class="s2">&quot;Class </span><span class="si">{cls}</span><span class="s2"> has no implementation&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Volume.contains"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.Volume.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks if the point is inside this volume</span>
+
+<span class="sd">        :param point: kdl Vector w.r.t. the same frame as this volume</span>
+<span class="sd">        :return: True if inside, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;contains must be implemented by subclasses. &quot;</span>
+                                  <span class="s2">&quot;Class </span><span class="si">{cls}</span><span class="s2"> has no implementation&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_size</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Volume._calc_size"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.Volume._calc_size">[docs]</a>    <span class="k">def</span> <span class="nf">_calc_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;_calc_size must be implemented by subclasses. &quot;</span>
+                                  <span class="s2">&quot;Class </span><span class="si">{cls}</span><span class="s2"> has no implementation&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="BoxVolume"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.BoxVolume">[docs]</a><span class="k">class</span> <span class="nc">BoxVolume</span><span class="p">(</span><span class="n">Volume</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Represents a box shaped volume &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_corner</span><span class="p">,</span> <span class="n">max_corner</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor.</span>
+
+<span class="sd">        Points are defined relative to the object they belong to</span>
+
+<span class="sd">        :param min_corner: PyKDL.Vector with the minimum bounding box corner</span>
+<span class="sd">        :param max_corner: PyKDL.Vector with the minimum bounding box corner</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BoxVolume</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">min_corner</span><span class="p">,</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_corner</span><span class="p">,</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span> <span class="o">=</span> <span class="n">min_corner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span> <span class="o">=</span> <span class="n">max_corner</span>
+
+<div class="viewcode-block" id="BoxVolume._calc_center_point"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.BoxVolume._calc_center_point">[docs]</a>    <span class="k">def</span> <span class="nf">_calc_center_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate where the center of the box is located</span>
+
+<span class="sd">        &gt;&gt;&gt; b = BoxVolume(kdl.Vector(0,0,0), kdl.Vector(1,1,1))</span>
+<span class="sd">        &gt;&gt;&gt; b.center_point</span>
+<span class="sd">        [         0.5,         0.5,         0.5]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span><span class="o">.</span><span class="n">x</span><span class="p">()),</span>
+                          <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span><span class="o">.</span><span class="n">y</span><span class="p">()),</span>
+                          <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="BoxVolume._calc_size"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.BoxVolume._calc_size">[docs]</a>    <span class="k">def</span> <span class="nf">_calc_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the size of a volume</span>
+<span class="sd">        &gt;&gt;&gt; BoxVolume(kdl.Vector(0, 0, 0), kdl.Vector(1, 1, 1)).size</span>
+<span class="sd">        1.0</span>
+<span class="sd">        &gt;&gt;&gt; BoxVolume(kdl.Vector(0, 0, 0), kdl.Vector(10, 10, 0.1)).size</span>
+<span class="sd">        10.0</span>
+<span class="sd">        &gt;&gt;&gt; BoxVolume(kdl.Vector(0, 0, 0), kdl.Vector(1, 1, 10)).size</span>
+<span class="sd">        10.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">size_x</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span><span class="o">.</span><span class="n">x</span><span class="p">())</span>
+        <span class="n">size_y</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span><span class="o">.</span><span class="n">y</span><span class="p">())</span>
+        <span class="n">size_z</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span><span class="o">.</span><span class="n">z</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">size_x</span> <span class="o">*</span> <span class="n">size_y</span> <span class="o">*</span> <span class="n">size_z</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">min_corner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_corner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bottom_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">convex_hull</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">convex_hull</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()))</span>  <span class="c1"># 1</span>
+        <span class="n">convex_hull</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_corner</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()))</span>  <span class="c1"># 2</span>
+        <span class="n">convex_hull</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_corner</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_corner</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()))</span>  <span class="c1"># 3</span>
+        <span class="n">convex_hull</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_corner</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()))</span>  <span class="c1"># 4</span>
+        <span class="k">return</span> <span class="n">convex_hull</span>
+
+<div class="viewcode-block" id="BoxVolume.contains"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.BoxVolume.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks if the point is inside this volume</span>
+
+<span class="sd">        :param point: kdl Vector w.r.t. the same frame as this volume</span>
+<span class="sd">        :return: True if inside, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_min_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">point</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corner</span><span class="o">.</span><span class="n">z</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="BoxVolume.__repr__"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.BoxVolume.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;BoxVolume(min_corner=</span><span class="si">{}</span><span class="s2">, max_corner=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_corner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_corner</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CompositeBoxVolume"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.CompositeBoxVolume">[docs]</a><span class="k">class</span> <span class="nc">CompositeBoxVolume</span><span class="p">(</span><span class="n">Volume</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Represents a composite box shaped volume &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">boxes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        Points are defined relative to the object they belong to.</span>
+
+<span class="sd">        :param boxes: list of tuples of two PyKDL.Vector. First one with the minimum bounding box corners,</span>
+<span class="sd">                            second one with the maximum bounding box corners</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CompositeBoxVolume</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">boxes</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">boxes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">boxes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">boxes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">boxes</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CompositeBoxVolume._calc_center_point"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.CompositeBoxVolume._calc_center_point">[docs]</a>    <span class="k">def</span> <span class="nf">_calc_center_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate where the center of the box is located</span>
+
+<span class="sd">        &gt;&gt;&gt; b = CompositeBoxVolume([(kdl.Vector(0,0,0), kdl.Vector(1,1,1))])</span>
+<span class="sd">        &gt;&gt;&gt; b.center_point</span>
+<span class="sd">        [         0.5,         0.5,         0.5]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">min_x</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">])</span>
+        <span class="n">min_y</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">])</span>
+        <span class="n">min_z</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">])</span>
+        <span class="n">max_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span><span class="p">])</span>
+        <span class="n">max_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span><span class="p">])</span>
+        <span class="n">max_z</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">min_x</span> <span class="o">+</span> <span class="n">max_x</span><span class="p">),</span>
+                          <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">min_y</span> <span class="o">+</span> <span class="n">max_y</span><span class="p">),</span>
+                          <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">min_z</span> <span class="o">+</span> <span class="n">max_z</span><span class="p">))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">min_corner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">min_x</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">])</span>
+        <span class="n">min_y</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">])</span>
+        <span class="n">min_z</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">min_z</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_corner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">max_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span><span class="p">])</span>
+        <span class="n">max_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span><span class="p">])</span>
+        <span class="n">max_z</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">,</span> <span class="n">max_z</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bottom_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">min_x</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">])</span>
+        <span class="n">min_y</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">])</span>
+        <span class="n">min_z</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">])</span>
+        <span class="n">max_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span><span class="p">])</span>
+        <span class="n">max_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span><span class="p">])</span>
+        <span class="n">convex_hull</span> <span class="o">=</span> <span class="p">[</span><span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">min_z</span><span class="p">),</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">max_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">min_z</span><span class="p">),</span>
+                       <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">max_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">,</span> <span class="n">min_z</span><span class="p">),</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">min_x</span><span class="p">,</span> <span class="n">max_y</span><span class="p">,</span> <span class="n">min_z</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">convex_hull</span>
+
+<div class="viewcode-block" id="CompositeBoxVolume.contains"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.CompositeBoxVolume.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks if the point is inside this volume</span>
+
+<span class="sd">        :param point: kdl Vector w.r.t. the same frame as this volume</span>
+<span class="sd">        :return: True if inside, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">min_corner</span><span class="p">,</span> <span class="n">max_corner</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">min_corner</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">max_corner</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="ow">and</span>
+                <span class="n">min_corner</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">max_corner</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="ow">and</span>
+                <span class="n">min_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">point</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">max_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="CompositeBoxVolume.__repr__"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.CompositeBoxVolume.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;CompositeBoxVolume:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">min_corner</span><span class="p">,</span> <span class="n">max_corner</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_corners</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_corners</span><span class="p">):</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="s2">&quot;min_corner=</span><span class="si">{}</span><span class="s2">, max_corner=</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">min_corner</span><span class="p">,</span> <span class="n">max_corner</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">description</span></div></div>
+
+
+<div class="viewcode-block" id="OffsetVolume"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.OffsetVolume">[docs]</a><span class="k">class</span> <span class="nc">OffsetVolume</span><span class="p">(</span><span class="n">Volume</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Represents a volume with a certain offset from the convex hull of the entity &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor</span>
+
+<span class="sd">        :param offset: float with offset [m]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OffsetVolume</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span> <span class="o">=</span> <span class="n">offset</span>
+
+<div class="viewcode-block" id="OffsetVolume.__repr__"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.OffsetVolume.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;OffsetVolume(offset=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_offset</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="volume_from_entity_volume_msg"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.volume_from_entity_volume_msg">[docs]</a><span class="k">def</span> <span class="nf">volume_from_entity_volume_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates a dict mapping strings to Volumes from the EntityInfo data dictionary</span>
+
+<span class="sd">    :param msg: ed_msgs.msg.Volume</span>
+<span class="sd">    :return: tuple of name and volume object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if we have data and if it contains volumes</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="c1"># Check if the volume has a name. Otherwise: skip</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="c1"># Check if we have a shape</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">subvolumes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">subvolume</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">subvolumes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">subvolume</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">subvolume</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">BOX</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="n">center_point</span> <span class="o">=</span> <span class="n">point_msg_to_kdl_vector</span><span class="p">(</span><span class="n">subvolume</span><span class="o">.</span><span class="n">center_point</span><span class="o">.</span><span class="n">point</span><span class="p">)</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="n">subvolume</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">dimensions</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="n">min_corner</span> <span class="o">=</span> <span class="n">center_point</span> <span class="o">-</span> <span class="n">size</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">max_corner</span> <span class="o">=</span> <span class="n">center_point</span> <span class="o">+</span> <span class="n">size</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">BoxVolume</span><span class="p">(</span><span class="n">min_corner</span><span class="p">,</span> <span class="n">max_corner</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">min_corners</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">max_corners</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">subvolume</span> <span class="ow">in</span> <span class="n">msg</span><span class="o">.</span><span class="n">subvolumes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">subvolume</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">subvolume</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">BOX</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">size</span> <span class="o">=</span> <span class="n">subvolume</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">dimensions</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+            <span class="n">center_point</span> <span class="o">=</span> <span class="n">point_msg_to_kdl_vector</span><span class="p">(</span><span class="n">subvolume</span><span class="o">.</span><span class="n">center_point</span><span class="p">)</span>
+
+            <span class="n">sub_min</span> <span class="o">=</span> <span class="n">center_point</span> <span class="o">-</span> <span class="n">size</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">sub_max</span> <span class="o">=</span> <span class="n">center_point</span> <span class="o">+</span> <span class="n">size</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">min_corners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_min</span><span class="p">)</span>
+            <span class="n">max_corners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sub_max</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">CompositeBoxVolume</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">min_corners</span><span class="p">,</span> <span class="n">max_corners</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="volumes_from_entity_volumes_msg"><a class="viewcode-back" href="../../../api/robot_skills/util/volume/index.html#robot_skills.util.volume.volumes_from_entity_volumes_msg">[docs]</a><span class="k">def</span> <span class="nf">volumes_from_entity_volumes_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="n">volumes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">name</span><span class="p">,</span> <span class="n">volume</span> <span class="o">=</span> <span class="n">volume_from_entity_volume_msg</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">and</span> <span class="n">volume</span><span class="p">:</span>
+            <span class="n">volumes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">volume</span>
+
+    <span class="k">return</span> <span class="n">volumes</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

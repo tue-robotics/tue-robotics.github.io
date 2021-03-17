@@ -1,0 +1,192 @@
+:mod:`robot_skills.util.volume`
+===============================
+
+.. py:module:: robot_skills.util.volume
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.util.volume.Volume
+   robot_skills.util.volume.BoxVolume
+   robot_skills.util.volume.CompositeBoxVolume
+   robot_skills.util.volume.OffsetVolume
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.util.volume.volume_from_entity_volume_msg
+   robot_skills.util.volume.volumes_from_entity_volumes_msg
+
+
+.. py:class:: Volume
+
+   Bases: :class:`object`
+
+   Represents an volume of an entity
+
+   Points are defined relative to the object they belong to
+
+   Constructor
+
+
+   .. method:: center_point(self)
+
+      Get the center of the Volume
+
+
+   .. method:: _calc_center_point(self)
+
+
+   .. method:: contains(self, point)
+
+      Checks if the point is inside this volume
+
+      :param point: kdl Vector w.r.t. the same frame as this volume
+      :return: True if inside, False otherwise
+
+
+   .. method:: size(self)
+
+
+   .. method:: _calc_size(self)
+
+
+
+.. py:class:: BoxVolume(min_corner, max_corner)
+
+   Bases: :class:`robot_skills.util.volume.Volume`
+
+   Represents a box shaped volume
+
+   Constructor.
+
+   Points are defined relative to the object they belong to
+
+   :param min_corner: PyKDL.Vector with the minimum bounding box corner
+   :param max_corner: PyKDL.Vector with the minimum bounding box corner
+
+   .. method:: _calc_center_point(self)
+
+      Calculate where the center of the box is located
+
+      >>> b = BoxVolume(kdl.Vector(0,0,0), kdl.Vector(1,1,1))
+      >>> b.center_point
+      [         0.5,         0.5,         0.5]
+
+
+   .. method:: _calc_size(self)
+
+      Calculate the size of a volume
+      >>> BoxVolume(kdl.Vector(0, 0, 0), kdl.Vector(1, 1, 1)).size
+      1.0
+      >>> BoxVolume(kdl.Vector(0, 0, 0), kdl.Vector(10, 10, 0.1)).size
+      10.0
+      >>> BoxVolume(kdl.Vector(0, 0, 0), kdl.Vector(1, 1, 10)).size
+      10.0
+
+
+   .. method:: min_corner(self)
+
+
+   .. method:: max_corner(self)
+
+
+   .. method:: bottom_area(self)
+
+
+   .. method:: contains(self, point)
+
+      Checks if the point is inside this volume
+
+      :param point: kdl Vector w.r.t. the same frame as this volume
+      :return: True if inside, False otherwise
+
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+
+.. py:class:: CompositeBoxVolume(boxes)
+
+   Bases: :class:`robot_skills.util.volume.Volume`
+
+   Represents a composite box shaped volume
+
+   Constructor
+
+   Points are defined relative to the object they belong to.
+
+   :param boxes: list of tuples of two PyKDL.Vector. First one with the minimum bounding box corners,
+                       second one with the maximum bounding box corners
+
+   .. method:: _calc_center_point(self)
+
+      Calculate where the center of the box is located
+
+      >>> b = CompositeBoxVolume([(kdl.Vector(0,0,0), kdl.Vector(1,1,1))])
+      >>> b.center_point
+      [         0.5,         0.5,         0.5]
+
+
+   .. method:: min_corner(self)
+
+
+   .. method:: max_corner(self)
+
+
+   .. method:: bottom_area(self)
+
+
+   .. method:: contains(self, point)
+
+      Checks if the point is inside this volume
+
+      :param point: kdl Vector w.r.t. the same frame as this volume
+      :return: True if inside, False otherwise
+
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+
+.. py:class:: OffsetVolume(offset)
+
+   Bases: :class:`robot_skills.util.volume.Volume`
+
+   Represents a volume with a certain offset from the convex hull of the entity
+
+   Constructor
+
+   :param offset: float with offset [m]
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+
+.. function:: volume_from_entity_volume_msg(msg)
+
+   Creates a dict mapping strings to Volumes from the EntityInfo data dictionary
+
+   :param msg: ed_msgs.msg.Volume
+   :return: tuple of name and volume object
+
+
+.. function:: volumes_from_entity_volumes_msg(msg)
+
+

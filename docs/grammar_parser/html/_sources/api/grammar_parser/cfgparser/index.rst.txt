@@ -1,0 +1,393 @@
+:mod:`grammar_parser.cfgparser`
+===============================
+
+.. py:module:: grammar_parser.cfgparser
+
+.. autoapi-nested-parse::
+
+   Grammars for the ContextFreeGrammarParser are built from production rules, corresponding to the Rule-class below.
+   This means that sentences can be generated (and auto-completed), according to this grammar.
+   Moreover, sentences can be parsed according to the same rules.
+
+   See https://www.tutorialspoint.com/automata_theory/context_free_grammar_introduction.htm and https://en.wikipedia.org/wiki/Context-free_grammar for an introduction to context free grammars.
+
+   If there is a rule "A -> one", then that means that to generate something according to rule A, the generated sentence is "one"
+   In this example "A" is the lname. lname stands for left name, as it's on the left of the arrow.
+   Sentences are produced and parsed from left to right.
+
+   There can be multiple lines in the grammar definition file with the same lname, which simply add ways to produce/parse sentences for that lname.
+
+   Rules can refer to each other via their lname.
+   If a rule A defines a way to start a sentence and refers to B, that means the completion of rule A is one via rule B.
+   For example, the grammar:
+   A -> go B
+   B -> forward
+   B -> backward
+   can generate the sentences "go forward" and "go backward". And thus parse these sentences as well.
+
+   Rules can also have variables that will be assigned to when a sentence is parsed.
+   For example, the line:
+
+       VP["action": A] -> V_PLACE[A]
+
+   adds a rule for the lname VP, with a field called "action", which will be set to A.
+   The value for A is determined by a rule with lname V_PLACE, which will determine the value of A.
+
+   The rule
+
+       V_PLACE["place"] -> place | put
+
+   applies when the text is "place" or "put".
+   When that is the case, the rule applies and the text "place" is filled in for A.
+   That means when the text "put" is typed, the variable "action" will be assigned the value "place".
+
+   The whole grammar has an entry point, or root rule, from which all the other rules are referred.
+   Each rule forms branch upon branch, together building a Tree.
+
+   When a sentence is parsed, a Tree is built. While this happens, the variables are collected.
+   When the Tree is completely parsed, the collected variables and their assignments are fetched from the Tree with the get_semantics-method.
+   This returns a string. However, this string represents a (nested) dictionary that maps a variable to a value.
+
+   Semantics describe what a sentence means. In this case, it describes what action to perform and with what to perform it.
+
+   The semantics are returned to whomever called CFGParser.parse(...), usually the REPL on console.py.
+   The REPL sends the semantics to the action_server, which grounds the semantics by implementing the actions.
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   grammar_parser.cfgparser.bcolors
+   grammar_parser.cfgparser.Option
+   grammar_parser.cfgparser.Conjunct
+   grammar_parser.cfgparser.Rule
+   grammar_parser.cfgparser.Tree
+   grammar_parser.cfgparser.CFGParser
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   grammar_parser.cfgparser.parse_next_atom
+
+
+.. py:exception:: GrammarError(message)
+
+   Bases: :class:`exceptions.Exception`
+
+   Exception indicating a problem in the grammar rules.
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+
+.. py:exception:: ParseError(words, word_index)
+
+   Bases: :class:`exceptions.Exception`
+
+   Exception indicating that the given sentence does not match on the grammar.
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+
+.. py:class:: bcolors
+
+   .. attribute:: HEADER
+      :annotation: = [95m
+
+      
+
+   .. attribute:: OKBLUE
+      :annotation: = [94m
+
+      
+
+   .. attribute:: OKGREEN
+      :annotation: = [92m
+
+      
+
+   .. attribute:: WARNING
+      :annotation: = [93m
+
+      
+
+   .. attribute:: FAIL
+      :annotation: = [91m
+
+      
+
+   .. attribute:: ENDC
+      :annotation: = [0m
+
+      
+
+   .. attribute:: BOLD
+      :annotation: = [1m
+
+      
+
+   .. attribute:: UNDERLINE
+      :annotation: = [4m
+
+      
+
+
+.. py:class:: Option(lsemantic='', conjs=None)
+
+   An option is a continuation of a sentence of where there are multiple ways to continue the sentence.
+   These choices in an Option are called called conjuncts.
+
+   Constructor of an Option
+   :param lsemantic the name of the semantics that the option is the continuation of. E.g. if the lsemantic is some action, this option might be the object to perform that action with.
+   :param conjs the choices in this option
+
+   .. method:: __repr__(self)
+
+
+   .. method:: __eq__(self, other)
+
+
+   .. staticmethod:: from_cfg_def(option_definition, left_semantics)
+
+      Parse text from the CFG definition into an Option and the choices it is composed of.
+
+
+   .. method:: pretty_print(self, level=0)
+
+
+   .. method:: graphviz_id(self)
+
+
+   .. method:: to_graphviz(self, graph)
+
+
+
+.. py:class:: Conjunct(name, rsemantic='', is_variable=False)
+
+   "A Conjunct is a placeholder in the parse-tree, which can be filled in by an Option or a word
+
+   :param name the word or variable
+   :param rsemantic what option is the Conjunct part of
+   :param is_variable is the conjunct variable or terminal?
+
+   .. method:: __repr__(self)
+
+
+   .. method:: __eq__(self, other)
+
+
+   .. method:: pretty_print(self, level=0)
+
+
+   .. method:: graphviz_id(self)
+
+
+   .. method:: to_graphviz(self, graph)
+
+
+
+.. py:class:: Rule(lname, options=None)
+
+   .. method:: __repr__(self)
+
+
+   .. method:: __eq__(self, other)
+
+
+   .. staticmethod:: from_cfg_def(s)
+
+
+   .. method:: pretty_print(self, level=0)
+
+
+   .. method:: graphviz_id(self)
+
+
+   .. method:: to_graphviz(self, graph)
+
+
+
+.. py:class:: Tree(option)
+
+   .. method:: next(self, idx)
+
+
+   .. method:: add_subtree(self, idx, tree)
+
+
+   .. method:: __repr__(self)
+
+
+   .. method:: pretty_print(self, level=0)
+
+
+
+.. function:: parse_next_atom(s)
+
+   Returns (name, semantics, remaining_str)
+   For example for "VP[X, Y] foo bar" it returns:
+        ("VP", "X, Y", "foo bar")
+   :param s:
+   :return: Tuple with the rule's lname, the variables involved and the remaining text: ("VP", "X, Y", "foo bar")
+
+
+.. py:class:: CFGParser
+
+   Parser for parsing the heard sentence, and converting it to information for
+   the action that should be performed.
+
+   Usage:
+   - For loading a grammar from a file use fromfile().
+   - For loading a grammar from a text string use fromstring().
+
+   - For loading a grammar with functions, construct a CFGParser object, add
+     the functions using CFGParser.set_function(), and finally load the
+     grammar using fromfile or fromstring, passing in the CFGParser object
+     as well.
+
+   The parser performs a few basic checks on the grammar, such as missing
+   sub-rules and missing functions while loading. The CFGParser.verify function
+   goes a step further by expanding all alternatives.
+
+   To parse a sentence, use parse_raw() at a CFGParser instance to get maximum information, or
+   use parse() at a CFGParser instance to avoid getting exceptions.
+
+   .. staticmethod:: fromfile(filename, parser=None)
+
+      Load the grammar from the provided file.
+
+      :param filename: Path to the text file containing the grammar
+      :param parser: If not None, the parser to use (else a new parser is created).
+      :return: The parser containing the grammar.
+
+
+   .. staticmethod:: fromstring(string, parser=None)
+
+      Load the grammar from the provided text.
+
+      :param string: Text containing the grammar
+      :param parser: If not None, the parser to use (else a new parser is created).
+      :return: The parser containing the grammar.
+
+
+   .. method:: check_rules(self)
+
+      Verify completeness of the loaded grammar, no rules that refer to missing
+      sub-rules and no functions that don't exist.
+
+
+   .. method:: verify(self, target=None)
+
+
+   .. method:: add_rule(self, s)
+
+
+   .. method:: set_function(self, name, func)
+
+      Add a new function to the parser. Must be done before loading the grammar.
+
+      TODO #11: Ensure the function expansion result does not refer to missing sub-rules or functions.
+
+
+   .. method:: get_semantics(self, tree)
+
+      Get the semantics of a tree.
+      This means that variables are unified with their values, which may be recursively gotten from the tree's subtrees.
+
+
+   .. method:: parse(self, target, words, debug=False)
+
+      Parse the given sentence against the grammar loaded in the class. This
+      method hides all errors (and returns False in that case). Use the
+      self.parse_raw function if the difference between a successful and
+      failed parse is relevant.
+
+      :param target: Target rule in the grammar to start parsing the sentence.
+      :type target: str.
+
+      :param words: Sentence to parse, either as a single string or a list of words.
+      :type words: str, or a list of str.
+
+      :param debug: If True, output the matched sequence in the tree.
+      :type debug: Boolean, by default False.
+
+      :return: The captured data value collected during parsing if parsing
+               succeeds, else False.
+
+
+   .. method:: parse_raw(self, target, words, debug=False)
+
+      Parse the given sentence against the grammar loaded in the class. This
+      method throws exceptions on failures, the self.parse function returns
+      False in such a case.
+
+      :param target: Target rule in the grammar to start parsing the sentence.
+      :type target: str.
+
+      :param words: Sentence to parse, either as a single string or a list of words.
+      :type words: str, or a list of str.
+
+      :param debug: If True, output the matched sequence in the tree.
+      :type debug: Boolean, by default False.
+
+      :return: The captured data value collected during parsing if parsing
+               succeeds, a GrammarError exception if the grammar is found to
+               be incorrect, or a ParseError exception if the sentence fails
+               to match the grammar.
+
+
+   .. method:: _parse(self, TIdx, words, word_index)
+
+      Try to match the provided words on the given grammar rule option.
+
+      :param TIdx: Tuple of grammar Rule, and rule alternative index.
+      :param words: Words to match on the alternative.
+      :param word_index: First word in words to match on the alternative.
+      :return: On successful match None is returned, else an index in words
+               pointing at the position that failed to match. Note that the
+               index may be equal to the number of words (indicating that
+               words are missing).
+
+
+   .. method:: next_word(self, target, words)
+
+
+   .. method:: _next_word(self, TIdx, words)
+
+
+   .. method:: has_completion_function(self, func_name)
+
+
+   .. method:: get_completion_function(self, func_name)
+
+
+   .. staticmethod:: graphviz_id()
+
+
+   .. method:: to_graphviz(self, graph)
+
+
+   .. method:: visualize_options(self, graph, target_rule, previous_words=None, depth=2)
+
+
+   .. method:: get_unwrapped(self, lname)
+
+
+   .. method:: get_random_sentence(self, lname)
+
+
+
+.. data:: grammar_file
+   
+
+   
+

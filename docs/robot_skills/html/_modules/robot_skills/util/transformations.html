@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.util.transformations &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.util.transformations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.util.transformations</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">geometry_msgs.msg</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">tf</span>
+
+
+<div class="viewcode-block" id="euler_z_to_quaternion"><a class="viewcode-back" href="../../../api/robot_skills/util/transformations/index.html#robot_skills.util.transformations.euler_z_to_quaternion">[docs]</a><span class="k">def</span> <span class="nf">euler_z_to_quaternion</span><span class="p">(</span><span class="n">angle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate a quaternion based on a Z angle</span>
+
+<span class="sd">    &gt;&gt;&gt; from math import pi</span>
+<span class="sd">    &gt;&gt;&gt; euler_z_to_quaternion(pi/2)</span>
+<span class="sd">    x: 0.0</span>
+<span class="sd">    y: 0.0</span>
+<span class="sd">    z: 0.707106781187</span>
+<span class="sd">    w: 0.707106781187</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">orientation_goal</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Quaternion</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">quaternion</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">quaternion_from_euler</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="n">te</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; cannot be parsed as a float: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">te</span><span class="p">))</span>
+    <span class="n">orientation_goal</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">quaternion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">orientation_goal</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">quaternion</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">orientation_goal</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">quaternion</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">orientation_goal</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">quaternion</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">orientation_goal</span></div>
+
+
+<div class="viewcode-block" id="euler_z_from_quaternion"><a class="viewcode-back" href="../../../api/robot_skills/util/transformations/index.html#robot_skills.util.transformations.euler_z_from_quaternion">[docs]</a><span class="k">def</span> <span class="nf">euler_z_from_quaternion</span><span class="p">(</span><span class="n">quaternion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the yaw (z) angle of a quaternion</span>
+
+<span class="sd">    &gt;&gt;&gt; from geometry_msgs.msg import Quaternion</span>
+<span class="sd">    &gt;&gt;&gt; q = Quaternion()</span>
+<span class="sd">    &gt;&gt;&gt; euler_z_from_quaternion(q)</span>
+<span class="sd">    0.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="p">[</span><span class="n">rx</span><span class="p">,</span><span class="n">ry</span><span class="p">,</span><span class="n">rz</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">euler_from_quaternion</span><span class="p">([</span><span class="n">quaternion</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">.</span><span class="n">w</span><span class="p">])</span>
+
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="n">te</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Quaternion </span><span class="si">{0}</span><span class="s2"> cannot be transformed to Euler&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">te</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">rz</span></div>
+
+
+<div class="viewcode-block" id="compute_relative_angle"><a class="viewcode-back" href="../../../api/robot_skills/util/transformations/index.html#robot_skills.util.transformations.compute_relative_angle">[docs]</a><span class="k">def</span> <span class="nf">compute_relative_angle</span><span class="p">(</span><span class="n">absolute_angle</span><span class="p">,</span> <span class="n">robot_orientation</span><span class="p">):</span>
+
+    <span class="n">robot_rotation</span><span class="o">=</span><span class="p">[</span><span class="n">robot_orientation</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">robot_orientation</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="n">robot_orientation</span><span class="o">.</span><span class="n">z</span><span class="p">,</span><span class="n">robot_orientation</span><span class="o">.</span><span class="n">w</span><span class="p">]</span>
+    <span class="n">robot_absolute_angle</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">euler_from_quaternion</span><span class="p">(</span><span class="n">robot_rotation</span><span class="p">,</span><span class="s1">&#39;sxyz&#39;</span><span class="p">)</span>
+
+    <span class="n">relative_angle</span> <span class="o">=</span> <span class="n">absolute_angle</span> <span class="o">-</span> <span class="n">robot_absolute_angle</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">relative_angle</span></div>
+
+
+<div class="viewcode-block" id="transform_into_base_coordinates"><a class="viewcode-back" href="../../../api/robot_skills/util/transformations/index.html#robot_skills.util.transformations.transform_into_base_coordinates">[docs]</a><span class="k">def</span> <span class="nf">transform_into_base_coordinates</span><span class="p">(</span><span class="n">target_position</span><span class="p">,</span> <span class="n">robot_position</span><span class="p">,</span> <span class="n">robot_orientation</span><span class="p">):</span>
+
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">compute_angle</span><span class="p">(</span><span class="n">target_position</span><span class="p">,</span> <span class="n">robot_position</span><span class="p">)</span>
+    <span class="n">relative_angle</span> <span class="o">=</span> <span class="n">compute_relative_angle</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">robot_orientation</span><span class="p">)</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="n">compute_distance</span><span class="p">(</span><span class="n">target_position</span><span class="p">,</span> <span class="n">robot_position</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">relative_angle</span><span class="p">)</span><span class="o">*</span><span class="n">distance</span>
+    <span class="n">ry</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">relative_angle</span><span class="p">)</span><span class="o">*</span><span class="n">distance</span>
+    <span class="n">rz</span> <span class="o">=</span> <span class="n">target_position</span><span class="o">.</span><span class="n">z</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">rx</span><span class="p">,</span> <span class="n">ry</span><span class="p">,</span> <span class="n">rz</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="compute_distance"><a class="viewcode-back" href="../../../api/robot_skills/util/transformations/index.html#robot_skills.util.transformations.compute_distance">[docs]</a><span class="k">def</span> <span class="nf">compute_distance</span><span class="p">(</span><span class="n">target_position</span><span class="p">,</span> <span class="n">robot_position</span><span class="p">):</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">target_position</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">robot_position</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">target_position</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">robot_position</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">dx</span><span class="o">+</span><span class="n">dy</span><span class="o">*</span><span class="n">dy</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">distance</span></div>
+
+
+<div class="viewcode-block" id="compute_angle"><a class="viewcode-back" href="../../../api/robot_skills/util/transformations/index.html#robot_skills.util.transformations.compute_angle">[docs]</a><span class="k">def</span> <span class="nf">compute_angle</span><span class="p">(</span><span class="n">target_position</span><span class="p">,</span> <span class="n">robot_position</span><span class="p">):</span>
+
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">target_position</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">robot_position</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">target_position</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">robot_position</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span><span class="n">dx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">angle</span></div>
+
+
+<div class="viewcode-block" id="transform_into_non_conflicting_position"><a class="viewcode-back" href="../../../api/robot_skills/util/transformations/index.html#robot_skills.util.transformations.transform_into_non_conflicting_position">[docs]</a><span class="k">def</span> <span class="nf">transform_into_non_conflicting_position</span><span class="p">(</span><span class="n">target_position</span><span class="p">,</span> <span class="n">robot_position</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.6</span><span class="p">):</span>
+
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">robot_position</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">target_position</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">robot_position</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">target_position</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">dx</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">dy</span><span class="p">)</span>
+
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">*</span> <span class="p">(</span><span class="n">dx</span> <span class="o">/</span> <span class="n">distance</span><span class="p">)</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">*</span> <span class="p">(</span><span class="n">dy</span> <span class="o">/</span> <span class="n">distance</span><span class="p">)</span>
+
+        <span class="n">target_position</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">dx</span>
+        <span class="n">target_position</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="n">dy</span>
+
+        <span class="k">return</span> <span class="n">target_position</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        angle = atan2(dy,dx)</span>
+
+<span class="sd">        if distance &gt; radius:</span>
+<span class="sd">            target_position.x = robot_position.x + cos(angle)*(distance - radius)</span>
+<span class="sd">            target_position.y = robot_position.y + sin(angle)*(distance - radius)</span>
+
+<span class="sd">        return target_position</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="tf_transform"><a class="viewcode-back" href="../../../api/robot_skills/util/transformations/index.html#robot_skills.util.transformations.tf_transform">[docs]</a><span class="k">def</span> <span class="nf">tf_transform</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">inputframe</span><span class="p">,</span> <span class="n">outputframe</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">):</span>
+    <span class="c1"># Should probably be called transform_point</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Point</span><span class="p">):</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">coordinates</span><span class="p">)</span>
+        <span class="n">ps</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">inputframe</span>
+        <span class="n">ps</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">):</span>
+        <span class="c1">#If coordinates is already a PointStamped, dont make one.</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="n">coordinates</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;coordinates is neither a Point nor a PointStamped? Trying my best, but might crash or work due to duck-typing&quot;</span><span class="p">)</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="n">coordinates</span><span class="p">)</span>
+        <span class="n">ps</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">inputframe</span>
+        <span class="n">ps</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="p">()</span>
+
+    <span class="n">output_coordinates</span> <span class="o">=</span> <span class="n">tf_listener</span><span class="o">.</span><span class="n">transformPoint</span><span class="p">(</span><span class="n">outputframe</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_coordinates</span><span class="o">.</span><span class="n">point</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

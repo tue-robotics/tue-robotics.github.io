@@ -1,0 +1,863 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>conversation_engine.engine &mdash; conversation_engine 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> conversation_engine
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">conversation_engine</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>conversation_engine.engine</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for conversation_engine.engine</h1><div class="highlight"><pre>
+<span></span><span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">from</span> <span class="nn">std_msgs.msg</span> <span class="k">import</span> <span class="n">String</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">action_server</span> <span class="k">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">TaskOutcome</span>
+<span class="kn">from</span> <span class="nn">grammar_parser</span> <span class="k">import</span> <span class="n">cfgparser</span>
+
+
+<div class="viewcode-block" id="sanitize_text"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.sanitize_text">[docs]</a><span class="k">def</span> <span class="nf">sanitize_text</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+    <span class="n">stripped</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">txt</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;&quot;&quot;!.,:&#39;?`~@#$%^&amp;*()+=-/\&gt;&lt;/*-+&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">lowered</span> <span class="o">=</span> <span class="n">stripped</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dining table&quot;</span><span class="p">:</span> <span class="s2">&quot;dining_table&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;dinner table&quot;</span><span class="p">:</span> <span class="s2">&quot;dinner_table&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;display case&quot;</span><span class="p">:</span> <span class="s2">&quot;display_case&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;storage shelf&quot;</span><span class="p">:</span> <span class="s2">&quot;storage_shelf&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;couch table&quot;</span><span class="p">:</span> <span class="s2">&quot;couch_table&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;tv table&quot;</span><span class="p">:</span> <span class="s2">&quot;tv_table&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;kitchen table&quot;</span><span class="p">:</span> <span class="s2">&quot;kitchen_table&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;kitchen cabinet&quot;</span><span class="p">:</span> <span class="s2">&quot;kitchen_cabinet&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;side table&quot;</span><span class="p">:</span> <span class="s2">&quot;side_table&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;living room&quot;</span><span class="p">:</span> <span class="s2">&quot;living_room&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;dining room&quot;</span><span class="p">:</span> <span class="s2">&quot;dining_room&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;storage table&quot;</span><span class="p">:</span> <span class="s2">&quot;storage_table&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;end table&quot;</span><span class="p">:</span> <span class="s2">&quot;end_table&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;chocolate drink&quot;</span><span class="p">:</span> <span class="s2">&quot;chocolate_drink&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;grape juice&quot;</span><span class="p">:</span> <span class="s2">&quot;grape_juice&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;orange juice&quot;</span><span class="p">:</span> <span class="s2">&quot;orange_juice&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;potato chips&quot;</span><span class="p">:</span> <span class="s2">&quot;potato_chips&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;cleaning stuff&quot;</span><span class="p">:</span> <span class="s2">&quot;cleaning_stuff&quot;</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="n">lowered</span> <span class="o">=</span> <span class="n">lowered</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">lowered</span></div>
+
+
+<div class="viewcode-block" id="describe_current_subtask"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.describe_current_subtask">[docs]</a><span class="k">def</span> <span class="nf">describe_current_subtask</span><span class="p">(</span><span class="n">subtask</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a &#39;natural&#39; language description of subtask name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">to_verb</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;AnswerQuestion&quot;</span><span class="p">:</span> <span class="s2">&quot;answering a question&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;ArmGoal&quot;</span><span class="p">:</span> <span class="s2">&quot;moving my arm&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;DemoPresentation&quot;</span><span class="p">:</span> <span class="s2">&quot;giving a demo&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;Find&quot;</span><span class="p">:</span> <span class="s2">&quot;finding&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;Follow&quot;</span><span class="p">:</span> <span class="s2">&quot;following&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;Guide&quot;</span><span class="p">:</span> <span class="s2">&quot;guiding&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;GripperGoal&quot;</span><span class="p">:</span> <span class="s2">&quot;moving my gripper&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;HandOver&quot;</span><span class="p">:</span> <span class="s2">&quot;handing something over&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;Inspect&quot;</span><span class="p">:</span> <span class="s2">&quot;inspecting&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;LookAt&quot;</span><span class="p">:</span> <span class="s2">&quot;looking&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;NavigateTo&quot;</span><span class="p">:</span> <span class="s2">&quot;navigating&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;PickUp&quot;</span><span class="p">:</span> <span class="s2">&quot;picking up&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;Place&quot;</span><span class="p">:</span> <span class="s2">&quot;placing&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;ResetWM&quot;</span><span class="p">:</span> <span class="s2">&quot;resetting my world model&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;Say&quot;</span><span class="p">:</span> <span class="s2">&quot;speaking&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;SendPicture&quot;</span><span class="p">:</span> <span class="s2">&quot;sending a picture&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;TurnTowardSound&quot;</span><span class="p">:</span> <span class="s2">&quot;turning towards a sound&quot;</span><span class="p">}</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">to_verb</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">subtask</span><span class="p">,</span> <span class="n">subtask</span> <span class="o">+</span> <span class="s2">&quot;ing&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;I&#39;m busy&quot;</span><span class="p">,</span> <span class="s2">&quot;I&#39;m&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">description</span>
+
+    <span class="k">return</span> <span class="n">description</span></div>
+
+
+<div class="viewcode-block" id="ConversationState"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationState">[docs]</a><span class="k">class</span> <span class="nc">ConversationState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encapsulate all conversation state.</span>
+<span class="sd">    This makes it impossible to transition to a next state without setting the correct fields</span>
+
+<span class="sd">    When a new conversation is started, the ConversationState is IDLE.</span>
+<span class="sd">    Then the user can initiate the conversation by supplying text, which then initializes the semantics of an action.</span>
+<span class="sd">    The ConversationEngine then sends this to the action_server and we wait for the robot to execute the action or</span>
+<span class="sd">    think about why the action cannot be performed yet.</span>
+<span class="sd">    When calling the action_server, we must indicate that we are waiting for the robot via the the wait_for_robot()</span>
+<span class="sd">    method.</span>
+
+<span class="sd">    In the case of missing info, the robot misses some field from the semantics.</span>
+<span class="sd">    The ConversationEngine figures out which subtree of the grammar to use to parse the user&#39;s eventual input and</span>
+<span class="sd">    passes this in the wait_for_user() method.</span>
+<span class="sd">    The missing field can, for example, be a location to do something with.</span>
+<span class="sd">    This means the grammar should not try to parse the reply to come as a type of drink or as a verb, for example, but</span>
+<span class="sd">    as a location.</span>
+<span class="sd">    What rule to parse text with is stored in .target</span>
+
+<span class="sd">    The ConversationEngine then says something to the user and waits for the user to reply.</span>
+<span class="sd">    When this is received, the ConversationEngine reads the grammar target from the ConversationState before it parses</span>
+<span class="sd">    the replied text for additional info.</span>
+
+<span class="sd">    The current semantics are updated using update_semantics() and the action_server is called again with the now</span>
+<span class="sd">    updated semantics.</span>
+<span class="sd">    When this happens, the ConversationEngine must call wait_for_robot() again.</span>
+
+<span class="sd">    The user can also ask to abort() the conversation to stop.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">IDLE</span> <span class="o">=</span> <span class="s2">&quot;IDLE&quot;</span>
+    <span class="n">WAIT_FOR_USER</span> <span class="o">=</span> <span class="s2">&quot;WAIT_FOR_USER&quot;</span>  <span class="c1"># Waiting for info from user</span>
+    <span class="n">WAIT_FOR_ROBOT</span> <span class="o">=</span> <span class="s2">&quot;WAIT_FOR_ROBOT&quot;</span>  <span class="c1"># Waiting for the action server to report success/aborted (missing info or fail)</span>
+    <span class="n">ABORTING</span> <span class="o">=</span> <span class="s2">&quot;ABORTING&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;New ConversationState&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">IDLE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_missing_field</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_semantics</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Part of the conversation we&#39;re in</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subtree of the grammar tree to use when parsing text</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">missing_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        What field is missing in the current_semantics before the action_server can execute it</span>
+<span class="sd">        The user must provide useful information to fill this field.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_field</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">current_semantics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A dict containing an (incomplete) action description for the action_server</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_semantics</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConversationState.wait_for_user"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationState.wait_for_user">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">missing_field</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Indicate that the ConversationEngine is waiting for the user&#39;s input.</span>
+
+<span class="sd">        This is to wait for additional info, that must be parsed according to target in order to fill some missing field</span>
+
+<span class="sd">        :param target: name of the grammar rule to parse the user&#39;s reply with</span>
+<span class="sd">        :type target: str</span>
+<span class="sd">        :param missing_field: a &#39;path&#39; indicating where to insert the additional info from the user into the</span>
+<span class="sd">        current_semantics dictionary</span>
+<span class="sd">        :type missing_field: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;ConversationState: </span><span class="si">{old}</span><span class="s2"> -&gt; </span><span class="si">{new}</span><span class="s2">. Target=&#39;</span><span class="si">{t}</span><span class="s2">&#39;, missing_field=&#39;</span><span class="si">{mf}</span><span class="s2">&#39;&quot;</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">ConversationState</span><span class="o">.</span><span class="n">WAIT_FOR_USER</span><span class="p">,</span>
+                              <span class="n">t</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">mf</span><span class="o">=</span><span class="n">missing_field</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">WAIT_FOR_USER</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_missing_field</span> <span class="o">=</span> <span class="n">missing_field</span></div>
+
+<div class="viewcode-block" id="ConversationState.wait_for_robot"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationState.wait_for_robot">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_robot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Indicate that the ConversationEngine is waiting for the robot to either finish (planning) the action</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;ConversationState: </span><span class="si">{old}</span><span class="s2"> -&gt; </span><span class="si">{new}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">ConversationState</span><span class="o">.</span><span class="n">WAIT_FOR_ROBOT</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">WAIT_FOR_ROBOT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_missing_field</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ConversationState.aborting"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationState.aborting">[docs]</a>    <span class="k">def</span> <span class="nf">aborting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">timeout_callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the state to ABORTING. If the action server hasn&#39;t aborted the action after the given timeout,</span>
+<span class="sd">        call the callback to deal with that</span>
+
+<span class="sd">        :param timeout: duration to wait before killing</span>
+<span class="sd">        :type timeout: rospy.Duration</span>
+<span class="sd">        :param timeout_callback: callback is called when the aborting takes too long</span>
+<span class="sd">        :type timeout_callback: (event: rospy.TimerEvent)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;ConversationState: </span><span class="si">{old}</span><span class="s2"> -&gt; </span><span class="si">{new}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">ConversationState</span><span class="o">.</span><span class="n">ABORTING</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">ABORTING</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span>
+                    <span class="n">timeout_callback</span><span class="p">,</span>
+                    <span class="n">oneshot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationState.initialize_semantics"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationState.initialize_semantics">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_semantics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semantics</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize an action description for the action_server. This gets updated as the conversation progresses, via</span>
+<span class="sd">        update_semantics()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">semantics</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="s2">&quot;the action description in &#39;semantics&#39; must be a dictionary, with an &#39;action&#39; key&quot;</span>
+        <span class="k">assert</span> <span class="s1">&#39;actions&#39;</span> <span class="ow">in</span> <span class="n">semantics</span><span class="p">,</span> <span class="s2">&quot;the action description in &#39;semantics&#39; is missing the &#39;actions&#39; key&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_semantics</span> <span class="o">=</span> <span class="n">semantics</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Initialized semantics: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_semantics</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ConversationState.update_semantics"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationState.update_semantics">[docs]</a>    <span class="k">def</span> <span class="nf">update_semantics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semantics</span><span class="p">,</span> <span class="n">missing_field_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the current action description for the action_server</span>
+
+<span class="sd">        The semantics will be filled into current_semantics at the missing_field_path</span>
+
+<span class="sd">        :param semantics: dictionary with additional info</span>
+<span class="sd">        :type semantics: dict</span>
+<span class="sd">        :param missing_field_path: a &#39;path&#39; indicating where to insert the additional info from the user into the</span>
+<span class="sd">        current_semantics dictionary</span>
+<span class="sd">        :type missing_field_path: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># I assume semantics is the exact information requested and supposed to go in place of the field indicated by</span>
+        <span class="c1"># the missing information path</span>
+
+        <span class="c1"># fill semantics in existing semantics</span>
+        <span class="n">path_list</span> <span class="o">=</span> <span class="n">missing_field_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">action_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">path_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;actions[&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">))</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">path_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">elem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_semantics</span><span class="p">[</span><span class="s1">&#39;actions&#39;</span><span class="p">][</span><span class="n">action_index</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">elem</span> <span class="o">=</span> <span class="n">elem</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">elem</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">semantics</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Updated semantics: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_semantics</span><span class="p">))</span>
+        <span class="k">return</span></div></div>
+
+
+<div class="viewcode-block" id="ConversationEngine"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine">[docs]</a><span class="k">class</span> <span class="nc">ConversationEngine</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ConversationEngine provides the bridge between the user and the action_server.</span>
+
+<span class="sd">    It accepts text and parses it to a &#39;semantics&#39; dictionary that the action_server can interpret.</span>
+
+<span class="sd">    The action_server then tries to formulate a plan based on the semantics and either:</span>
+<span class="sd">    - starts execution and succeeds or fails</span>
+<span class="sd">    - indicates it is missing information.</span>
+<span class="sd">    In the case of missing information, the action_server indicates what field of information it is missing.</span>
+
+<span class="sd">    Based on that, the ConversationEngine must converse with the user to obtain more information.</span>
+<span class="sd">    There is some logic to determine with grammar rules/target to use to parse the additional information with.</span>
+
+<span class="sd">    Once the information is obtained, the semantics of the current conversation state are updated</span>
+<span class="sd">    and sent to the action_server again, in hope the semantics is now complete enough for execution.</span>
+
+<span class="sd">    ConversationEngine is set up as a base class, that leaves the implementation of talking with the user to subclasses.</span>
+<span class="sd">    Implement</span>
+<span class="sd">    - _say_to_user to say something to the user</span>
+<span class="sd">    - user_to_robot_text to accept text from the user</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_client</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">command_target</span><span class="p">,</span> <span class="n">give_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a new ConversationEngine for the given robot, using some grammar with a command_target.</span>
+<span class="sd">        Indicate whether to give examples of thins to say to the user via give_examples</span>
+
+<span class="sd">        :param action_client: interface to the action server</span>
+<span class="sd">        :type action_client: Client</span>
+<span class="sd">        :param grammar: string to initialize a CFGParser with see https://github.com/tue-robotics/grammar_parser/</span>
+<span class="sd">            The grammar must result in an action description dictionary, like</span>
+<span class="sd">            {&#39;actions&#39;: [{&#39;action&#39;: &#39;hand-over&#39;,</span>
+<span class="sd">                          &#39;object&#39;: {&#39;type&#39;: &#39;drink&#39;},</span>
+<span class="sd">                          &#39;target-location&#39;: {&#39;type&#39;: &#39;person&#39;, &#39;id&#39;: &#39;operator&#39;}}]}</span>
+<span class="sd">        :type grammar: str</span>
+<span class="sd">        :param command_target: the root of the grammar&#39;s parse tree</span>
+<span class="sd">        :type command_target: str</span>
+<span class="sd">        :param give_examples: Include examples when talking with the user.</span>
+<span class="sd">            These are randomly generated from the active part of the grammar</span>
+<span class="sd">        :type give_examples: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConversationState</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span> <span class="o">=</span> <span class="n">action_client</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span> <span class="o">=</span> <span class="n">cfgparser</span><span class="o">.</span><span class="n">CFGParser</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">grammar</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_grammar</span> <span class="o">=</span> <span class="n">grammar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_command_target</span> <span class="o">=</span> <span class="n">command_target</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">give_examples</span> <span class="o">=</span> <span class="n">give_examples</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_latest_feedback</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Started conversation engine&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConversationEngine.user_to_robot_text"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine.user_to_robot_text">[docs]</a>    <span class="k">def</span> <span class="nf">user_to_robot_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accept raw text from the user.</span>
+
+<span class="sd">        :param text: what the user typed or said</span>
+<span class="sd">        :type text str&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_user_to_robot</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._handle_user_to_robot"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._handle_user_to_robot">[docs]</a>    <span class="k">def</span> <span class="nf">_handle_user_to_robot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start processing text from the user. This handles sanitation of the strings and</span>
+<span class="sd">        any special commands that affect the conversation flow rather than the action (like aborting etc)</span>
+
+<span class="sd">        :param text: what the user typed or said</span>
+<span class="sd">        :type text str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_handle_user_to_robot(&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="n">sanitize_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_special_commands</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">IDLE</span><span class="p">:</span>
+            <span class="c1"># parse command and send_goal</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_command</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">WAIT_FOR_USER</span><span class="p">:</span>
+            <span class="c1"># Update semantics and send updated goal</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_additional_info</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">WAIT_FOR_ROBOT</span><span class="p">:</span>
+            <span class="c1"># User must wait for robot/action server to reply, cannot handle user input now</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_user_while_waiting_for_robot</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">ABORTING</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_user_while_aborting</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._handle_special_commands"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._handle_special_commands">[docs]</a>    <span class="k">def</span> <span class="nf">_handle_special_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check for special commands that should not be parsed further</span>
+
+<span class="sd">        :return: indicating if the text is a special command</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">stop_words</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;stop&quot;</span><span class="p">,</span> <span class="s2">&quot;cancel&quot;</span><span class="p">,</span> <span class="s2">&quot;quit&quot;</span><span class="p">,</span> <span class="s2">&quot;reset&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">stop_words</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_handle_special_commands(&#39;</span><span class="si">{}</span><span class="s2">&#39;):&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">IDLE</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;I&#39;m not busy&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;I&#39;m not doing anything&quot;</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_say_ready_for_command</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">WAIT_FOR_ROBOT</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">WAIT_FOR_USER</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;I&#39;m waiting for you, there&#39;s nothing to stop&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;I can&#39;t stop, you stop!&quot;</span><span class="p">]))</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_start_new_conversation</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">ConversationState</span><span class="o">.</span><span class="n">ABORTING</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;I&#39;m already stopping, gimme some time!&quot;</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">kill_words</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sudo kill&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">kill_words</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_handle_special_commands(&#39;</span><span class="si">{}</span><span class="s2">&#39;): kill action server&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">cancel_all_async</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;Woah, sorry dude for not stopping fast enough!&quot;</span><span class="p">]))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;rosnode kill /state_machine&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;Killed the action_server, pray for resurrection&quot;</span><span class="p">]))</span>
+
+            <span class="c1"># This is assuming the state machine is back online when a command is received</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_new_conversation</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._stop"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._stop">[docs]</a>    <span class="k">def</span> <span class="nf">_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_stop(): Cancelling goals, resetting state&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">notify_user</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;State machine takes a long time to abort, you can kill it with &#39;sudo kill&#39;&quot;</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">aborting</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">notify_user</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">cancel_all_async</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_latest_feedback</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;Stop! Hammer time&quot;</span><span class="p">,</span>
+                                         <span class="s2">&quot;Oops, sorry&quot;</span><span class="p">,</span>
+                                         <span class="s2">&quot;OK, I&#39;ll stop&quot;</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._start_new_conversation"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._start_new_conversation">[docs]</a>    <span class="k">def</span> <span class="nf">_start_new_conversation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">ConversationState</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_latest_feedback</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_say_ready_for_command</span><span class="p">()</span>  <span class="c1"># This is assuming the state machine is back online when a command is received</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_wait_for_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grammar</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_target</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._handle_command"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._handle_command">[docs]</a>    <span class="k">def</span> <span class="nf">_handle_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse text into goal semantics, send to action_server</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_handle_command(&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+
+        <span class="n">words</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+        <span class="c1"># The command the user gave is being parsed towards the command_target in the grammar</span>
+        <span class="c1"># The parse returns a task description dictionary</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">semantics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">parse_raw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_command_target</span><span class="p">,</span> <span class="n">words</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">initialize_semantics</span><span class="p">(</span><span class="n">semantics</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">send_async_task</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">current_semantics</span><span class="p">),</span>
+                                                <span class="n">done_cb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_done_cb</span><span class="p">,</span>
+                                                <span class="n">feedback_cb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_feedback_cb</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Task sent: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">current_semantics</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">wait_for_robot</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">cfgparser</span><span class="o">.</span><span class="n">GrammarError</span><span class="p">,</span> <span class="n">cfgparser</span><span class="o">.</span><span class="n">ParseError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Parsing &#39;</span><span class="si">{}</span><span class="s2">&#39; failed: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_invalid_command</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;sandwich&#39;</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+                <span class="n">result_sentence</span> <span class="o">=</span> <span class="s2">&quot;Try &#39;sudo </span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result_sentence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;You&#39;re not making sense.&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;Don&#39;t give me this shit.&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;Tell me something useful.&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;This is useless input. Thanks, but no thanks.&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;Make sense to me, fool!&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;Talk to the gripper, the PC is too good for you.&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;Something went terribly wrong.&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;Would your mother in law understand?&quot;</span><span class="p">,</span>
+                                                 <span class="s2">&quot;Try &#39;sudo </span><span class="si">{}</span><span class="s2">&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">result_sentence</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_new_conversation</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._handle_additional_info"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._handle_additional_info">[docs]</a>    <span class="k">def</span> <span class="nf">_handle_additional_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse text into additional info according to grammar &amp; target received from action_server result</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_handle_additional_info(&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+
+        <span class="n">words</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">additional_semantics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">parse_raw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">words</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">cfgparser</span><span class="o">.</span><span class="n">GrammarError</span><span class="p">,</span> <span class="n">cfgparser</span><span class="o">.</span><span class="n">ParseError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Parsing &#39;</span><span class="si">{}</span><span class="s2">&#39; failed: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="n">sentence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;Give me something useful&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">give_examples</span><span class="p">:</span>
+                <span class="n">example</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">get_random_sentence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+                <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot;, like &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">example</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">wait_for_user</span><span class="p">(</span><span class="n">missing_field</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">missing_field</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;additional_semantics: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">additional_semantics</span><span class="p">))</span>
+        <span class="n">sem_str</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">additional_semantics</span><span class="p">)</span>
+        <span class="n">sem_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">sem_str</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;parsed: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sem_dict</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Additional_semantics: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">additional_semantics</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">update_semantics</span><span class="p">(</span><span class="n">sem_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">missing_field</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;OK, that helps!&quot;</span><span class="p">,</span>
+                                             <span class="s2">&quot;Allright, thanks!&quot;</span><span class="p">]))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">send_async_task</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">current_semantics</span><span class="p">),</span>
+                                                <span class="n">done_cb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_done_cb</span><span class="p">,</span>
+                                                <span class="n">feedback_cb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_feedback_cb</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Updated task sent: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">current_semantics</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">wait_for_robot</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not update semantics: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;Something went terribly wrong, can we try a new command?&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;I didn&#39;t understand that, what do you want me to do?&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;What would you like me to do? Could you please rephrase you command?&quot;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._handle_user_while_waiting_for_robot"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._handle_user_while_waiting_for_robot">[docs]</a>    <span class="k">def</span> <span class="nf">_handle_user_while_waiting_for_robot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Talk with the user while the robot is busy doing stuff</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sentence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;I&#39;m busy, give me a sec.&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Hold on, &quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_latest_feedback</span><span class="p">:</span>
+            <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">describe_current_subtask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_latest_feedback</span><span class="o">.</span><span class="n">current_subtask</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._handle_user_while_aborting"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._handle_user_while_aborting">[docs]</a>    <span class="k">def</span> <span class="nf">_handle_user_while_aborting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Talk with the user while the robot is busy aborting the action</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sentence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;Yes, I&#39;ll stop &quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;I&#39;m quitting &quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_latest_feedback</span><span class="p">:</span>
+            <span class="n">sentence</span> <span class="o">+=</span> <span class="n">describe_current_subtask</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_latest_feedback</span><span class="o">.</span><span class="n">current_subtask</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._say_ready_for_command"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._say_ready_for_command">[docs]</a>    <span class="k">def</span> <span class="nf">_say_ready_for_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sentence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;I&#39;m ready for a command.&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Your wish is my command.&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Do you have an assignment for me?&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Do you have a command for me?&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Please tell me what to do.&quot;</span><span class="p">,</span>
+                                  <span class="s2">&quot;Anything to do boss?&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">give_examples</span><span class="p">:</span>
+            <span class="n">example</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">get_random_sentence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_command_target</span><span class="p">)</span>
+
+            <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot; An example command is: &#39;</span><span class="si">{}</span><span class="s2">&#39;. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">example</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._done_cb"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._done_cb">[docs]</a>    <span class="k">def</span> <span class="nf">_done_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_outcome</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The action_server&#39;s action is done, which can mean the action is finished (successfully or failed) or</span>
+<span class="sd">        needs additional info. This last option is handled by _on_request_missing_information and</span>
+<span class="sd">        the other cases by a starting a new conversation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_done_cb: Task done -&gt; </span><span class="si">{to}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">to</span><span class="o">=</span><span class="n">task_outcome</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">task_outcome</span><span class="p">,</span> <span class="n">TaskOutcome</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_latest_feedback</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">task_outcome</span><span class="o">.</span><span class="n">succeeded</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Action succeeded&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on_task_successful</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_outcome</span><span class="o">.</span><span class="n">messages</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_new_conversation</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">task_outcome</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">TaskOutcome</span><span class="o">.</span><span class="n">RESULT_MISSING_INFORMATION</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Action needs more info from user&quot;</span><span class="p">)</span>
+
+            <span class="n">sentence</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_outcome</span><span class="o">.</span><span class="n">messages</span><span class="p">)</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_grammar_target</span><span class="p">(</span><span class="n">task_outcome</span><span class="o">.</span><span class="n">missing_field</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">wait_for_user</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+                                      <span class="n">missing_field</span><span class="o">=</span><span class="n">task_outcome</span><span class="o">.</span><span class="n">missing_field</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on_request_missing_information</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grammar</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">task_outcome</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">TaskOutcome</span><span class="o">.</span><span class="n">RESULT_TASK_EXECUTION_FAILED</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Action execution failed&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on_task_outcome_failed</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_outcome</span><span class="o">.</span><span class="n">messages</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_new_conversation</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">task_outcome</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">TaskOutcome</span><span class="o">.</span><span class="n">RESULT_UNKNOWN</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Action result: unknown&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on_task_outcome_unknown</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_outcome</span><span class="o">.</span><span class="n">messages</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_new_conversation</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Action result: other&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">task_outcome</span><span class="o">.</span><span class="n">messages</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_new_conversation</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._feedback_cb"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._feedback_cb">[docs]</a>    <span class="k">def</span> <span class="nf">_feedback_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_latest_feedback</span> <span class="o">=</span> <span class="n">feedback</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">feedback</span><span class="o">.</span><span class="n">current_subtask</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._get_grammar_target"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._get_grammar_target">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_grammar_target</span><span class="p">(</span><span class="n">missing_field_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine which grammar target to use when a particular field of info is missing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">deepest_field_name</span> <span class="o">=</span> <span class="n">missing_field_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">grammar_target</span> <span class="o">=</span> <span class="s2">&quot;T&quot;</span>
+
+        <span class="k">if</span> <span class="s1">&#39;location&#39;</span> <span class="ow">in</span> <span class="n">deepest_field_name</span><span class="p">:</span>
+            <span class="n">grammar_target</span> <span class="o">=</span> <span class="s1">&#39;ROOM_OR_LOCATION&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;entity&#39;</span> <span class="ow">in</span> <span class="n">deepest_field_name</span><span class="p">:</span>
+            <span class="n">grammar_target</span> <span class="o">=</span> <span class="s1">&#39;ROOM_OR_LOCATION&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;target&#39;</span> <span class="ow">in</span> <span class="n">deepest_field_name</span><span class="p">:</span>
+            <span class="n">grammar_target</span> <span class="o">=</span> <span class="s1">&#39;NAMED_PERSON&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;sentence&#39;</span> <span class="ow">in</span> <span class="n">deepest_field_name</span><span class="p">:</span>
+            <span class="n">grammar_target</span> <span class="o">=</span> <span class="s1">&#39;SAY_SENTENCE&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">deepest_field_name</span><span class="p">:</span>
+            <span class="n">grammar_target</span> <span class="o">=</span> <span class="s1">&#39;NAMED_OBJECT&#39;</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Missing information &#39;</span><span class="si">{}</span><span class="s2">&#39; must match &#39;</span><span class="si">{}</span><span class="s2">&#39; in grammar&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">missing_field_path</span><span class="p">,</span> <span class="n">grammar_target</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">grammar_target</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._log_invalid_command"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._log_invalid_command">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_log_invalid_command</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;invalid_commands.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dump</span><span class="p">:</span>
+            <span class="n">dump</span><span class="o">.</span><span class="n">writelines</span><span class="p">([</span><span class="n">text</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._say_to_user"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._say_to_user">[docs]</a>    <span class="k">def</span> <span class="nf">_say_to_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;How to say something to the user must be implemented in the subclass. &quot;</span>
+            <span class="s2">&quot;Signature: ```_say_to_user(message: str)```&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._on_task_successful"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._on_task_successful">[docs]</a>    <span class="k">def</span> <span class="nf">_on_task_successful</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._on_request_missing_information"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._on_request_missing_information">[docs]</a>    <span class="k">def</span> <span class="nf">_on_request_missing_information</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_request_missing_information(&#39;</span><span class="si">{}</span><span class="s2">&#39;, &#39;</span><span class="si">{}</span><span class="s2">...&#39;, &#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">grammar</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">target</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">give_examples</span><span class="p">:</span>
+            <span class="n">example</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">get_random_sentence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+            <span class="n">description</span> <span class="o">+=</span> <span class="s2">&quot; For example: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">example</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">description</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._on_task_outcome_failed"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._on_task_outcome_failed">[docs]</a>    <span class="k">def</span> <span class="nf">_on_task_outcome_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._on_task_outcome_unknown"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._on_task_outcome_unknown">[docs]</a>    <span class="k">def</span> <span class="nf">_on_task_outcome_unknown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_say_to_user</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngine._start_wait_for_command"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine._start_wait_for_command">[docs]</a>    <span class="k">def</span> <span class="nf">_start_wait_for_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ConversationEngine.is_text_valid_input"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngine.is_text_valid_input">[docs]</a>    <span class="k">def</span> <span class="nf">is_text_valid_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the provided text input is valid by parsing it</span>
+
+<span class="sd">        :param text: input text</span>
+<span class="sd">        :type text: str</span>
+<span class="sd">        :return: whether the parsing succeeded or failed</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sanitized</span> <span class="o">=</span> <span class="n">sanitize_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">sanitized</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">target</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">target</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_target</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parser</span><span class="o">.</span><span class="n">parse_raw</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">words</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">cfgparser</span><span class="o">.</span><span class="n">GrammarError</span><span class="p">,</span> <span class="n">cfgparser</span><span class="o">.</span><span class="n">ParseError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Text input &#39;</span><span class="si">{}</span><span class="s2">&#39; is not valid: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="ConversationEngineUsingTopic"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngineUsingTopic">[docs]</a><span class="k">class</span> <span class="nc">ConversationEngineUsingTopic</span><span class="p">(</span><span class="n">ConversationEngine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">command_target</span><span class="p">):</span>
+
+        <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">robot_name</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">ConversationEngineUsingTopic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">command_target</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_to_robot_sub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;user_to_robot&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_to_robot_msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot_to_user_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;robot_to_user&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConversationEngineUsingTopic.user_to_robot_msg"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngineUsingTopic.user_to_robot_msg">[docs]</a>    <span class="k">def</span> <span class="nf">user_to_robot_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_user_to_robot</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConversationEngineUsingTopic._say_to_user"><a class="viewcode-back" href="../../api/conversation_engine/engine/index.html#conversation_engine.engine.ConversationEngineUsingTopic._say_to_user">[docs]</a>    <span class="k">def</span> <span class="nf">_say_to_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot_to_user_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

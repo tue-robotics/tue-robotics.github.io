@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.navigation.find &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.navigation.find</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.navigation.find</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;rokus&#39;</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.classification_result</span> <span class="k">import</span> <span class="n">ClassificationResult</span>
+<span class="kn">from</span> <span class="nn">..world_model</span> <span class="k">import</span> <span class="n">Inspect</span>
+<span class="kn">from</span> <span class="nn">..utility</span> <span class="k">import</span> <span class="n">WaitTime</span>
+<span class="kn">from</span> <span class="nn">..util.designators</span> <span class="k">import</span> <span class="n">VariableDesignator</span>
+
+
+<div class="viewcode-block" id="entities_from_description"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/find/index.html#robot_smach_states.navigation.find.entities_from_description">[docs]</a><span class="k">def</span> <span class="nf">entities_from_description</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">knowledge</span><span class="p">,</span> <span class="n">entity_description</span><span class="p">,</span> <span class="n">list_of_entity_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Query entities and return those that satisfy the given description</span>
+
+<span class="sd">    @param robot: The robot object</span>
+<span class="sd">    @param knowledge: Knowledge object</span>
+<span class="sd">    @param entity_description: A dict that contains a &#39;type&#39; field</span>
+<span class="sd">    @param list_of_entity_ids: A list of entity ids to choose from (for example a result of a segment)</span>
+
+<span class="sd">    @return: entities</span>
+<span class="sd">        entities  - list of entities that fulfill the description</span>
+<span class="sd">                    (each element has type Entity)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">list_of_entity_ids</span> <span class="o">=</span> <span class="n">list_of_entity_ids</span> <span class="k">if</span> <span class="n">list_of_entity_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">list_of_entity_ids</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="s2">&quot;Input should be a list&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entity_description</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="s2">&quot;Entity description should be a dict&quot;</span>
+    <span class="k">assert</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">entity_description</span> <span class="ow">or</span> <span class="s1">&#39;category&#39;</span> <span class="ow">in</span> <span class="n">entity_description</span>
+
+    <span class="c1"># Get all entities from the world model</span>
+    <span class="n">entities</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entities</span><span class="p">()</span>
+
+    <span class="c1"># Select entities based on the description</span>
+    <span class="k">if</span> <span class="n">entity_description</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">):</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">entity_description</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span>
+    <span class="k">elif</span> <span class="n">entity_description</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">):</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">knowledge</span><span class="o">.</span><span class="n">get_object_category</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="o">==</span> <span class="n">entity_description</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="c1"># If we have a list of entities to choose from, select based on that list</span>
+    <span class="k">if</span> <span class="n">list_of_entity_ids</span><span class="p">:</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">list_of_entity_ids</span><span class="p">]</span>
+
+    <span class="c1"># Sort entities by distance</span>
+    <span class="n">robot_location</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span>
+    <span class="n">robot_pos</span> <span class="o">=</span> <span class="n">robot_location</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span>
+    <span class="n">entities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">entity</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">robot_pos</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">entities</span></div>
+
+
+<div class="viewcode-block" id="CheckIfDescribedEntityAvailable"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/find/index.html#robot_smach_states.navigation.find.CheckIfDescribedEntityAvailable">[docs]</a><span class="k">class</span> <span class="nc">CheckIfDescribedEntityAvailable</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if a described entity is in the world model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">robot</span><span class="p">,</span>
+                 <span class="n">knowledge</span><span class="p">,</span>
+                 <span class="n">description_designator</span><span class="p">,</span>
+                 <span class="n">found_entity_designator</span><span class="p">,</span>
+                 <span class="n">candidate_entities_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span> <span class="o">=</span> <span class="n">knowledge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description_designator</span> <span class="o">=</span> <span class="n">description_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span> <span class="o">=</span> <span class="n">found_entity_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_candidate_entities_designator</span> <span class="o">=</span> <span class="n">candidate_entities_designator</span>
+
+<div class="viewcode-block" id="CheckIfDescribedEntityAvailable.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/find/index.html#robot_smach_states.navigation.find.CheckIfDescribedEntityAvailable.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">ids_to_select_from</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_candidate_entities_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()]</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s1">&#39;list of entities to select from: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ids_to_select_from</span><span class="p">))</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s1">&#39;description used for selection: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">description</span><span class="p">))</span>
+
+        <span class="n">satisfying_entities</span> <span class="o">=</span> <span class="n">entities_from_description</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span>
+                                                        <span class="n">knowledge</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="p">,</span>
+                                                        <span class="n">entity_description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+                                                        <span class="n">list_of_entity_ids</span><span class="o">=</span><span class="n">ids_to_select_from</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s1">&#39;entities that satisfy the selection criteria: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">satisfying_entities</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">satisfying_entities</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_found_entity_designator</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">satisfying_entities</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;failed&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="Find"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/find/index.html#robot_smach_states.navigation.find.Find">[docs]</a><span class="k">class</span> <span class="nc">Find</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find an entity based on a description. The description designator should</span>
+<span class="sd">    have resolve type dict and it should contain at least a &#39;type&#39; field</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">knowledge</span><span class="p">,</span> <span class="n">source_entity_designator</span><span class="p">,</span> <span class="n">description_designator</span><span class="p">,</span> <span class="n">found_entity_designator</span><span class="p">,</span>
+                 <span class="n">area_name</span><span class="o">=</span><span class="s2">&quot;on_top_of&quot;</span><span class="p">,</span> <span class="n">navigation_area</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param robot: Robot object</span>
+<span class="sd">        :param knowledge: Robocup knowledge object. Used to find an object by its properties</span>
+<span class="sd">        :param source_entity_designator: Designator resolving to EdEntity to inspect</span>
+<span class="sd">        :param description_designator: dict which contains at least a &#39;type&#39; field</span>
+<span class="sd">        :param found_entity_designator: Designator the found entity can be written to</span>
+<span class="sd">        :param area_name: str or str Designator describing the area of the source entity to inspect</span>
+<span class="sd">        :param navigation_area: str or str Designator describing the area to drive to for the inspect.</span>
+<span class="sd">                                None=NavigateToObserve</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;inspect_failed&#39;</span><span class="p">,</span> <span class="s1">&#39;not_found&#39;</span><span class="p">])</span>
+
+        <span class="n">segmented_entities_designator</span> <span class="o">=</span> <span class="n">VariableDesignator</span><span class="p">([],</span> <span class="n">resolve_type</span><span class="o">=</span><span class="p">[</span><span class="n">ClassificationResult</span><span class="p">])</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;INSPECT_SOURCE_ENTITY&#39;</span><span class="p">,</span>
+                                   <span class="n">Inspect</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span>
+                                           <span class="n">entityDes</span><span class="o">=</span><span class="n">source_entity_designator</span><span class="p">,</span>
+                                           <span class="n">objectIDsDes</span><span class="o">=</span><span class="n">segmented_entities_designator</span><span class="p">,</span>
+                                           <span class="n">searchArea</span><span class="o">=</span><span class="n">area_name</span><span class="p">,</span>
+                                           <span class="n">navigation_area</span><span class="o">=</span><span class="n">navigation_area</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;CHECK_IF_ENTITY_FOUND&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;inspect_failed&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;CHECK_IF_ENTITY_FOUND&#39;</span><span class="p">,</span>
+                                   <span class="n">CheckIfDescribedEntityAvailable</span><span class="p">(</span>
+                                       <span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span>
+                                       <span class="n">knowledge</span><span class="o">=</span><span class="n">knowledge</span><span class="p">,</span>
+                                       <span class="n">description_designator</span><span class="o">=</span><span class="n">description_designator</span><span class="p">,</span>
+                                       <span class="n">found_entity_designator</span><span class="o">=</span><span class="n">found_entity_designator</span><span class="o">.</span><span class="n">writeable</span><span class="p">,</span>
+                                       <span class="n">candidate_entities_designator</span><span class="o">=</span><span class="n">segmented_entities_designator</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;succeeded&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;not_found&#39;</span><span class="p">})</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

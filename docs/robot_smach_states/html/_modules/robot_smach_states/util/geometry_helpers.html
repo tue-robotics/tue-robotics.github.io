@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.util.geometry_helpers &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.util.geometry_helpers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.util.geometry_helpers</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">PyKDL</span> <span class="k">as</span> <span class="nn">kdl</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">point_msg_to_kdl_vector</span>
+
+
+<div class="viewcode-block" id="wrap_angle_pi"><a class="viewcode-back" href="../../../api/robot_smach_states/util/geometry_helpers/index.html#robot_smach_states.util.geometry_helpers.wrap_angle_pi">[docs]</a><span class="k">def</span> <span class="nf">wrap_angle_pi</span><span class="p">(</span><span class="n">angle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wraps between -pi and +pi</span>
+
+<span class="sd">    :param angle: Input angle</span>
+<span class="sd">    :return: Wrapped angle</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">angle</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">angle</span> <span class="o">&gt;</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">angle</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">elif</span> <span class="n">angle</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">angle</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">return</span> <span class="n">angle</span></div>
+
+
+<div class="viewcode-block" id="isLeftOfLine"><a class="viewcode-back" href="../../../api/robot_smach_states/util/geometry_helpers/index.html#robot_smach_states.util.geometry_helpers.isLeftOfLine">[docs]</a><span class="k">def</span> <span class="nf">isLeftOfLine</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Checks whether point p is left of line l</span>
+<span class="sd">        p: geometry_msgs.Point</span>
+<span class="sd">        l: array of size two of geometry_msgs.Point.</span>
+<span class="sd">        Note that only x and y are evaluated</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">A</span><span class="o">.</span><span class="n">x</span><span class="p">())</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="n">A</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="o">-</span> <span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="n">A</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">A</span><span class="o">.</span><span class="n">x</span><span class="p">())</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+    <span class="c1">#position = sign( (Bx-Ax)*(Y-Ay) - (By-Ay)*(X-Ax) )</span>
+
+
+<div class="viewcode-block" id="isPointInsideHull"><a class="viewcode-back" href="../../../api/robot_smach_states/util/geometry_helpers/index.html#robot_smach_states.util.geometry_helpers.isPointInsideHull">[docs]</a><span class="k">def</span> <span class="nf">isPointInsideHull</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">chull</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Checks whether point p is inside the convex hull ch</span>
+<span class="sd">        p: geometry_msgs.Point</span>
+<span class="sd">        ch: array of geometry_msgs.Point. Note that the order is supposed to be anti-clockwise</span>
+<span class="sd">        Note that only p.x and p.y are evaluated</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="sd">&#39;&#39;&#39; Copy list &#39;&#39;&#39;</span>
+    <span class="n">ch</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chull</span><span class="p">)</span>
+
+    <span class="sd">&#39;&#39;&#39; Loop over lines of chull &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ch</span><span class="p">)):</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+        <span class="sd">&#39;&#39;&#39; Check whether the point is left of the line &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isLeftOfLine</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="p">[</span><span class="n">ch</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ch</span><span class="p">[</span><span class="n">j</span><span class="p">]]):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="onTopOff"><a class="viewcode-back" href="../../../api/robot_smach_states/util/geometry_helpers/index.html#robot_smach_states.util.geometry_helpers.onTopOff">[docs]</a><span class="k">def</span> <span class="nf">onTopOff</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">ht</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Checks whether the entity &#39;subject&#39; is on top of entity &#39;container&#39;</span>
+<span class="sd">        @param subject the EntityInfo which may be on top of the container, e.g. a cup</span>
+<span class="sd">        @param container: the EntityInfo that may be supporting the other subject, e.g. a table.</span>
+<span class="sd">        ht: height threshold: the bottom of entity and the top of container need to be within ht m</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&#39;&#39;&#39; First: check if container actually has a convex hull &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">container</span><span class="o">.</span><span class="n">convex_hull</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;Entity </span><span class="si">{0}</span><span class="s1"> has no convex hull&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">container</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="sd">&#39;&#39;&#39; Second: turn points into KDL objects and offset &#39;&#39;&#39;</span>
+    <span class="n">convex_hull_obj</span> <span class="o">=</span> <span class="p">[</span><span class="n">point_msg_to_kdl_vector</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">container</span><span class="o">.</span><span class="n">convex_hull</span><span class="p">]</span>   <span class="c1"># convex hull in object frame</span>
+    <span class="n">convex_hull</span> <span class="o">=</span> <span class="n">offsetConvexHull</span><span class="p">(</span><span class="n">convex_hull_obj</span><span class="p">,</span> <span class="n">container</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>  <span class="c1"># convex hull in map frame</span>
+
+    <span class="sd">&#39;&#39;&#39; Third: check if center point of entity is within convex hull of container &#39;&#39;&#39;</span>
+    <span class="n">subject_center_pose</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isPointInsideHull</span><span class="p">(</span><span class="n">subject_center_pose</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">convex_hull</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">subject_bottom</span> <span class="o">=</span> <span class="n">subject</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()</span><span class="o">+</span><span class="n">subject</span><span class="o">.</span><span class="n">z_min</span>
+    <span class="n">container_top</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()</span><span class="o">+</span><span class="n">container</span><span class="o">.</span><span class="n">z_max</span>
+    <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">subject_bottom</span> <span class="o">-</span> <span class="n">container_top</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ht</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="onTopOffForDesignator"><a class="viewcode-back" href="../../../api/robot_smach_states/util/geometry_helpers/index.html#robot_smach_states.util.geometry_helpers.onTopOffForDesignator">[docs]</a><span class="k">def</span> <span class="nf">onTopOffForDesignator</span><span class="p">(</span><span class="n">container_designator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a function that will tell if an entity is on top of the entity designated by container_designator.</span>
+<span class="sd">    This function can be used as a designator-criterium.</span>
+<span class="sd">    E.g. criteria_funcs = [onTopOffForDesignator(EdEntityDesignator(...))]&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">on_top</span><span class="p">(</span><span class="n">entity</span><span class="p">):</span>
+        <span class="n">container_entity</span> <span class="o">=</span> <span class="n">container_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">onTopOff</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">container_entity</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">on_top</span></div>
+
+
+<div class="viewcode-block" id="offsetConvexHull"><a class="viewcode-back" href="../../../api/robot_smach_states/util/geometry_helpers/index.html#robot_smach_states.util.geometry_helpers.offsetConvexHull">[docs]</a><span class="k">def</span> <span class="nf">offsetConvexHull</span><span class="p">(</span><span class="n">input_ch</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Offsets the the convex hull &#39;input_ch&#39; with &#39;offset&#39;. This can be used, e.g., when a convex hull is desired in map</span>
+<span class="sd">    frame while it is given in object frame. In that case, &#39;offset&#39; represents the object pose in map frame.</span>
+
+<span class="sd">    :param input_ch: list with kdl Vectors</span>
+<span class="sd">    :param offset: KDL frame representing the offset with which to multiply the convex_hull</span>
+<span class="sd">    :return: list with KDL vectors representing the convex hull</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out_ch</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">input_ch</span><span class="p">:</span>
+        <span class="n">pf</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="p">(),</span> <span class="n">p</span><span class="p">)</span>  <span class="c1"># ToDo: is this necessary???</span>
+        <span class="n">pf</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">*</span> <span class="n">pf</span>
+        <span class="n">p_out</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">pf</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">out_ch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_out</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out_ch</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

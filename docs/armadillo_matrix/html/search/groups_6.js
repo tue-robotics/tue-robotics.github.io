@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['gemm',['Gemm',['../group__gemm.html',1,'']]],
+  ['gemm_5fmixed',['Gemm_mixed',['../group__gemm__mixed.html',1,'']]],
+  ['gemv',['Gemv',['../group__gemv.html',1,'']]],
+  ['gen',['Gen',['../group__Gen.html',1,'']]],
+  ['gencube',['GenCube',['../group__GenCube.html',1,'']]],
+  ['glue',['Glue',['../group__Glue.html',1,'']]],
+  ['glue_5fconv',['Glue_conv',['../group__glue__conv.html',1,'']]],
+  ['glue_5fcor',['Glue_cor',['../group__glue__cor.html',1,'']]],
+  ['glue_5fcov',['Glue_cov',['../group__glue__cov.html',1,'']]],
+  ['glue_5fcross',['Glue_cross',['../group__glue__cross.html',1,'']]],
+  ['glue_5fjoin',['Glue_join',['../group__glue__join.html',1,'']]],
+  ['glue_5fkron',['Glue_kron',['../group__glue__kron.html',1,'']]],
+  ['glue_5fmixed',['Glue_mixed',['../group__glue__mixed.html',1,'']]],
+  ['glue_5frelational',['Glue_relational',['../group__glue__relational.html',1,'']]],
+  ['glue_5fsolve',['Glue_solve',['../group__glue__solve.html',1,'']]],
+  ['glue_5ftimes',['Glue_times',['../group__glue__times.html',1,'']]],
+  ['glue_5ftoeplitz',['Glue_toeplitz',['../group__glue__toeplitz.html',1,'']]],
+  ['gluecube',['GlueCube',['../group__GlueCube.html',1,'']]]
+];

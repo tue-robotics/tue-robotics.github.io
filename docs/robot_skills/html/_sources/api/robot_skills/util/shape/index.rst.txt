@@ -1,0 +1,140 @@
+:mod:`robot_skills.util.shape`
+==============================
+
+.. py:module:: robot_skills.util.shape
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.util.shape.Shape
+   robot_skills.util.shape.RightPrism
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.util.shape.shape_from_entity_info
+
+
+.. py:class:: Shape
+
+   Bases: :class:`object`
+
+   Represents shape properties
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: convex_hull(self)
+
+
+   .. method:: _calc_convex_hull(self)
+
+
+   .. method:: size(self)
+
+
+   .. method:: _calc_size(self)
+
+
+   .. method:: x_min(self)
+
+
+   .. method:: _calc_x_min(self)
+
+
+   .. method:: x_max(self)
+
+
+   .. method:: _calc_x_max(self)
+
+
+   .. method:: y_min(self)
+
+
+   .. method:: _calc_y_min(self)
+
+
+   .. method:: y_max(self)
+
+
+   .. method:: _calc_y_max(self)
+
+
+   .. method:: z_min(self)
+
+
+   .. method:: _calc_z_min(self)
+
+
+   .. method:: z_max(self)
+
+
+   .. method:: _calc_z_max(self)
+
+
+
+.. py:class:: RightPrism(convex_hull, z_min, z_max)
+
+   Bases: :class:`robot_skills.util.shape.Shape`
+
+   Represents a right prism, i.e., a  prism in which the joining edges and faces are perpendicular to the base
+   faces. This is typical for the shapes resulting from the convex hull, z min and z max of EntityInfo
+
+
+   Constructor
+
+   :param convex_hull: list with kdl Vectors representing the vertices of the convex hull. N.B.: these should only
+       contain x and y values, the z-values are not relevant (the height information is contained in the z_min
+       and z_max parameters).
+   :param z_min: float minimum height [m] w.r.t. the center of the corresponding Entity
+   :param z_max: float maximum height [m] w.r.t. the center of the corresponding Entity
+
+   .. method:: _calc_x_max(self)
+
+
+   .. method:: _calc_x_min(self)
+
+
+   .. method:: _calc_y_max(self)
+
+
+   .. method:: _calc_y_min(self)
+
+
+   .. method:: _calc_z_max(self)
+
+
+   .. method:: _calc_z_min(self)
+
+
+   .. method:: _calc_convex_hull(self)
+
+
+   .. method:: _calc_size(self)
+
+      Calculate the rough size of a shape
+      >>> RightPrism([kdl.Vector(0, 0, 0), kdl.Vector(0, 1, 0), kdl.Vector(1, 1, 0), kdl.Vector(1, 0, 0)], z_min=0, z_max=1).size
+      1.0
+      >>> RightPrism([kdl.Vector(0, 0, 0), kdl.Vector(0, 2, 0), kdl.Vector(2, 2, 0), kdl.Vector(2, 0, 0)], z_min=0, z_max=2).size
+      8.0
+
+
+
+.. function:: shape_from_entity_info(e)
+
+   Creates a shape from the convex_hull, z_min and z_max of the EntityInfo object. If no convex hull is present,
+   an empty Shape object is returned
+
+   :param e: ed_msgs.msg.EntityInfo
+   :return: Shape
+
+

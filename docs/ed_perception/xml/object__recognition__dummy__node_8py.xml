@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="object__recognition__dummy__node_8py" kind="file" language="Python">
+    <compoundname>object_recognition_dummy_node.py</compoundname>
+    <innerclass refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS" prot="public">object_recognition_dummy_node::ObjectRecognitionDummyROS</innerclass>
+    <innernamespace refid="namespaceobject__recognition__dummy__node">object_recognition_dummy_node</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespaceobject__recognition__dummy__node" refkind="compound"><highlight class="comment">#!/usr/bin/env<sp/>python</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">#<sp/>System</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>os</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>sys</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">#<sp/>ROS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>rospy</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>random<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>random</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">#<sp/>TU/e<sp/>Robotics</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>image_recognition_msgs.srv<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Recognize</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>image_recognition_msgs.msg<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Recognition,<sp/>CategoryProbability</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17" refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS" kindref="compound">ObjectRecognitionDummyROS</ref>:</highlight></codeline>
+<codeline lineno="18" refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1a9382b5e35496a7e10ead81882081928b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1a9382b5e35496a7e10ead81882081928b" kindref="member">__init__</ref>(self,<sp/>labels_path):</highlight></codeline>
+<codeline lineno="19" refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1a72a75b750bf767b6d00595920f7d4b47" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1a72a75b750bf767b6d00595920f7d4b47" kindref="member">_recognize_srv</ref><sp/>=<sp/>rospy.Service(</highlight><highlight class="stringliteral">&apos;recognize&apos;</highlight><highlight class="normal">,<sp/>Recognize,<sp/>self.<ref refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1ab1946256236537f3d5a1f7833ffe82c8" kindref="member">_recognize_srv_callback</ref>)</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.loginfo(</highlight><highlight class="stringliteral">&quot;ObjectRecognitionDummyROS<sp/>initialized:&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.loginfo(</highlight><highlight class="stringliteral">&quot;<sp/>-<sp/>labels_path=%s&quot;</highlight><highlight class="normal">,<sp/>labels_path)</highlight></codeline>
+<codeline lineno="23" refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1a2c7fb01c29743f93dd0afe33116c64b9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1a2c7fb01c29743f93dd0afe33116c64b9" kindref="member">_labels</ref><sp/>=<sp/>[]</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>os.path.isfile(labels_path):</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logerr(</highlight><highlight class="stringliteral">&quot;Labels<sp/>path<sp/>{}<sp/>does<sp/>not<sp/>exist&quot;</highlight><highlight class="normal">.format(labels_path))</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>with<sp/>open(labels_path,<sp/></highlight><highlight class="stringliteral">&quot;r&quot;)<sp/>as<sp/>labels_file:</highlight></codeline>
+<codeline lineno="30"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>labels_str<sp/>=<sp/>labels_file.read()</highlight></codeline>
+<codeline lineno="31"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1a2c7fb01c29743f93dd0afe33116c64b9" kindref="member">_labels</ref><sp/>=<sp/>labels_str.strip().split(&quot;\n&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.loginfo(</highlight><highlight class="stringliteral">&quot;Labels<sp/>=<sp/>%s&quot;</highlight><highlight class="normal">,<sp/>self.<ref refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1a2c7fb01c29743f93dd0afe33116c64b9" kindref="member">_labels</ref>)</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1ab1946256236537f3d5a1f7833ffe82c8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1ab1946256236537f3d5a1f7833ffe82c8" kindref="member">_recognize_srv_callback</ref>(self,<sp/>req):</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>recognition<sp/>=<sp/>Recognition()</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>recognition.roi.height<sp/>=<sp/>req.image.height</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>recognition.roi.width<sp/>=<sp/>req.image.width</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>recognition.categorical_distribution.unknown_probability<sp/>=<sp/>0.1<sp/><sp/></highlight><highlight class="comment">#<sp/>TODO:<sp/>How<sp/>do<sp/>we<sp/>know<sp/>this?</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>label<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>self.<ref refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS_1a2c7fb01c29743f93dd0afe33116c64b9" kindref="member">_labels</ref>:</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>category_probabilty<sp/>=<sp/>CategoryProbability(label=label,<sp/>probability=random())</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>recognition.categorical_distribution.probabilities.append(category_probabilty)</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{</highlight><highlight class="stringliteral">&quot;recognitions&quot;</highlight><highlight class="normal">:<sp/>[recognition]}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&apos;__main__&apos;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Start<sp/>ROS<sp/>node</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.init_node(</highlight><highlight class="stringliteral">&apos;object_recognition_dummy_ros&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="52" refid="namespaceobject__recognition__dummy__node_1a8bb68d397d32319e72d55ca9f44becf1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_labels_path<sp/>=<sp/>os.path.expanduser(rospy.get_param(</highlight><highlight class="stringliteral">&quot;~labels_path&quot;</highlight><highlight class="normal">))</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">except</highlight><highlight class="normal"><sp/>KeyError<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>e:</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logerr(</highlight><highlight class="stringliteral">&quot;Parameter<sp/>%s<sp/>not<sp/>found&quot;</highlight><highlight class="normal"><sp/>%<sp/>e)</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sys.exit(1)</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Create<sp/>object</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58" refid="namespaceobject__recognition__dummy__node_1a407a1f6757d46688a05d9880ca12c313" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>object_recognition<sp/>=<sp/><ref refid="classobject__recognition__dummy__node_1_1ObjectRecognitionDummyROS" kindref="compound">ObjectRecognitionDummyROS</ref>(labels_path=_labels_path)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.spin()</highlight></codeline>
+    </programlisting>
+    <location file="scripts/object_recognition_dummy_node.py"/>
+  </compounddef>
+</doxygen>

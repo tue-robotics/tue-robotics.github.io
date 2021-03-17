@@ -1,0 +1,269 @@
+:mod:`ed_object_models.conversion_sdf`
+======================================
+
+.. py:module:: ed_object_models.conversion_sdf
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   ed_object_models.conversion_sdf.bcolors
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   ed_object_models.conversion_sdf.get_model_path
+   ed_object_models.conversion_sdf.unique_name
+   ed_object_models.conversion_sdf.read_pose
+   ed_object_models.conversion_sdf.read_geometry
+   ed_object_models.conversion_sdf.read_shape_item
+   ed_object_models.conversion_sdf.read_shape
+   ed_object_models.conversion_sdf.read_areas
+   ed_object_models.conversion_sdf.parse_to_xml
+   ed_object_models.conversion_sdf.write_xml_to_file
+   ed_object_models.conversion_sdf.convert_world
+   ed_object_models.conversion_sdf.convert_model
+   ed_object_models.conversion_sdf.convert_model_data
+   ed_object_models.conversion_sdf.convert_model_file
+   ed_object_models.conversion_sdf.convert_model_name
+
+
+.. py:class:: bcolors
+
+   .. attribute:: HEADER
+      :annotation: = [95m
+
+      
+
+   .. attribute:: OKBLUE
+      :annotation: = [94m
+
+      
+
+   .. attribute:: OKGREEN
+      :annotation: = [92m
+
+      
+
+   .. attribute:: WARNING
+      :annotation: = [93m
+
+      
+
+   .. attribute:: FAIL
+      :annotation: = [91m
+
+      
+
+   .. attribute:: ENDC
+      :annotation: = [0m
+
+      
+
+   .. attribute:: BOLD
+      :annotation: = [1m
+
+      
+
+   .. attribute:: UNDERLINE
+      :annotation: = [4m
+
+      
+
+
+.. function:: get_model_path(model_name, ext='yaml')
+
+   Checks for model file in ED_MODEL_PATH
+
+   :param model_name: name of the model
+   :type model_name: str
+   :param ext: extension of the file: yaml/sdf
+   :type ext: str
+   :return: absolute model path or empty string if not found
+   :rtype: str
+
+
+.. function:: unique_name(name, names)
+
+   Provide a unique name based on name. If name already in names, the name is changed.
+   If the name ends with digits, this number is increased. If the name doesn't end with a digit, the name is append
+   with '1'. This continues until a unique name is found.
+
+   :param name: name you want to be unique
+   :type name: str
+   :param names: list of names which are already used
+   :type names: list
+   :return: unique name
+   :rtype: str
+
+
+.. function:: read_pose(yaml_dict)
+
+   converts pose in yaml dict to string of 6 coordinates.
+
+   :param yaml_dict: dict with possible pose as key on first level in dict
+   :type yaml_dict: dict
+   :return: string with 6 coordinates
+   :rtype: str
+
+
+.. function:: read_geometry(shape_item, model_name)
+
+   Convert a shape item to a SDF geometry. With a possible pose offset. Which should be added to
+   visual/collision/virtual_volume
+
+   :param shape_item: dict with shape description
+   :type shape_item: dict
+   :param model_name: name of current model being converted
+   :type model_name: str
+   :return: tuple of geometry, link_pose and geometry_pose OR tuple of 3x None in case of error
+   :rtype: tuple
+
+
+.. function:: read_shape_item(shape_item, link_names, color, model_name)
+
+   Convert shape item to a link with collision and visual elements
+
+   :param shape_item: dict of one shape item
+   :type shape_item: dict
+   :param link_names: list of link names already used
+   :type link_names: list[str]
+   :param color: None or dict of rgb values (0-1.0)
+   :type color: dict
+   :param model_name: name of current model being converted
+   :type model_name: str
+   :return: dict of SDF link element OR None in case of error
+   :rtype: Union[dict, None]
+
+
+.. function:: read_shape(shape, link_names, color, model_name)
+
+   Convert (array of) shape(s) to list of SDF links
+
+   :param shape: shape dict
+   :type shape: dict
+   :param link_names: list of link names already used
+   :type link_names: list
+   :param color: None or dict of rgb values (0-1.0)
+   :type color: OrderedDict
+   :param model_name: name of current model being converted
+   :type model_name: str
+   :return: list of link elements OR None in case of error
+   :rtype: Union[list, None]
+
+
+.. function:: read_areas(areas, link_names, model_name)
+
+   Convert areas to links with a virtual area
+
+   :param areas: list of areas
+   :type areas: list
+   :param link_names: list of link names already used
+   :type link_names: list
+   :param model_name: name of current model being converted
+   :type model_name: str
+   :return: list of links with a virtual area child element OR None in case of error
+   :rtype: Union[list, None]
+
+
+.. function:: parse_to_xml(xml, item, list_name='')
+
+   Extend XML with elements from a dict, list or a string.
+   This takes SDF attribute/element rules into account
+
+   :param xml: xml element
+   :type xml: xml.etree.ElementTree.Element
+   :param item: dict, list or str
+   :type item: Union[list, dict, str, float, int]
+   :param list_name: name of list, needs to be passed on by parent for each element
+   :type list_name: str
+   :raises: Exception: incorrect usage of argument or unknown class type
+
+
+.. function:: write_xml_to_file(xml_element, filepath)
+
+   Write xml element to a file
+
+   :param xml_element: xml element
+   :type xml_element: xml.etree.ElementTree.Element
+   :param filepath: full path of file, which to write
+   :type filepath: str
+
+
+.. function:: convert_world(yml, model_name, recursive=False)
+
+   Convert world yaml to sdf world dict
+
+   :param yml: yaml object of a world ed yaml
+   :type yml: dict
+   :param model_name: Name of the world
+   :type model_name: str
+   :param recursive: If true all included models are also converted
+   :type recursive: bool
+   :return: sdf dict of the model
+   :rtype: dict
+
+
+.. function:: convert_model(yml, model_name)
+
+   Convert model yaml to sdf model dict
+
+   :param yml: yaml object of a world ed yaml
+   :type yml: dict
+   :param model_name: Name of the model
+   :type model_name: str
+   :return: sdf dict of the model
+   :rtype: dict
+
+
+.. function:: convert_model_data(model_data, model_name, model_dir, recursive=False)
+
+   Convert model data to SDF with the name 'model_name' in directory 'model_dir'.
+   Most of the times model_dir=ROOT/model_name for a ROOT in ED_MODEL_PATH
+
+   :param model_data: yaml data of the model
+   :type model_data: Union[dict, list]
+   :param model_name: Name of the model
+   :type model_name: str
+   :param model_dir: Directory of the model.
+   :type model_dir: str
+   :param recursive: If true all included models are also converted
+   :type recursive: bool
+   :return: Good: 0, Error: 1
+   :rtype: int
+
+
+.. function:: convert_model_file(model_name, model_file, recursive=False)
+
+   Convert a model to SDF based on a model file
+
+   :param model_name: name of the model
+   :type model_name: str
+   :param model_file: path of the model file
+   :type model_file: str
+   :param recursive: If true all included models are also converted
+   :type recursive: bool
+   :return: Good: 0, Error: 1
+   :rtype: int
+
+
+.. function:: convert_model_name(model_name, recursive=False)
+
+   Convert a model to SDF based on the model name.
+
+   :param model_name: Name of the model, model_name/model.yaml should exist in ED_MODEL_PATH
+   :param recursive: If true all included models are also converted
+   :type recursive: bool
+   :return: Good: 0, Error: 1
+   :rtype: int
+
+

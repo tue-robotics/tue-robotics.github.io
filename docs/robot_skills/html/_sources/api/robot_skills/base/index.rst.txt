@@ -1,0 +1,190 @@
+:mod:`robot_skills.base`
+========================
+
+.. py:module:: robot_skills.base
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.base.LocalPlanner
+   robot_skills.base.GlobalPlanner
+   robot_skills.base.Base
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.base.get_location
+   robot_skills.base.computePathLength
+
+
+.. py:class:: LocalPlanner(robot_name, tf_listener, analyzer)
+
+   Bases: :class:`robot_skills.robot_part.RobotPart`
+
+   Base class for robot parts
+
+   Constructor
+
+   :param robot_name: string with robot name
+   :param tf_listener: tf listener object
+
+   .. method:: setPlan(self, plan, position_constraint, orientation_constraint)
+
+
+   .. method:: cancelCurrentPlan(self)
+
+
+   .. method:: selfreset(self)
+
+      Reset of the body part itself. This function may be overwritten.
+      Returns: bool
+
+
+   .. method:: getGoalHandle(self)
+
+
+   .. method:: getStatus(self)
+
+
+   .. method:: getDistanceToGoal(self)
+
+
+   .. method:: getObstaclePoint(self)
+
+
+   .. method:: getCurrentOrientationConstraint(self)
+
+
+   .. method:: __feedbackCallback(self, feedback)
+
+
+   .. method:: __doneCallback(self, terminal_state, result)
+
+
+   .. method:: __setState(self, status, obstacle_point=None, dtg=None, plan=None)
+
+
+
+.. py:class:: GlobalPlanner(robot_name, tf_listener, analyzer)
+
+   Bases: :class:`robot_skills.robot_part.RobotPart`
+
+   Base class for robot parts
+
+   Constructor
+
+   :param robot_name: string with robot name
+   :param tf_listener: tf listener object
+
+   .. method:: getPlan(self, position_constraint)
+
+      :param position_constraint: (PositionConstraint)
+      :return: list(PoseStamped). N.B.: If No path was found, this list is empty. If the planner service fails,
+          'None' is returned.
+
+
+   .. method:: checkPlan(self, plan)
+
+
+   .. method:: getCurrentPositionConstraint(self)
+
+
+   .. method:: computePathLength(self, path)
+
+
+
+.. py:class:: Base(robot_name, tf_listener, cmd_vel_topic=None, initial_pose_topic=None)
+
+   Bases: :class:`robot_skills.robot_part.RobotPart`
+
+   Base class for robot parts
+
+   Constructor
+
+   :param robot_name: string with robot name
+   :param tf_listener: tf listener object
+
+   .. method:: wait_for_connections(self, timeout, log_failing_connections=True)
+
+      Waits for the connections until they are connected
+
+      :param timeout: timeout in seconds
+      :param log_failing_connections: (bool) whether to log errors if not connected. This is useful when checking
+          multiple robot parts in a loop
+      :return: bool indicating whether all connections are connected
+
+
+   .. method:: move(self, position_constraint_string, frame)
+
+
+   .. method:: turn_towards(self, x, y, frame, offset=0.0)
+
+
+   .. method:: force_drive(self, vx, vy, vth, timeout, loop_rate=10, stop=True, ax=float('inf'), ay=float('inf'), ath=float('inf'))
+
+      Forces the robot to drive by sending a command velocity directly to the base controller. N.B.: all collision
+      avoidance is bypassed.
+
+      :param vx: forward velocity [m/s]
+      :param vy: sideways velocity [m/s]
+      :param vth: rotational velocity in [rad/s]
+      :param timeout: duration for this motion [s]
+      :param loop_rate: Rate of sending twist messages [Hz]
+      :param stop: send stop message afterwards
+      :param ax: forward acceleration [m/s^2]
+      :param ay: sideways acceleration [m/s^2]
+      :param ath: rotational acceleration [rad/s^2]
+
+
+   .. method:: get_location(self)
+
+      Returns a FrameStamped with the robot pose
+
+      :return: FrameStamped with robot pose
+
+
+   .. method:: set_initial_pose(self, x, y, phi)
+
+
+   .. method:: wait_for_motion_done(self, timeout=10.0, cancel=False)
+
+      Waits until local planner is done
+
+      :param timeout: timeout in seconds; in case 0.0, no sensible output is provided, just False
+      :param cancel: bool specifying whether goals should be cancelled
+          if timeout is exceeded
+      :return: bool indicates whether motion was done (True if reached, False otherwise)
+
+
+   .. method:: selfreset(self)
+
+      Reset of the body part itself. This function may be overwritten.
+      Returns: bool
+
+
+   .. method:: go(self, x, y, phi, frame='/map', timeout=0)
+
+
+   .. method:: reset_costmap(self)
+
+
+   .. method:: cancel_goal(self)
+
+
+
+.. function:: get_location(robot_name, tf_listener)
+
+
+.. function:: computePathLength(path)
+
+

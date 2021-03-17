@@ -1,0 +1,346 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="shared__methods_8cpp" kind="file" language="C++">
+    <compoundname>shared_methods.cpp</compoundname>
+    <includes refid="shared__methods_8h" local="yes">shared_methods.h</includes>
+    <includes local="no">ed/error_context.h</includes>
+    <includes local="no">rgbd/Image.h</includes>
+    <includes local="no">rgbd/View.h</includes>
+    <includes local="no">boost/filesystem.hpp</includes>
+    <incdepgraph>
+      <node id="570">
+        <label>rgbd/View.h</label>
+      </node>
+      <node id="564">
+        <label>shared_methods.h</label>
+        <link refid="shared__methods_8h"/>
+        <childnode refid="565" relation="include">
+        </childnode>
+        <childnode refid="566" relation="include">
+        </childnode>
+        <childnode refid="567" relation="include">
+        </childnode>
+      </node>
+      <node id="566">
+        <label>ed/measurement.h</label>
+      </node>
+      <node id="571">
+        <label>boost/filesystem.hpp</label>
+      </node>
+      <node id="565">
+        <label>opencv2/highgui/highgui.hpp</label>
+      </node>
+      <node id="569">
+        <label>rgbd/Image.h</label>
+      </node>
+      <node id="567">
+        <label>ed/entity.h</label>
+      </node>
+      <node id="563">
+        <label>shared_methods.cpp</label>
+        <link refid="shared__methods_8cpp"/>
+        <childnode refid="564" relation="include">
+        </childnode>
+        <childnode refid="568" relation="include">
+        </childnode>
+        <childnode refid="569" relation="include">
+        </childnode>
+        <childnode refid="570" relation="include">
+        </childnode>
+        <childnode refid="571" relation="include">
+        </childnode>
+      </node>
+      <node id="568">
+        <label>ed/error_context.h</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceed">ed</innernamespace>
+    <innernamespace refid="namespaceed_1_1perception">ed::perception</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">*<sp/>Author:<sp/>Luis<sp/>Fererira</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*<sp/>E-mail:<sp/>luisfferreira@outlook.com</highlight></codeline>
+<codeline lineno="4"><highlight class="comment">*<sp/>Date:<sp/>March<sp/>2015</highlight></codeline>
+<codeline lineno="5"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="shared__methods_8h" kindref="compound">shared_methods.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>ED<sp/>includes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ed/error_context.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;rgbd/Image.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;rgbd/View.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/filesystem.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceed" kindref="compound">ed</ref></highlight></codeline>
+<codeline lineno="17"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="18" refid="namespaceed_1_1perception" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">perception</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment">//<sp/>---------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23" refid="namespaceed_1_1perception_1ae3fc29c23fb9d3ddc831ddf2c0063e3a" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceed_1_1perception_1ae3fc29c23fb9d3ddc831ddf2c0063e3a" kindref="member">prepareMeasurement</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ed::EntityConstPtr&amp;<sp/>e,<sp/>cv::Mat&amp;<sp/>view_color_img,<sp/>cv::Mat&amp;<sp/>view_depth_img,<sp/>cv::Mat&amp;<sp/>mask,<sp/>cv::Rect&amp;<sp/>bouding_box)<sp/>{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Get<sp/>the<sp/>best<sp/>measurement<sp/>from<sp/>the<sp/>entity</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>ed::MeasurementConstPtr<sp/>msr<sp/>=<sp/>e-&gt;lastMeasurement();</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!msr)</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>min_x,<sp/>max_x,<sp/>min_y,<sp/>max_y;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>create<sp/>a<sp/>view</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classrgbd_1_1View" kindref="compound" external="/home/amigo/ros/melodic/system/build/docs/rgbd/tags">rgbd::View</ref><sp/>view(*msr-&gt;image(),<sp/>msr-&gt;image()-&gt;getRGBImage().cols);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>get<sp/>depth<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>view_depth_img<sp/>=<sp/>msr-&gt;image()-&gt;getDepthImage();</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>get<sp/>color<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>color_image<sp/>=<sp/>msr-&gt;image()-&gt;getRGBImage();</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>crop<sp/>it<sp/>to<sp/>match<sp/>the<sp/>view</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>view_color_img<sp/>=<sp/>cv::Mat(color_image(cv::Rect(0,<sp/>0,<sp/>view.getWidth(),<sp/>view.getHeight())));</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/>&quot;image:<sp/>&quot;<sp/>&lt;&lt;<sp/>cropped_image.cols<sp/>&lt;&lt;<sp/>&quot;x&quot;<sp/>&lt;&lt;<sp/>cropped_image.rows<sp/>&lt;&lt;<sp/>std::endl;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>initialize<sp/>bounding<sp/>box<sp/>points</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>max_x<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>max_y<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>min_x<sp/>=<sp/>view.<ref refid="classrgbd_1_1View_1ad2f9300d4e5a17f10a32e5f42db110e1" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/rgbd/tags">getWidth</ref>();</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>min_y<sp/>=<sp/>view.getHeight();</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>initialize<sp/>mask,<sp/>all<sp/>0s</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>mask<sp/>=<sp/>cv::Mat::zeros(view.getHeight(),<sp/>view.getWidth(),<sp/>CV_8UC1);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Iterate<sp/>over<sp/>all<sp/>points<sp/>in<sp/>the<sp/>mask</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(ed::ImageMask::const_iterator<sp/>it<sp/>=<sp/>msr-&gt;imageMask().begin(view.getWidth());<sp/>it<sp/>!=<sp/>msr-&gt;imageMask().end();<sp/>++it)</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>mask&apos;s<sp/>(x,<sp/>y)<sp/>coordinate<sp/>in<sp/>the<sp/>depth<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Point2i<sp/>p_2d(it());</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>paint<sp/>a<sp/>mask</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mask.at&lt;</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">&gt;(p_2d)<sp/>=<sp/>255;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>update<sp/>the<sp/>boundary<sp/>coordinates</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(min_x<sp/>&gt;<sp/>p_2d.x)<sp/>min_x<sp/>=<sp/>p_2d.x;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(max_x<sp/>&lt;<sp/>p_2d.x)<sp/>max_x<sp/>=<sp/>p_2d.x;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(min_y<sp/>&gt;<sp/>p_2d.y)<sp/>min_y<sp/>=<sp/>p_2d.y;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(max_y<sp/>&lt;<sp/>p_2d.y)<sp/>max_y<sp/>=<sp/>p_2d.y;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>bouding_box<sp/>=<sp/>cv::Rect(min_x,<sp/>min_y,<sp/>max_x<sp/>-<sp/>min_x,<sp/>max_y<sp/>-<sp/>min_y);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76" refid="namespaceed_1_1perception_1a96b420de07e8be8fa447c28435cc4b43" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="namespaceed_1_1perception_1a96b420de07e8be8fa447c28435cc4b43" kindref="member">getMedianDepth</ref>(cv::Mat&amp;<sp/>depth_img)</highlight></codeline>
+<codeline lineno="77"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>median<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;float&gt;</ref><sp/>depths;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>fill<sp/>vector<sp/>with<sp/>depth<sp/>values</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>x<sp/>=<sp/>0<sp/>;<sp/>x<sp/>&lt;<sp/>depth_img.cols<sp/>;<sp/>x++){</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>y<sp/>=<sp/>0<sp/>;<sp/>y<sp/>&lt;<sp/>depth_img.rows<sp/>;<sp/>y++){</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(depth_img.at&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&gt;(y,x)<sp/>&gt;<sp/>0.0){</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>depths.<ref refid="cpp/container/vector/push_back" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">push_back</ref>(depth_img.at&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&gt;(y,x));</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(depths.<ref refid="cpp/container/vector/empty" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">empty</ref>()){</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/io/cout" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::cout</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;GetAverageDepth:<sp/>no<sp/>depth<sp/>values<sp/>pushed.<sp/>Empty<sp/>image<sp/>matrix?&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>sort<sp/>and<sp/>pick<sp/>the<sp/>center<sp/>value</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/algorithm/sort" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::sort</ref>(depths.<ref refid="cpp/container/vector/begin" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">begin</ref>(),depths.<ref refid="cpp/container/vector/end" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">end</ref>());</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(depths.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>()<sp/>%<sp/>2<sp/>==<sp/>0){</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>median<sp/>=<sp/>(depths[depths.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>()/2-1]<sp/>+<sp/>depths[depths.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>()/2])<sp/>/<sp/>2.0;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>median<sp/>=<sp/>depths[depths.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>()<sp/>/<sp/>2];</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>median;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110" refid="namespaceed_1_1perception_1af71e3596d555050a40c5e1580256febd" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceed_1_1perception_1af71e3596d555050a40c5e1580256febd" kindref="member">optimizeContourHull</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>mask_orig,<sp/>cv::Mat&amp;<sp/>mask_optimized)<sp/>{</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;std::vector&lt;cv::Point&gt;</ref><sp/>&gt;<sp/>hull;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;std::vector&lt;cv::Point&gt;</ref><sp/>&gt;<sp/>contours;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/>mask_optimized<sp/>=<sp/>cv::Mat::zeros(mask_orig.size(),<sp/>CV_8UC1);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::findContours(mask_orig,<sp/>contours,<sp/>CV_RETR_EXTERNAL,<sp/>CV_CHAIN_APPROX_SIMPLE);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>contours.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>();<sp/>i++){</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>hull.<ref refid="cpp/container/vector/push_back" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">push_back</ref>(<ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;cv::Point&gt;</ref>());</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::convexHull(cv::Mat(contours[i]),<sp/>hull.<ref refid="cpp/container/vector/back" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">back</ref>(),<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::drawContours(mask_optimized,<sp/>hull,<sp/>-1,<sp/>cv::Scalar(255),<sp/>CV_FILLED);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="125"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129" refid="namespaceed_1_1perception_1acd82d359d9b25a55e6cca9411f5363f5" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceed_1_1perception_1acd82d359d9b25a55e6cca9411f5363f5" kindref="member">optimizeContourBlur</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>mask_orig,<sp/>cv::Mat&amp;<sp/>mask_optimized)<sp/>{</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/>mask_orig.copyTo(mask_optimized);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>blur<sp/>the<sp/>contour,<sp/>also<sp/>expands<sp/>it<sp/>a<sp/>bit</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>i<sp/>=<sp/>6;<sp/>i<sp/>&lt;<sp/>18;<sp/>i<sp/>=<sp/>i<sp/>+<sp/>2){</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::blur(mask_optimized,<sp/>mask_optimized,<sp/>cv::Size(<sp/>i,<sp/>i<sp/>),<sp/>cv::Point(-1,-1)<sp/>);</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::threshold(mask_optimized,<sp/>mask_optimized,<sp/>50,<sp/>255,<sp/>CV_THRESH_BINARY);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145" refid="namespaceed_1_1perception_1a1d46fccab72569c88d1b9a7d24c7b0f5" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="namespaceed_1_1perception_1a1d46fccab72569c88d1b9a7d24c7b0f5" kindref="member">clipInt</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>val,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>min,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>max)</highlight></codeline>
+<codeline lineno="146"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>val<sp/>&lt;=<sp/>min<sp/>?<sp/>min<sp/>:<sp/>val<sp/>&gt;=<sp/>max<sp/>?<sp/>max<sp/>:<sp/>val;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154" refid="namespaceed_1_1perception_1a413612f00bc280a501d6bec293fe48c3" refkind="member"><highlight class="normal">cv::Mat<sp/><ref refid="namespaceed_1_1perception_1a413612f00bc280a501d6bec293fe48c3" kindref="member">maskImage</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>img,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ed::ImageMask&amp;<sp/>mask,<sp/>cv::Rect&amp;<sp/>roi)</highlight></codeline>
+<codeline lineno="155"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>initialize<sp/>bounding<sp/>box<sp/>points</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/>uint<sp/>max_x<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/>uint<sp/>max_y<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/>uint<sp/>min_x<sp/>=<sp/>img.cols;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/>uint<sp/>min_y<sp/>=<sp/>img.rows;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Created<sp/>masked<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::Mat<sp/>masked_img<sp/>=<sp/>cv::Mat::zeros(img.rows,<sp/>img.cols,<sp/>img.type());</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(ed::ImageMask::const_iterator<sp/>it<sp/>=<sp/>mask.begin(img.cols);<sp/>it<sp/>!=<sp/>mask.end();<sp/>++it)</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Point2i&amp;<sp/>p_2d<sp/>=<sp/>*it;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>masked_img.at&lt;cv::Vec3b&gt;(p_2d)<sp/>=<sp/>img.at&lt;cv::Vec3b&gt;(p_2d);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>update<sp/>the<sp/>boundary<sp/>coordinates</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(min_x<sp/>&gt;<sp/>p_2d.x)<sp/>min_x<sp/>=<sp/>p_2d.x;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(max_x<sp/>&lt;<sp/>p_2d.x)<sp/>max_x<sp/>=<sp/>p_2d.x;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(min_y<sp/>&gt;<sp/>p_2d.y)<sp/>min_y<sp/>=<sp/>p_2d.y;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(max_y<sp/>&lt;<sp/>p_2d.y)<sp/>max_y<sp/>=<sp/>p_2d.y;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/>roi<sp/>=<sp/>cv::Rect(min_x,<sp/>min_y,<sp/>max_x<sp/>-<sp/>min_x,<sp/>max_y<sp/>-<sp/>min_y);</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>masked_img;</highlight></codeline>
+<codeline lineno="181"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187" refid="namespaceed_1_1perception_1ae86099089bde0e5f31637491c13ad1bf" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceed_1_1perception_1ae86099089bde0e5f31637491c13ad1bf" kindref="member">saveDebugImage</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref>&amp;<sp/>name,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>img)</highlight></codeline>
+<codeline lineno="188"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/>ed::UUID<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal"><sp/>=<sp/>ed::Entity::generateID();</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref><sp/>filename<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;/tmp/&quot;</highlight><highlight class="normal"><sp/>+<sp/>name<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;-&quot;</highlight><highlight class="normal"><sp/>+<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">.str()<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;.jpg&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(img.type()<sp/>==<sp/>CV_32FC1)</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>depth<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d_min<sp/>=<sp/>1e9;</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d_max<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Mat<sp/><ref refid="record__to__video_8cpp_1a666c70a25e5ec1223dee12c73c1ea2cc" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/rgbd/tags">rgb_image</ref>(img.rows,<sp/>img.cols,<sp/>CV_8UC3,<sp/>cv::Scalar(100,<sp/>0,<sp/>0));</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>img.rows<sp/>*<sp/>img.cols;<sp/>++i)</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>img.at&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&gt;(i);</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(d<sp/>==<sp/>d<sp/>&amp;&amp;<sp/>d<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>d_min<sp/>=<sp/><ref refid="cpp/algorithm/min" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(d,<sp/>d_min);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>d_max<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(d,<sp/>d_max);</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>img.rows<sp/>*<sp/>img.cols;<sp/>++i)</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>img.at&lt;</highlight><highlight class="keywordtype">float</highlight><highlight class="normal">&gt;(i);</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(d<sp/>==<sp/>d<sp/>&amp;&amp;<sp/>d<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="test__profiler_8cpp_1acfb0b2932bdc838461b776576cf85c50" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/code_profiler/tags">c</ref><sp/>=<sp/>255<sp/>*<sp/>(1.0<sp/>-<sp/>(d<sp/>-<sp/>d_min)<sp/>/<sp/>(d_max<sp/>-<sp/>d_min));</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rgb_image.at&lt;cv::Vec3b&gt;(i)<sp/>=<sp/>cv::Vec3b(c,<sp/>c,<sp/>c);</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::imwrite(filename,<sp/>rgb_image);</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::imwrite(filename,<sp/>img);</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="225"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight></codeline>
+<codeline lineno="231" refid="namespaceed_1_1perception_1acf7159e8e42c17bfbee77d5b5cd95495" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceed_1_1perception_1acf7159e8e42c17bfbee77d5b5cd95495" kindref="member">cleanDebugFolder</ref>(<ref refid="cpp/string/basic_string" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref><sp/>folder){</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>clean<sp/>the<sp/>debug<sp/>folder<sp/>if<sp/>debugging<sp/>is<sp/>active</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boost::filesystem::path<sp/>dir(folder);</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boost::filesystem::remove_all(dir);</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boost::filesystem::create_directories(dir);</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>boost::filesystem::filesystem_error&amp;<sp/>e){</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(e.code()<sp/>==<sp/>boost::system::errc::permission_denied)</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/io/cout" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::cout</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;[&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;cleanDebugFolder&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;]<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;boost::filesystem<sp/>permission<sp/>denied&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/io/cout" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::cout</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;[&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;cleanDebugFolder&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;]<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;boost::filesystem<sp/>failed<sp/>with<sp/>error:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>e.code().message()<sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="243"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal"></highlight></codeline>
+<codeline lineno="246"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="247"><highlight class="normal"></highlight></codeline>
+<codeline lineno="248" refid="namespaceed_1_1perception_1ae13097d5aa3b000d13c622cad393cfc8" refkind="member"><highlight class="normal">cv::Mat<sp/><ref refid="namespaceed_1_1perception_1ae13097d5aa3b000d13c622cad393cfc8" kindref="member">resizeSameRatio</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>img,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>target_width<sp/>=<sp/>500){</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>width<sp/>=<sp/>img.cols;</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>height<sp/>=<sp/>img.rows;</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::Rect<sp/>roi;</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::Mat<sp/>square<sp/>=<sp/>cv::Mat(target_width,<sp/>target_width,<sp/>img.type()<sp/>);</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"></highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/>square.setTo(cv::Scalar(255,255,255));</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"></highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>max_dim<sp/>=<sp/>(<sp/>width<sp/>&gt;=<sp/>height<sp/>)<sp/>?<sp/>width<sp/>:<sp/>height;</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>scale<sp/>=<sp/>(<sp/>(<sp/>float<sp/>)<sp/>target_width<sp/>)<sp/>/<sp/>max_dim;</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<sp/>width<sp/>&gt;=<sp/>height<sp/>){</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>roi.width<sp/>=<sp/>target_width;</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>roi.x<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>roi.height<sp/>=<sp/>height<sp/>*<sp/>scale;</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>roi.y<sp/>=<sp/>(<sp/>target_width<sp/>-<sp/>roi.height<sp/>)<sp/>/<sp/>2;</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>roi.y<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>roi.height<sp/>=<sp/>target_width;</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>roi.width<sp/>=<sp/>width<sp/>*<sp/>scale;</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>roi.x<sp/>=<sp/>(<sp/>target_width<sp/>-<sp/>roi.width<sp/>)<sp/>/<sp/>2;</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::resize(<sp/>img,<sp/>square(<sp/>roi<sp/>),<sp/>roi.size()<sp/>);</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"></highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>square;</highlight></codeline>
+<codeline lineno="275"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"></highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="278"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="279"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="plugins/shared_methods.cpp"/>
+  </compounddef>
+</doxygen>

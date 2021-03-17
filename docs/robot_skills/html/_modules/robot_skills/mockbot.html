@@ -1,0 +1,759 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.mockbot &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.mockbot</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.mockbot</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># System</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">mock</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">six</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">geometry_msgs</span>
+<span class="kn">import</span> <span class="nn">PyKDL</span> <span class="k">as</span> <span class="nn">kdl</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">std_msgs.msg</span>
+<span class="kn">import</span> <span class="nn">tf</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">ed_msgs.msg</span> <span class="k">import</span> <span class="n">EntityInfo</span>
+<span class="kn">from</span> <span class="nn">ed_sensor_integration_msgs.srv</span> <span class="k">import</span> <span class="n">UpdateResponse</span>
+<span class="kn">from</span> <span class="nn">robot_skills</span> <span class="k">import</span> <span class="n">robot</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">VectorStamped</span><span class="p">,</span> <span class="n">FrameStamped</span>
+<span class="kn">from</span> <span class="nn">robot_skills.classification_result</span> <span class="k">import</span> <span class="n">ClassificationResult</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">from_entity_info</span>
+<span class="kn">from</span> <span class="nn">hmi</span> <span class="k">import</span> <span class="n">HMIResult</span>
+<span class="kn">from</span> <span class="nn">hmi.common</span> <span class="k">import</span> <span class="n">random_sentence</span><span class="p">,</span> <span class="n">parse_sentence</span>
+
+
+<div class="viewcode-block" id="random_kdl_vector"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.random_kdl_vector">[docs]</a><span class="k">def</span> <span class="nf">random_kdl_vector</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="random_kdl_frame"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.random_kdl_frame">[docs]</a><span class="k">def</span> <span class="nf">random_kdl_frame</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">RPY</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()),</span>
+                     <span class="n">random_kdl_vector</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="mock_query"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.mock_query">[docs]</a><span class="k">def</span> <span class="nf">mock_query</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+    <span class="n">sentence</span> <span class="o">=</span> <span class="n">random_sentence</span><span class="p">(</span><span class="n">grammar</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+    <span class="n">semantics</span> <span class="o">=</span> <span class="n">parse_sentence</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">HMIResult</span><span class="p">(</span><span class="n">sentence</span><span class="o">=</span><span class="n">sentence</span><span class="p">,</span> <span class="n">semantics</span><span class="o">=</span><span class="n">semantics</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="old_query"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.old_query">[docs]</a><span class="k">def</span> <span class="nf">old_query</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;robot.ears.recognize IS REMOVED. Use `robot.hmi.query`&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AlteredMagicMock"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.AlteredMagicMock">[docs]</a><span class="k">class</span> <span class="nc">AlteredMagicMock</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">):</span>
+<div class="viewcode-block" id="AlteredMagicMock.assert_called_with"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.AlteredMagicMock.assert_called_with">[docs]</a>    <span class="k">def</span> <span class="nf">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assert that the mock was called with the specified arguments.</span>
+
+<span class="sd">        Raises an AssertionError if the args and keyword args passed in are</span>
+<span class="sd">        different to the last call to the mock.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">expected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_mock_call_signature</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s1">&#39;Expected call: </span><span class="si">%s</span><span class="se">\n</span><span class="s1">Not called&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">expected</span><span class="p">,))</span>
+
+        <span class="k">def</span> <span class="nf">_error_message</span><span class="p">(</span><span class="n">cause</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_mock_failure_message</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY2</span> <span class="ow">and</span> <span class="n">cause</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Tack on some diagnostics for Python without __cause__</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">cause</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">msg</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_matcher</span><span class="p">((</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_matcher</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">call_args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">equal_or_more_arguments</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">actual</span><span class="p">):</span>
+            <span class="n">cause</span> <span class="o">=</span> <span class="n">expected</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">six</span><span class="o">.</span><span class="n">raise_from</span><span class="p">(</span><span class="ne">AssertionError</span><span class="p">(</span><span class="n">_error_message</span><span class="p">(</span><span class="n">cause</span><span class="p">)),</span> <span class="n">cause</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AlteredMagicMock.assert_any_call"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.AlteredMagicMock.assert_any_call">[docs]</a>    <span class="k">def</span> <span class="nf">assert_any_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assert the mock has been called with the specified arguments.</span>
+
+<span class="sd">        The assert passes if the mock has *ever* been called, unlike</span>
+<span class="sd">        `assert_called_with` and `assert_called_once_with` that only pass if</span>
+<span class="sd">        the call is the most recent one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_matcher</span><span class="p">((</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_call_matcher</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_args_list</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">equal_or_more_arguments</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">actual</span><span class="p">]):</span>
+            <span class="n">cause</span> <span class="o">=</span> <span class="n">expected</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">expected_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_mock_call_signature</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">six</span><span class="o">.</span><span class="n">raise_from</span><span class="p">(</span><span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; call not found&quot;</span> <span class="o">%</span> <span class="n">expected_string</span><span class="p">),</span> <span class="n">cause</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AlteredMagicMock.equal_or_more_arguments"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.AlteredMagicMock.equal_or_more_arguments">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">equal_or_more_arguments</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">actual</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether the actual call contains at least the arguments and keyword arguments of the expected call.</span>
+<span class="sd">        But still return true if the actual call contains more (keyword) arguments than expected</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check args</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">expected</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">actual</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">expected</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">actual</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># check kwargs</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">expected</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">actual</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">expected</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">!=</span> <span class="n">actual</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">k</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+
+<div class="viewcode-block" id="MockedRobotPart"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.MockedRobotPart">[docs]</a><span class="k">class</span> <span class="nc">MockedRobotPart</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">=</span> <span class="n">robot_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span> <span class="o">=</span> <span class="n">tf_listener</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_connections</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_simple_action_client</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_subscriber</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_connection</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operational</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscribe_hardware_status</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unsubscribe_hardware_status</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_hardware_status</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Arm"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Arm">[docs]</a><span class="k">class</span> <span class="nc">Arm</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="n">get_joint_states</span><span class="p">,</span> <span class="n">side</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Arm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">side</span> <span class="o">=</span> <span class="n">side</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_joint_states</span> <span class="o">=</span> <span class="n">get_joint_states</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operational</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_offset</span> <span class="o">=</span> <span class="n">random_kdl_vector</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_configurations</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_trajectories</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_joint_goal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_joint_trajectory</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_goals</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_goal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_joint_goal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_joint_trajectory</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_joint_trajectory</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_publish_marker</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_motion_done</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+
+        <span class="c1"># add parts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gripper</span> <span class="o">=</span> <span class="n">Gripper</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handover_detector</span> <span class="o">=</span> <span class="n">HandoverDetector</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Arm.collect_gripper_types"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Arm.collect_gripper_types">[docs]</a>    <span class="k">def</span> <span class="nf">collect_gripper_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gripper_type</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">gripper_type</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">base_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_offset</span></div>
+
+
+<div class="viewcode-block" id="Gripper"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Gripper">[docs]</a><span class="k">class</span> <span class="nc">Gripper</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Gripper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">occupied_by</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_goal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="HandoverDetector"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.HandoverDetector">[docs]</a><span class="k">class</span> <span class="nc">HandoverDetector</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HandoverDetector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handover_to_human</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handover_to_robot</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn_towards</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">force_drive</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_location</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">FrameStamped</span><span class="p">(</span><span class="n">random_kdl_frame</span><span class="p">(),</span> <span class="s2">&quot;/map&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_pose</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_motion_done</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">go</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_costmap</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_goal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analyzer</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_planner</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getStatus</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="s2">&quot;arrived&quot;</span><span class="p">)</span>  <span class="c1"># always arrive for now</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dummy_plan&quot;</span><span class="p">])</span>  <span class="c1"># always arrive for now</span></div>
+
+
+<div class="viewcode-block" id="Hmi"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Hmi">[docs]</a><span class="k">class</span> <span class="nc">Hmi</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Hmi</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="n">mock_query</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_image</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_image_from_msg</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">old_query</span> <span class="o">=</span> <span class="n">old_query</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restart_dragonfly</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="EButton"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.EButton">[docs]</a><span class="k">class</span> <span class="nc">EButton</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EButton</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_listen</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_ebutton</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Head"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Head">[docs]</a><span class="k">class</span> <span class="nc">Head</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Head</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pan_tilt</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_goal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_goal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getGoal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atGoal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">look_at_standing_person</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">look_at_point</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">look_at_ground_in_front_of_robot</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>  <span class="c1"># TODO: Must return a EntityInfo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setPanTiltGoal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLookAtGoal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancelGoal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_motion_done</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setHeadReferenceGoal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__feedbackCallback</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__doneCallback</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Perception"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Perception">[docs]</a><span class="k">class</span> <span class="nc">Perception</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Perception</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learn_person</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detect_faces</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_best_face_recognition</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_rgb_depth_caminfo</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_roi</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="s2">&quot;/map&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Lights"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Lights">[docs]</a><span class="k">class</span> <span class="nc">Lights</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Lights</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_color</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_color_colorRGBA</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">off</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Speech"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Speech">[docs]</a><span class="k">class</span> <span class="nc">Speech</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Speech</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speak</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Torso"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Torso">[docs]</a><span class="k">class</span> <span class="nc">Torso</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="n">get_joint_states</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Torso</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_joint_states</span> <span class="o">=</span> <span class="n">get_joint_states</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_goal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_goal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">medium</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_goal</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_receive_torso_measurement</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_position</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_motion_done</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ED"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.ED">[docs]</a><span class="k">class</span> <span class="nc">ED</span><span class="p">(</span><span class="n">MockedRobotPart</span><span class="p">):</span>
+<div class="viewcode-block" id="ED.generate_random_entity"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.ED.generate_random_entity">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">generate_random_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">entity_info</span> <span class="o">=</span> <span class="n">EntityInfo</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">id</span><span class="p">:</span>
+                <span class="n">entity_info</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">entity_info</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">entity_info</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+            <span class="n">entity_info</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;random_from_magicmock&quot;</span><span class="p">,</span> <span class="s2">&quot;human&quot;</span><span class="p">,</span> <span class="s2">&quot;coke&quot;</span><span class="p">,</span> <span class="s2">&quot;fanta&quot;</span><span class="p">])</span>
+            <span class="c1"># entity.data = AlteredMagicMock()</span>
+            <span class="n">entity_info</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="n">entity</span> <span class="o">=</span> <span class="n">from_entity_info</span><span class="p">(</span><span class="n">entity_info</span><span class="p">)</span>
+            <span class="n">entity</span><span class="o">.</span><span class="n">_pose</span> <span class="o">=</span> <span class="n">random_kdl_frame</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
+                <span class="n">entity</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
+            <span class="k">return</span> <span class="n">entity</span></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ED</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_entities</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">,</span>
+                                     <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_entities</span><span class="p">[</span><span class="s1">&#39;john&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;john&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;person&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_static_entities</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">,</span>
+                                     <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_static_entities</span><span class="p">[</span><span class="s1">&#39;test_waypoint_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;test_waypoint_1&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;waypoint&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_static_entities</span><span class="p">[</span><span class="s1">&#39;cabinet&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;cabinet&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_closest_entity</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_entity</span> <span class="o">=</span> <span class="k">lambda</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_entities</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">navigation</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">navigation</span><span class="o">.</span><span class="n">get_position_constraint</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_entity</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_closest_possible_person_entity</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_closest_laser_entity</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_entity_info</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_connections</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_person_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="ED.get_entities"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.ED.get_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="n">VectorStamped</span><span class="p">(),</span> <span class="n">radius</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ignore_z</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="n">center_point_in_map</span> <span class="o">=</span> <span class="n">center_point</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="s2">&quot;/map&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+
+        <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="nb">type</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">radius</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ignore_z</span><span class="p">:</span>
+                <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">center_point_in_map</span><span class="o">.</span><span class="n">vector</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">radius</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">distance_to_3d</span><span class="p">(</span><span class="n">center_point_in_map</span><span class="o">.</span><span class="n">vector</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">radius</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">id</span><span class="p">:</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">entities</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">ED</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_entities</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_static_entities</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ED.segment_kinect"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.ED.segment_kinect">[docs]</a>    <span class="k">def</span> <span class="nf">segment_kinect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_entities</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ED</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span></div>
+
+<div class="viewcode-block" id="ED.update_kinect"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.ED.update_kinect">[docs]</a>    <span class="k">def</span> <span class="nf">update_kinect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">new_entities</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">id</span><span class="p">:</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ED</span><span class="o">.</span><span class="n">generate_random_entity</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_entities</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_entities</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">UpdateResponse</span><span class="p">()</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">new_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">new_entities</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">updated_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_entities</span><span class="p">)</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">deleted_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="ED.classify"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.ED.classify">[docs]</a>    <span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unknown_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">_id</span> <span class="ow">in</span> <span class="n">ids</span> <span class="k">if</span> <span class="n">_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entities</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ClassificationResult</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ED.detect_people"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.ED.detect_people">[docs]</a>    <span class="k">def</span> <span class="nf">detect_people</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">cam_info</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_dynamic_entities</span><span class="p">[</span><span class="s1">&#39;operator&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="MockedTfListener"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.MockedTfListener">[docs]</a><span class="k">class</span> <span class="nc">MockedTfListener</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MockedTfListener</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MockedTfListener.waitForTransform"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.MockedTfListener.waitForTransform">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">waitForTransform</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="MockedTfListener.transformPoint"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.MockedTfListener.transformPoint">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">transformPoint</span><span class="p">(</span><span class="n">frame_id</span><span class="p">,</span> <span class="n">point_stamped</span><span class="p">):</span>
+        <span class="n">point_stamped</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">frame_id</span>
+        <span class="k">return</span> <span class="n">point_stamped</span></div></div>
+
+
+<div class="viewcode-block" id="Mockbot"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Mockbot">[docs]</a><span class="k">class</span> <span class="nc">Mockbot</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">Robot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface to all parts of Mockbot. When initializing Mockbot, you can choose a list of components</span>
+<span class="sd">    which wont be needed</span>
+
+<span class="sd">    # I want a blind and mute Mockbot!</span>
+<span class="sd">    &gt;&gt;&gt; Mockbot([&#39;perception&#39;, &#39;speech&#39;])  # doctest: +SKIP</span>
+
+<span class="sd">    # I want a full fledged, awesome Mockbot</span>
+<span class="sd">    &gt;&gt;&gt; Mockbot()  # doctest: +SKIP</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">robot_name</span> <span class="o">=</span> <span class="s2">&quot;mockbot&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Mockbot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">wait_services</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="n">MockedTfListener</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">publish_target</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tf_transform_pose</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_joint_states</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_body_part</span><span class="p">(</span><span class="s1">&#39;hmi&#39;</span><span class="p">,</span> <span class="n">Hmi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">))</span>
+
+        <span class="c1"># Body parts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_body_part</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="n">Base</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_body_part</span><span class="p">(</span><span class="s1">&#39;torso&#39;</span><span class="p">,</span> <span class="n">Torso</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_joint_states</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_arm_part</span><span class="p">(</span><span class="s1">&#39;leftArm&#39;</span><span class="p">,</span> <span class="n">Arm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_joint_states</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_arm_part</span><span class="p">(</span><span class="s1">&#39;rightArm&#39;</span><span class="p">,</span> <span class="n">Arm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_joint_states</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_body_part</span><span class="p">(</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="n">Head</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">))</span>
+
+        <span class="c1"># Human Robot Interaction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_body_part</span><span class="p">(</span><span class="s1">&#39;speech&#39;</span><span class="p">,</span> <span class="n">Speech</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_body_part</span><span class="p">(</span><span class="s1">&#39;ebutton&#39;</span><span class="p">,</span> <span class="n">EButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_body_part</span><span class="p">(</span><span class="s1">&#39;lights&#39;</span><span class="p">,</span> <span class="n">Lights</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">))</span>
+
+        <span class="c1"># Reasoning/world modeling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_body_part</span><span class="p">(</span><span class="s1">&#39;ed&#39;</span><span class="p">,</span> <span class="n">ED</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_body_part</span><span class="p">(</span><span class="s1">&#39;perception&#39;</span><span class="p">,</span> <span class="n">Perception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">))</span>
+
+        <span class="c1"># Miscellaneous</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pub_target</span> <span class="o">=</span> <span class="n">AlteredMagicMock</span><span class="p">()</span>
+
+        <span class="c1"># Grasp offsets</span>
+        <span class="c1"># TODO: Don&#39;t hardcode, load from parameter server to make robot independent.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grasp_offset</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Mockbot.__enter__"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Mockbot.__enter__">[docs]</a>    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Mockbot.__exit__"><a class="viewcode-back" href="../../api/robot_skills/mockbot/index.html#robot_skills.mockbot.Mockbot.__exit__">[docs]</a>    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_val</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_val</span><span class="p">,</span> <span class="n">trace</span><span class="p">)):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Robot exited with </span><span class="si">{0}</span><span class="s2">,</span><span class="si">{1}</span><span class="s2">,</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_val</span><span class="p">,</span> <span class="n">trace</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;     _              __&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    / `</span><span class="se">\\</span><span class="s2">  (~._    ./  )&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    </span><span class="se">\\</span><span class="s2">__/ __`-_</span><span class="se">\\</span><span class="s2">__/ ./&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   _ </span><span class="se">\\</span><span class="s2"> </span><span class="se">\\</span><span class="s2">/  </span><span class="se">\\</span><span class="s2">  </span><span class="se">\\</span><span class="s2"> |_   __&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; (   )  </span><span class="se">\\</span><span class="s2">__/ -^    </span><span class="se">\\</span><span class="s2"> /  </span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  </span><span class="se">\\</span><span class="s2">_/ </span><span class="se">\&quot;</span><span class="s2">  </span><span class="se">\\</span><span class="s2">  | o  o  |.. /  __&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;       </span><span class="se">\\\\</span><span class="s2">. --&#39; ====  /  || /  </span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;         </span><span class="se">\\</span><span class="s2">   .  .  |---__.</span><span class="se">\\</span><span class="s2">__/&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;         /  :     /   |   |&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;         /   :   /     </span><span class="se">\\</span><span class="s2">_/&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      --/ ::    (&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;     (  |     (  (____&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   .--  .. ----**.____)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   </span><span class="se">\\</span><span class="s2">___/          &quot;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">atexit</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s2">&quot;mockbot_executioner&quot;</span><span class="p">,</span> <span class="n">anonymous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">mockbot</span> <span class="o">=</span> <span class="n">Mockbot</span><span class="p">(</span><span class="n">wait_services</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">robot</span> <span class="o">=</span> <span class="n">mockbot</span>  <span class="c1"># All state machines use robot. ..., this makes copy/pasting easier.</span>
+
+    <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">mockbot</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>  <span class="c1"># When exiting the interpreter, call mockbot.close(), which cancels all action goals etc.</span>
+
+    <span class="n">head_reset</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="n">head_down</span>  <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="n">right_close</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">_arms</span><span class="p">[</span><span class="s1">&#39;rightArm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">send_gripper_goal_close</span><span class="p">()</span>
+    <span class="n">left_close</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">_arms</span><span class="p">[</span><span class="s1">&#39;leftArm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">send_gripper_goal_close</span><span class="p">()</span>
+    <span class="n">right_open</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">_arms</span><span class="p">[</span><span class="s1">&#39;rightArm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">send_gripper_goal_open</span><span class="p">()</span>
+    <span class="n">left_open</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">_arms</span><span class="p">[</span><span class="s1">&#39;leftArm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">send_gripper_goal_open</span><span class="p">()</span>
+    <span class="n">speak</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">sentence</span><span class="p">:</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">praat</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">sentence</span><span class="p">:</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s1">&#39;nl&#39;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">look_at_point</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/mockbot/base_link&quot;</span><span class="p">))</span>
+
+    <span class="n">mapgo</span> <span class="o">=</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">go</span>
+
+    <span class="k">def</span> <span class="nf">basego</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">phi</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">go</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">phi</span><span class="p">,</span><span class="n">frame</span><span class="o">=</span><span class="s2">&quot;/mockbot/base_link&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">insert_object</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">test_tools.WorldFaker</span> <span class="k">import</span> <span class="n">WorldFaker</span>
+        <span class="n">wf</span> <span class="o">=</span> <span class="n">WorldFaker</span><span class="p">()</span>
+        <span class="n">wf</span><span class="o">.</span><span class="n">insert</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)})</span>
+
+    <span class="c1"># Useful for making location-files</span>
+    <span class="k">def</span> <span class="nf">get_pose_2d</span><span class="p">():</span>
+       <span class="n">posestamped</span> <span class="o">=</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">location</span>
+       <span class="n">loc</span><span class="p">,</span><span class="n">rot</span> <span class="o">=</span> <span class="n">posestamped</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">point</span><span class="p">,</span> <span class="n">posestamped</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span>
+       <span class="n">rot_array</span> <span class="o">=</span> <span class="p">[</span><span class="n">rot</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">rot</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">rot</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">rot</span><span class="o">.</span><span class="n">z</span><span class="p">]</span>
+       <span class="n">rot3</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">transformations</span><span class="o">.</span><span class="n">euler_from_quaternion</span><span class="p">(</span><span class="n">rot_array</span><span class="p">)</span>
+       <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x=</span><span class="si">{0}</span><span class="s1">, y=</span><span class="si">{1}</span><span class="s1">, phi=</span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loc</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">rot3</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+       <span class="k">return</span> <span class="n">loc</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">loc</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">rot3</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">hear</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="n">pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/pocketsphinx/output&#39;</span><span class="p">,</span> <span class="n">std_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">String</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Telling Mockbot &#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+        <span class="n">pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">std_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">save_sentence</span><span class="p">(</span><span class="n">sentence</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let mockbot say a sentence and them move the generated speech file to a separate file that will not be overwritten</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">+=</span> <span class="s2">&quot;.wav&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;mv /tmp/speech.wav /tmp/</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">test_audio</span><span class="p">():</span>
+        <span class="n">OKGREEN</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[92m&#39;</span>
+        <span class="n">ENDC</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[0m&#39;</span>
+
+        <span class="n">mockbot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Please say: continue when I turn green&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#definitely block here, otherwise we hear ourselves</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">mockbot</span><span class="o">.</span><span class="n">ears</span><span class="o">.</span><span class="n">ask_user</span><span class="p">(</span><span class="s2">&quot;continue&quot;</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;test_audio result: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">and</span> <span class="n">result</span> <span class="o">!=</span> <span class="s2">&quot;false&quot;</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">OKGREEN</span><span class="o">+</span><span class="s2">&quot;Speach pipeline working&quot;</span><span class="o">+</span><span class="n">ENDC</span><span class="p">)</span>
+            <span class="n">mockbot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Yep, my ears are fine&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Speech pipeline not working&quot;</span><span class="p">)</span>
+            <span class="n">mockbot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Nope, my ears are clogged&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\033</span><span class="s2">[1;33m You can now command mockbot from the python REPL.</span>
+<span class="s2">    Type e.g. help(mockbot) for help on objects and functions,</span>
+<span class="s2">    or type &#39;mockbot.&#39; &lt;TAB&gt; to see what methods are available.</span>
+<span class="s2">    Also, try &#39;dir()&#39;</span>
+<span class="s2">    You can use both robot.foo or mockbot.foo for easy copypasting.</span>
+<span class="s2">    Press ctrl-D or type &#39;exit()&#39; to exit the awesome mockbot-console.</span>
+<span class="s2">    WARNING: When the console exits, it cancels ALL arm and base goals.</span>
+<span class="s2">    There are handy shortcuts, such as:</span>
+<span class="s2">        - mapgo/basego(x,y,phi),</span>
+<span class="s2">        - speak/praat/(sentence), save_sentence(sentence) saves the .wav file to /tmp/&lt;sentence_you_typed&gt;.wav</span>
+<span class="s2">        - head_down, head_reset, left/right_close/open, look_at_point(x,y,z),</span>
+<span class="s2">        - get_pose_2d()</span>
+<span class="s2">        - test_audio()</span>
+<span class="s2">    Finally, methods can be called without parentheses, like &#39;speak &quot;Look ma, no parentheses!&quot;&#39;</span><span class="se">\033</span><span class="s2">[1;m&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

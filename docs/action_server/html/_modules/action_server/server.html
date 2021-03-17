@@ -1,0 +1,319 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>action_server.server &mdash; action_server 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> action_server
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">action_server</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>action_server.server</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for action_server.server</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">rospy</span><span class="o">,</span> <span class="nn">yaml</span>
+
+<span class="kn">import</span> <span class="nn">actionlib</span>
+<span class="kn">import</span> <span class="nn">action_server_msgs.msg</span>
+<span class="kn">from</span> <span class="nn">action_server_msgs.srv</span> <span class="k">import</span> <span class="n">GetActions</span><span class="p">,</span> <span class="n">GetActionsResponse</span>
+<span class="kn">from</span> <span class="nn">task_manager</span> <span class="k">import</span> <span class="n">TaskManager</span>
+<span class="kn">from</span> <span class="nn">actions.action</span> <span class="k">import</span> <span class="n">ConfigurationResult</span>
+
+
+<div class="viewcode-block" id="Server"><a class="viewcode-back" href="../../api/action_server/server/index.html#action_server.server.Server">[docs]</a><span class="k">class</span> <span class="nc">Server</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Server wraps the TaskManager to expose a ROS actionlib interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task_manager</span> <span class="o">=</span> <span class="n">TaskManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">)</span>
+
+        <span class="c1"># Set up actionlib interface for clients to give a task to the robot.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_name</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/action_server/task&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_server</span> <span class="o">=</span> <span class="n">actionlib</span><span class="o">.</span><span class="n">SimpleActionServer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_action_name</span><span class="p">,</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskAction</span><span class="p">,</span>
+                                                           <span class="n">execute_cb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_action_cb</span><span class="p">,</span> <span class="n">auto_start</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_server</span><span class="o">.</span><span class="n">register_preempt_callback</span><span class="p">(</span><span class="n">cb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cancel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_actions_srv</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Service</span><span class="p">(</span><span class="s2">&quot;get_actions&quot;</span><span class="p">,</span> <span class="n">GetActions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_actions_cb</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Started action server with action name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_action_name</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Server._get_actions_cb"><a class="viewcode-back" href="../../api/action_server/server/index.html#action_server.server.Server._get_actions_cb">[docs]</a>    <span class="k">def</span> <span class="nf">_get_actions_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">GetActionsResponse</span><span class="p">()</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_manager</span><span class="o">.</span><span class="n">get_actions</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="Server._add_action_cb"><a class="viewcode-back" href="../../api/action_server/server/index.html#action_server.server.Server._add_action_cb">[docs]</a>    <span class="k">def</span> <span class="nf">_add_action_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">goal</span><span class="p">):</span>
+        <span class="n">recipe</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">goal</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Received action recipe: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">goal</span><span class="o">.</span><span class="n">recipe</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># check if we have a recipe that makes sense, otherwise set result to failed</span>
+            <span class="c1"># note that python uses lazy evaluation of boolean conditions</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">recipe</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;actions&#39;</span> <span class="ow">in</span> <span class="n">recipe</span> <span class="ow">and</span> <span class="n">recipe</span><span class="p">[</span><span class="s1">&#39;actions&#39;</span><span class="p">]:</span>
+                <span class="n">configuration_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_manager</span><span class="o">.</span><span class="n">set_up_state_machine</span><span class="p">(</span><span class="n">recipe</span><span class="p">[</span><span class="s1">&#39;actions&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Recipe does not contain actions, setting configuration result to failed&quot;</span><span class="p">)</span>
+                <span class="n">configuration_result</span> <span class="o">=</span> <span class="n">ConfigurationResult</span><span class="p">()</span>
+                <span class="n">configuration_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">configuration_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;I do not understand your command.&quot;</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Result of state machine setup: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configuration_result</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">log_messages</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="n">configuration_result</span><span class="o">.</span><span class="n">succeeded</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Setting up state machine succeeded&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">configuration_result</span><span class="o">.</span><span class="n">missing_field</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="o">.</span><span class="n">RESULT_MISSING_INFORMATION</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">missing_field</span> <span class="o">=</span> <span class="s2">&quot;actions&quot;</span> <span class="o">+</span> <span class="n">configuration_result</span><span class="o">.</span><span class="n">missing_field</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">log_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; I don&#39;t have enough information to perform that task.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">log_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">configuration_result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">configuration_result</span><span class="o">.</span><span class="n">message</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="o">.</span><span class="n">RESULT_TASK_CONFIGURATION_FAILED</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">log_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">configuration_result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="o">.</span><span class="n">RESULT_UNKNOWN</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">log_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; It seems that I am unable to perform that task. &quot;</span>
+                                                       <span class="s2">&quot;Not sure why though.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_action_server</span><span class="o">.</span><span class="n">set_aborted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_task_manager</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Setting up state machine failed&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_manager</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
+                <span class="c1"># Pass feedback to client about what type of action is running</span>
+                <span class="n">feedback</span> <span class="o">=</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskFeedback</span><span class="p">()</span>
+                <span class="n">feedback</span><span class="o">.</span><span class="n">current_subtask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_manager</span><span class="o">.</span><span class="n">get_next_action_name</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_action_server</span><span class="o">.</span><span class="n">publish_feedback</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+
+                <span class="n">action_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_manager</span><span class="o">.</span><span class="n">execute_next_action</span><span class="p">()</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Result of action execution: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">action_result</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">log_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">action_result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">action_result</span><span class="o">.</span><span class="n">succeeded</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="o">.</span><span class="n">RESULT_TASK_EXECUTION_FAILED</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_action_server</span><span class="o">.</span><span class="n">set_aborted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_task_manager</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Execution of state machine aborted because action failed.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;An error occurred using task recipe: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">goal</span><span class="o">.</span><span class="n">recipe</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="o">.</span><span class="n">RESULT_TASK_EXECUTION_FAILED</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">log_messages</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; I failed to perform the task. &#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_action_server</span><span class="o">.</span><span class="n">set_aborted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Execution of state machine succeeded.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="o">.</span><span class="n">RESULT_SUCCEEDED</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_server</span><span class="o">.</span><span class="n">set_succeeded</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Server._cancel"><a class="viewcode-back" href="../../api/action_server/server/index.html#action_server.server.Server._cancel">[docs]</a>    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task_manager</span><span class="o">.</span><span class="n">request_preempt</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

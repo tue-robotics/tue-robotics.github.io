@@ -1,0 +1,667 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.navigation.door_opening &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.navigation.door_opening</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.navigation.door_opening</h1><div class="highlight"><pre>
+<span></span><span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Event</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">from</span> <span class="nn">geometry_msgs.msg</span> <span class="k">import</span> <span class="n">PolygonStamped</span><span class="p">,</span> <span class="n">Point</span><span class="p">,</span> <span class="n">PoseStamped</span><span class="p">,</span> <span class="n">Pose</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">from</span> <span class="nn">sensor_msgs.msg</span> <span class="k">import</span> <span class="n">LaserScan</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+<span class="kn">from</span> <span class="nn">visualization_msgs.msg</span> <span class="k">import</span> <span class="n">Marker</span><span class="p">,</span> <span class="n">MarkerArray</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">cb_base_navigation_msgs.msg</span> <span class="k">import</span> <span class="n">PositionConstraint</span>
+<span class="kn">from</span> <span class="nn">ed_msgs.msg</span> <span class="k">import</span> <span class="n">EntityInfo</span>
+<span class="kn">from</span> <span class="nn">robot_skills.base</span> <span class="k">import</span> <span class="n">computePathLength</span>
+<span class="kn">import</span> <span class="nn">robot_smach_states</span> <span class="k">as</span> <span class="nn">states</span>
+<span class="kn">import</span> <span class="nn">robot_smach_states.util.designators</span> <span class="k">as</span> <span class="nn">ds</span>
+
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor">[docs]</a><span class="k">class</span> <span class="nc">ForceDriveToTouchDoor</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Once a door is no longer locked, the lever is not latched into locking plate, it can be pushed open.</span>
+<span class="sd">    This can be done either with the arms or even with the base, if you push gently,</span>
+<span class="sd">        as a person would use his/her butt to bump open a door when you&#39;re holding something with both hands :-)</span>
+
+<span class="sd">    Assumptions: We are already in front of the door, e.g. on the door mat so to speak.</span>
+
+<span class="sd">    To do this, the following steps are needed:</span>
+<span class="sd">     - Move slowly to put the edge of the base against the door</span>
+<span class="sd">     - Now move forward, perpendicular to the wall the door is in.</span>
+
+<span class="sd">    Test in amigo-console with</span>
+<span class="sd">    do = state_machine.ForceDriveToTouchDoor(amigo, None); do.execute(); do.execute()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">approach_speed</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">approach_speed</span> <span class="o">=</span> <span class="n">approach_speed</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_vizualizer</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;visualization_marker_array&quot;</span><span class="p">,</span> <span class="n">MarkerArray</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Align with the door frame; the X-axis should be perpendicular to the wall; y parallel to the wall</span>
+
+        <span class="c1"># Get a laserscan message from topic /{robotname}/base_laser/scan</span>
+        <span class="c1"># Convert this to a list of cartesian points in base_link for easier calculations</span>
+        <span class="c1">#   (the assumption that the base_laser is in line with the base_link X-axis makes this easier, just addition)</span>
+
+        <span class="c1"># Get footprint of the robot: topic /{robotname}/local_planner/local_costmap/robot_footprint/footprint_stamped</span>
+        <span class="c1"># Convert this to /base_link coordinates</span>
+
+        <span class="c1"># Find a distance (in base_link X+) when the footprint and the scan will intersect</span>
+        <span class="c1"># Sample the X distances for the conversion of the footprint above or do this algebraically?</span>
+
+        <span class="c1"># To determine the side, get the intersection point and the Y coordinate. If in y-, then right, if y+ then left.</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">suppress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">footprint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_footprint</span><span class="p">()</span>
+        <span class="n">footprint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_frontside_of_footprint</span><span class="p">(</span><span class="n">footprint</span><span class="p">)</span>
+
+        <span class="n">scan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_laserscan</span><span class="p">()</span>
+        <span class="n">scan_in_bl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_to_base_link_points</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
+        <span class="n">scan_in_bl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_scanpoints_in_front_of_footprint</span><span class="p">(</span><span class="n">scan_in_bl</span><span class="p">,</span> <span class="n">footprint</span><span class="p">)</span>
+
+        <span class="n">footprint_point</span><span class="p">,</span> <span class="n">drive_dist</span><span class="p">,</span> <span class="n">scan_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_drive_distance_to_first_obstacle</span><span class="p">(</span><span class="n">footprint</span><span class="p">,</span> <span class="n">scan_in_bl</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">publish_debug_info</span><span class="p">(</span><span class="n">footprint_point</span><span class="p">,</span> <span class="n">drive_dist</span><span class="p">,</span> <span class="n">scan_point</span><span class="p">)</span>
+
+        <span class="n">collision_side</span> <span class="o">=</span> <span class="s2">&quot;front&quot;</span>
+        <span class="k">if</span> <span class="n">footprint_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="n">collision_side</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span> <span class="c1"># Left side</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">collision_side</span> <span class="o">=</span> <span class="s1">&#39;right&#39;</span>  <span class="c1"># Right side</span>
+
+        <span class="n">drive_time</span> <span class="o">=</span> <span class="n">drive_dist</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">approach_speed</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Will drive </span><span class="si">{}</span><span class="s2">m forward towards door. &quot;</span>
+                      <span class="s2">&quot;Collision will happen on my </span><span class="si">{}</span><span class="s2"> side&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">drive_dist</span><span class="p">,</span> <span class="n">collision_side</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">force_drive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">approach_speed</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">drive_time</span><span class="o">*</span><span class="mf">0.9</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">collision_side</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span></div>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.get_laserscan"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.get_laserscan">[docs]</a>    <span class="k">def</span> <span class="nf">get_laserscan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subscribe to laserscans and unsubscribe when we get one.</span>
+<span class="sd">        This is realized through a threading.Event which is set when a message is received</span>
+<span class="sd">        :return: the most recent laser scan</span>
+<span class="sd">        :rtype LaserScan</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">received</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+
+        <span class="n">laserscan</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+        <span class="k">def</span> <span class="nf">get_scan</span><span class="p">(</span><span class="n">scan</span><span class="p">):</span>
+            <span class="n">laserscan</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">scan</span>  <span class="c1"># Going via a list is apparently the way to have a proper closure. Py3 has &#39;nonlocal&#39;</span>
+            <span class="n">received</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+        <span class="n">laser_sub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/base_laser/scan&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">),</span> <span class="n">LaserScan</span><span class="p">,</span> <span class="n">get_scan</span><span class="p">)</span>
+        <span class="n">received</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
+
+        <span class="n">laser_sub</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">laserscan</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.get_footprint"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.get_footprint">[docs]</a>    <span class="k">def</span> <span class="nf">get_footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subscribe to footprint and unsubscribe when we get one.</span>
+<span class="sd">        This is realized through a threading.Event which is set when a message is received</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">received</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+
+        <span class="n">footprint</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+        <span class="k">def</span> <span class="nf">get_footprint</span><span class="p">(</span><span class="n">fp</span><span class="p">):</span>
+            <span class="c1"># print &quot;Received footprint&quot;</span>
+            <span class="n">footprint</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">fp</span>
+            <span class="n">received</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+        <span class="n">footprint_sub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/local_planner/local_costmap/robot_footprint/footprint_stamped&quot;</span><span class="o">.</span>
+                                         <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">),</span> <span class="n">PolygonStamped</span><span class="p">,</span> <span class="n">get_footprint</span><span class="p">)</span>
+
+        <span class="n">received</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
+        <span class="n">footprint_sub</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
+        <span class="n">footprint</span> <span class="o">=</span> <span class="n">footprint</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">posestampeds</span> <span class="o">=</span> <span class="p">[</span><span class="n">PoseStamped</span><span class="p">(</span><span class="n">footprint</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="n">Pose</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">point</span><span class="p">))</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">footprint</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">points</span><span class="p">]</span>
+        <span class="n">in_baselink</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">tf_transform_pose</span><span class="p">(</span><span class="n">ps</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/base_link&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">))</span> <span class="k">for</span> <span class="n">ps</span> <span class="ow">in</span> <span class="n">posestampeds</span><span class="p">]</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">ps</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">ps</span> <span class="ow">in</span> <span class="n">in_baselink</span><span class="p">]</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="p">[</span><span class="n">ps</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="k">for</span> <span class="n">ps</span> <span class="ow">in</span> <span class="n">in_baselink</span><span class="p">]</span>
+        <span class="c1"># Z = [ps.point.z for ps in in_baselink]</span>
+        <span class="n">as_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">return</span> <span class="n">as_array</span></div>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.select_frontside_of_footprint"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.select_frontside_of_footprint">[docs]</a>    <span class="k">def</span> <span class="nf">select_frontside_of_footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">footprint_points</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">footprint_points</span><span class="p">[</span><span class="n">footprint_points</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.select_scanpoints_in_front_of_footprint"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.select_scanpoints_in_front_of_footprint">[docs]</a>    <span class="k">def</span> <span class="nf">select_scanpoints_in_front_of_footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan_points</span><span class="p">,</span> <span class="n">footprint</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="n">y_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">footprint</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="n">tolerance</span>
+        <span class="n">y_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">footprint</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="n">tolerance</span>
+
+        <span class="n">larger_than_min</span> <span class="o">=</span> <span class="n">scan_points</span><span class="p">[</span><span class="n">scan_points</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">y_min</span><span class="p">]</span>
+        <span class="n">smaller_than_max</span> <span class="o">=</span> <span class="n">larger_than_min</span><span class="p">[</span><span class="n">larger_than_min</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">y_max</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">smaller_than_max</span></div>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.scan_to_base_link_points"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.scan_to_base_link_points">[docs]</a>    <span class="k">def</span> <span class="nf">scan_to_base_link_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scan</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a sensor_msgs.msg.LaserScan message to a list of point in base_link frame</span>
+<span class="sd">        Returns a numpy.ndarray of shape (N, 2)</span>
+
+<span class="sd">        :param scan:</span>
+<span class="sd">        :type scan: LaserScan</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#angles = np.arange(scan.angle_min, scan.angle_max-scan.angle_increment, scan.angle_increment)</span>
+        <span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">scan</span><span class="o">.</span><span class="n">angle_min</span><span class="p">,</span> <span class="n">scan</span><span class="o">.</span><span class="n">angle_max</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">scan</span><span class="o">.</span><span class="n">ranges</span><span class="p">))</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">scan</span><span class="o">.</span><span class="n">ranges</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span> <span class="c1"># TODO: get distance between laser frame and base_link</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">scan</span><span class="o">.</span><span class="n">ranges</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span>
+
+        <span class="n">posestampeds</span> <span class="o">=</span> <span class="p">[</span><span class="n">PoseStamped</span><span class="p">(</span><span class="n">scan</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="n">Pose</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)]</span>
+        <span class="n">in_baselink</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">tf_transform_pose</span><span class="p">(</span><span class="n">ps</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/base_link&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">))</span> <span class="k">for</span> <span class="n">ps</span> <span class="ow">in</span> <span class="n">posestampeds</span><span class="p">]</span>
+
+        <span class="n">Xb</span> <span class="o">=</span> <span class="p">[</span><span class="n">ps</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="k">for</span> <span class="n">ps</span> <span class="ow">in</span> <span class="n">in_baselink</span><span class="p">]</span>
+        <span class="n">Yb</span> <span class="o">=</span> <span class="p">[</span><span class="n">ps</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="k">for</span> <span class="n">ps</span> <span class="ow">in</span> <span class="n">in_baselink</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Xb</span><span class="p">,</span><span class="n">Yb</span><span class="p">])</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.add_delta_to_points"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.add_delta_to_points">[docs]</a>    <span class="k">def</span> <span class="nf">add_delta_to_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">delta</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a distance to a list of points. Points should be an (N, 2)-shaped numpy.ndarray</span>
+<span class="sd">        and delta must be a (2)-shaped np.ndarray.</span>
+
+<span class="sd">        :param points:</span>
+<span class="sd">        :param delta:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.closest_other_point"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.closest_other_point">[docs]</a>    <span class="k">def</span> <span class="nf">closest_other_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">points</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">points</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span>
+        <span class="n">smallest_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="n">smallest_index</span><span class="p">],</span> <span class="n">points</span><span class="p">[</span><span class="n">smallest_index</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.distance_between_footprint_and_scan"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.distance_between_footprint_and_scan">[docs]</a>    <span class="k">def</span> <span class="nf">distance_between_footprint_and_scan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">footprint_points</span><span class="p">,</span> <span class="n">scan_points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the distance between the two closest points in the two sets of points and return those points as well.</span>
+
+<span class="sd">        :param footprint_points: Points (in base_link) that define the base&#39;s footprint</span>
+<span class="sd">        :param scan_points: Points (in base_link) that are scanned by the front laser</span>
+<span class="sd">        :return: tuple of (footprint_point, distance, scan_point)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">fp_dist_sp</span> <span class="o">=</span> <span class="p">[(</span><span class="n">point</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">closest_other_point</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">scan_points</span><span class="p">))</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">footprint_points</span><span class="p">]</span>
+        <span class="c1"># fp_dist_sp is a list of (footprint_point, (distance, scan_point))-tuples</span>
+        <span class="n">smallest</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">fp_dist_sp</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">pair</span><span class="p">:</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">smallest</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">smallest</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">smallest</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.find_drive_distance_to_first_obstacle"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.find_drive_distance_to_first_obstacle">[docs]</a>    <span class="k">def</span> <span class="nf">find_drive_distance_to_first_obstacle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">footprint_points</span><span class="p">,</span> <span class="n">scan_points</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="mf">0.025</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Samples the distance with which to shift the footprint_points forwards (through a delta in X)</span>
+<span class="sd">        and find the deltaX that makes for the smallest distance between these sets of points.</span>
+
+<span class="sd">        This value is returned with the footprint_point at which this happens.</span>
+
+<span class="sd">        :param footprint_points:</span>
+<span class="sd">        :param scan_points:</span>
+<span class="sd">        :return: A tuple giving the footprint point closest to the scan, distance to the scan and scan point closest to the footprint</span>
+<span class="sd">        :rtype tuple of (np.array([x, y]), distance, np.array([x, y]))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">calc</span><span class="p">(</span><span class="n">forward_travel</span><span class="p">):</span>
+            <span class="n">shifted_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_delta_to_points</span><span class="p">(</span><span class="n">footprint_points</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">forward_travel</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+            <span class="n">fp</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">sp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_between_footprint_and_scan</span><span class="p">(</span><span class="n">shifted_points</span><span class="p">,</span> <span class="n">scan_points</span><span class="p">)</span>
+            <span class="c1"># print &quot;If I drive {0:.3f}, distance will be {2} between {1} and {3}&quot;.format(forward_travel, fp, distance, sp)</span>
+
+            <span class="n">original_fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_delta_to_points</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">forward_travel</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="n">original_fp</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">sp</span>
+
+        <span class="n">forward_travels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">)</span>
+        <span class="n">fp_distance_sp</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">calc</span><span class="p">,</span> <span class="n">forward_travels</span><span class="p">)</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fp_dist_sp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">fp_dist_sp</span> <span class="ow">in</span> <span class="n">fp_distance_sp</span><span class="p">])</span>
+
+        <span class="n">smallest_distance_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+
+        <span class="n">forward_travel_to_minimize_distance</span> <span class="o">=</span> <span class="n">forward_travels</span><span class="p">[</span><span class="n">smallest_distance_index</span><span class="p">]</span>
+        <span class="n">footprint_point_closest_to_scan</span> <span class="o">=</span> <span class="n">fp_distance_sp</span><span class="p">[</span><span class="n">smallest_distance_index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">scan_point_closest_to_footprint</span> <span class="o">=</span> <span class="n">fp_distance_sp</span><span class="p">[</span><span class="n">smallest_distance_index</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">footprint_point_closest_to_scan</span><span class="p">,</span> <span class="n">forward_travel_to_minimize_distance</span><span class="p">,</span> <span class="n">scan_point_closest_to_footprint</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ForceDriveToTouchDoor.publish_debug_info"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor.publish_debug_info">[docs]</a>    <span class="k">def</span> <span class="nf">publish_debug_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">footprint_point</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">scan_point</span><span class="p">):</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">MarkerArray</span><span class="p">()</span>
+
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">Marker</span><span class="p">()</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">SPHERE</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">fp</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">fp</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">footprint_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">footprint_point</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">fp</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">fp</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">scale</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">scale</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">fp</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="n">fp</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">fp</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/base_link&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">frame_locked</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">ADD</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">ns</span> <span class="o">=</span> <span class="s2">&quot;door_opening&quot;</span>
+        <span class="n">array</span><span class="o">.</span><span class="n">markers</span> <span class="o">+=</span> <span class="p">[</span><span class="n">fp</span><span class="p">]</span>
+
+        <span class="n">sp</span> <span class="o">=</span> <span class="n">Marker</span><span class="p">()</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">SPHERE</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">sp</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">scan_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scan_point</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">scale</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">scale</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">sp</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/base_link&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">)</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">frame_locked</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">ADD</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">ns</span> <span class="o">=</span> <span class="s2">&quot;door_opening&quot;</span>
+        <span class="n">array</span><span class="o">.</span><span class="n">markers</span> <span class="o">+=</span> <span class="p">[</span><span class="n">sp</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_vizualizer</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">array</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PushPerpendicularToDoor"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.PushPerpendicularToDoor">[docs]</a><span class="k">class</span> <span class="nc">PushPerpendicularToDoor</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the angle of the door via the laser or world model and</span>
+<span class="sd">    force_drive to push with a force perpendicular to the door plane</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="PushSidewaysAndBack"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.PushSidewaysAndBack">[docs]</a><span class="k">class</span> <span class="nc">PushSidewaysAndBack</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Drive sideways for some distance (in base_link) and move back again</span>
+
+<span class="sd">    Test in amigo-console with state_machine.PushSidewaysAndBack(amigo, 0.2, 0.05).execute()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">y_dist</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_dist</span> <span class="o">=</span> <span class="n">y_dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">speed</span>
+
+<div class="viewcode-block" id="PushSidewaysAndBack.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.PushSidewaysAndBack.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_dist</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">force_drive</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>  <span class="c1"># There</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">force_drive</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">speed</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>  <span class="c1"># and back again</span>
+                <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;failed&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="CheckDoorPassable"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.CheckDoorPassable">[docs]</a><span class="k">class</span> <span class="nc">CheckDoorPassable</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check whether a given door can be passed. The precondition is that the robot is in front of said door.</span>
+
+<span class="sd">    Test in amigo-console with</span>
+<span class="sd">    state_machine.CheckDoorPassable(amigo, ds.EdEntityDesignator(amigo, id=&#39;door_navigation&#39;)).execute() &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">destination_designator</span><span class="p">,</span> <span class="n">door_entity_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param robot: Robot on which to perform this state</span>
+<span class="sd">        :param destination_designator: The destination to reach through this door.</span>
+<span class="sd">        :param door_entity_designator: The door which to pass</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;passable&#39;</span><span class="p">,</span> <span class="s1">&#39;blocked&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">door_entity_designator</span> <span class="o">=</span> <span class="n">door_entity_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destination_designator</span> <span class="o">=</span> <span class="n">destination_designator</span>
+
+<div class="viewcode-block" id="CheckDoorPassable.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.CheckDoorPassable.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">destination_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;CheckDoorPassable::execute: No entity could be resolved from designator &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">destination_designator</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">PositionConstraint</span><span class="p">(</span><span class="n">constraint</span><span class="o">=</span><span class="s2">&quot;(x-</span><span class="si">%f</span><span class="s2">)^2+(y-</span><span class="si">%f</span><span class="s2">)^2 &lt; </span><span class="si">%f</span><span class="s2">^2&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;/map&quot;</span><span class="p">)</span>
+        <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">plan</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">computePathLength</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">3.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;passable&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;blocked&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="WaypointOfDoorDesignator"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.WaypointOfDoorDesignator">[docs]</a><span class="k">class</span> <span class="nc">WaypointOfDoorDesignator</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">Designator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resolves to a waypoint associated with a door-entity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">door_entity_designator</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param robot: The robot with which to query ED</span>
+<span class="sd">        :param door_entity_designator: Designator resolving to an entity of type door that has a push_start_waypoint and push_destination_waypoint data field</span>
+<span class="sd">        :param direction: &#39;start&#39; or &#39;destination&#39; to select one of the two data fields</span>
+<span class="sd">        :param name: Name for this designator to aid in debugging.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WaypointOfDoorDesignator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">EntityInfo</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_resolve_type</span><span class="p">(</span><span class="n">door_entity_designator</span><span class="p">,</span> <span class="n">EntityInfo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">door_entity_designator</span> <span class="o">=</span> <span class="n">door_entity_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_field</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;push_start_waypoint&#39;</span><span class="p">,</span> <span class="s1">&#39;destination&#39;</span><span class="p">:</span><span class="s1">&#39;push_destination_waypoint&#39;</span><span class="p">}[</span><span class="n">direction</span><span class="p">]</span>
+
+<div class="viewcode-block" id="WaypointOfDoorDesignator._resolve"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.WaypointOfDoorDesignator._resolve">[docs]</a>    <span class="k">def</span> <span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Finding from where to open a door&quot;</span><span class="p">)</span>
+        <span class="n">door_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">door_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="kn">import</span> <span class="nn">ipdb</span><span class="p">;</span> <span class="n">ipdb</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">door_entity</span><span class="p">:</span>
+            <span class="n">waypoint_id</span> <span class="o">=</span> <span class="n">door_entity</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data_field</span><span class="p">]</span>
+            <span class="n">waypoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">waypoint_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">waypoint</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Door </span><span class="si">{}</span><span class="s2"> should be opened from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">door_entity</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">waypoint</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">waypoint</span>
+        <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="OpenDoorByPushing"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/door_opening/index.html#robot_smach_states.navigation.door_opening.OpenDoorByPushing">[docs]</a><span class="k">class</span> <span class="nc">OpenDoorByPushing</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test in amigo-console with</span>
+<span class="sd">    door = ds.EdEntityDesignator(amigo, id=&#39;door1&#39;); do = state_machine.OpenDoorByPushing(amigo, door); print do.execute();</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">door_start_wp_designator</span><span class="p">,</span> <span class="n">door_dest_wp_designator</span><span class="p">,</span> <span class="n">approach_speed</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">push_speed</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">attempts</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Push against a door until its open</span>
+
+<span class="sd">        :param robot: Robot on which to execute this state machine</span>
+<span class="sd">        :param door_entity_designator: The door entity. Defaults to None, which implies the door its in front of</span>
+<span class="sd">            This entity must have 2 fields in its data: push_start_waypoint and push_destination_waypoint,</span>
+<span class="sd">            which must both contain an ID of a waypoint.</span>
+<span class="sd">            push_start_waypoint is from where the robot will start pushing</span>
+<span class="sd">            push_destination_waypoint simply needs to be reachable for the door the be considered &#39;open&#39;</span>
+<span class="sd">        :param approach_speed: Speed with which to approach the door</span>
+<span class="sd">        :param push_speed: Speed with which to push against the door</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="c1">#door_start_wp_designator = WaypointOfDoorDesignator(robot, door_entity_designator, direction=&#39;start&#39;, name=&#39;door_open_start&#39;)</span>
+        <span class="c1">#door_dest_wp_designator = WaypointOfDoorDesignator(robot, door_entity_designator, direction=&#39;destination&#39;, name=&#39;door_open_dest&#39;)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="s1">&#39;GOTO_DOOR_START&#39;</span><span class="p">,</span>
+                                            <span class="n">states</span><span class="o">.</span><span class="n">NavigateToWaypoint</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">door_start_wp_designator</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.05</span><span class="p">),</span>
+                                            <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;arrived&#39;</span>          <span class="p">:</span><span class="s1">&#39;PUSH_DOOR_ITERATOR&#39;</span><span class="p">,</span>
+                                                         <span class="s1">&#39;unreachable&#39;</span>      <span class="p">:</span><span class="s1">&#39;failed&#39;</span><span class="p">,</span>
+                                                         <span class="s1">&#39;goal_not_defined&#39;</span> <span class="p">:</span><span class="s1">&#39;failed&#39;</span><span class="p">})</span>
+
+            <span class="c1"># START REPEAT DOOR OPENING</span>
+
+            <span class="n">push_door_iterator</span> <span class="o">=</span> <span class="n">smach</span><span class="o">.</span><span class="n">Iterator</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="s1">&#39;closed&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">],</span>
+                                                <span class="n">it</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">attempts</span><span class="p">),</span>
+                                                <span class="n">it_label</span><span class="o">=</span><span class="s1">&#39;counter&#39;</span><span class="p">,</span>
+                                                <span class="n">input_keys</span><span class="o">=</span><span class="p">[],</span>
+                                                <span class="n">output_keys</span><span class="o">=</span><span class="p">[],</span>
+                                                <span class="n">exhausted_outcome</span> <span class="o">=</span> <span class="s1">&#39;failed&#39;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">push_door_iterator</span><span class="p">:</span>
+                <span class="n">push_door</span> <span class="o">=</span> <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">(</span> <span class="n">outcomes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="s1">&#39;closed&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+                <span class="k">with</span> <span class="n">push_door</span><span class="p">:</span>
+                    <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="s1">&#39;APPROACH_AGAINST_N&#39;</span><span class="p">,</span>
+                                            <span class="n">ForceDriveToTouchDoor</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">approach_speed</span><span class="p">),</span>
+                                            <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;front&#39;</span><span class="p">:</span><span class="s1">&#39;closed&#39;</span><span class="p">,</span>
+                                                        <span class="s1">&#39;left&#39;</span><span class="p">:</span><span class="s1">&#39;CHECK_DOOR_PASSABLE&#39;</span><span class="p">,</span>
+                                                        <span class="s1">&#39;right&#39;</span><span class="p">:</span><span class="s1">&#39;CHECK_DOOR_PASSABLE&#39;</span><span class="p">,</span>
+                                                        <span class="s1">&#39;failed&#39;</span><span class="p">:</span><span class="s1">&#39;failed&#39;</span><span class="p">})</span>
+
+                    <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="s1">&#39;CHECK_DOOR_PASSABLE&#39;</span><span class="p">,</span>
+                                            <span class="n">CheckDoorPassable</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span>
+                                                              <span class="n">destination_designator</span><span class="o">=</span><span class="n">door_dest_wp_designator</span><span class="p">),</span>
+                                            <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;blocked&#39;</span><span class="p">:</span><span class="s1">&#39;closed&#39;</span><span class="p">,</span>
+                                                         <span class="s1">&#39;passable&#39;</span><span class="p">:</span><span class="s1">&#39;open&#39;</span><span class="p">})</span>
+
+                <span class="n">smach</span><span class="o">.</span><span class="n">Iterator</span><span class="o">.</span><span class="n">set_contained_state</span><span class="p">(</span> <span class="s1">&#39;APPROACH_AGAINST&#39;</span><span class="p">,</span>
+                                                     <span class="n">push_door</span><span class="p">,</span>
+                                                     <span class="n">loop_outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;failed&#39;</span><span class="p">,</span> <span class="s1">&#39;closed&#39;</span><span class="p">],</span>
+                                                     <span class="n">break_outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">])</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="s1">&#39;PUSH_DOOR_ITERATOR&#39;</span><span class="p">,</span>
+                                    <span class="n">push_door_iterator</span><span class="p">,</span>
+                                    <span class="p">{</span>   <span class="s1">&#39;open&#39;</span><span class="p">:</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span>
+                                        <span class="s1">&#39;closed&#39;</span><span class="p">:</span><span class="s1">&#39;failed&#39;</span><span class="p">,</span>
+                                        <span class="s1">&#39;failed&#39;</span><span class="p">:</span><span class="s1">&#39;failed&#39;</span><span class="p">})</span></div>
+            <span class="c1"># END REPEAT DOOR OPENING</span>
+
+            <span class="c1"># smach.StateMachine.add(&#39;PUSH_LEFT&#39;,</span>
+            <span class="c1">#                        PushSidewaysAndBack(robot, y_dist=0.1, speed=push_speed),</span>
+            <span class="c1">#                        transitions={&#39;succeeded&#39;:&#39;succeeded&#39;,</span>
+            <span class="c1">#                                     &#39;failed&#39;:&#39;failed&#39;})</span>
+            <span class="c1">#</span>
+            <span class="c1"># smach.StateMachine.add(&#39;PUSH_RIGHT&#39;,</span>
+            <span class="c1">#                        PushSidewaysAndBack(robot, y_dist=-0.1, speed=push_speed),</span>
+            <span class="c1">#                        transitions={&#39;succeeded&#39;:&#39;succeeded&#39;,</span>
+            <span class="c1">#                                     &#39;failed&#39;:&#39;failed&#39;})</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

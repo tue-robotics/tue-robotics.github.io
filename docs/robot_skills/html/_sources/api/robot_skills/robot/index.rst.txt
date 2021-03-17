@@ -1,0 +1,215 @@
+:mod:`robot_skills.robot`
+=========================
+
+.. py:module:: robot_skills.robot
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.robot.Robot
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.robot._collect_needs_desires
+   robot_skills.robot._collect_available
+
+
+.. data:: CONNECTION_TIMEOUT
+   :annotation: = 10.0
+
+   
+
+.. py:class:: Robot(robot_name='', wait_services=False, tf_listener=None)
+
+   Bases: :class:`object`
+
+   Interface to all parts of the robot.
+
+   Constructor
+
+   :param robot_name: Name of the robot
+   :type robot_name: str
+   :param wait_services: Not used anymore
+   :type wait_services: bool
+   :param tf_listener: tf_listener object
+   :type tf_listener: Optional[tf.TransformListener]
+
+   .. method:: get_joint_states(self)
+
+
+   .. method:: add_body_part(self, partname, bodypart)
+
+      Add a bodypart to the robot. This is added to the parts dict and set as an attribute
+
+      :param partname: name of the bodypart
+      :param bodypart: bodypart object
+
+
+   .. method:: add_arm_part(self, arm_name, arm_part)
+
+      Add an arm part to the robot. This is added to the parts dictionary as well.
+
+      :param arm_name: Name of the arm part.
+      :param arm_part: Arm part object
+
+
+   .. method:: arms(self)
+
+
+   .. method:: configure(self)
+
+      This should be run at the end of the constructor of a child class.
+
+
+   .. method:: reset(self)
+
+
+   .. method:: reset_all_arms(self, arm_timeout=0.0, close_gripper=True, gripper_timeout=None)
+
+      Reset all arms of the robot, and by default, close their grippers.
+
+      The arm is always reset, the gripper is closed if 'close_gripper' is True (which is the default).
+
+      :param arm_timeout: How long to wait for resetting the arm, by default 0.0
+      :param close_gripper: By default 'True', which closes the gripper. If False, the gripper is not activated,
+      :param gripper_timeout: If specified and 'close_gripper' holds, timeout for closing the gripper.
+          If not specified, gripper movement uses 'arm_timeout'.
+
+
+   .. method:: standby(self)
+
+
+   .. method:: publish_target(self, x, y)
+
+
+   .. method:: tf_transform_pose(self, ps, frame)
+
+
+   .. method:: get_arm(self, required_gripper_types=None, desired_gripper_types=None, required_goals=None, desired_goals=None, required_trajectories=None, desired_trajectories=None, required_arm_name=None, force_sensor_required=False, required_objects=None, desired_objects=None)
+
+      Find an arm that has the needed and hopefully the desired properties.
+      Does not give an arm if all needed properties cannot be satisfied. An
+      arm returned by the call will not be able to do anything you didn't ask
+      for, except for objects held by it.
+
+      :param required_gripper_types: Collection of gripper types that must all be
+              available. None means grippers are not needed.
+      :param desired_gripper_types: Collection of gripper types from GripperTypes,
+              where one or more may be selected. None means no grippers are desired.
+
+      :param required_goals: Collection of joint goals that must all be available.
+              None means no joint goals are needed.
+      :param desired_goals: Collection of joint goals where one or more may be
+              selected. None means no joint goals are desired.
+
+      :param required_trajectories: Collection of joint trajectories that must all
+              be available. None means no joint trajectories are needed.
+      :param desired_trajectories: Collection of joint trajectories where one or
+              more may be selected. None means no joint trajectories are desired.
+
+      :param required_arm_name: Name of the arm that is needed. If set, no
+              other arm will be considered. None means any arm will do.
+
+      :param force_sensor_required: Bool specifying whether a force_sensor is needed or not.
+
+      :param required_objects: Collection of objects that the arm must have. Special
+              pseudo-objects PseudoObjects.ANY and PseudoObjects.EMPTY may be used
+              too in the collection, although they do not make much sense when used
+              together with other objects. None means there are no required objects.
+      :param desired_objects: Collection of objects that the arm may have. None
+              means there are no desired objects.
+
+      :return: An Arm of the robot with the requested properties, or None.
+              Note that the arm will never do more than you requested.
+
+
+   .. staticmethod:: _check_required_obj(arm, obj_collection)
+
+      Check the object requirement.
+
+      :param arm: Arm to check.
+      :param obj_collection: Objects to find. None means the empty requirement
+              (arm may have anything, including nothng).
+      :return: Whether the requirement holds.
+
+
+   .. method:: close(self)
+
+
+   .. method:: operational(self)
+
+      :return: if all parts are operational
+
+
+   .. method:: handle_hardware_status(self, diagnostic_array)
+
+      hardware_status callback to determine if the bodypart is operational
+
+      :param msg: diagnostic_msgs.msg.DiagnosticArray
+      :return: no return
+
+
+   .. method:: move_to_inspect_pose(self, inspection_position)
+
+      This poses the robot for an inspect.
+
+      :param inspection_position: kdl.Frame with the pose of the entity to be inspected.
+      :return: boolean, false if something went wrong.
+
+
+   .. method:: move_to_pregrasp_pose(self, arm, grasp_position)
+
+      This poses the robot for an inspect.
+
+      :param arm: PublicArm to use for grasping the target
+      :param grasp_position: kdl.Frame with the pose of the entity to be grasp.
+      :return: boolean, false if something went wrong.
+
+
+   .. method:: move_to_hmi_pose(self)
+
+      This poses the robot for conversations.
+
+      :return: None
+
+
+   .. method:: go_to_driving_pose(self)
+
+      This poses the robot for driving.
+
+      :return: None
+
+
+   .. method:: __enter__(self)
+
+
+   .. method:: __exit__(self, exception_type, exception_val, trace)
+
+
+
+.. function:: _collect_needs_desires(needs, desires, test_func)
+
+   :param needs: Collection of needed values. None means nothing is needed.
+   :param desires: Collection of desired values, None means nothing is desired.
+   :param test_func: Function that takes a value and returns whether the value is available.
+   :return: Needed and subset of the desired values, or None if the needs can't be met.
+
+
+.. function:: _collect_available(values, test_func)
+
+   :param values: Collection of values that must be tested.
+   :param test_func: Function that takes a value and returns whether the value is available.
+   :return: Subset of values that is found to be available.
+
+

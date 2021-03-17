@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>action_server.actions.pick_up &mdash; action_server 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> action_server
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">action_server</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>action_server.actions.pick_up</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for action_server.actions.pick_up</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">action</span> <span class="k">import</span> <span class="n">Action</span><span class="p">,</span> <span class="n">ConfigurationData</span>
+
+<span class="kn">from</span> <span class="nn">entity_description</span> <span class="k">import</span> <span class="n">resolve_entity_description</span>
+
+<span class="kn">from</span> <span class="nn">robot_smach_states.manipulation</span> <span class="k">import</span> <span class="n">Grab</span>
+<span class="kn">from</span> <span class="nn">robot_skills.arm.arms</span> <span class="k">import</span> <span class="n">GripperTypes</span>
+<span class="kn">from</span> <span class="nn">robot_smach_states.util.designators</span> <span class="k">import</span> <span class="n">UnoccupiedArmDesignator</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+
+
+<div class="viewcode-block" id="PickUp"><a class="viewcode-back" href="../../../api/action_server/actions/pick_up/index.html#action_server.actions.pick_up.PickUp">[docs]</a><span class="k">class</span> <span class="nc">PickUp</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The PickUp class implements the action to grasp an object.</span>
+
+<span class="sd">    Parameters to pass to the configure() method are:</span>
+<span class="sd">     - `object` (required): the id of the object to grab</span>
+<span class="sd">     - `object-designator` (required): a designator resolving to the object to grab</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Action</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_skills</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;arms&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_field_prompts</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s2">&quot; What would you like me to pick up? &quot;</span><span class="p">,</span>
+                                        <span class="s1">&#39;source-location&#39;</span><span class="p">:</span> <span class="s2">&quot; Where would you like me to pick that up? &quot;</span><span class="p">}</span>  <span class="c1"># TODO: handle source location from context?</span>
+
+<div class="viewcode-block" id="PickUp.Semantics"><a class="viewcode-back" href="../../../api/action_server/actions/pick_up/index.html#action_server.actions.pick_up.PickUp.Semantics">[docs]</a>    <span class="k">class</span> <span class="nc">Semantics</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_location</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PickUp._parse_semantics"><a class="viewcode-back" href="../../../api/action_server/actions/pick_up/index.html#action_server.actions.pick_up.PickUp._parse_semantics">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_semantics</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">):</span>
+        <span class="n">semantics</span> <span class="o">=</span> <span class="n">PickUp</span><span class="o">.</span><span class="n">Semantics</span><span class="p">()</span>
+
+        <span class="n">semantics</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;source-location&#39;</span> <span class="ow">in</span> <span class="n">semantics_dict</span><span class="p">:</span>
+            <span class="n">semantics</span><span class="o">.</span><span class="n">source_location</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">[</span><span class="s1">&#39;source-location&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">semantics</span></div>
+
+<div class="viewcode-block" id="PickUp.Context"><a class="viewcode-back" href="../../../api/action_server/actions/pick_up/index.html#action_server.actions.pick_up.PickUp.Context">[docs]</a>    <span class="k">class</span> <span class="nc">Context</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PickUp._parse_context"><a class="viewcode-back" href="../../../api/action_server/actions/pick_up/index.html#action_server.actions.pick_up.PickUp._parse_context">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_context</span><span class="p">(</span><span class="n">context_dict</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">PickUp</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;arm-designator&#39;</span> <span class="ow">in</span> <span class="n">context_dict</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="n">context_dict</span><span class="p">[</span><span class="s1">&#39;arm-designator&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">context_dict</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">context_dict</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;location&#39;</span> <span class="ow">in</span> <span class="n">context_dict</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">context_dict</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">context</span></div>
+
+<div class="viewcode-block" id="PickUp._configure"><a class="viewcode-back" href="../../../api/action_server/actions/pick_up/index.html#action_server.actions.pick_up.PickUp._configure">[docs]</a>    <span class="k">def</span> <span class="nf">_configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="n">semantics</span> <span class="o">=</span> <span class="n">PickUp</span><span class="o">.</span><span class="n">_parse_semantics</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">PickUp</span><span class="o">.</span><span class="n">_parse_context</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="c1"># Check if a previous action had us find the object already...</span>
+        <span class="n">object_found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">object</span><span class="p">:</span>  <span class="c1"># we got some object from a previous action</span>
+            <span class="k">if</span> <span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>  <span class="c1"># we got some sort of type, could still be a reference...</span>
+                <span class="k">if</span> <span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s1">&#39;reference&#39;</span><span class="p">:</span>  <span class="c1"># an object type was specified in the task</span>
+                    <span class="k">if</span> <span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">context</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>  <span class="c1"># then they need to be the same</span>
+                        <span class="n">object_found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>  <span class="c1"># the object was a reference, then we don&#39;t care what the type of context object is</span>
+                    <span class="n">object_found</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">category</span><span class="p">:</span>  <span class="c1"># no type, but a category was specified</span>
+                <span class="c1"># Then the context object must be one of that category</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">get_object_category</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="o">==</span> <span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">category</span><span class="p">:</span>
+                    <span class="n">object_found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">category</span> <span class="o">==</span> <span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">category</span><span class="p">:</span>
+                    <span class="n">object_found</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">object_found</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">required_context</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;find&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="n">semantics</span><span class="o">.</span><span class="n">source_location</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">required_context</span><span class="p">[</span><span class="s1">&#39;source-location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;source-location&#39;</span><span class="p">]</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Add the found object to the context that is passed to the next task</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span>
+
+        <span class="c1"># side = config.semantics[&#39;side&#39;] if &#39;side&#39; in config.semantics else &#39;right&#39;</span>
+
+        <span class="c1"># Next to the arm_properties of the Pick_up action this ArmDesignator also needs the properties of the Place and</span>
+        <span class="c1"># Hand_over actions since these actions (can) rely on the Pick_up action for the context.</span>
+        <span class="n">arm_des</span> <span class="o">=</span> <span class="n">UnoccupiedArmDesignator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;required_trajectories&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;prepare_grasp&quot;</span><span class="p">,</span> <span class="s2">&quot;prepare_place&quot;</span><span class="p">],</span>
+                                                        <span class="s2">&quot;required_goals&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;carrying_pose&quot;</span><span class="p">,</span> <span class="s2">&quot;handover_to_human&quot;</span><span class="p">],</span>
+                                                        <span class="s2">&quot;required_gripper_types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">GripperTypes</span><span class="o">.</span><span class="n">GRASPING</span><span class="p">]}</span>
+                                          <span class="p">)</span><span class="o">.</span><span class="n">lockable</span><span class="p">()</span>
+        <span class="n">arm_des</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fsm</span> <span class="o">=</span> <span class="n">Grab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">context</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">designator</span><span class="p">,</span> <span class="n">arm</span><span class="o">=</span><span class="n">arm_des</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;arm-designator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arm_des</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PickUp._start"><a class="viewcode-back" href="../../../api/action_server/actions/pick_up/index.html#action_server.actions.pick_up.PickUp._start">[docs]</a>    <span class="k">def</span> <span class="nf">_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fsm_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fsm</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">fsm_result</span> <span class="o">==</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">][</span><span class="s1">&#39;designator&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">resolve</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; I could not pick anything up. &quot;</span><span class="o">.</span> \
+                    <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; I picked up the </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span> \
+                    <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">][</span><span class="s1">&#39;designator&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">][</span><span class="s1">&#39;designator&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">resolve</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; I could not pick anything up. &quot;</span><span class="o">.</span> \
+                    <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; I could not pick up the </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span> \
+                    <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">][</span><span class="s1">&#39;designator&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">type</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PickUp._cancel"><a class="viewcode-back" href="../../../api/action_server/actions/pick_up/index.html#action_server.actions.pick_up.PickUp._cancel">[docs]</a>    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fsm</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fsm</span><span class="o">.</span><span class="n">request_preempt</span><span class="p">()</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;place_test&#39;</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+    <span class="n">robot_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;amigo&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.amigo</span> <span class="k">import</span> <span class="n">Amigo</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">elif</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;sergio&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.sergio</span> <span class="k">import</span> <span class="n">Sergio</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">elif</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;hero&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.hero</span> <span class="k">import</span> <span class="n">Hero</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.mockbot</span> <span class="k">import</span> <span class="n">Mockbot</span> <span class="k">as</span> <span class="n">Robot</span>
+
+    <span class="n">robot</span> <span class="o">=</span> <span class="n">Robot</span><span class="p">()</span>
+
+    <span class="n">action</span> <span class="o">=</span> <span class="n">PickUp</span><span class="p">()</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigurationData</span><span class="p">({</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;pick_up&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;cabinet&#39;</span><span class="p">},</span>
+                                <span class="s1">&#39;side&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">})</span>
+
+    <span class="n">action</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

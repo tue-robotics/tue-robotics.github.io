@@ -1,0 +1,432 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>action_server.actions.example_action &mdash; action_server 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> action_server
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">action_server</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>action_server.actions.example_action</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for action_server.actions.example_action</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">action</span> <span class="k">import</span> <span class="n">Action</span><span class="p">,</span> <span class="n">ConfigurationData</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">Entity</span>
+
+<span class="kn">from</span> <span class="nn">robot_smach_states.util.designators</span> <span class="k">import</span> <span class="n">VariableDesignator</span>
+
+
+<div class="viewcode-block" id="ExampleAction"><a class="viewcode-back" href="../../../api/action_server/actions/example_action/index.html#action_server.actions.example_action.ExampleAction">[docs]</a><span class="k">class</span> <span class="nc">ExampleAction</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ExampleAction class explains how Actions, as handled by the TaskManager, work.</span>
+
+<span class="sd">    As by example, it takes passed context of a color passed by a previous Action, passes an Entity to the next</span>
+<span class="sd">    Action and uses a dict mapping from object types to colors from the common knowledge. A practical use would be the</span>
+<span class="sd">    following:</span>
+
+<span class="sd">    Task: &quot;Ask for a color, select an item of that color and grab it.&quot; (Completely made up task BTW)</span>
+
+<span class="sd">    This Action would perform the middle part of the task: &quot;select an item of that color&quot;. It takes the color from the</span>
+<span class="sd">    Action asking for a color, and passes the selected item (Entity) to the Action for grabbing an entity. Typically,</span>
+<span class="sd">    one would wrap higher level behavior in an Action than this, but this is just for illustration purposes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Call the base class constructor</span>
+        <span class="n">Action</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The base class constructor initializes the following fields:</span>
+<span class="sd">         - self._config_result = ConfigurationResult()</span>
+<span class="sd">         - self._execute_result = ActionResult()</span>
+<span class="sd">        Their fields should be assigned meaningful values in the _configure and _start methods, respectively, by the</span>
+<span class="sd">        implementation so the (typically the task manager) can give decent feedback to the user about the result of the</span>
+<span class="sd">        action.</span>
+
+<span class="sd">        Here, you can specify which robot skills are required to perform this action, you can specify what fields are</span>
+<span class="sd">        required in the semantics of the task, and what information from previous tasks is required.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        You can set the required robot skills here. During the configure step, the given robot object is checked for</span>
+<span class="sd">        their availability.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_skills</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ed&#39;</span><span class="p">]</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Similarly, you can set the required keys in the context. Their availability is also checked in the configure</span>
+<span class="sd">        step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_passed_knowledge</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Similarly, you can set the required keys in the semantics. Their availability is also checked in the configure</span>
+<span class="sd">        step. However, a missing field means that the client may want to add this information by posing a follow-up</span>
+<span class="sd">        question. Therefore, this is a dict mapping from the required fields to the prompts requesting the user for</span>
+<span class="sd">        the specific missing information.</span>
+
+<span class="sd">        If information is missing, the json path to the missing field is returned to the client, so the client knows</span>
+<span class="sd">        which field to add.</span>
+
+<span class="sd">        Actually, we don&#39;t require any fields in the configuration in this case, but this would be the way to do that.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># self._required_field_prompts = {&#39;object&#39;: &quot; What object would you like me to work with? &quot;}</span>
+
+<div class="viewcode-block" id="ExampleAction._configure"><a class="viewcode-back" href="../../../api/action_server/actions/example_action/index.html#action_server.actions.example_action.ExampleAction._configure">[docs]</a>    <span class="k">def</span> <span class="nf">_configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param robot: The robot to use for this action</span>
+<span class="sd">        :param config: The configuration of the action, containing fields semantics and context</span>
+<span class="sd">        :return: ConfigurationResult</span>
+
+<span class="sd">        The configure step is typically done just after the command is given. It is intended to check if the task makes</span>
+<span class="sd">        any sense. For example, a task &#39;Take it to the bridge.&#39;, does not make sense as &#39;it&#39; should refer to something.</span>
+<span class="sd">        In another example, &#39;Find Ava&#39;, we may want to search differently than when the task is to find an object. All</span>
+<span class="sd">        such checking can be done in the configure step.</span>
+
+<span class="sd">        If a command is composed out of multiple actions (go to the kitchen and find the coffee), all actions in the</span>
+<span class="sd">        command are first configured before the first is started. This is done to make sure the complete command makes</span>
+<span class="sd">        sense, and the robot will not find out it doesn&#39;t make sense halfway through the execution.</span>
+
+<span class="sd">        This does mean that any resulting information from earlier actions in the command is not available in the world</span>
+<span class="sd">        model yet, in this stage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The common knowledge is available through self._knowledge. The value of self._config_result.succeeded is False</span>
+<span class="sd">        by default, so when you simply return, the configuration is considered failed. The message is intended to be</span>
+<span class="sd">        reported to the operator after the task.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="p">,</span> <span class="s1">&#39;object_colors&#39;</span><span class="p">):</span>
+            <span class="n">object_colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_knowledge</span><span class="o">.</span><span class="n">object_colors</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; Colors of objects are not in my knowledge. &quot;</span>
+            <span class="k">return</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Knowledge gained in previous Actions passed on to this Action can be accessed through config. The availability</span>
+<span class="sd">        of this field is checked by the base class (because we specified &#39;color&#39; as required passed context), but you</span>
+<span class="sd">        should perform all the necessary checks on this data to make sure that it is what you expect it to be!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">knowledge</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">],</span> <span class="n">VariableDesignator</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; The ExampleAction state cannot handle a </span><span class="si">%s</span><span class="s2"> as a source of color. &quot;</span> <span class="o">%</span> \
+                                          <span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">knowledge</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">knowledge</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">()</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; The color variable is not a string. &quot;</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_designator</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">knowledge</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Information that should be passed on to a next action should be instantiated here. In this case we expect this</span>
+<span class="sd">        state to result in some Entity object, so we create an empty variable designator with that resolve type. The</span>
+<span class="sd">        designator should be &#39;filled&#39; with data of an Entity during the execution of the _start method. This is</span>
+<span class="sd">        typically done in the underlying state machine.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entity_designator</span> <span class="o">=</span> <span class="n">VariableDesignator</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">Entity</span><span class="p">)</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pass on the resulting context by putting it in the resulting context (this action results in some Entity).</span>
+<span class="sd">        The following action can use this data by accessing its config.context[&#39;object&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">resulting_knowledge</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_designator</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Typically, we instantiate a (smach) state machine here, which will do the actual work of the action. In this</span>
+<span class="sd">        case, it will be some state machine filling an object designator based on the context passed to this Action.</span>
+<span class="sd">        For more information on designators, how they work and why we need them, ask @LoyVanBeek.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_fsm</span> <span class="o">=</span> <span class="n">DummyStateMachine</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_color_designator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_designator</span><span class="p">,</span> <span class="n">object_colors</span><span class="p">)</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Explicitly set the config result to True if configuration succeeded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="ExampleAction._start"><a class="viewcode-back" href="../../../api/action_server/actions/example_action/index.html#action_server.actions.example_action.ExampleAction._start">[docs]</a>    <span class="k">def</span> <span class="nf">_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Here, the action is actually performed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We typically run the state machine here. Under the hood, this state machine fills the entity designator. Because</span>
+<span class="sd">        this is the same object as the one in our _config_result.resulting_knowledge[&#39;object&#39;], the context of this</span>
+<span class="sd">        entity is passed to any following states that used this Designator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_fsm</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        After this, we may want to check the output of the state machine execution</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_color_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s1">&#39;not_available&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I haven&#39;t seen any </span><span class="si">%s</span><span class="s2"> object yet. &quot;</span> <span class="o">%</span> <span class="n">color</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; Something went wrong trying to determine which objects are </span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">color</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finally, we can return to the task manager that the action was performed successfully. Explicitly set succeeded</span>
+<span class="sd">        to True here, to let the TaskManager know that the Action succeeded. The message is reported to the operator</span>
+<span class="sd">        after the complete Task (series of Actions) is performed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; I successfully performed the example action. &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="ExampleAction._cancel"><a class="viewcode-back" href="../../../api/action_server/actions/example_action/index.html#action_server.actions.example_action.ExampleAction._cancel">[docs]</a>    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The _cancel method is called when the Action Server&#39;s goal is canceled and this action is still running</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # If the state machine is still running, we need to send it a preempt request</span>
+<span class="sd">        if self._action_fsm.is_running():</span>
+<span class="sd">            self._action_fsm.request_preempt()</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The below code should not be in the Action implementation file. An action should always wrap an existing smach State</span>
+<span class="sd">from the Robot Smach States. This is just here to be able to demonstrate the use in the above Action implementation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+
+<div class="viewcode-block" id="DummyStateMachine"><a class="viewcode-back" href="../../../api/action_server/actions/example_action/index.html#action_server.actions.example_action.DummyStateMachine">[docs]</a><span class="k">class</span> <span class="nc">DummyStateMachine</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">color_designator</span><span class="p">,</span> <span class="n">entity_designator</span><span class="p">,</span> <span class="n">object_colors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Select an entity with the given color.</span>
+<span class="sd">        :param robot: robot to execute state with</span>
+<span class="sd">        :param color_designator: A color that the resulting entity should have.</span>
+<span class="sd">        :param entity_designator: The resulting entity with the specified color</span>
+<span class="sd">        :param object_colors: Dict mapping from object type to color</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;not_available&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Assign member variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_designator</span> <span class="o">=</span> <span class="n">color_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entity_designator</span> <span class="o">=</span> <span class="n">entity_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_object_colors</span> <span class="o">=</span> <span class="n">object_colors</span>
+
+<div class="viewcode-block" id="DummyStateMachine.execute"><a class="viewcode-back" href="../../../api/action_server/actions/example_action/index.html#action_server.actions.example_action.DummyStateMachine.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_color_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entities</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_colors</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">type</span><span class="p">]</span> <span class="o">==</span> <span class="n">color</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_entity_designator</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span>
+            <span class="k">return</span> <span class="s1">&#39;not_available&#39;</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;error&#39;</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

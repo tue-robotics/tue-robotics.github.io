@@ -1,0 +1,746 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classFitter" kind="class" language="C++" prot="public">
+    <compoundname>Fitter</compoundname>
+    <includes refid="fitter_8h" local="no">fitter.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classFitter_1afed8610d9dfda5529c16d9573915b1ed" prot="private" static="no" mutable="no">
+        <type><ref refid="classBeamModel" kindref="compound">BeamModel</ref></type>
+        <definition>BeamModel Fitter::beam_model_</definition>
+        <argsstring></argsstring>
+        <name>beam_model_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="233" column="1" bodyfile="include/ed/kinect/fitter.h" bodystart="233" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classFitter_1a8a46f221f5b20a6b2a2a44cbe46c938b" prot="private" static="no" mutable="yes">
+        <type><ref refid="cpp/container/map" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::map</ref>&lt; ed::UUID, <ref refid="structEntityRepresentation2D" kindref="compound">EntityRepresentation2D</ref> &gt;</type>
+        <definition>std::map&lt;ed::UUID, EntityRepresentation2D&gt; Fitter::entity_shapes_</definition>
+        <argsstring></argsstring>
+        <name>entity_shapes_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="236" column="1" bodyfile="include/ed/kinect/fitter.h" bodystart="236" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classFitter_1a109c58459f22239b805d9f8f2e952f70" prot="private" static="no" mutable="no">
+        <type>ed::models::ModelLoader</type>
+        <definition>ed::models::ModelLoader Fitter::model_loader_</definition>
+        <argsstring></argsstring>
+        <name>model_loader_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="239" column="1" bodyfile="include/ed/kinect/fitter.h" bodystart="239" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classFitter_1a2c288eea72aba4a9ae58ec2541e443ef" prot="private" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint Fitter::nr_data_points_</definition>
+        <argsstring></argsstring>
+        <name>nr_data_points_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="241" column="1" bodyfile="include/ed/kinect/fitter.h" bodystart="241" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classFitter_1a3cbcf2ef11c711eb5bc3cb01e00f9d9b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Fitter::estimateEntityPose</definition>
+        <argsstring>(const FitterData &amp;data, const ed::WorldModel &amp;world, const ed::UUID &amp;id, const geo::Pose3D &amp;expected_pose, geo::Pose3D &amp;fitted_pose, double max_yaw_change=M_PI) const</argsstring>
+        <name>estimateEntityPose</name>
+        <param>
+          <type>const <ref refid="structFitterData" kindref="compound">FitterData</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const ed::WorldModel &amp;</type>
+          <declname>world</declname>
+        </param>
+        <param>
+          <type>const ed::UUID &amp;</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacegeo_1a6c851aec5e98801c86d46d508de5c05d" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Pose3D</ref> &amp;</type>
+          <declname>expected_pose</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacegeo_1a6c851aec5e98801c86d46d508de5c05d" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Pose3D</ref> &amp;</type>
+          <declname>fitted_pose</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>max_yaw_change</declname>
+          <defval>M_PI</defval>
+        </param>
+        <briefdescription>
+<para>estimateEntityPose performs the entity pose estimation. Basically, tries to call estimateEntityPoseImp and return the results, catches any FitterErrors and returns false </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pre-processed sensor data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>world</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>world model </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of the entity we&apos;re trying to fit </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>expected_pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pose where the entity is expected </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fitted_pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the fitted pose is stored here </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>max_yaw_change</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>maximum allowed yaw rotation </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>success or failure </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="131" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="261" bodyend="273"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1acb857b873cba9ba6507d81a6464c9bca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="cpp/memory/unique_ptr" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::unique_ptr</ref>&lt; <ref refid="classOptimalFit" kindref="compound">OptimalFit</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; OptimalFit &gt; Fitter::findOptimum</definition>
+        <argsstring>(const EstimationInputData &amp;input_data, const YawRange &amp;yaw_range) const</argsstring>
+        <name>findOptimum</name>
+        <param>
+          <type>const <ref refid="structEstimationInputData" kindref="compound">EstimationInputData</ref> &amp;</type>
+          <declname>input_data</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structYawRange" kindref="compound">YawRange</ref> &amp;</type>
+          <declname>yaw_range</declname>
+        </param>
+        <briefdescription>
+<para>findOptimum finds the &apos;optimal&apos; fit by evaluating candidates over all beams and over the entire yaw range. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>input_data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="structEstimationInputData" kindref="compound">EstimationInputData</ref>: everything that&apos;s required </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>yaw_range</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>min and max yaw range to sample over </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>pointer to the optimum </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="141" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="348" bodyend="371"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1a60a230a63c637e8e9db6c13e75b59c71" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Fitter::Fitter</definition>
+        <argsstring>(uint nr_data_points=200)</argsstring>
+        <name>Fitter</name>
+        <param>
+          <type>uint</type>
+          <declname>nr_data_points</declname>
+          <defval>200</defval>
+        </param>
+        <briefdescription>
+<para><ref refid="classFitter" kindref="compound">Fitter</ref> constructor. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nr_data_points</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>nr_data_points for the beam model </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="107" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="247" bodyend="251"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1a5e9587019b45ed8caaf1a308fe7dee3d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structEntityRepresentation2D" kindref="compound">EntityRepresentation2D</ref></type>
+        <definition>EntityRepresentation2D Fitter::GetOrCreateEntity2D</definition>
+        <argsstring>(const ed::EntityConstPtr &amp;e) const</argsstring>
+        <name>GetOrCreateEntity2D</name>
+        <param>
+          <type>const ed::EntityConstPtr &amp;</type>
+          <declname>e</declname>
+        </param>
+        <briefdescription>
+<para>GetOrCreateEntity2D returns the downprojected shape of the entity. If it&apos;s already in the cache, it&apos;s returned directly. If not, it&apos;s obtained from the entity. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>e</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input entity </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>2D entity representation </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="149" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="501" bodyend="517"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1a8dd85e00f88582fbb5fea699840b88a3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Fitter::processSensorData</definition>
+        <argsstring>(const rgbd::Image &amp;image, const geo::Pose3D &amp;sensor_pose, FitterData &amp;data) const</argsstring>
+        <name>processSensorData</name>
+        <param>
+          <type>const rgbd::Image &amp;</type>
+          <declname>image</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacegeo_1a6c851aec5e98801c86d46d508de5c05d" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Pose3D</ref> &amp;</type>
+          <declname>sensor_pose</declname>
+        </param>
+        <param>
+          <type><ref refid="structFitterData" kindref="compound">FitterData</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>processSensorData pre-processes sensor data, i.e., performs a downprojection of the input depth image based on the provided sensor pose and stores the result in the <ref refid="structFitterData" kindref="compound">FitterData</ref> struct </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>image</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input (depth) image </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sensor_pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pose of the sensor in the world while taking the image </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>processed data is stored here </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="118" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="461" bodyend="497"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1a79f2b09e42fd66fa7f3a8322184f4af2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Fitter::~Fitter</definition>
+        <argsstring>()</argsstring>
+        <name>~Fitter</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="109" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="255" bodyend="257"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classFitter_1afa6d4aaf9d75dc661f516f988fd81430" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Fitter::checkExpectedBeamThroughEntity</definition>
+        <argsstring>(const std::vector&lt; double &gt; &amp;model_ranges, ed::EntityConstPtr entity, const geo::Pose3D &amp;sensor_pose_xya, const int expected_center_beam) const</argsstring>
+        <name>checkExpectedBeamThroughEntity</name>
+        <param>
+          <type>const <ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; double &gt; &amp;</type>
+          <declname>model_ranges</declname>
+        </param>
+        <param>
+          <type>ed::EntityConstPtr</type>
+          <declname>entity</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacegeo_1a6c851aec5e98801c86d46d508de5c05d" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Pose3D</ref> &amp;</type>
+          <declname>sensor_pose_xya</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>expected_center_beam</declname>
+        </param>
+        <briefdescription>
+<para>checkExpectedBeamThroughEntity checks if the expected center beam passes through the entity. If not: something went wrong </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>model_ranges</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>entity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sensor_pose_xya</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>expected_center_beam</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="220" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="445" bodyend="457"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1a1e087fff26440ceef6dc0f53575dc6e5" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Fitter::estimateEntityPoseImp</definition>
+        <argsstring>(const FitterData &amp;data, const ed::WorldModel &amp;world, const ed::UUID &amp;id, const geo::Pose3D &amp;expected_pose, geo::Pose3D &amp;fitted_pose, double max_yaw_change) const</argsstring>
+        <name>estimateEntityPoseImp</name>
+        <param>
+          <type>const <ref refid="structFitterData" kindref="compound">FitterData</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>const ed::WorldModel &amp;</type>
+          <declname>world</declname>
+        </param>
+        <param>
+          <type>const ed::UUID &amp;</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacegeo_1a6c851aec5e98801c86d46d508de5c05d" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Pose3D</ref> &amp;</type>
+          <declname>expected_pose</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacegeo_1a6c851aec5e98801c86d46d508de5c05d" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Pose3D</ref> &amp;</type>
+          <declname>fitted_pose</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>max_yaw_change</declname>
+        </param>
+        <briefdescription>
+<para>estimateEntityPoseImp actual implementation of the entity pose estimation. Preprocess input data iterates over all beams and the yaw range to compuate the best fit. Finally, a correction of the sensor pose is computed and the result is transformed back to 3D </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pre-processed sensor data </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>world</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>world model </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of the entity we&apos;re trying to fit </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>expected_pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pose where the entity is expected </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fitted_pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the fitted pose is stored here </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>max_yaw_change</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>maximum allowed yaw rotation </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>success or failure </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="178" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="277" bodyend="304"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1a9a11923d654ca91b8e7bb45b40f0172e" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Fitter::evaluateCandidate</definition>
+        <argsstring>(const EstimationInputData &amp;static_data, Candidate &amp;candidate) const</argsstring>
+        <name>evaluateCandidate</name>
+        <param>
+          <type>const <ref refid="structEstimationInputData" kindref="compound">EstimationInputData</ref> &amp;</type>
+          <declname>static_data</declname>
+        </param>
+        <param>
+          <type><ref refid="classCandidate" kindref="compound">Candidate</ref> &amp;</type>
+          <declname>candidate</declname>
+        </param>
+        <briefdescription>
+<para>evaluateCandidate renders the model, transform the model along the beam direction to get this distance right and render once again </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>static_data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>&apos;static&apos; input data that was the result from the pre-processing </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>candidate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>contains the &apos;candidate&apos; beam index and yaw that is evaluated </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="230" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="375" bodyend="400"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1af2adce958a648f34b06e2ddc816e7ead" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="fitter_8h_1a896ceca009294b6c6ed9af103a3edee7" kindref="member">Shape2D</ref></type>
+        <definition>Shape2D Fitter::get2DShape</definition>
+        <argsstring>(ed::EntityConstPtr entity_ptr) const</argsstring>
+        <name>get2DShape</name>
+        <param>
+          <type>ed::EntityConstPtr</type>
+          <declname>entity_ptr</declname>
+        </param>
+        <briefdescription>
+<para>get2DShape gets the downprojected, 2D shape from an entity </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>entity_ptr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>points to the entity </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>the computed shape </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="198" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="404" bodyend="414"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1a4cbf48062d3af6d55fde3a0c01aaea65" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structEstimationInputData" kindref="compound">EstimationInputData</ref></type>
+        <definition>EstimationInputData Fitter::preProcessInputData</definition>
+        <argsstring>(const ed::WorldModel &amp;world, const ed::UUID &amp;id, const geo::Pose3D &amp;expected_pose, const FitterData &amp;data) const</argsstring>
+        <name>preProcessInputData</name>
+        <param>
+          <type>const ed::WorldModel &amp;</type>
+          <declname>world</declname>
+        </param>
+        <param>
+          <type>const ed::UUID &amp;</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacegeo_1a6c851aec5e98801c86d46d508de5c05d" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Pose3D</ref> &amp;</type>
+          <declname>expected_pose</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structFitterData" kindref="compound">FitterData</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>preProcessInputData pre-processes the inputs for the fitting algorithm, i.e., gets the shape of the entity, compute its center, transform the shape to (0, 0), and compute the expected center beam. Everything is stored in a struct that can be used (const) throughout the rest of the algorithm </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>world</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>world model </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id of the entity to fit </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>expected_pose</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>expected pose of the entity </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>input sensor data </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="structEstimationInputData" kindref="compound">EstimationInputData</ref> used throughout the rest of the algorithm </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="191" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="308" bodyend="344"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1a3befefdb0da539edf71f53c97feef82b" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Fitter::renderEntity</definition>
+        <argsstring>(const ed::EntityConstPtr &amp;e, const geo::Pose3D &amp;sensor_pose_xya, int identifier, std::vector&lt; double &gt; &amp;model_ranges, std::vector&lt; int &gt; &amp;identifiers) const</argsstring>
+        <name>renderEntity</name>
+        <param>
+          <type>const ed::EntityConstPtr &amp;</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacegeo_1a6c851aec5e98801c86d46d508de5c05d" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Pose3D</ref> &amp;</type>
+          <declname>sensor_pose_xya</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>identifier</declname>
+        </param>
+        <param>
+          <type><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; double &gt; &amp;</type>
+          <declname>model_ranges</declname>
+        </param>
+        <param>
+          <type><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; int &gt; &amp;</type>
+          <declname>identifiers</declname>
+        </param>
+        <briefdescription>
+<para>renderEntity renders the entity in 2D using the beam model with the provided (2D) sensor pose. The ranges of the simulated measurement are stored in &apos;model ranges&apos; and the &apos;identifier&apos; is stored in the &apos;identifiers&apos; vector in order to be able to distinguish multiple entity shapes. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>e</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>entity to render </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sensor_pose_xya</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>2D sensor pose (i.e., only x, y and yaw are used) </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>identifier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>model_ranges</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>identifiers</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="163" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="521" bodyend="542"/>
+      </memberdef>
+      <memberdef kind="function" id="classFitter_1a039c4fc049ed0431886fb643b4cf0918" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Fitter::renderWorldModel2D</definition>
+        <argsstring>(const ed::WorldModel &amp;world, const geo::Pose3D &amp;sensor_pose_xya, const ed::UUID &amp;skip_id, std::vector&lt; double &gt; &amp;model_ranges, std::vector&lt; int &gt; &amp;identifiers) const</argsstring>
+        <name>renderWorldModel2D</name>
+        <param>
+          <type>const ed::WorldModel &amp;</type>
+          <declname>world</declname>
+        </param>
+        <param>
+          <type>const <ref refid="namespacegeo_1a6c851aec5e98801c86d46d508de5c05d" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Pose3D</ref> &amp;</type>
+          <declname>sensor_pose_xya</declname>
+        </param>
+        <param>
+          <type>const ed::UUID &amp;</type>
+          <declname>skip_id</declname>
+        </param>
+        <param>
+          <type><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; double &gt; &amp;</type>
+          <declname>model_ranges</declname>
+        </param>
+        <param>
+          <type><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; int &gt; &amp;</type>
+          <declname>identifiers</declname>
+        </param>
+        <briefdescription>
+<para>renderWorldModel2D renders all world model entities </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>world</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>world model </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sensor_pose_xya</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sensor pose </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>skip_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>id to skip (so we don&apos;t render the entity we&apos;re fitting </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>model_ranges</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>data is stored here </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>identifiers</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>to distinguish which &apos;range&apos; belongs to which entity. In this case, -1 will be used as an identifier </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/ed/kinect/fitter.h" line="209" column="1" bodyfile="src/kinect/fitter.cpp" bodystart="418" bodyend="441"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>The <ref refid="classFitter" kindref="compound">Fitter</ref> class contains the algorithm to do the 2D fit. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="41">
+        <label>std::map&lt; ed::UUID, EntityRepresentation2D &gt;</label>
+        <link refid="cpp/container/map" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="40">
+        <label>std::vector&lt; geo::Vec2T &gt;</label>
+        <link refid="cpp/container/vector" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="39">
+        <label>BeamModel</label>
+        <link refid="classBeamModel"/>
+        <childnode refid="40" relation="usage">
+          <edgelabel>rays_</edgelabel>
+        </childnode>
+      </node>
+      <node id="38">
+        <label>Fitter</label>
+        <link refid="classFitter"/>
+        <childnode refid="39" relation="usage">
+          <edgelabel>beam_model_</edgelabel>
+        </childnode>
+        <childnode refid="41" relation="usage">
+          <edgelabel>entity_shapes_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="include/ed/kinect/fitter.h" line="99" column="1" bodyfile="include/ed/kinect/fitter.h" bodystart="98" bodyend="243"/>
+    <listofallmembers>
+      <member refid="classFitter_1afed8610d9dfda5529c16d9573915b1ed" prot="private" virt="non-virtual"><scope>Fitter</scope><name>beam_model_</name></member>
+      <member refid="classFitter_1afa6d4aaf9d75dc661f516f988fd81430" prot="private" virt="non-virtual"><scope>Fitter</scope><name>checkExpectedBeamThroughEntity</name></member>
+      <member refid="classFitter_1a8a46f221f5b20a6b2a2a44cbe46c938b" prot="private" virt="non-virtual"><scope>Fitter</scope><name>entity_shapes_</name></member>
+      <member refid="classFitter_1a3cbcf2ef11c711eb5bc3cb01e00f9d9b" prot="public" virt="non-virtual"><scope>Fitter</scope><name>estimateEntityPose</name></member>
+      <member refid="classFitter_1a1e087fff26440ceef6dc0f53575dc6e5" prot="private" virt="non-virtual"><scope>Fitter</scope><name>estimateEntityPoseImp</name></member>
+      <member refid="classFitter_1a9a11923d654ca91b8e7bb45b40f0172e" prot="private" virt="non-virtual"><scope>Fitter</scope><name>evaluateCandidate</name></member>
+      <member refid="classFitter_1acb857b873cba9ba6507d81a6464c9bca" prot="public" virt="non-virtual"><scope>Fitter</scope><name>findOptimum</name></member>
+      <member refid="classFitter_1a60a230a63c637e8e9db6c13e75b59c71" prot="public" virt="non-virtual"><scope>Fitter</scope><name>Fitter</name></member>
+      <member refid="classFitter_1af2adce958a648f34b06e2ddc816e7ead" prot="private" virt="non-virtual"><scope>Fitter</scope><name>get2DShape</name></member>
+      <member refid="classFitter_1a5e9587019b45ed8caaf1a308fe7dee3d" prot="public" virt="non-virtual"><scope>Fitter</scope><name>GetOrCreateEntity2D</name></member>
+      <member refid="classFitter_1a109c58459f22239b805d9f8f2e952f70" prot="private" virt="non-virtual"><scope>Fitter</scope><name>model_loader_</name></member>
+      <member refid="classFitter_1a2c288eea72aba4a9ae58ec2541e443ef" prot="private" virt="non-virtual"><scope>Fitter</scope><name>nr_data_points_</name></member>
+      <member refid="classFitter_1a4cbf48062d3af6d55fde3a0c01aaea65" prot="private" virt="non-virtual"><scope>Fitter</scope><name>preProcessInputData</name></member>
+      <member refid="classFitter_1a8dd85e00f88582fbb5fea699840b88a3" prot="public" virt="non-virtual"><scope>Fitter</scope><name>processSensorData</name></member>
+      <member refid="classFitter_1a3befefdb0da539edf71f53c97feef82b" prot="private" virt="non-virtual"><scope>Fitter</scope><name>renderEntity</name></member>
+      <member refid="classFitter_1a039c4fc049ed0431886fb643b4cf0918" prot="private" virt="non-virtual"><scope>Fitter</scope><name>renderWorldModel2D</name></member>
+      <member refid="classFitter_1a79f2b09e42fd66fa7f3a8322184f4af2" prot="public" virt="non-virtual"><scope>Fitter</scope><name>~Fitter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

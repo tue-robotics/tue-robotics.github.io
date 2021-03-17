@@ -1,0 +1,162 @@
+:mod:`image_recognition_skybiometry.face_client`
+================================================
+
+.. py:module:: image_recognition_skybiometry.face_client
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   image_recognition_skybiometry.face_client.FaceClient
+
+
+
+.. data:: API_HOST
+   :annotation: = api.skybiometry.com/fc
+
+   
+
+.. data:: USE_SSL
+   :annotation: = True
+
+   
+
+.. py:class:: FaceClient(api_key=None, api_secret=None)
+
+   Bases: :class:`object`
+
+   The most base type
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: set_twitter_oauth_credentials(self, user=None, secret=None, token=None)
+
+
+   .. method:: set_facebook_oauth_credentials(self, user_id=None, session_id=None, oauth_token=None)
+
+
+   .. method:: faces_detect(self, urls=None, file_=None, buffer_=None, aggressive=False)
+
+      Returns tags for detected faces in one or more photos, with geometric
+      information of the tag, eyes, nose and mouth, as well as the gender,
+      glasses, and smiling attributes.
+
+      http://www.skybiometry.com/Documentation#faces/detect
+
+
+   .. method:: faces_status(self, uids=None, namespace=None)
+
+      Reports training set status for the specified UIDs.
+
+      http://www.skybiometry.com/Documentation#faces/status
+
+
+   .. method:: faces_recognize(self, uids=None, urls=None, files_=None, buffers_=None, aggressive=False, train=None, namespace=None)
+
+      Attempts to detect and recognize one or more user IDs' faces, in one
+      or more photos.
+      For each detected face, the SkyBiometry engine will return the most likely
+      user IDs, or empty result for unrecognized faces. In addition, each
+      tag includes a threshold score - any score below this number is
+      considered a low-probability hit.
+
+      http://www.skybiometry.com/Documentation#faces/recognize
+
+
+   .. method:: faces_train(self, uids=None, namespace=None)
+
+      Calls the training procedure for the specified UIDs, and reports back
+      changes.
+
+      http://www.skybiometry.com/Documentation#faces/train
+
+
+   .. method:: tags_get(self, uids=None, urls=None, pids=None, order='recent', limit=5, together=False, filters=None, namespace=None)
+
+      Returns saved tags in one or more photos, or for the specified
+      User ID(s).
+      This method also accepts multiple filters for finding tags
+      corresponding to a more specific criteria such as front-facing,
+      recent, or where two or more users appear together in same photos.
+
+      http://www.skybiometry.com/Documentation#tags/get
+
+
+   .. method:: tags_add(self, url=None, x=None, y=None, width=None, uid=None, tagger_id=None, label=None, password=None)
+
+      Add a (manual) face tag to a photo. Use this method to add face tags
+      where those were not detected for completeness of your service.
+
+      http://www.skybiometry.com/Documentation#tags/add
+
+
+   .. method:: tags_save(self, tids=None, uid=None, tagger_id=None, label=None, password=None)
+
+      Saves a face tag. Use this method to save tags for training the
+      index, or for future use of the faces.detect and tags.get methods.
+
+      http://www.skybiometry.com/Documentation#tags/save
+
+
+   .. method:: tags_remove(self, tids=None, password=None)
+
+      Remove a previously saved face tag from a photo.
+
+      http://www.skybiometry.com/Documentation#tags/remove
+
+
+   .. method:: account_limits(self)
+
+      Returns current rate limits for the account represented by the passed
+      API key and Secret.
+
+      http://www.skybiometry.com/Documentation#account/limits
+
+
+   .. method:: account_users(self, namespaces=None)
+
+      Returns current rate limits for the account represented by the passed
+      API key and Secret.
+
+      http://www.skybiometry.com/Documentation#account/users
+
+
+   .. method:: account_namespaces(self)
+
+      Returns all valid data namespaces for user authorized by specified API key.
+
+      http://www.skybiometry.com/Documentation#account/namespaces
+
+
+   .. method:: __check_user_auth_credentials(self, uids)
+
+
+   .. method:: __append_user_auth_data(self, data, facebook_uids, twitter_uids)
+
+
+   .. staticmethod:: __append_optional_arguments(data, **kwargs)
+
+
+   .. method:: send_request(self, method=None, parameters=None, files=None, buffers=None)
+
+
+
+.. py:exception:: FaceError(error_code, error_message)
+
+   Bases: :class:`exceptions.Exception`
+
+   Common base class for all non-exit exceptions.
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: __str__(self)
+
+      x.__str__() <==> str(x)
+
+
+

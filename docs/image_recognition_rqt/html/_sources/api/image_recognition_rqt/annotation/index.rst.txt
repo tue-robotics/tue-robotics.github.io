@@ -1,0 +1,148 @@
+:mod:`image_recognition_rqt.annotation`
+=======================================
+
+.. py:module:: image_recognition_rqt.annotation
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   image_recognition_rqt.annotation.AnnotationPlugin
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   image_recognition_rqt.annotation._sanitize
+
+
+.. data:: _SUPPORTED_SERVICES
+   :annotation: = ['image_recognition_msgs/Annotate']
+
+   
+
+.. function:: _sanitize(label)
+
+   Sanitize string, only allow \w regex chars
+
+   :param label: Input that needs to be sanitized
+   :return: The sanatized string
+
+
+.. py:class:: AnnotationPlugin(context)
+
+   Bases: :class:`qt_gui.plugin.Plugin`
+
+   Annotation plugin to create data sets or test the Annotate.srv service
+
+   :param context: Parent QT widget
+
+   .. method:: image_roi_callback(self, roi_image)
+
+      Callback from the image widget when the user has selected a ROI
+
+      :param roi_image: The opencv image of the ROI
+
+
+   .. method:: annotate_again_clicked(self)
+
+      Triggered when button clicked
+
+
+   .. method:: annotate(self, roi_image)
+
+      Create an annotation
+
+      :param roi_image: The image we want to annotate
+
+
+   .. method:: annotate_srv(self, roi_image)
+
+      Call the selected Annotate.srv
+      :param roi_image: The full opencv image we want to annotate
+
+
+   .. method:: _create_service_client(self, srv_name)
+
+      Create a service client proxy
+
+      :param srv_name: Name of the service
+
+
+   .. method:: store_image(self, roi_image)
+
+      Store the image
+
+      :param roi_image: Image we would like to store
+
+
+   .. method:: _get_output_directory(self)
+
+      Gets and sets the output directory via a QFileDialog
+
+
+   .. method:: _set_output_directory(self, path)
+
+      Sets the output directory
+
+      :param path: The path of the directory
+
+
+   .. method:: _get_labels(self)
+
+      Gets and sets the labels
+
+
+   .. method:: _set_labels(self, labels)
+
+      Sets the labels
+      :param labels: label string array
+
+
+   .. method:: _image_callback(self, msg)
+
+      Called when a new sensor_msgs/Image is coming in
+      :param msg: The image messaeg
+
+
+   .. method:: trigger_configuration(self)
+
+      Callback when the configuration button is clicked
+
+
+   .. method:: _create_subscriber(self, topic_name)
+
+      Method that creates a subscriber to a sensor_msgs/Image topic
+      :param topic_name: The topic_name
+
+
+   .. method:: shutdown_plugin(self)
+
+      Callback function when shutdown is requested
+
+
+   .. method:: save_settings(self, plugin_settings, instance_settings)
+
+      Callback function on shutdown to store the local plugin variables
+
+      :param plugin_settings: Plugin settings
+      :param instance_settings: Settings of this instance
+
+
+   .. method:: restore_settings(self, plugin_settings, instance_settings)
+
+      Callback function fired on load of the plugin that allows to restore saved variables
+
+      :param plugin_settings: Plugin settings
+      :param instance_settings: Settings of this instance
+
+
+

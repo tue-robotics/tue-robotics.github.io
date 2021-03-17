@@ -1,0 +1,592 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.base &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.base</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.base</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1">#  Rein Appeldoorn</span>
+<span class="c1">#  October &#39;14</span>
+<span class="c1">#</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">sign</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">from</span> <span class="nn">actionlib_msgs.msg</span> <span class="k">import</span> <span class="n">GoalStatus</span>
+<span class="kn">import</span> <span class="nn">geometry_msgs.msg</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">tf</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">cb_base_navigation_msgs.msg</span> <span class="k">import</span> <span class="n">LocalPlannerAction</span><span class="p">,</span> <span class="n">OrientationConstraint</span><span class="p">,</span> <span class="n">PositionConstraint</span><span class="p">,</span> <span class="n">LocalPlannerGoal</span>
+<span class="kn">from</span> <span class="nn">cb_base_navigation_msgs.srv</span> <span class="k">import</span> <span class="n">GetPlan</span><span class="p">,</span> <span class="n">CheckPlan</span>
+<span class="kn">from</span> <span class="nn">robot_skills.robot_part</span> <span class="k">import</span> <span class="n">RobotPart</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">kdl_frame_stamped_from_pose_stamped_msg</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util</span> <span class="k">import</span> <span class="n">nav_analyzer</span><span class="p">,</span> <span class="n">transformations</span>
+
+
+<div class="viewcode-block" id="LocalPlanner"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.LocalPlanner">[docs]</a><span class="k">class</span> <span class="nc">LocalPlanner</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="n">analyzer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LocalPlanner</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analyzer</span> <span class="o">=</span> <span class="n">analyzer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_simple_action_client</span><span class="p">(</span><span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/local_planner/action_server&#39;</span><span class="p">,</span>
+                                                               <span class="n">LocalPlannerAction</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_position_constraint</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orientation_constraint</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Public members!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="s2">&quot;idle&quot;</span>  <span class="c1"># idle, controlling, blocked, arrived</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obstacle_point</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dtg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plan</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal_handle</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="LocalPlanner.setPlan"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.LocalPlanner.setPlan">[docs]</a>    <span class="k">def</span> <span class="nf">setPlan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">position_constraint</span><span class="p">,</span> <span class="n">orientation_constraint</span><span class="p">):</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="n">LocalPlannerGoal</span><span class="p">()</span>
+        <span class="n">goal</span><span class="o">.</span><span class="n">plan</span> <span class="o">=</span> <span class="n">plan</span>
+        <span class="n">goal</span><span class="o">.</span><span class="n">orientation_constraint</span> <span class="o">=</span> <span class="n">orientation_constraint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orientation_constraint</span> <span class="o">=</span> <span class="n">orientation_constraint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">goal</span><span class="p">,</span> <span class="n">done_cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__doneCallback</span><span class="p">,</span> <span class="n">feedback_cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__feedbackCallback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_goal_handle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">gh</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Goal handle = </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_goal_handle</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__setState</span><span class="p">(</span><span class="s2">&quot;controlling&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">plan</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LocalPlanner.cancelCurrentPlan"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.LocalPlanner.cancelCurrentPlan">[docs]</a>    <span class="k">def</span> <span class="nf">cancelCurrentPlan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_goal_handle</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+            <span class="c1"># Only cancel goal when pending or active</span>
+            <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">GoalStatus</span><span class="o">.</span><span class="n">PENDING</span> <span class="ow">or</span> <span class="n">state</span> <span class="o">==</span> <span class="n">GoalStatus</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__setState</span><span class="p">(</span><span class="s2">&quot;idle&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LocalPlanner.selfreset"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.LocalPlanner.selfreset">[docs]</a>    <span class="k">def</span> <span class="nf">selfreset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">cancel_all_goals</span><span class="p">()</span>
+        <span class="c1"># cancel_all_goals doesn&#39;t return anything useful to check, so we just return True</span>
+        <span class="c1"># https://docs.ros.org/kinetic/api/actionlib/html/simple__action__client_8py_source.html#l00192</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="LocalPlanner.getGoalHandle"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.LocalPlanner.getGoalHandle">[docs]</a>    <span class="k">def</span> <span class="nf">getGoalHandle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_goal_handle</span></div>
+
+<div class="viewcode-block" id="LocalPlanner.getStatus"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.LocalPlanner.getStatus">[docs]</a>    <span class="k">def</span> <span class="nf">getStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span></div>
+
+<div class="viewcode-block" id="LocalPlanner.getDistanceToGoal"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.LocalPlanner.getDistanceToGoal">[docs]</a>    <span class="k">def</span> <span class="nf">getDistanceToGoal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtg</span></div>
+
+<div class="viewcode-block" id="LocalPlanner.getObstaclePoint"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.LocalPlanner.getObstaclePoint">[docs]</a>    <span class="k">def</span> <span class="nf">getObstaclePoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obstacle_point</span></div>
+
+<div class="viewcode-block" id="LocalPlanner.getCurrentOrientationConstraint"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.LocalPlanner.getCurrentOrientationConstraint">[docs]</a>    <span class="k">def</span> <span class="nf">getCurrentOrientationConstraint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orientation_constraint</span></div>
+
+    <span class="k">def</span> <span class="nf">__feedbackCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">feedback</span><span class="o">.</span><span class="n">blocked</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__setState</span><span class="p">(</span><span class="s2">&quot;blocked&quot;</span><span class="p">,</span> <span class="n">feedback</span><span class="o">.</span><span class="n">point_blocked</span><span class="p">,</span> <span class="n">feedback</span><span class="o">.</span><span class="n">dtg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plan</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__setState</span><span class="p">(</span><span class="s2">&quot;controlling&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">feedback</span><span class="o">.</span><span class="n">dtg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plan</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__doneCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">terminal_state</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__setState</span><span class="p">(</span><span class="s2">&quot;arrived&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__setState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">obstacle_point</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plan</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obstacle_point</span> <span class="o">=</span> <span class="n">obstacle_point</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dtg</span> <span class="o">=</span> <span class="n">dtg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plan</span> <span class="o">=</span> <span class="n">plan</span></div>
+
+
+<div class="viewcode-block" id="GlobalPlanner"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.GlobalPlanner">[docs]</a><span class="k">class</span> <span class="nc">GlobalPlanner</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="n">analyzer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GlobalPlanner</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analyzer</span> <span class="o">=</span> <span class="n">analyzer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_position_constraint</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_plan_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/global_planner/get_plan_srv&quot;</span><span class="p">,</span> <span class="n">GetPlan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_plan_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span><span class="s2">&quot;/global_planner/check_plan_srv&quot;</span><span class="p">,</span> <span class="n">CheckPlan</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GlobalPlanner.getPlan"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.GlobalPlanner.getPlan">[docs]</a>    <span class="k">def</span> <span class="nf">getPlan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position_constraint</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param position_constraint: (PositionConstraint)</span>
+<span class="sd">        :return: list(PoseStamped). N.B.: If No path was found, this list is empty. If the planner service fails,</span>
+<span class="sd">            &#39;None&#39; is returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_position_constraint</span> <span class="o">=</span> <span class="n">position_constraint</span>
+
+        <span class="n">pcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">position_constraint</span><span class="p">]</span>
+
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_plan_client</span><span class="p">(</span><span class="n">pcs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not get plan from global planner via service call: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resp</span><span class="o">.</span><span class="n">succes</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Global planner couldn&#39;t plan a path to the specified constraints. Are the constraints you specified valid?: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pcs</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">plan_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_time</span><span class="o">-</span><span class="n">start_time</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">computePathLength</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">plan</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="n">plan</span></div>
+
+<div class="viewcode-block" id="GlobalPlanner.checkPlan"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.GlobalPlanner.checkPlan">[docs]</a>    <span class="k">def</span> <span class="nf">checkPlan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plan</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_plan_client</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not check plan: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="n">valid</span></div>
+
+<div class="viewcode-block" id="GlobalPlanner.getCurrentPositionConstraint"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.GlobalPlanner.getCurrentPositionConstraint">[docs]</a>    <span class="k">def</span> <span class="nf">getCurrentPositionConstraint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position_constraint</span></div>
+
+<div class="viewcode-block" id="GlobalPlanner.computePathLength"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.GlobalPlanner.computePathLength">[docs]</a>    <span class="k">def</span> <span class="nf">computePathLength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="c1">#rospy.logwarn(&quot;Please use the other computepathlength&quot;)</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">pose</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">path</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">path</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span>
+                <span class="n">distance</span> <span class="o">+=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">dx</span><span class="o">*</span><span class="n">dx</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">dy</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">distance</span></div></div>
+
+
+<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="n">cmd_vel_topic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial_pose_topic</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cmd_vel_topic</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cmd_vel_topic</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/base/references&#39;</span>
+        <span class="k">if</span> <span class="n">initial_pose_topic</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">initial_pose_topic</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/initialpose&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmd_vel</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="n">cmd_vel_topic</span><span class="p">,</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Twist</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_pose_publisher</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="n">initial_pose_topic</span><span class="p">,</span>
+                                                       <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PoseWithCovarianceStamped</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">analyzer</span> <span class="o">=</span> <span class="n">nav_analyzer</span><span class="o">.</span><span class="n">NavAnalyzer</span><span class="p">(</span><span class="n">robot_name</span><span class="p">)</span>
+
+        <span class="c1"># The planners</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">global_planner</span> <span class="o">=</span> <span class="n">GlobalPlanner</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyzer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span> <span class="o">=</span> <span class="n">LocalPlanner</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyzer</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscribe_hardware_status</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Base.wait_for_connections"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.wait_for_connections">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">log_failing_connections</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Waits for the connections until they are connected</span>
+
+<span class="sd">        :param timeout: timeout in seconds</span>
+<span class="sd">        :param log_failing_connections: (bool) whether to log errors if not connected. This is useful when checking</span>
+<span class="sd">            multiple robot parts in a loop</span>
+<span class="sd">        :return: bool indicating whether all connections are connected</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">wait_for_connections</span><span class="p">(</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">log_failing_connections</span><span class="o">=</span><span class="n">log_failing_connections</span><span class="p">)</span> <span class="ow">and</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">wait_for_connections</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">log_failing_connections</span><span class="o">=</span><span class="n">log_failing_connections</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Base.move"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position_constraint_string</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">PositionConstraint</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="n">position_constraint_string</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span>
+        <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plan</span><span class="p">:</span>
+            <span class="n">o</span> <span class="o">=</span> <span class="n">OrientationConstraint</span><span class="p">()</span>
+            <span class="n">o</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">setPlan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">plan</span></div>
+
+<div class="viewcode-block" id="Base.turn_towards"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.turn_towards">[docs]</a>    <span class="k">def</span> <span class="nf">turn_towards</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="n">current_pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">PositionConstraint</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="s2">&quot;(x-</span><span class="si">%f</span><span class="s2">)^2+(y-</span><span class="si">%f</span><span class="s2">)^2 &lt; </span><span class="si">%f</span><span class="s2">^2&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">current_pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">current_pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">current_pose</span><span class="o">.</span><span class="n">frame_id</span>
+        <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">OrientationConstraint</span><span class="p">(</span><span class="n">look_at</span><span class="o">=</span><span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">angle_offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+        <span class="n">o</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">setPlan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">plan</span></div>
+
+<div class="viewcode-block" id="Base.force_drive"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.force_drive">[docs]</a>    <span class="k">def</span> <span class="nf">force_drive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vth</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">loop_rate</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">),</span> <span class="n">ay</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">),</span> <span class="n">ath</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot; Forces the robot to drive by sending a command velocity directly to the base controller. N.B.: all collision</span>
+<span class="sd">        avoidance is bypassed.</span>
+
+<span class="sd">        :param vx: forward velocity [m/s]</span>
+<span class="sd">        :param vy: sideways velocity [m/s]</span>
+<span class="sd">        :param vth: rotational velocity in [rad/s]</span>
+<span class="sd">        :param timeout: duration for this motion [s]</span>
+<span class="sd">        :param loop_rate: Rate of sending twist messages [Hz]</span>
+<span class="sd">        :param stop: send stop message afterwards</span>
+<span class="sd">        :param ax: forward acceleration [m/s^2]</span>
+<span class="sd">        :param ay: sideways acceleration [m/s^2]</span>
+<span class="sd">        :param ath: rotational acceleration [rad/s^2]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Cancel the local planner goal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+
+        <span class="n">v</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Twist</span><span class="p">()</span>        <span class="c1"># Initialize velocity</span>
+        <span class="n">t_start</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">t_end</span> <span class="o">=</span> <span class="n">t_start</span> <span class="o">+</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="o">.</span><span class="n">from_sec</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_abs_max</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">max_value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">sign</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">max_value</span><span class="p">),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="c1"># Drive</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="n">loop_rate</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">t_end</span><span class="p">:</span>
+            <span class="n">seconds_from_start</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span>
+
+            <span class="c1"># 0 * inf =  NaN, so in case &#39;seconds_from_start&#39; is close to zero, aka in the first loop iteration,</span>
+            <span class="c1"># use zero to prevent NaNs</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">_abs_max</span><span class="p">(</span><span class="n">vx</span><span class="p">,</span> <span class="n">ax</span> <span class="o">*</span> <span class="n">seconds_from_start</span> <span class="k">if</span> <span class="n">seconds_from_start</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">/</span><span class="n">loop_rate</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">_abs_max</span><span class="p">(</span><span class="n">vy</span><span class="p">,</span> <span class="n">ay</span> <span class="o">*</span> <span class="n">seconds_from_start</span> <span class="k">if</span> <span class="n">seconds_from_start</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">/</span><span class="n">loop_rate</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">_abs_max</span><span class="p">(</span><span class="n">vth</span><span class="p">,</span> <span class="n">ath</span> <span class="o">*</span> <span class="n">seconds_from_start</span> <span class="k">if</span> <span class="n">seconds_from_start</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">/</span><span class="n">loop_rate</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cmd_vel</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="n">rate</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">stop</span><span class="p">:</span>
+            <span class="c1"># Stop driving</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">angular</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cmd_vel</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Base.get_location"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.get_location">[docs]</a>    <span class="k">def</span> <span class="nf">get_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a FrameStamped with the robot pose</span>
+
+<span class="sd">        :return: FrameStamped with robot pose</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">get_location</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Base.set_initial_pose"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.set_initial_pose">[docs]</a>    <span class="k">def</span> <span class="nf">set_initial_pose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+
+        <span class="n">initial_pose</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PoseWithCovarianceStamped</span><span class="p">()</span>
+
+        <span class="n">initial_pose</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;/map&quot;</span>
+
+        <span class="n">initial_pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">initial_pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="n">initial_pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">initial_pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">euler_z_to_quaternion</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+        <span class="n">initial_pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">covariance</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>
+                                        <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>
+                                        <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>
+                                        <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.06853891945200942</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>
+                                        <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>
+                                        <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+
+        <span class="c1">#rospy.loginfo(&quot;initalpose = {0}&quot;.format(initial_pose))</span>
+
+        <span class="c1"># We have to do this twice for some reason, somewhere in ed_localization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_pose_publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">initial_pose</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_pose_publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">initial_pose</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Base.wait_for_motion_done"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.wait_for_motion_done">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_motion_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Waits until local planner is done</span>
+
+<span class="sd">        :param timeout: timeout in seconds; in case 0.0, no sensible output is provided, just False</span>
+<span class="sd">        :param cancel: bool specifying whether goals should be cancelled</span>
+<span class="sd">            if timeout is exceeded</span>
+<span class="sd">        :return: bool indicates whether motion was done (True if reached, False otherwise)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#TODO implement navigation using an actionserver</span>
+        <span class="n">starttime</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># Hz</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getStatus</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;arrived&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">passed_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">passed_time</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cancel</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Base.selfreset"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.selfreset">[docs]</a>    <span class="k">def</span> <span class="nf">selfreset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">glob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">loc</span> <span class="ow">and</span> <span class="n">glob</span></div>
+
+    <span class="c1">########################################################</span>
+    <span class="c1">###### Are the following functions deprecated ??? ######</span>
+    <span class="c1">########################################################</span>
+<div class="viewcode-block" id="Base.go"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.go">[docs]</a>    <span class="k">def</span> <span class="nf">go</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;/map&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;[base.py] Function &#39;go&#39; of &#39;Base&#39; is obsolete.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Base.reset_costmap"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.reset_costmap">[docs]</a>    <span class="k">def</span> <span class="nf">reset_costmap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;[base.py] Function &#39;reset_costmap&#39; of &#39;Base&#39; is obsolete.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Base.cancel_goal"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.Base.cancel_goal">[docs]</a>    <span class="k">def</span> <span class="nf">cancel_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;[base.py] Function &#39;cancel_goal&#39; of &#39;Base&#39; is obsolete.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+    <span class="c1">########################################################</span>
+    <span class="c1">########################################################</span>
+    <span class="c1">########################################################</span>
+
+
+<div class="viewcode-block" id="get_location"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.get_location">[docs]</a><span class="k">def</span> <span class="nf">get_location</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">):</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">tf_listener</span><span class="o">.</span><span class="n">waitForTransform</span><span class="p">(</span><span class="s2">&quot;/map&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/base_link&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">20.0</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">ro_trans</span><span class="p">,</span> <span class="n">ro_rot</span><span class="p">)</span> <span class="o">=</span> <span class="n">tf_listener</span><span class="o">.</span><span class="n">lookupTransform</span><span class="p">(</span><span class="s2">&quot;/map&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/base_link&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+
+        <span class="n">position</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Point</span><span class="p">()</span>
+        <span class="n">orientation</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Quaternion</span><span class="p">()</span>
+
+        <span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">ro_trans</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">ro_trans</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">orientation</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">ro_rot</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">orientation</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">ro_rot</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">orientation</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">ro_rot</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">orientation</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">ro_rot</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+        <span class="n">target_pose</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PoseStamped</span><span class="p">(</span><span class="n">pose</span><span class="o">=</span><span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Pose</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="n">orientation</span><span class="p">))</span>
+        <span class="n">target_pose</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;/map&quot;</span>
+        <span class="n">target_pose</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="k">return</span> <span class="n">kdl_frame_stamped_from_pose_stamped_msg</span><span class="p">(</span><span class="n">target_pose</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">LookupException</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">ConnectivityException</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;tf request failed!, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">target_pose</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PoseStamped</span><span class="p">(</span><span class="n">pose</span><span class="o">=</span><span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Pose</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">position</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="n">orientation</span><span class="p">))</span>
+        <span class="n">target_pose</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;/map&quot;</span>
+        <span class="k">return</span> <span class="n">kdl_frame_stamped_from_pose_stamped_msg</span><span class="p">(</span><span class="n">target_pose</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="computePathLength"><a class="viewcode-back" href="../../api/robot_skills/base/index.html#robot_skills.base.computePathLength">[docs]</a><span class="k">def</span> <span class="nf">computePathLength</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">pose</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">path</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">path</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span>
+            <span class="n">distance</span> <span class="o">+=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">dx</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">dy</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">distance</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

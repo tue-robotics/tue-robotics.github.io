@@ -1,0 +1,955 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.navigation.follow_operator &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.navigation.follow_operator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.navigation.follow_operator</h1><div class="highlight"><pre>
+<span></span><span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">geometry_msgs</span>  <span class="c1"># Only used for publishing markers</span>
+<span class="kn">import</span> <span class="nn">geometry_msgs.msg</span>
+<span class="kn">import</span> <span class="nn">PyKDL</span> <span class="k">as</span> <span class="nn">kdl</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">visualization_msgs.msg</span> <span class="k">import</span> <span class="n">Marker</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">cb_base_navigation_msgs.msg</span> <span class="k">import</span> <span class="n">PositionConstraint</span><span class="p">,</span> <span class="n">OrientationConstraint</span>
+<span class="kn">from</span> <span class="nn">hmi</span> <span class="k">import</span> <span class="n">TimeoutException</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util</span> <span class="k">import</span> <span class="n">kdl_conversions</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">Entity</span>
+<span class="kn">from</span> <span class="nn">..util.startup</span> <span class="k">import</span> <span class="n">startup</span>
+<span class="kn">from</span> <span class="nn">..util.designators</span> <span class="k">import</span> <span class="n">VariableDesignator</span>
+
+
+<div class="viewcode-block" id="vector_stampeds_to_point_stampeds"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.vector_stampeds_to_point_stampeds">[docs]</a><span class="k">def</span> <span class="nf">vector_stampeds_to_point_stampeds</span><span class="p">(</span><span class="n">vector_stampeds</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">kdl_vector_stamped_to_point_stamped</span><span class="p">,</span> <span class="n">vector_stampeds</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="frame_stampeds_to_pose_stampeds"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.frame_stampeds_to_pose_stampeds">[docs]</a><span class="k">def</span> <span class="nf">frame_stampeds_to_pose_stampeds</span><span class="p">(</span><span class="n">frame_stampeds</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">kdl_frame_stamped_to_pose_stamped_msg</span><span class="p">,</span> <span class="n">frame_stampeds</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FollowOperator"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator">[docs]</a><span class="k">class</span> <span class="nc">FollowOperator</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">ask_follow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">learn_face</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">operator_radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">lookat_radius</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">start_timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">operator_timeout</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">distance_threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lost_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">lost_distance</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                 <span class="n">operator_id_des</span><span class="o">=</span><span class="n">VariableDesignator</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="nb">str</span><span class="p">),</span> <span class="n">standing_still_timeout</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                 <span class="n">operator_standing_still_timeout</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">replan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param ask_follow:</span>
+<span class="sd">        :param learn_face:</span>
+<span class="sd">        :param operator_radius:</span>
+<span class="sd">        :param lookat_radius:</span>
+<span class="sd">        :param timeout:</span>
+<span class="sd">        :param start_timeout:</span>
+<span class="sd">        :param operator_timeout:</span>
+<span class="sd">        :param distance_threshold:</span>
+<span class="sd">        :param lost_timeout: How long to look for the operator when we lost him/her?</span>
+<span class="sd">        :param lost_distance:</span>
+<span class="sd">        :param operator_id_des:</span>
+<span class="sd">        :param standing_still_timeout:</span>
+<span class="sd">        :param operator_standing_still_timeout:</span>
+<span class="sd">        :param replan:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;stopped&quot;</span><span class="p">,</span> <span class="s1">&#39;lost_operator&#39;</span><span class="p">,</span> <span class="s2">&quot;no_operator&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_started</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_name</span> <span class="o">=</span> <span class="s2">&quot;operator&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_radius</span> <span class="o">=</span> <span class="n">operator_radius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lookat_radius</span> <span class="o">=</span> <span class="n">lookat_radius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_timeout</span> <span class="o">=</span> <span class="n">start_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List of Entity&#39;s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb_distance</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># meters between dropped breadcrumbs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_timeout</span> <span class="o">=</span> <span class="n">operator_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ask_follow</span> <span class="o">=</span> <span class="n">ask_follow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_learn_face</span> <span class="o">=</span> <span class="n">learn_face</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lost_timeout</span> <span class="o">=</span> <span class="n">lost_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lost_distance</span> <span class="o">=</span> <span class="n">lost_distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_standing_still_timeout</span> <span class="o">=</span> <span class="n">standing_still_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_standing_still_timeout</span> <span class="o">=</span> <span class="n">operator_standing_still_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id_des</span> <span class="o">=</span> <span class="n">operator_id_des</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_distance</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/follow_operator/operator_position&#39;</span> <span class="o">%</span> <span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span>
+                                             <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plan_marker_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/global_planner/visualization/markers/global_plan&#39;</span> <span class="o">%</span> <span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">Marker</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/follow_operator/breadcrumbs&#39;</span> <span class="o">%</span> <span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">Marker</span><span class="p">,</span>
+                                               <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_face_pos_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/follow_operator/operator_detected_face&#39;</span> <span class="o">%</span> <span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span>
+                                             <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator_fs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_replan_active</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_replan_allowed</span> <span class="o">=</span> <span class="n">replan</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_replan_timeout</span> <span class="o">=</span> <span class="mi">15</span> <span class="c1"># seconds before another replan is allowed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_replan_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_replan_timeout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_replan_attempts</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_replan_attempts</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+<div class="viewcode-block" id="FollowOperator._operator_standing_still_for_x_seconds"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._operator_standing_still_for_x_seconds">[docs]</a>    <span class="k">def</span> <span class="nf">_operator_standing_still_for_x_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether the operator is standing still for X seconds</span>
+
+<span class="sd">        :param timeout: how many seconds must the operator be standing still before returning True</span>
+<span class="sd">        :type timeout: float</span>
+<span class="sd">        :return: bool indicating whether the operator has been standing still for longer than timeout seconds</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">operator_current_fs</span> <span class="o">=</span> <span class="n">kdl_conversions</span><span class="o">.</span><span class="n">FrameStamped</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="o">.</span><span class="n">_pose</span><span class="p">,</span> <span class="s2">&quot;/map&quot;</span><span class="p">,</span> <span class="n">stamp</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="c1"># rospy.loginfo(&quot;Operator position: %s&quot; % self._operator.pose.position)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator_fs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator_fs</span> <span class="o">=</span> <span class="n">operator_current_fs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Compare the pose with the last pose and update if difference is larger than x</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">operator_current_fs</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator_fs</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.15</span><span class="p">:</span>
+                <span class="c1"># Update the last pose</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator_fs</span> <span class="o">=</span> <span class="n">operator_current_fs</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Operator is standing still for </span><span class="si">%f</span><span class="s2"> seconds&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">operator_current_fs</span><span class="o">.</span><span class="n">stamp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator_fs</span><span class="o">.</span><span class="n">stamp</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">())</span>
+                <span class="c1"># Check whether we passed the timeout</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">operator_current_fs</span><span class="o">.</span><span class="n">stamp</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator_fs</span><span class="o">.</span><span class="n">stamp</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="FollowOperator._standing_still_for_x_seconds"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._standing_still_for_x_seconds">[docs]</a>    <span class="k">def</span> <span class="nf">_standing_still_for_x_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether the robot is standing still for X seconds</span>
+
+<span class="sd">        :param timeout: how many seconds must the robot be standing still before returning True</span>
+<span class="sd">        :type timeout: float</span>
+<span class="sd">        :return: bool indicating whether the robot has been standing still for longer than timeout seconds</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped</span> <span class="o">=</span> <span class="n">current_frame</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped_time</span> <span class="o">=</span> <span class="n">now</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">current_yaw</span> <span class="o">=</span> <span class="n">current_frame</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">GetRPY</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Get the Yaw</span>
+            <span class="n">last_yaw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">GetRPY</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Get the Yaw</span>
+
+            <span class="c1"># Compare the pose with the last pose and update if difference is larger than x</span>
+            <span class="k">if</span> <span class="n">kdl</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">current_frame</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped</span><span class="o">.</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.05</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current_yaw</span> <span class="o">-</span> <span class="n">last_yaw</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">:</span>
+                <span class="c1"># Update the last pose</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped</span> <span class="o">=</span> <span class="n">current_frame</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span> <span class="s2">&quot;Robot dit not move for x seconds: </span><span class="si">%f</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped_time</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">())</span>
+
+                <span class="c1"># Check whether we passed the timeout</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped_time</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="FollowOperator._register_operator"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._register_operator">[docs]</a>    <span class="k">def</span> <span class="nf">_register_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Robots looks at the operator and asks whether the operator should follow.</span>
+<span class="sd">        If he says yes, then set self._operator.</span>
+<span class="sd">        Also adds the operator to the breadcrumb list&quot;&quot;&quot;</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span><span class="p">:</span>
+            <span class="n">operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span> <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">operator</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">operator</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_timeout</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ask_follow</span><span class="p">:</span>
+                <span class="n">sentence</span> <span class="o">=</span> <span class="s2">&quot;Should I follow you?&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">hmi</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="s2">&quot;T -&gt; yes | no&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">TimeoutException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I did not hear you!&quot;</span><span class="p">)</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">sentence</span> <span class="o">==</span> <span class="s2">&quot;yes&quot;</span><span class="p">:</span>
+                        <span class="n">operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_closest_laser_entity</span><span class="p">(</span>
+                            <span class="n">radius</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                            <span class="n">center_point</span><span class="o">=</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                                       <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">%s</span><span class="s2">/base_link&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">))</span>
+                        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Operator: </span><span class="si">{op}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">op</span><span class="o">=</span><span class="n">operator</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">operator</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Please stand in front of me&quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learn_face</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Please look at me while I learn to recognize you.&quot;</span><span class="p">,</span>
+                                                         <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Just in case...&quot;</span><span class="p">,</span>
+                                                         <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">()</span>
+                                <span class="n">learn_person_start_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                                <span class="n">learn_person_timeout</span> <span class="o">=</span> <span class="mf">10.0</span>  <span class="c1"># TODO: Parameterize</span>
+                                <span class="n">num_detections</span> <span class="o">=</span> <span class="mi">0</span>
+                                <span class="k">while</span> <span class="n">num_detections</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">learn_person</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator_name</span><span class="p">):</span>
+                                        <span class="n">num_detections</span> <span class="o">+=</span> <span class="mi">1</span>
+                                    <span class="k">elif</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">learn_person_start_time</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">learn_person_timeout</span><span class="p">:</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Please stand in front of me and look at me&quot;</span><span class="p">)</span>
+                                        <span class="n">operator</span> <span class="o">=</span> <span class="kc">None</span>
+                                        <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_closest_laser_entity</span><span class="p">(</span>
+                    <span class="n">radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">center_point</span><span class="o">=</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                               <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">%s</span><span class="s2">/base_link&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">operator</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;We have a new operator: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">operator</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Gotcha! I will follow you!&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="n">operator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">operator</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;NOW!!!&quot;</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="FollowOperator._update_breadcrumb_path"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._update_breadcrumb_path">[docs]</a>    <span class="k">def</span> <span class="nf">_update_breadcrumb_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; If the last breadcrumb is less than a threshold away, replace</span>
+<span class="sd">        the last breadcrumb with the latest operator position; otherwise</span>
+<span class="sd">        just add it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb_distance</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="p">)</span>
+
+        <span class="c1"># Remove &#39;reached&#39; breadcrumbs from breadcrumb path</span>
+        <span class="n">robot_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span>
+        <span class="c1"># robot_yaw = transformations.euler_z_from_quaternion(self._robot.base.pose.orientation)</span>
+        <span class="n">temp_crumbs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">crumb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">crumb</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">robot_position</span><span class="o">.</span><span class="n">p</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lookat_radius</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">:</span>
+                <span class="n">temp_crumbs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">crumb</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">temp_crumbs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span> <span class="o">=</span> <span class="n">temp_crumbs</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visualize_breadcrumbs</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="FollowOperator._backup_register"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._backup_register">[docs]</a>    <span class="k">def</span> <span class="nf">_backup_register</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This only happens when the operator was just registered, and never tracked&quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Operator already lost. Getting closest possible person entity at 1.5 m in front, radius = 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_closest_laser_entity</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                                 <span class="n">center_point</span><span class="o">=</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">VectorStamped</span><span class="p">(</span>
+                                                                     <span class="n">x</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                                     <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">%s</span><span class="s2">/base_link&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Operator still lost. Getting closest possible laser entity at 1.5 m in front, radius = 1&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_closest_laser_entity</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                                     <span class="n">center_point</span><span class="o">=</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">VectorStamped</span><span class="p">(</span>
+                                                                         <span class="n">x</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                                         <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">%s</span><span class="s2">/base_link&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Trying to register operator again&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Oops, let&#39;s try this again...&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_register_operator</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span> <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="FollowOperator._track_operator"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._track_operator">[docs]</a>    <span class="k">def</span> <span class="nf">_track_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets self._operator_distance if we have an operator and otherwise set self._operator_distance to the</span>
+<span class="sd">        distance to the last operator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span> <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="o">.</span><span class="n">last_update_time</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Not so fast!&quot;</span><span class="p">)</span>
+
+            <span class="c1"># If the operator is still tracked, it is also the last_operator</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span>
+
+            <span class="n">operator_pos</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">()</span>
+            <span class="n">operator_pos</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+            <span class="n">operator_pos</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span>
+            <span class="n">operator_pos</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">operator_pos</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">operator_pos</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_operator_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">operator_pos</span><span class="p">)</span>
+
+            <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_operator_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_backup_register</span><span class="p">():</span>
+                    <span class="c1"># If the operator is still tracked, it is also the last_operator</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span>
+
+                    <span class="n">operator_pos</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">()</span>
+                    <span class="n">operator_pos</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+                    <span class="n">operator_pos</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span>
+                    <span class="n">operator_pos</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="n">operator_pos</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="n">operator_pos</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_operator_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">operator_pos</span><span class="p">)</span>
+
+                    <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_operator_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I&#39;m sorry, but I couldn&#39;t find a person to track&quot;</span><span class="p">)</span>
+
+            <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_operator_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+            <span class="c1"># If the operator is lost, check if we still have an ID</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span><span class="p">:</span>
+                <span class="c1"># At the moment when the operator is lost, tell him to slow down and clear operator ID</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Stop! I lost you! Until I find you again, please wait there.&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="FollowOperator._visualize_breadcrumbs"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._visualize_breadcrumbs">[docs]</a>    <span class="k">def</span> <span class="nf">_visualize_breadcrumbs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">breadcrumbs_msg</span> <span class="o">=</span> <span class="n">Marker</span><span class="p">()</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">Marker</span><span class="o">.</span><span class="n">POINTS</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_rostime</span><span class="p">()</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;/map&quot;</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">lifetime</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">Marker</span><span class="o">.</span><span class="n">ADD</span>
+
+        <span class="k">for</span> <span class="n">crumb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span><span class="p">:</span>
+            <span class="n">breadcrumbs_msg</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">kdl_vector_to_point_msg</span><span class="p">(</span><span class="n">crumb</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumb_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">breadcrumbs_msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FollowOperator._visualize_plan"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._visualize_plan">[docs]</a>    <span class="k">def</span> <span class="nf">_visualize_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="n">line_strip</span> <span class="o">=</span> <span class="n">Marker</span><span class="p">()</span>
+        <span class="n">line_strip</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">Marker</span><span class="o">.</span><span class="n">LINE_STRIP</span>
+        <span class="n">line_strip</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">line_strip</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;/map&quot;</span>
+        <span class="n">line_strip</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">line_strip</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">line_strip</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">line_strip</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">line_strip</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">line_strip</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">line_strip</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">Marker</span><span class="o">.</span><span class="n">ADD</span>
+
+        <span class="c1"># Push back all pnts</span>
+        <span class="k">for</span> <span class="n">pose_stamped</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">line_strip</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pose_stamped</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plan_marker_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">line_strip</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FollowOperator._update_navigation"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._update_navigation">[docs]</a>    <span class="k">def</span> <span class="nf">_update_navigation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the navigation plan to match the breadcrumbs collected into self._breadcrumbs.</span>
+<span class="sd">        This list has all the Entity&#39;s of where the operator has been&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span>
+        <span class="n">robot_position</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">p</span>
+        <span class="n">operator_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span>
+
+        <span class="sd">&#39;&#39;&#39; Define end goal constraint, solely based on the (old) operator position &#39;&#39;&#39;</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">PositionConstraint</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="s2">&quot;(x-</span><span class="si">%f</span><span class="s2">)^2 + (y-</span><span class="si">%f</span><span class="s2">)^2 &lt; </span><span class="si">%f</span><span class="s2">^2&quot;</span><span class="o">%</span> <span class="p">(</span><span class="n">operator_position</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">operator_position</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span>
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">_operator_radius</span><span class="p">)</span>
+
+        <span class="n">o</span> <span class="o">=</span> <span class="n">OrientationConstraint</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span><span class="p">:</span>
+            <span class="n">o</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">o</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="s1">&#39;map&#39;</span>
+            <span class="n">o</span><span class="o">.</span><span class="n">look_at</span> <span class="o">=</span> <span class="n">kdl_conversions</span><span class="o">.</span><span class="n">kdl_vector_to_point_msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="sd">&#39;&#39;&#39; Calculate global plan from robot position, through breadcrumbs, to the operator &#39;&#39;&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">kdl_plan</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">previous_point</span> <span class="o">=</span> <span class="n">robot_position</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="p">:</span>
+            <span class="n">breadcrumbs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">breadcrumbs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">crumb</span> <span class="ow">in</span> <span class="n">breadcrumbs</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">crumb</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">crumb</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">previous_point</span>
+            <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">diff</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">diff</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+
+            <span class="n">length</span> <span class="o">=</span> <span class="n">crumb</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">previous_point</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">length</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dx_norm</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">/</span> <span class="n">length</span>
+                <span class="n">dy_norm</span> <span class="o">=</span> <span class="n">dy</span> <span class="o">/</span> <span class="n">length</span>
+                <span class="n">yaw</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span>
+
+                <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span> <span class="o">/</span> <span class="n">res</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">previous_point</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dx_norm</span> <span class="o">*</span> <span class="n">res</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">previous_point</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dy_norm</span> <span class="o">*</span> <span class="n">res</span>
+                    <span class="n">kdl_plan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">kdl_frame_stamped_from_XYZRPY</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span class="n">yaw</span><span class="p">))</span>
+
+            <span class="n">previous_point</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">crumb</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="c1"># Delete the elements from the plan within the operator radius from the robot</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator_radius</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">res</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kdl_plan</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">cutoff</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">kdl_plan</span><span class="p">[</span><span class="o">-</span><span class="n">cutoff</span><span class="p">:]</span>
+
+        <span class="n">ros_plan</span> <span class="o">=</span> <span class="n">frame_stampeds_to_pose_stampeds</span><span class="p">(</span><span class="n">kdl_plan</span><span class="p">)</span>
+        <span class="c1"># Check if plan is valid. If not, remove invalid points from the path</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">checkPlan</span><span class="p">(</span><span class="n">ros_plan</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Breadcrumb plan is blocked, removing blocked points&quot;</span><span class="p">)</span>
+            <span class="c1"># Go through plan from operator to robot and pick the first unoccupied point as goal point</span>
+            <span class="n">ros_plan</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">ros_plan</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">checkPlan</span><span class="p">([</span><span class="n">point</span><span class="p">])]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visualize_plan</span><span class="p">(</span><span class="n">ros_plan</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">setPlan</span><span class="p">(</span><span class="n">ros_plan</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FollowOperator._recover_operator"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._recover_operator">[docs]</a>    <span class="k">def</span> <span class="nf">_recover_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span> <span class="s2">&quot;Trying to recover the operator&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">, please look at me while I am looking for you&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_name</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Wait for the operator and find his/her face</span>
+        <span class="n">operator_recovery_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lost_timeout</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">recovered_operator</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">look_distance</span> <span class="o">=</span> <span class="mf">2.0</span>
+        <span class="n">look_angles</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span>
+                       <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span>
+                       <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span>
+                       <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.3</span><span class="p">,</span>
+                       <span class="mf">0.0</span><span class="p">,</span>
+                       <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span>
+                       <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span>
+                       <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">2.3</span><span class="p">]</span>
+        <span class="n">head_goals</span> <span class="o">=</span> <span class="p">[</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">look_distance</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span>
+                                                    <span class="n">y</span><span class="o">=</span><span class="n">look_distance</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="n">z</span><span class="o">=</span><span class="mf">1.7</span><span class="p">,</span>
+                                                    <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">%s</span><span class="s2">/base_link&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">look_angles</span><span class="p">]</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">operator_recovery_timeout</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">head_goals</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">head_goals</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+
+            <span class="c1"># raw_detections is a list of Recognitions</span>
+            <span class="c1"># a recognition contains a CategoricalDistribution</span>
+            <span class="c1"># a CategoricalDistribution is a list of CategoryProbabilities</span>
+            <span class="c1"># a CategoryProbability has a label and a float</span>
+            <span class="n">raw_detections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">detect_faces</span><span class="p">()</span>
+            <span class="n">best_detection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">get_best_face_recognition</span><span class="p">(</span><span class="n">raw_detections</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">)</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;best_detection = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_detection</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">best_detection</span><span class="p">:</span>
+
+                <span class="c1"># rospy.loginfo(&quot;Best detection: {}&quot;.format(best_detection))</span>
+                <span class="n">roi</span> <span class="o">=</span> <span class="n">best_detection</span><span class="o">.</span><span class="n">roi</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">operator_pos_kdl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">project_roi</span><span class="p">(</span><span class="n">roi</span><span class="o">=</span><span class="n">roi</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;map&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;head.project_roi failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="n">operator_pos_ros</span> <span class="o">=</span> <span class="n">kdl_conversions</span><span class="o">.</span><span class="n">kdl_vector_stamped_to_point_stamped</span><span class="p">(</span><span class="n">operator_pos_kdl</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_face_pos_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">operator_pos_ros</span><span class="p">)</span>
+
+                <span class="n">recovered_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_closest_laser_entity</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lost_distance</span><span class="p">,</span>
+                                                                             <span class="n">center_point</span><span class="o">=</span><span class="n">operator_pos_kdl</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">recovered_operator</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Found one!&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span> <span class="o">=</span> <span class="n">recovered_operator</span><span class="o">.</span><span class="n">id</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Recovered operator id: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="o">=</span> <span class="n">recovered_operator</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;There you are! Go ahead, I&#39;ll follow you again&quot;</span><span class="p">,</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_time_started</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Could not find an entity </span><span class="si">{}</span><span class="s2"> meter near </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lost_distance</span><span class="p">,</span> <span class="n">operator_pos_kdl</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_turn_towards_operator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_navigation</span><span class="p">()</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="FollowOperator._turn_towards_operator"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._turn_towards_operator">[docs]</a>    <span class="k">def</span> <span class="nf">_turn_towards_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span>
+        <span class="n">robot_position</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">p</span>
+        <span class="n">operator_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">PositionConstraint</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="s2">&quot;(x-</span><span class="si">%f</span><span class="s2">)^2 + (y-</span><span class="si">%f</span><span class="s2">)^2 &lt; </span><span class="si">%f</span><span class="s2">^2&quot;</span><span class="o">%</span> <span class="p">(</span><span class="n">operator_position</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">operator_position</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_radius</span><span class="p">)</span>
+
+        <span class="n">o</span> <span class="o">=</span> <span class="n">OrientationConstraint</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span><span class="p">:</span>
+            <span class="n">o</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">o</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="s1">&#39;map&#39;</span>
+            <span class="n">o</span><span class="o">.</span><span class="n">look_at</span> <span class="o">=</span> <span class="n">kdl_conversions</span><span class="o">.</span><span class="n">kdl_vector_to_point_msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">operator_position</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">robot_position</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">operator_position</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="n">robot_position</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+
+        <span class="n">yaw</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span>
+        <span class="c1"># ToDo: make nice!</span>
+        <span class="n">pose</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PoseStamped</span><span class="p">()</span>
+        <span class="n">pose</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;/map&quot;</span>
+        <span class="n">pose</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">robot_position</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">robot_position</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+        <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">ww</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">RPY</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yaw</span><span class="p">)</span><span class="o">.</span><span class="n">GetQuaternion</span><span class="p">()</span>
+        <span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">xx</span>
+        <span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">yy</span>
+        <span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">zz</span>
+        <span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">ww</span>
+        <span class="n">plan</span> <span class="o">=</span> <span class="p">[</span><span class="n">pose</span><span class="p">]</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Operator within self._lookat_radius&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">setPlan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FollowOperator._replan"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._replan">[docs]</a>    <span class="k">def</span> <span class="nf">_replan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_replan_attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Trying to get a global plan&quot;</span><span class="p">)</span>
+        <span class="n">operator_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span>
+        <span class="c1"># Define end goal constraint, solely based on the (old) operator position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_replan_pc</span> <span class="o">=</span> <span class="n">PositionConstraint</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_replan_pc</span><span class="o">.</span><span class="n">constraint</span> <span class="o">=</span> <span class="s2">&quot;(x-</span><span class="si">%f</span><span class="s2">)^2 + (y-</span><span class="si">%f</span><span class="s2">)^2 &lt; </span><span class="si">%f</span><span class="s2">^2&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">operator_position</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">operator_position</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span>
+                                                                     <span class="bp">self</span><span class="o">.</span><span class="n">_operator_radius</span><span class="p">)</span>
+        <span class="n">ros_plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_replan_pc</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ros_plan</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">checkPlan</span><span class="p">(</span><span class="n">ros_plan</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;No global plan possible&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Just a sec, let me try this way.&quot;</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Found a global plan, sending it to local planner&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_replan_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_replan_active</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">oc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getCurrentOrientationConstraint</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visualize_plan</span><span class="p">(</span><span class="n">ros_plan</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">setPlan</span><span class="p">(</span><span class="n">ros_plan</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replan_pc</span><span class="p">,</span> <span class="n">oc</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="FollowOperator._check_end_criteria"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator._check_end_criteria">[docs]</a>    <span class="k">def</span> <span class="nf">_check_end_criteria</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Check if we still have an operator</span>
+        <span class="n">lost_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span> <span class="ow">is</span> <span class="kc">None</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Checking end criteria&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replan_active</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_replan_pc</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_replan_active</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">lost_operator</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recover_operator</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="s2">&quot;lost_operator&quot;</span>
+
+        <span class="c1"># Try to recover operator if lost and reached last seen operator position</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Operator is at </span><span class="si">%f</span><span class="s2"> meters distance&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_distance</span><span class="p">)</span>
+        <span class="c1"># TODO: HACK! Magic number!</span>
+        <span class="k">if</span> <span class="n">lost_operator</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_distance</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lookat_radius</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standing_still_for_x_seconds</span><span class="p">(</span><span class="mf">1.0</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;lost operator and within lookat radius and standing still for 1 second&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recover_operator</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I am unable to recover you&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;lost_operator&quot;</span>
+
+        <span class="c1"># Check are standing still long</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standing_still_for_x_seconds</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_standing_still_timeout</span><span class="p">):</span>
+            <span class="c1"># Navigation stuck! One of the following possiblities</span>
+            <span class="c1"># - Following an operator, operator is still correct, corner is cut or path is otherwise invalid:</span>
+            <span class="c1"># (path should not have been cut off) replan with global planner and wait for the local planner to get us</span>
+            <span class="c1"># out of here</span>
+            <span class="c1"># - Following an operator, operator is still correct, local planner is in local minimum:</span>
+            <span class="c1"># wait for the local planner to get us out of here (at least 10 s)</span>
+            <span class="c1"># - Following an operator, operator is not correct, &#39;operator&#39; is unreachable:</span>
+            <span class="c1"># try a global plan and wait for the local planner to get us out of here</span>
+            <span class="c1"># - Not following an operator, planner is in local minimum: try a global plan and wait for</span>
+            <span class="c1"># the local planner to get us out of here</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replan_allowed</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replan_attempts</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_replan_attempts</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replan_time</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replan_timeout</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_replan</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recover_operator</span><span class="p">():</span>
+                        <span class="k">return</span> <span class="s2">&quot;lost_operator&quot;</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recover_operator</span><span class="p">():</span>
+                <span class="k">return</span> <span class="s2">&quot;lost_operator&quot;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_replan_attempts</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Check if we are already there (in operator radius and operator standing still long enough)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Checking if done following&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_distance</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_radius</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_standing_still_for_x_seconds</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator_standing_still_timeout</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;I&#39;m close enough to the operator and he&#39;s been standing there for long enough&quot;</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Checking if we pass the start timeout&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_started</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_timeout</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Passed&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id_des</span><span class="o">.</span><span class="n">writeable</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;stopped&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Not passed&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;apparently not&quot;</span><span class="p">)</span>
+
+        <span class="c1"># No end criteria met</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="FollowOperator.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.FollowOperator.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Reset robot and operator last pose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_pose_stamped</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_operator_fs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">old_no_breadcrumbs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_breadcrumbs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id_des</span><span class="p">:</span>
+            <span class="n">operator_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id_des</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">operator_id</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_operator_id</span> <span class="o">=</span> <span class="n">operator_id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">==</span> <span class="s2">&quot;amigo&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_register_operator</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+            <span class="k">return</span> <span class="s2">&quot;no_operator&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_started</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+                <span class="k">return</span> <span class="s1">&#39;lost_operator&#39;</span>
+
+            <span class="c1"># 1) Track operator</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_track_operator</span><span class="p">()</span>
+
+            <span class="c1"># 2) Keep track of operator history</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_breadcrumb_path</span><span class="p">()</span>
+
+            <span class="c1"># 3) Check end criteria</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_end_criteria</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>
+
+            <span class="c1"># 4) Action</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_standing_still_for_x_seconds</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_operator_standing_still_timeout</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_distance</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lookat_radius</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_turn_towards_operator</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Only update navigation if there is something to update: operator must have moved</span>
+                <span class="c1"># if len(self._breadcrumbs) &gt; old_no_breadcrumbs:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replan_allowed</span><span class="p">:</span>
+                    <span class="c1"># If replanned: if recently replanned, only update navigation if not standing still for too long</span>
+                    <span class="c1"># (to make sure that local planner reaches align state) or just started following</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Replan=True, so check if we replanned...&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replan_time</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_started</span><span class="o">.</span><span class="n">to_sec</span><span class="p">():</span>
+                        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;We did replan at least once&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replan_active</span><span class="p">:</span>
+                            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;and this plan is still active, so I&#39;ll give the global planner a chance&quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;but we reached that goal at some point, so we can safely update navigation&quot;</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_update_navigation</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;We never replanned so far, so we can safely update navigation&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_update_navigation</span><span class="p">()</span>
+                    <span class="c1"># else:</span>
+                    <span class="c1">#     rospy.loginfo(&quot;Updating navigation&quot;)</span>
+                    <span class="c1">#     self._update_navigation()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_navigation</span><span class="p">()</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Updating navigation.&quot;</span><span class="p">)</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">)</span> <span class="c1"># Loop at 2Hz</span></div></div>
+
+
+<div class="viewcode-block" id="setup_statemachine"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/follow_operator/index.html#robot_smach_states.navigation.follow_operator.setup_statemachine">[docs]</a><span class="k">def</span> <span class="nf">setup_statemachine</span><span class="p">(</span><span class="n">robot</span><span class="p">):</span>
+    <span class="n">sm</span> <span class="o">=</span> <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Done&#39;</span><span class="p">,</span> <span class="s1">&#39;Aborted&#39;</span><span class="p">])</span>
+    <span class="k">with</span> <span class="n">sm</span><span class="p">:</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;TEST&#39;</span><span class="p">,</span> <span class="n">FollowOperator</span><span class="p">(</span><span class="n">robot</span><span class="p">),</span> <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;stopped&quot;</span><span class="p">:</span> <span class="s2">&quot;TEST&quot;</span><span class="p">,</span>
+                                                                           <span class="s1">&#39;lost_operator&#39;</span><span class="p">:</span> <span class="s2">&quot;TEST&quot;</span><span class="p">,</span>
+                                                                           <span class="s2">&quot;no_operator&quot;</span><span class="p">:</span> <span class="s2">&quot;TEST&quot;</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">sm</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">robot_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Please provide robot name as argument.&quot;</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;test_follow_operator&#39;</span><span class="p">)</span>
+    <span class="n">startup</span><span class="p">(</span><span class="n">setup_statemachine</span><span class="p">,</span> <span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

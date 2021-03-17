@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.navigation.control_to_pose &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.navigation.control_to_pose</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.navigation.control_to_pose</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright (c) 2019, TU/e Robotics, Netherlands</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># \author Rein Appeldoorn</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">from</span> <span class="nn">geometry_msgs.msg</span> <span class="k">import</span> <span class="n">PoseStamped</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+<span class="kn">import</span> <span class="nn">tf2_geometry_msgs</span>
+<span class="kn">import</span> <span class="nn">tf2_ros</span>
+<span class="kn">from</span> <span class="nn">tf.transformations</span> <span class="k">import</span> <span class="n">euler_from_quaternion</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">..util.geometry_helpers</span> <span class="k">import</span> <span class="n">wrap_angle_pi</span>
+<span class="kn">from</span> <span class="nn">..util.designators.checks</span> <span class="k">import</span> <span class="n">check_type</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">tf2_geometry_msgs</span>  <span class="c1"># tf2_geometry_msgs must be declared here for it to be imported</span>
+
+
+<div class="viewcode-block" id="_clamp"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/control_to_pose/index.html#robot_smach_states.navigation.control_to_pose._clamp">[docs]</a><span class="k">def</span> <span class="nf">_clamp</span><span class="p">(</span><span class="n">abs_value</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="n">abs_value</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">abs_value</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="_get_yaw_from_quaternion_msg"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/control_to_pose/index.html#robot_smach_states.navigation.control_to_pose._get_yaw_from_quaternion_msg">[docs]</a><span class="k">def</span> <span class="nf">_get_yaw_from_quaternion_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the yaw angle from a rotation in quaternion representation (msg)</span>
+
+<span class="sd">    :param msg: The quaternion msg</span>
+<span class="sd">    :return: (float) Yaw angle in rad</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">orientation_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">w</span><span class="p">]</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">yaw</span> <span class="o">=</span> <span class="n">euler_from_quaternion</span><span class="p">(</span><span class="n">orientation_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">yaw</span></div>
+
+
+<div class="viewcode-block" id="ControlParameters"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/control_to_pose/index.html#robot_smach_states.navigation.control_to_pose.ControlParameters">[docs]</a><span class="k">class</span> <span class="nc">ControlParameters</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;ControlParameters&#39;</span><span class="p">,</span> <span class="p">[</span>
+    <span class="s1">&#39;position_gain&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;rotation_gain&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;abs_vx&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;abs_vy&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;abs_vyaw&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;goal_position_tolerance&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;goal_rotation_tolerance&#39;</span>
+<span class="p">])):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    position_gain: (float) Tunable parameter to increase or decrease the change in position per time</span>
+<span class="sd">    rotation_gain: (float) Tunable parameter to increase or decrease the change in yaw per time</span>
+<span class="sd">    abs_vx: (float) Absolute velocity in x [m/s]</span>
+<span class="sd">    abs_vy: (float) Absolute velocity in y [m/s]</span>
+<span class="sd">    abs_vyaw: (float) Absolute velocity in yaw [rad/s]</span>
+<span class="sd">    goal_position_tolerance: (float) Tolerance in position [m]</span>
+<span class="sd">    goal_rotation_tolerance: (float) Tolerance in yaw [rad]</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ControlToPose"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/control_to_pose/index.html#robot_smach_states.navigation.control_to_pose.ControlToPose">[docs]</a><span class="k">class</span> <span class="nc">ControlToPose</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">goal_pose</span><span class="p">,</span> <span class="n">control_parameters</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        State that allows the tuning of robot navigation to a specific goal through custom speeds, gains and tolerances</span>
+
+<span class="sd">        :param robot: (Robot) api object</span>
+<span class="sd">        :param goal_pose: (PoseStamped or Designator to PoseStamped) Position the robot needs to go to</span>
+<span class="sd">        :param control_parameters: (namedtuple, ControlParameters) Parameters that specify how the robot should reach</span>
+<span class="sd">        :param rate: (float, int) Control rate [Hz]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">control_parameters</span><span class="p">]),</span> <span class="s2">&quot;Control parameters are invalid&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="n">check_type</span><span class="p">(</span><span class="n">goal_pose</span><span class="p">,</span> <span class="n">PoseStamped</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">goal_pose</span> <span class="o">=</span> <span class="n">goal_pose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">control_parameters</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rate</span> <span class="o">=</span> <span class="n">rate</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_buffer</span> <span class="o">=</span> <span class="n">tf2_ros</span><span class="o">.</span><span class="n">Buffer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tf_listener</span> <span class="o">=</span> <span class="n">tf2_ros</span><span class="o">.</span><span class="n">TransformListener</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tf_buffer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ControlToPose.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/control_to_pose/index.html#robot_smach_states.navigation.control_to_pose.ControlToPose.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">goal_pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">goal_pose</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">goal_pose</span><span class="p">,</span> <span class="s2">&quot;resolve&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">goal_pose</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_goal_reached</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_target_delta_in_robot_frame</span><span class="p">(</span><span class="n">goal_pose</span><span class="p">)):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;We are already there&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span>
+
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rate</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Starting alignment ....&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+            <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dyaw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_target_delta_in_robot_frame</span><span class="p">(</span><span class="n">goal_pose</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_goal_reached</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dyaw</span><span class="p">):</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Goal reached&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug_throttle</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="s2">&quot;Aligning .. Delta = </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dyaw</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">force_drive</span><span class="p">(</span><span class="n">vx</span><span class="o">=</span><span class="n">_clamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">abs_vx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">position_gain</span> <span class="o">*</span> <span class="n">dx</span><span class="p">),</span>
+                                        <span class="n">vy</span><span class="o">=</span><span class="n">_clamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">abs_vy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">position_gain</span> <span class="o">*</span> <span class="n">dy</span><span class="p">),</span>
+                                        <span class="n">vth</span><span class="o">=</span><span class="n">_clamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">abs_vyaw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">rotation_gain</span> <span class="o">*</span> <span class="n">dyaw</span><span class="p">),</span>
+                                        <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rate</span><span class="p">),</span> <span class="n">loop_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rate</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">rate</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">force_drive</span><span class="p">(</span><span class="n">vx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;failed&#39;</span></div>
+
+<div class="viewcode-block" id="ControlToPose._get_target_delta_in_robot_frame"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/control_to_pose/index.html#robot_smach_states.navigation.control_to_pose.ControlToPose._get_target_delta_in_robot_frame">[docs]</a>    <span class="k">def</span> <span class="nf">_get_target_delta_in_robot_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">goal_pose</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transfers the goal pose to robot frame</span>
+
+<span class="sd">        :param goal_pose: (PoseStamped) Position the robot needs to go to</span>
+<span class="sd">        :return: (float) x position of goal in robot frame,</span>
+<span class="sd">                 (float) y position of goal in robot frame,</span>
+<span class="sd">                 (float) yaw of goal in robot frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">goal_pose</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tf_buffer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">goal_pose</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base_link_frame</span><span class="p">,</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+        <span class="n">yaw</span> <span class="o">=</span> <span class="n">_get_yaw_from_quaternion_msg</span><span class="p">(</span><span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">pose</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">wrap_angle_pi</span><span class="p">(</span><span class="n">yaw</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ControlToPose._goal_reached"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/control_to_pose/index.html#robot_smach_states.navigation.control_to_pose.ControlToPose._goal_reached">[docs]</a>    <span class="k">def</span> <span class="nf">_goal_reached</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dyaw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the goal pose is reached</span>
+
+<span class="sd">        :param dx: (float)[m] Margin between goal_pose and robot in x</span>
+<span class="sd">        :param dy: (float)[m] Margin between goal_pose and robot in y</span>
+<span class="sd">        :param dyaw: (float)[rad] Margin between goal_pose and robot in yaw</span>
+<span class="sd">        :return: (bool) Boolean indicating whether the margins are reached</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">goal_position_tolerance</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span>
+            <span class="n">dyaw</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">goal_rotation_tolerance</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

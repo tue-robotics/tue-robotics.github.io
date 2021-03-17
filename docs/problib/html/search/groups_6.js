@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['gemm',['Gemm',['../../../armadillo_matrix/html/group__gemm.html',1,'']]],
+  ['gemm_5fmixed',['Gemm_mixed',['../../../armadillo_matrix/html/group__gemm__mixed.html',1,'']]],
+  ['gemv',['Gemv',['../../../armadillo_matrix/html/group__gemv.html',1,'']]],
+  ['gen',['Gen',['../../../armadillo_matrix/html/group__Gen.html',1,'']]],
+  ['gencube',['GenCube',['../../../armadillo_matrix/html/group__GenCube.html',1,'']]],
+  ['glue',['Glue',['../../../armadillo_matrix/html/group__Glue.html',1,'']]],
+  ['glue_5fconv',['Glue_conv',['../../../armadillo_matrix/html/group__glue__conv.html',1,'']]],
+  ['glue_5fcor',['Glue_cor',['../../../armadillo_matrix/html/group__glue__cor.html',1,'']]],
+  ['glue_5fcov',['Glue_cov',['../../../armadillo_matrix/html/group__glue__cov.html',1,'']]],
+  ['glue_5fcross',['Glue_cross',['../../../armadillo_matrix/html/group__glue__cross.html',1,'']]],
+  ['glue_5fjoin',['Glue_join',['../../../armadillo_matrix/html/group__glue__join.html',1,'']]],
+  ['glue_5fkron',['Glue_kron',['../../../armadillo_matrix/html/group__glue__kron.html',1,'']]],
+  ['glue_5fmixed',['Glue_mixed',['../../../armadillo_matrix/html/group__glue__mixed.html',1,'']]],
+  ['glue_5frelational',['Glue_relational',['../../../armadillo_matrix/html/group__glue__relational.html',1,'']]],
+  ['glue_5fsolve',['Glue_solve',['../../../armadillo_matrix/html/group__glue__solve.html',1,'']]],
+  ['glue_5ftimes',['Glue_times',['../../../armadillo_matrix/html/group__glue__times.html',1,'']]],
+  ['glue_5ftoeplitz',['Glue_toeplitz',['../../../armadillo_matrix/html/group__glue__toeplitz.html',1,'']]],
+  ['gluecube',['GlueCube',['../../../armadillo_matrix/html/group__GlueCube.html',1,'']]]
+];

@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.navigation.navigate_robust &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.navigation.navigate_robust</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.navigation.navigate_robust</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+<span class="c1"># Robot smach states</span>
+<span class="kn">from</span> <span class="nn">..human_interaction.human_interaction</span> <span class="k">import</span> <span class="n">Say</span>
+<span class="kn">from</span> <span class="nn">..utility</span> <span class="k">import</span> <span class="n">WaitTime</span>
+<span class="kn">from</span> <span class="nn">.navigation</span> <span class="k">import</span> <span class="n">NavigateTo</span>
+
+
+<span class="n">SENTENCES</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">([</span>
+    <span class="s2">&quot;I seem to have difficulties getting there&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Let&#39;s try a different route&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;How can I get there?&quot;</span>
+<span class="p">])</span>
+
+
+<div class="viewcode-block" id="NavigateRobust"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigate_robust/index.html#robot_smach_states.navigation.navigate_robust.NavigateRobust">[docs]</a><span class="k">class</span> <span class="nc">NavigateRobust</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">wait_time</span><span class="o">=</span><span class="mf">3.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class that hooks up a number of navigation options. If arrived, this state machine will exit with result</span>
+<span class="sd">        arrived. If not unreachable or goal not defined, the robot will wait for &lt;waittime&gt; seconds and proceed to the</span>
+<span class="sd">        next navigation option until either it succeeds or runs out of options.</span>
+
+<span class="sd">        N.B.: on preemption, &quot;unreachable&quot; is returned (since the NavigateTo class has no &quot;preempted&quot; outcome).</span>
+
+<span class="sd">        :param robot: (Robot) api object</span>
+<span class="sd">        :param options: (list(NavigateTo)) list of different navigation options (instances of some derivative of the</span>
+<span class="sd">            &#39;NavigateTo&#39; class, e.g., &#39;NavigateToSymbolic&#39;, &#39;NavigateToWaypoint&#39;, &#39;NavigateToRoom&#39; etc.</span>
+<span class="sd">        :param wait_time: (float) time the robot waits before trying different options.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">NavigateTo</span><span class="p">)</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">options</span><span class="p">]),</span> <span class="s2">&quot;Not all options are &#39;NavigateTo&#39; instances&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;arrived&quot;</span><span class="p">,</span> <span class="s2">&quot;unreachable&quot;</span><span class="p">,</span> <span class="s2">&quot;goal_not_defined&quot;</span><span class="p">])</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+
+            <span class="c1"># Add all options except the last.</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">option</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">options</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+
+                <span class="c1"># Add an option</span>
+                <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;NAVIGATE</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="n">option</span><span class="p">,</span>
+                                       <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+                                           <span class="s2">&quot;arrived&quot;</span><span class="p">:</span> <span class="s2">&quot;arrived&quot;</span><span class="p">,</span>
+                                           <span class="s2">&quot;unreachable&quot;</span><span class="p">:</span> <span class="s2">&quot;SAY</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span>
+                                           <span class="s2">&quot;goal_not_defined&quot;</span><span class="p">:</span> <span class="s2">&quot;SAY</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span>
+                                       <span class="p">})</span>
+
+                <span class="c1"># Have the robot say something</span>
+                <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;SAY</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span>
+                                       <span class="n">Say</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">sentence</span><span class="o">=</span><span class="n">SENTENCES</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                                       <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spoken&quot;</span><span class="p">:</span> <span class="s2">&quot;WAIT</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">)}</span>
+                <span class="p">)</span>
+                <span class="n">SENTENCES</span><span class="o">.</span><span class="n">rotate</span><span class="p">()</span>
+
+                <span class="c1"># Have the robot wait for a while</span>
+                <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;WAIT</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span>
+                                       <span class="n">WaitTime</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">waittime</span><span class="o">=</span><span class="n">wait_time</span><span class="p">),</span>
+                                       <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;waited&quot;</span><span class="p">:</span> <span class="s2">&quot;NAVIGATE</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+                                                    <span class="s2">&quot;preempted&quot;</span><span class="p">:</span> <span class="s2">&quot;unreachable&quot;</span><span class="p">})</span>
+
+            <span class="c1"># Add the final option</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;NAVIGATE</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                                   <span class="n">options</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+                                       <span class="s2">&quot;arrived&quot;</span><span class="p">:</span> <span class="s2">&quot;arrived&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;unreachable&quot;</span><span class="p">:</span> <span class="s2">&quot;unreachable&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;goal_not_defined&quot;</span><span class="p">:</span> <span class="s2">&quot;goal_not_defined&quot;</span><span class="p">,</span>
+                                   <span class="p">})</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

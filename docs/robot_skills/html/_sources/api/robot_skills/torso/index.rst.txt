@@ -1,0 +1,110 @@
+:mod:`robot_skills.torso`
+=========================
+
+.. py:module:: robot_skills.torso
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.torso.Torso
+
+
+
+.. py:class:: Torso(robot_name, tf_listener, get_joint_states)
+
+   Bases: :class:`robot_skills.robot_part.RobotPart`
+
+   Base class for robot parts
+
+   constructor
+
+   :param robot_name: robot_name
+   :param tf_listener: tf_server.TFClient()
+
+   .. method:: close(self)
+
+      Cancels all active goals for the torso
+      :return: no return
+
+
+   .. method:: send_goal(self, configuration, timeout=0.0, tolerance=[])
+
+      Send a named joint goal (pose) defined in the parameter default_configurations to the torso
+
+      :param configuration: name of configuration, configuration should be loaded as parameter
+      :param timeout: timeout in seconds; in case of 0.0, not waiting for motion done
+      :param tolerance: list of position tolerances with the length equal to the number of joints
+      :return: True or False, False in case of nonexistent configuration or failed execution
+
+
+   .. method:: _send_goal(self, torso_pos, timeout=0.0, tolerance=[], start_time=1.5)
+
+      Send a joint goal to the torso
+
+      :param torso_pos: list of joint positions with the length equal to the number of joints
+      :param timeout: timeout in seconds; in case of 0.0, not waiting for motion done
+      :param tolerance: list of position tolerances with the length equal to the number of joints
+      :return: True or False, False in case of nonexistent configuration or failed execution
+
+
+   .. method:: high(self)
+
+      Sends the torso to its upper limit
+
+      :return: True or False
+
+
+   .. method:: medium(self)
+
+      Sends the torso to the middle position of each joint
+
+      :return: True or False
+
+
+   .. method:: low(self)
+
+      Sends the torso to its lower limit
+
+      :return: True or False
+
+
+   .. method:: selfreset(self)
+
+      Sends the torso to the reset pose
+
+      :return:
+
+
+   .. method:: cancel_goal(self)
+
+      Cancels all active goals for the torso; Doing the same as close()
+
+      :return: no return
+
+
+   .. method:: wait_for_motion_done(self, timeout=10, cancel=False)
+
+      Waits until all action clients are done
+
+      :param timeout: double with time (defaults to 10.0 seconds)
+      :param cancel: bool specifying whether goals should be cancelled if timeout is exceeded
+      :return: bool indicates whether motion was done (True if reached, False otherwise)
+
+
+   .. method:: wait(self, timeout=10)
+
+
+   .. method:: get_position(self)
+
+      Get the current joint positions
+
+      :return: list of current positions
+
+
+

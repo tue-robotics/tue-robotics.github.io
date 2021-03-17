@@ -1,0 +1,718 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.human_interaction.human_interaction &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.human_interaction.human_interaction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.human_interaction.human_interaction</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="k">import</span> <span class="n">Formatter</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">hmi</span> <span class="k">import</span> <span class="n">TimeoutException</span>
+<span class="kn">import</span> <span class="nn">robot_smach_states.util.designators</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="kn">from</span> <span class="nn">hmi</span> <span class="k">import</span> <span class="n">HMIResult</span>
+
+<span class="c1"># Say: Immediate Say with optional named placeholders for designators</span>
+<span class="c1"># Hear: Immediate hear</span>
+<span class="c1"># Ask: Interaction, say + hear</span>
+<span class="kn">from</span> <span class="nn">robot_skills.robot</span> <span class="k">import</span> <span class="n">Robot</span>
+
+
+<div class="viewcode-block" id="Say"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.Say">[docs]</a><span class="k">class</span> <span class="nc">Say</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Say a sentence or pick a random one from a list, which then is formatted with designators which are resolved on</span>
+<span class="sd">    runtime. The main sentence can be a str, [str] or a Designator to str or [str]</span>
+
+<span class="sd">    &gt;&gt;&gt; from robot_skills.mockbot import Mockbot</span>
+<span class="sd">    &gt;&gt;&gt; robot = Mockbot()</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; say = Say(robot, [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; say.execute()</span>
+<span class="sd">    &#39;spoken&#39;</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; say1 = Say(robot, [&quot;Hey {a}&quot;, &quot;He {a}&quot;, &quot;Hoi {a}&quot;], a=ds.VariableDesignator(&quot;hero&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; #Repeat command 50 times, every time it should succeed and return &quot;spoken&quot;</span>
+<span class="sd">    &gt;&gt;&gt; outcomes1 = [say.execute() for i in range(50)]</span>
+<span class="sd">    &gt;&gt;&gt; assert all(outcome == &quot;spoken&quot; for outcome in outcomes1)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; say2 = Say(robot, ds.VariableDesignator(&#39;aap&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; say2.execute()</span>
+<span class="sd">    &#39;spoken&#39;</span>
+<span class="sd">    &gt;&gt;&gt; robot.speech.speak.assert_called_with(&#39;aap&#39;, None, None, None, None, True)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; des = ds.VariableDesignator([&quot;Hey {a}&quot;, &quot;He {a}&quot;, &quot;Hoi {a}&quot;], resolve_type=[str])</span>
+<span class="sd">    &gt;&gt;&gt; say3 = Say(robot, des, a=ds.VariableDesignator(&quot;hero&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; #Repeat command 50 times, every time it should succeed and return &quot;spoken&quot;</span>
+<span class="sd">    &gt;&gt;&gt; outcomes3 = [say3.execute() for i in range(50)]</span>
+<span class="sd">    &gt;&gt;&gt; assert all(outcome == &quot;spoken&quot; for outcome in outcomes3)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; des2 = ds.VariableDesignator([&quot;Hey&quot;, &quot;He&quot;, &quot;Hoi&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; say4 = Say(robot, des2, a=ds.VariableDesignator(&quot;hero&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; #Repeat command 50 times, every time it should succeed and return &quot;spoken&quot;</span>
+<span class="sd">    &gt;&gt;&gt; outcomes4 = [say4.execute() for i in range(50)]</span>
+<span class="sd">    &gt;&gt;&gt; assert all(outcome == &quot;spoken&quot; for outcome in outcomes4)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; say5 = Say(robot, des2)</span>
+<span class="sd">    &gt;&gt;&gt; #Repeat command 50 times, every time it should succeed and return &quot;spoken&quot;</span>
+<span class="sd">    &gt;&gt;&gt; outcomes5 = [say5.execute() for i in range(50)]</span>
+<span class="sd">    &gt;&gt;&gt; assert all(outcome == &quot;spoken&quot; for outcome in outcomes5)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; say6 = Say(robot, des, b=ds.VariableDesignator(&quot;hero&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; say6.execute()  # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    RuntimeError: ...</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; des3 = ds.VariableDesignator(resolve_type=str).writeable</span>
+<span class="sd">    &gt;&gt;&gt; des3.write(&#39;banana&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; say6 = Say(robot, des3)</span>
+<span class="sd">    &gt;&gt;&gt; say6.execute()</span>
+<span class="sd">    &#39;spoken&#39;</span>
+<span class="sd">    &gt;&gt;&gt; robot.speech.speak.assert_called_with(&#39;banana&#39;, None, None, None, None, True)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">sentence</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">personality</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">voice</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mood</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">look_at_standing_person</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">place_holders</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        State exits with &#39;spoken&#39;.</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :type robot: Robot</span>
+<span class="sd">        :param sentence: Sentence to be spoken, can contain place holders to  be filled in at runtime</span>
+<span class="sd">        :type sentence: str, [str], designator to str or [str]</span>
+<span class="sd">        :param language: Language of speech module</span>
+<span class="sd">        :type language: str</span>
+<span class="sd">        :param personality: Personality of speech module</span>
+<span class="sd">        :type personality: str</span>
+<span class="sd">        :param voice: Voice of speech module</span>
+<span class="sd">        :type voice: str</span>
+<span class="sd">        :param mood: Mood of speech module</span>
+<span class="sd">        :type mood: str</span>
+<span class="sd">        :param block: Wait for talking to be completed before returning, if true</span>
+<span class="sd">        :type block: bool</span>
+<span class="sd">        :param look_at_standing_person: Look at standing person if true, otherwise keep current head pose</span>
+<span class="sd">        :type look_at_standing_person: bool</span>
+<span class="sd">        :param place_holders: place holders to be filled in at runtime</span>
+<span class="sd">        :type place_holders: designator to str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;spoken&quot;</span><span class="p">])</span>
+
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">language</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">language</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">personality</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">personality</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">voice</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">voice</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">mood</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mood</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="nb">bool</span><span class="p">))</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">Designator</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">place_holders</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ph_designators</span> <span class="o">=</span> <span class="n">place_holders</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_place_holders</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sentence</span> <span class="o">=</span> <span class="n">sentence</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">language</span> <span class="o">=</span> <span class="n">language</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">personality</span> <span class="o">=</span> <span class="n">personality</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voice</span> <span class="o">=</span> <span class="n">voice</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mood</span> <span class="o">=</span> <span class="n">mood</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">block</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">look_at_standing_person</span> <span class="o">=</span> <span class="n">look_at_standing_person</span>
+
+<div class="viewcode-block" id="Say.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.Say.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;sentence = None, not saying anything...&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;spoken&quot;</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sentence</span><span class="p">,</span> <span class="s2">&quot;resolve&quot;</span><span class="p">):</span>
+            <span class="n">sentence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_place_holders</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sentence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentence</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">sentence</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+
+        <span class="n">resolved_ph</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ph_designators</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">sentence</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">resolved_ph</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sentence</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">language</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">personality</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">voice</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mood</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;spoken&quot;</span></div>
+
+<div class="viewcode-block" id="Say._check_place_holders"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.Say._check_place_holders">[docs]</a>    <span class="k">def</span> <span class="nf">_check_place_holders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sentence</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">sen</span> <span class="ow">in</span> <span class="n">sentence</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_place_holders</span><span class="p">(</span><span class="n">sen</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">place_holders</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Formatter</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">missing_ph</span> <span class="o">=</span> <span class="n">place_holders</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ph_designators</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">missing_ph</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Not all named place holders are provided, missing: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span>
+                               <span class="nb">format</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">missing_ph</span><span class="p">))))</span></div></div>
+
+
+<div class="viewcode-block" id="HearOptions"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.HearOptions">[docs]</a><span class="k">class</span> <span class="nc">HearOptions</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hear one of the options</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">look_at_standing_person</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># type:(Robot, list, (float, int), bool) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param robot: (Robot) robot api object</span>
+<span class="sd">        :param options: List of strings with the options the robot can hear</span>
+<span class="sd">        :param timeout: (float, int) indicating when the robot has to timeout</span>
+<span class="sd">        :param look_at_standing_person: bool indicating whether the robot should look at the person giving the command</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">outcomes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>  <span class="c1"># make a copy</span>
+        <span class="n">outcomes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;no_result&quot;</span><span class="p">)</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="n">outcomes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">look_at_standing_person</span> <span class="o">=</span> <span class="n">look_at_standing_person</span>
+
+<div class="viewcode-block" id="HearOptions.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.HearOptions.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">hmi</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;Which option?&#39;</span><span class="p">,</span> <span class="s1">&#39;T -&gt; &#39;</span> <span class="o">+</span> <span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">),</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span>
+                                           <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">TimeoutException</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;no_result&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">sentence</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">answer</span><span class="o">.</span><span class="n">sentence</span>
+
+        <span class="k">return</span> <span class="s1">&#39;no_result&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="HearOptionsExtra"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.HearOptionsExtra">[docs]</a><span class="k">class</span> <span class="nc">HearOptionsExtra</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Listen to what the user said, based on a pre-constructed sentence</span>
+
+<span class="sd">    Keyword arguments:</span>
+<span class="sd">    spec_designator -- sentence that is supposed to be heard</span>
+<span class="sd">    choices_designator -- list of choices for words in the sentence</span>
+<span class="sd">    speech_result_designator -- variable where the result is stored</span>
+<span class="sd">    time_out -- timeout in case nothing is heard</span>
+
+<span class="sd">    Example of usage:</span>
+<span class="sd">        from hmi import HMIResult</span>
+<span class="sd">        spec = ds.Designator(&quot;T --&gt; &lt;name&gt;)|&lt;name&gt;)&quot;)</span>
+<span class="sd">        choices = ds.Designator({&quot;name&quot;  : names_list,</span>
+<span class="sd">                              &quot;prefix&quot;: [&quot;My name is&quot;, &quot;I&#39;m called&quot;]})</span>
+<span class="sd">        answer = ds.VariableDesignator(resolve_type=HMIResult)</span>
+<span class="sd">        state = HearOptionsExtra(self.robot, spec, choices, answer.writeable)</span>
+<span class="sd">        outcome = state.execute()</span>
+
+<span class="sd">        if outcome == &quot;heard&quot;:</span>
+<span class="sd">            name = answer.resolve().choices[&quot;name&quot;]</span>
+
+<span class="sd">    &gt;&gt;&gt; from robot_skills.mockbot import Mockbot</span>
+<span class="sd">    &gt;&gt;&gt; from hmi import HMIResult</span>
+<span class="sd">    &gt;&gt;&gt; mockbot = Mockbot()</span>
+<span class="sd">    &gt;&gt;&gt; import robot_smach_states.util.designators as ds</span>
+<span class="sd">    &gt;&gt;&gt; import os</span>
+<span class="sd">    &gt;&gt;&gt; spec = &quot;T[O] -&gt; OPTIONS[O]&quot;+os.linesep  # Newlines are needed, doctests doesn&#39;t accept &#39;slash-n&quot;</span>
+<span class="sd">    &gt;&gt;&gt; spec += &quot;OPTIONS[&#39;foo&#39;] -&gt; foo&quot;+os.linesep</span>
+<span class="sd">    &gt;&gt;&gt; spec += &quot;OPTIONS[&#39;bar&#39;] -&gt; bar&quot;+os.linesep</span>
+<span class="sd">    &gt;&gt;&gt; spec = ds.Designator(spec)</span>
+<span class="sd">    &gt;&gt;&gt; answer = ds.VariableDesignator(resolve_type=HMIResult)</span>
+<span class="sd">    &gt;&gt;&gt; state = HearOptionsExtra(mockbot, spec, answer.writeable)</span>
+<span class="sd">    &gt;&gt;&gt; outcome = state.execute()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span>
+                 <span class="n">spec_designator</span><span class="p">,</span>
+                 <span class="n">speech_result_designator</span><span class="p">,</span>
+                 <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">look_at_standing_person</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;heard&quot;</span><span class="p">,</span> <span class="s2">&quot;no_result&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_resolve_type</span><span class="p">(</span><span class="n">spec_designator</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_resolve_type</span><span class="p">(</span><span class="n">speech_result_designator</span><span class="p">,</span> <span class="n">HMIResult</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">is_writeable</span><span class="p">(</span><span class="n">speech_result_designator</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">spec_designator</span> <span class="o">=</span> <span class="n">spec_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speech_result_designator</span> <span class="o">=</span> <span class="n">speech_result_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">look_at_standing_person</span> <span class="o">=</span> <span class="n">look_at_standing_person</span>
+
+<div class="viewcode-block" id="HearOptionsExtra.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.HearOptionsExtra.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spec_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">spec</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve spec&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;no_result&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">hmi</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;Which option?&#39;</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span>  <span class="c1"># TODO: T needs to also be configurable</span>
+                                          <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">answer</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">semantics</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">speech_result_designator</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="s2">&quot;heard&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Something is wrong with my ears, please take a look!&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">TimeoutException</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;no_result&#39;</span>
+
+        <span class="k">return</span> <span class="s2">&quot;no_result&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="AskContinue"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.AskContinue">[docs]</a><span class="k">class</span> <span class="nc">AskContinue</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;continue&#39;</span><span class="p">,</span> <span class="s1">&#39;no_response&#39;</span><span class="p">])</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;SAY&#39;</span><span class="p">,</span>
+                                   <span class="n">Say</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span>
+                                       <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;I will continue my task if you say continue.&quot;</span><span class="p">,</span>
+                                                      <span class="s2">&quot;Please say continue so that I can continue my task.&quot;</span><span class="p">,</span>
+                                                      <span class="s2">&quot;I will wait until you say continue.&quot;</span><span class="p">])),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;spoken&#39;</span><span class="p">:</span> <span class="s1">&#39;HEAR&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;HEAR&#39;</span><span class="p">,</span>
+                                   <span class="n">HearOptions</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;continue&#39;</span><span class="p">],</span> <span class="n">timeout</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;continue&#39;</span><span class="p">:</span> <span class="s1">&#39;continue&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;no_result&#39;</span><span class="p">:</span> <span class="s1">&#39;no_response&#39;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="AskYesNo"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.AskYesNo">[docs]</a><span class="k">class</span> <span class="nc">AskYesNo</span><span class="p">(</span><span class="n">HearOptions</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">HearOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">],</span> <span class="n">timeout</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WaitForPersonInFront"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.WaitForPersonInFront">[docs]</a><span class="k">class</span> <span class="nc">WaitForPersonInFront</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">attempts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sleep_interval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Waits for a person to be found in front of the robot. Attempts to wait a number of times with a sleep interval</span>
+
+<span class="sd">        :param robot: (Robot) robot api object</span>
+<span class="sd">        :param attempts: (int) number of attempts the robot will take</span>
+<span class="sd">        :param sleep_interval: (float) time the robot waits between checking for an operator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attempts</span> <span class="o">=</span> <span class="n">attempts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sleep_interval</span> <span class="o">=</span> <span class="n">sleep_interval</span>
+
+<div class="viewcode-block" id="WaitForPersonInFront.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.WaitForPersonInFront.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attempts</span><span class="p">):</span>
+            <span class="n">image_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">get_rgb_depth_caminfo</span><span class="p">()</span>
+            <span class="n">success</span><span class="p">,</span> <span class="n">found_people_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">detect_people</span><span class="p">(</span><span class="o">*</span><span class="n">image_data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">found_people_ids</span><span class="p">):</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">{}</span><span class="s2"> people in front of me (1 is enough): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">found_people_ids</span><span class="p">),</span>
+                    <span class="n">found_people_ids</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="s1">&#39;success&#39;</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sleep_interval</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;failed&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="LearnPerson"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.LearnPerson">[docs]</a><span class="k">class</span> <span class="nc">LearnPerson</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Smach state to learn a person</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">person_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">name_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nr_tries</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param person_name: string indicating the name that will be given</span>
+<span class="sd">        :param name_designator: designator returning a string with the name of the person. This will be used if no</span>
+<span class="sd">            person name is provided</span>
+<span class="sd">        :param nr_tries: maximum number of tries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;succeeded&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_person_name</span> <span class="o">=</span> <span class="n">person_name</span>
+        <span class="k">if</span> <span class="n">name_designator</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">check_resolve_type</span><span class="p">(</span><span class="n">name_designator</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name_designator</span> <span class="o">=</span> <span class="n">name_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nr_tries</span> <span class="o">=</span> <span class="n">nr_tries</span>
+
+<div class="viewcode-block" id="LearnPerson.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.LearnPerson.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># Look up</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Please look at me while I admire your beauty&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+
+        <span class="c1"># if person_name is empty then try to get it from designator</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_person_name</span><span class="p">:</span>
+            <span class="n">person_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;[LearnPerson] Resolved name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">person_name</span><span class="p">))</span>
+
+            <span class="c1"># if there is still no name, quit the learning</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">person_name</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;[LearnPerson] No name was provided. Quitting the learning&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">person_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_person_name</span>
+
+        <span class="c1"># Learn the face (try for a maximum of nr_tries times</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nr_tries</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">learn_person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">person_name</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;succeeded&quot;</span>
+
+        <span class="c1"># If we end up here, learning failed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;There&#39;s something in my eyes, I might not be able to remember you&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s2">&quot;failed&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="learn_person_procedure"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.learn_person_procedure">[docs]</a><span class="k">def</span> <span class="nf">learn_person_procedure</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">person_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Starts the learning process that will save n_samples of the closest person&#39;s face.</span>
+<span class="sd">    It ends when the number of snapshots is reached or when a timeout occurs</span>
+
+<span class="sd">    Returns: number of samples saved. If smaller than what was requested, then a timeout occured</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># if there is no name, quit the learning</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">person_name</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;No name was provided. Quitting the learning!&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="n">n_samples</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;robot.ed.learn_ person(person_name), dissapeared! I will return false&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Hi there!&quot;</span><span class="p">)</span>
+
+            <span class="c1"># reset timer</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_samples</span> <span class="o">/</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Almost done, keep looking.&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span> <span class="p">(</span><span class="s2">&quot;[LearnPersonProcedure] &quot;</span> <span class="o">+</span> <span class="s2">&quot;No person found.&quot;</span><span class="p">)</span>
+            <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="k">if</span> <span class="n">elapsed_time</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span> <span class="p">(</span><span class="s2">&quot;[LearnPersonProcedure] &quot;</span> <span class="o">+</span> <span class="s2">&quot;Learn procedure timed out!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">count</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;[LearnPersonProcedure] &quot;</span> <span class="o">+</span> <span class="s2">&quot;Completed </span><span class="si">{0}</span><span class="s2">/</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">))</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;[LearnPersonProcedure] &quot;</span> <span class="o">+</span> <span class="s2">&quot;Learn procedure completed!&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">count</span></div>
+
+
+<div class="viewcode-block" id="AskPersonName"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.AskPersonName">[docs]</a><span class="k">class</span> <span class="nc">AskPersonName</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Ask the person&#39;s name, and try to hear one of the given names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">person_name_des</span><span class="p">,</span> <span class="n">name_options</span><span class="p">,</span> <span class="n">default_name</span><span class="o">=</span><span class="s1">&#39;Operator&#39;</span><span class="p">,</span> <span class="n">nr_tries</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_name_des</span> <span class="o">=</span> <span class="n">person_name_des</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_name</span> <span class="o">=</span> <span class="n">default_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_options</span> <span class="o">=</span> <span class="n">name_options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nr_tries</span> <span class="o">=</span> <span class="n">nr_tries</span>
+
+<div class="viewcode-block" id="AskPersonName.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/human_interaction/index.html#robot_smach_states.human_interaction.human_interaction.AskPersonName.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">limit_reached</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nr_tries</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;AskPersonName&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;What is your name?&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">names_spec</span> <span class="o">=</span> <span class="s2">&quot;T[&#39;name&#39;: N] -&gt; NAME[N]</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">dn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_options</span><span class="p">:</span>
+                <span class="n">names_spec</span> <span class="o">+=</span> <span class="s2">&quot;NAME[&#39;</span><span class="si">{name}</span><span class="s2">&#39;] -&gt; </span><span class="si">{name}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">dn</span><span class="p">)</span>
+            <span class="n">spec</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">Designator</span><span class="p">(</span><span class="n">names_spec</span><span class="p">)</span>
+
+            <span class="n">answer</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">VariableDesignator</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">HMIResult</span><span class="p">)</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">HearOptionsExtra</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">answer</span><span class="o">.</span><span class="n">writeable</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">outcome</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">outcome</span> <span class="o">==</span> <span class="s2">&quot;heard&quot;</span><span class="p">:</span>
+                    <span class="n">limit_reached</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">limit_reached</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nr_tries</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">person_name_des</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_name</span><span class="p">)</span>
+
+                        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span>
+                            <span class="s2">&quot;Speech recognition outcome was not successful. Using default name &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">person_name_des</span><span class="o">.</span><span class="n">resolve</span><span class="p">()))</span>
+                        <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+
+                <span class="k">if</span> <span class="n">outcome</span> <span class="o">==</span> <span class="s2">&quot;heard&quot;</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Answer: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">answer</span><span class="o">.</span><span class="n">resolve</span><span class="p">()))</span>
+                        <span class="n">name</span> <span class="o">=</span> <span class="n">answer</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;This person&#39;s name is: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">person_name_des</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+
+                        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Result received from speech recognition is &#39;&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke</span><span class="p">:</span>
+                        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;KeyError resolving the name heard: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ke</span><span class="p">))</span>
+                        <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+                    <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span>
+            <span class="k">except</span> <span class="n">TimeoutException</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;timeout&quot;</span>
+
+        <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;human_interaction_doctest&#39;</span><span class="p">)</span>  <span class="c1"># Needed to instantiate a Robot subclass</span>
+    <span class="kn">import</span> <span class="nn">doctest</span>
+
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,743 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.world_model_ed &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.world_model_ed</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.world_model_ed</h1><div class="highlight"><pre>
+<span></span><span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">sqrt</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospkg</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">visualization_msgs.msg</span>
+
+<span class="c1"># TU/e</span>
+<span class="kn">import</span> <span class="nn">ed_msgs.srv</span>
+<span class="kn">from</span> <span class="nn">ed_msgs.srv</span> <span class="k">import</span> <span class="n">SimpleQuery</span><span class="p">,</span> <span class="n">SimpleQueryRequest</span><span class="p">,</span> <span class="n">UpdateSrv</span><span class="p">,</span> <span class="n">Configure</span>
+<span class="kn">import</span> <span class="nn">ed_sensor_integration_msgs.srv</span> <span class="k">as</span> <span class="nn">ed_sensor_srv</span>
+<span class="kn">from</span> <span class="nn">ed_people_recognition_msgs.srv</span> <span class="k">import</span> <span class="n">EdRecognizePeople</span>
+<span class="kn">from</span> <span class="nn">ed_perception_msgs.srv</span> <span class="k">import</span> <span class="n">Classify</span>
+<span class="kn">from</span> <span class="nn">ed_gui_server_msgs.srv</span> <span class="k">import</span> <span class="n">GetEntityInfo</span><span class="p">,</span> <span class="n">GetEntityInfoResponse</span>
+<span class="kn">from</span> <span class="nn">ed_navigation_msgs.srv</span> <span class="k">import</span> <span class="n">GetGoalConstraint</span>
+<span class="kn">from</span> <span class="nn">cb_base_navigation_msgs.msg</span> <span class="k">import</span> <span class="n">PositionConstraint</span>
+
+<span class="c1"># Robot skills</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util</span> <span class="k">import</span> <span class="n">transformations</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.decorators</span> <span class="k">import</span> <span class="n">deprecated</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">VectorStamped</span><span class="p">,</span> <span class="n">kdl_vector_to_point_msg</span>
+<span class="kn">from</span> <span class="nn">robot_skills.classification_result</span> <span class="k">import</span> <span class="n">ClassificationResult</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">from_entity_info</span>
+<span class="kn">from</span> <span class="nn">robot_skills.robot_part</span> <span class="k">import</span> <span class="n">RobotPart</span>
+
+
+<div class="viewcode-block" id="Navigation"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.Navigation">[docs]</a><span class="k">class</span> <span class="nc">Navigation</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Navigation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_constraint_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/navigation/get_constraint&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span>
+                                                              <span class="n">GetGoalConstraint</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Navigation.get_position_constraint"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.Navigation.get_position_constraint">[docs]</a>    <span class="k">def</span> <span class="nf">get_position_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_id_area_name_map</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_constraint_srv</span><span class="p">(</span><span class="n">entity_ids</span><span class="o">=</span><span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">entity_id_area_name_map</span><span class="p">],</span>
+                                           <span class="n">area_names</span><span class="o">=</span><span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">entity_id_area_name_map</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()])</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Can&#39;t get position constraint: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">error_msg</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">PositionConstraint</span><span class="p">(</span><span class="n">constraint</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">position_constraint_map_frame</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;/map&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ED"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED">[docs]</a><span class="k">class</span> <span class="nc">ED</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ED</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ed_simple_query_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/simple_query&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">SimpleQuery</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ed_entity_info_query_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/gui/get_entity_info&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span>
+                                                                    <span class="n">GetEntityInfo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ed_update_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/update&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">UpdateSrv</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ed_kinect_update_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/kinect/update&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span>
+                                                                <span class="n">ed_sensor_srv</span><span class="o">.</span><span class="n">Update</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ed_classify_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/classify&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">Classify</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ed_configure_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/configure&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">Configure</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ed_reset_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/reset&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">ed_msgs</span><span class="o">.</span><span class="n">srv</span><span class="o">.</span><span class="n">Reset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ed_get_image_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/kinect/get_image&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span>
+                                                            <span class="n">ed_sensor_srv</span><span class="o">.</span><span class="n">GetImage</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ed_ray_trace_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/ray_trace&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span>
+                                                            <span class="n">ed_sensor_srv</span><span class="o">.</span><span class="n">RayTrace</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ed_detect_people_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/</span><span class="si">%s</span><span class="s1">/ed/people_recognition/detect_people&#39;</span> <span class="o">%</span> <span class="n">robot_name</span><span class="p">,</span>
+                                                                <span class="n">EdRecognizePeople</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">navigation</span> <span class="o">=</span> <span class="n">Navigation</span><span class="p">(</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_marker_publisher</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/ed/simple_query&quot;</span><span class="p">,</span> <span class="n">visualization_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Marker</span><span class="p">,</span>
+                                                 <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">=</span> <span class="n">robot_name</span>
+
+<div class="viewcode-block" id="ED.wait_for_connections"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.wait_for_connections">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">log_failing_connections</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Waits for the connections until they are connected</span>
+
+<span class="sd">        :param timeout: timeout in seconds</span>
+<span class="sd">        :param log_failing_connections: (bool) whether to log errors if not connected. This is useful when checking</span>
+<span class="sd">            multiple robot parts in a loop</span>
+<span class="sd">        :return: bool indicating whether all connections are connected</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">ED</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">wait_for_connections</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="n">log_failing_connections</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">navigation</span><span class="o">.</span><span class="n">wait_for_connections</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="n">log_failing_connections</span><span class="p">)</span>
+                <span class="p">)</span></div>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+    <span class="c1">#                                             QUERYING</span>
+    <span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ED.get_entities"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.get_entities">[docs]</a>    <span class="k">def</span> <span class="nf">get_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="n">VectorStamped</span><span class="p">(),</span> <span class="n">radius</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">),</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ignore_z</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get entities via Simple Query interface</span>
+
+<span class="sd">        :param type: Type of entity</span>
+<span class="sd">        :param center_point: Point from which radius is measured</span>
+<span class="sd">        :param radius: Distance between center_point and entity</span>
+<span class="sd">        :param id: ID of entity</span>
+<span class="sd">        :param ignore_z: Consider only the distance in the X,Y plane for the radius from center_point</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_publish_marker</span><span class="p">(</span><span class="n">center_point</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+
+        <span class="n">center_point_in_map</span> <span class="o">=</span> <span class="n">center_point</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="s2">&quot;/map&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">SimpleQueryRequest</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="n">kdl_vector_to_point_msg</span><span class="p">(</span><span class="n">center_point_in_map</span><span class="o">.</span><span class="n">vector</span><span class="p">),</span>
+                                   <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">ignore_z</span><span class="o">=</span><span class="n">ignore_z</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">entity_infos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ed_simple_query_srv</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">entities</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">from_entity_info</span><span class="p">,</span> <span class="n">entity_infos</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;ERROR: robot.ed.get_entities(id=</span><span class="si">{}</span><span class="s2">, type=</span><span class="si">{}</span><span class="s2">, center_point=</span><span class="si">{}</span><span class="s2">, radius=</span><span class="si">{}</span><span class="s2">, ignore_z=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">id</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">center_point</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">radius</span><span class="p">),</span> <span class="n">ignore_z</span><span class="p">))</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;L____&gt; [</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">return</span> <span class="n">entities</span></div>
+
+<div class="viewcode-block" id="ED.get_closest_entity"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.get_closest_entity">[docs]</a>    <span class="k">def</span> <span class="nf">get_closest_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">center_point</span><span class="p">:</span>
+            <span class="n">center_point</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/base_link&quot;</span><span class="p">)</span>
+
+        <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entities</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="n">center_point</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">)</span>
+
+        <span class="c1"># HACK</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Sort by distance</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">center_in_map</span> <span class="o">=</span> <span class="n">center_point</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="s2">&quot;/map&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">entity</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">center_in_map</span><span class="o">.</span><span class="n">vector</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Failed to sort entities: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">entities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ED.get_closest_room"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.get_closest_room">[docs]</a>    <span class="k">def</span> <span class="nf">get_closest_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">center_point</span><span class="p">:</span>
+            <span class="n">center_point</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/base_link&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_closest_entity</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;room&quot;</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="n">center_point</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ED.get_closest_laser_entity"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.get_closest_laser_entity">[docs]</a>    <span class="k">def</span> <span class="nf">get_closest_laser_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="n">VectorStamped</span><span class="p">(),</span> <span class="n">radius</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">),</span> <span class="n">ignore_z</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the closest entity detected by the laser. The ID&#39;s of such entities are postfixed with &#39;-laser&#39;</span>
+<span class="sd">        For the rest, this works exactly like get_closest_entity</span>
+
+<span class="sd">        :param type: What type of entities to filter on</span>
+<span class="sd">        :param center_point: combined with radius. Around which point to search for entities</span>
+<span class="sd">        :param radius: how far from the center_point to look (in meters)</span>
+<span class="sd">        :param ignore_z: Consider only the distance in the X,Y plane for the radius from center_point criterium.</span>
+<span class="sd">        :return: list of Entity</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entities</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="n">center_point</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">ignore_z</span><span class="o">=</span><span class="n">ignore_z</span><span class="p">)</span>
+
+        <span class="c1"># HACK</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">shape</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-laser&quot;</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Sort by distance</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">entity</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span>
+                <span class="n">center_point</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">%s</span><span class="s2">/base_link&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span><span class="o">.</span><span class="n">vector</span><span class="p">))</span>  <span class="c1"># TODO: adjust for robot</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Failed to sort entities: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">entities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ED.get_entity"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.get_entity">[docs]</a>    <span class="k">def</span> <span class="nf">get_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entities</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not get_entity(id=&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">entities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ED.get_entity_info"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.get_entity_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_entity_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ed_entity_info_query_srv</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">measurement_image_border</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Cant get entity info of id=&#39;</span><span class="si">{}</span><span class="s2">&#39;: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">GetEntityInfoResponse</span><span class="p">()</span></div>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+    <span class="c1">#                                             UPDATING</span>
+    <span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ED.selfreset"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.selfreset">[docs]</a>    <span class="k">def</span> <span class="nf">selfreset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep_all_shapes</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ed_reset_srv</span><span class="p">(</span><span class="n">keep_all_shapes</span><span class="o">=</span><span class="n">keep_all_shapes</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not reset ED: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+<div class="viewcode-block" id="ED.update_entity"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.update_entity">[docs]</a>    <span class="k">def</span> <span class="nf">update_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame_stamped</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remove_flags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates entity</span>
+
+<span class="sd">        :param id: entity id</span>
+<span class="sd">        :param type: entity type</span>
+<span class="sd">        :param frame_stamped: If specified, the entity is updated to be at this FrameStamped</span>
+<span class="sd">        :param flags: (OBSOLETE, use add_flags and remove_flags): (list of) dict(s) containing key &#39;add&#39; or &#39;remove&#39; and value of the flag to set,  e.g., &#39;perception&#39;</span>
+<span class="sd">        :param add_flags: list of flags which will be added to the specified entity</span>
+<span class="sd">        :param remove_flags: list of flags which will removed from the specified entity</span>
+<span class="sd">        :param action: update_action, e.g. remove</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">add_flags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">add_flags</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">remove_flags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">remove_flags</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">json_entity</span> <span class="o">=</span> <span class="s1">&#39;&quot;id&quot; : &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="nb">id</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">:</span>
+            <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;, &quot;type&quot;: &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="nb">type</span>
+
+        <span class="k">if</span> <span class="n">action</span><span class="p">:</span>
+            <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;, &quot;action&quot;: &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">action</span>
+
+        <span class="k">if</span> <span class="n">frame_stamped</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">!=</span> <span class="s2">&quot;/map&quot;</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;update_entity: frame not in map, transforming&#39;</span><span class="p">)</span>
+                <span class="n">frame_stamped</span> <span class="o">=</span> <span class="n">frame_stamped</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="s2">&quot;/map&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+
+            <span class="n">Z</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">GetEulerZYX</span><span class="p">()</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span>
+            <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;, &quot;pose&quot;: { &quot;x&quot;: </span><span class="si">%f</span><span class="s1">, &quot;y&quot;: </span><span class="si">%f</span><span class="s1">, &quot;z&quot;: </span><span class="si">%f</span><span class="s1">, &quot;X&quot;: </span><span class="si">%f</span><span class="s1">, &quot;Y&quot;: </span><span class="si">%f</span><span class="s1">, &quot;Z&quot;: </span><span class="si">%f</span><span class="s1"> }&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">t</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">t</span><span class="o">.</span><span class="n">z</span><span class="p">(),</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">flags</span> <span class="ow">or</span> <span class="n">add_flags</span> <span class="ow">or</span> <span class="n">remove_flags</span><span class="p">:</span>
+            <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;, &quot;flags&quot;: [&#39;</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">flags</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">flags</span> <span class="o">=</span> <span class="p">[</span><span class="n">flags</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">flags</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">flags</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">flag</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;update_entity - Error: flags need to be a list of dicts or a dict&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">flag</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">first</span><span class="p">:</span>
+                            <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;,&#39;</span>
+                        <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;{&quot;</span><span class="si">%s</span><span class="s1">&quot;:&quot;</span><span class="si">%s</span><span class="s1">&quot;}&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                        <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">add_flags</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">first</span><span class="p">:</span>
+                    <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;,&#39;</span>
+                <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;{&quot;add&quot;:&quot;</span><span class="si">%s</span><span class="s1">&quot;}&#39;</span> <span class="o">%</span> <span class="n">flag</span>
+                <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">remove_flags</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">first</span><span class="p">:</span>
+                    <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;,&#39;</span>
+                <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;{&quot;remove&quot;:&quot;</span><span class="si">%s</span><span class="s1">&quot;}&#39;</span> <span class="o">%</span> <span class="n">flag</span>
+                <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="n">json_entity</span> <span class="o">+=</span> <span class="s1">&#39;]&#39;</span>
+
+        <span class="n">json</span> <span class="o">=</span> <span class="s1">&#39;{&quot;entities&quot;:[{</span><span class="si">%s</span><span class="s1">}]}&#39;</span> <span class="o">%</span> <span class="n">json_entity</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="n">json</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ed_update_srv</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">json</span><span class="p">)</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+<div class="viewcode-block" id="ED.remove_entity"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.remove_entity">[docs]</a>    <span class="k">def</span> <span class="nf">remove_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Removes entity with the provided id to the world model</span>
+
+<span class="sd">        :param id: string with the ID of the entity to remove</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+<div class="viewcode-block" id="ED.lock_entities"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.lock_entities">[docs]</a>    <span class="k">def</span> <span class="nf">lock_entities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lock_ids</span><span class="p">,</span> <span class="n">unlock_ids</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="n">lock_ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">eid</span><span class="p">,</span> <span class="n">add_flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;locked&#39;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="n">unlock_ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">eid</span><span class="p">,</span> <span class="n">remove_flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;locked&#39;</span><span class="p">])</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+<div class="viewcode-block" id="ED.get_closest_possible_person_entity"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.get_closest_possible_person_entity">[docs]</a>    <span class="k">def</span> <span class="nf">get_closest_possible_person_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="n">VectorStamped</span><span class="p">(),</span> <span class="n">radius</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the &#39;possible_human&#39; entity closest to a certain center point.</span>
+
+<span class="sd">        :param center_point: (VectorStamped) indicating where the human should be close to</span>
+<span class="sd">        :param radius: (float) radius to look for possible humans</span>
+<span class="sd">        :return: (Entity) entity (if found), None otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">center_point</span><span class="o">.</span><span class="n">frame_id</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;map&quot;</span><span class="p">),</span> <span class="s2">&quot;Other frame ids not yet implemented&quot;</span>
+
+        <span class="c1"># Get all entities</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entities</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">center_point</span><span class="o">=</span><span class="n">center_point</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">)</span>
+
+        <span class="c1"># Filter on &#39;possible humans&#39;</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="s1">&#39;possible_human&#39;</span><span class="p">)]</span>
+
+        <span class="c1"># If nothing found, return None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">entities</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Sort by distance</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">entity</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">distance_to_2d</span><span class="p">(</span><span class="n">center_point</span><span class="o">.</span><span class="n">vector</span><span class="p">))</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;entities sorted closest to robot = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entities</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Failed to sort entities: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">entities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+    <span class="c1">#                                  KINECT INTEGRATION AND PERCEPTION</span>
+    <span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ED.update_kinect"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.update_kinect">[docs]</a>    <span class="k">def</span> <span class="nf">update_kinect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area_description</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">background_padding</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update ED based on kinect (depth) images</span>
+
+<span class="sd">        :param area_description: An entity id or area description, e.g. &quot;a08d537e-e051-11e5-a34e-6cc217ec9f41&quot; or &quot;on_top_of cabinet-11&quot;</span>
+<span class="sd">        :param background_padding: The maximum distance to which kinect data points are associated to existing objects (in meters).</span>
+<span class="sd">               Or, in other words: the padding that is added to existing objects before they are removed from the point cloud</span>
+<span class="sd">        :return: Update result</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check the area description</span>
+        <span class="k">if</span> <span class="n">area_description</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;No area_description provided for &#39;update_kinect&#39;. This is probably a bad idea.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save the image (logging)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">path_suffix</span><span class="o">=</span><span class="n">area_description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">))</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ed_kinect_update_srv</span><span class="p">(</span><span class="n">area_description</span><span class="o">=</span><span class="n">area_description</span><span class="p">,</span> <span class="n">background_padding</span><span class="o">=</span><span class="n">background_padding</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">error_msg</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not segment objects: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">res</span><span class="o">.</span><span class="n">error_msg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+<div class="viewcode-block" id="ED.classify"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.classify">[docs]</a>    <span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unknown_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="c1"># type: (List[str], List[str], float) -&gt; List[ClassificationResult]</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Classifies the entities with the given IDs</span>
+
+<span class="sd">        :param ids: list with IDs</span>
+<span class="sd">        :type ids: List[str]</span>
+<span class="sd">        :param types: list with types to identify</span>
+<span class="sd">        :type: types: List[str]</span>
+<span class="sd">        :param unknown_threshold: objects with a probability lower than this unknown_threshold are not set as a type</span>
+<span class="sd">        :type unknown_threshold: float</span>
+<span class="sd">        :return: List of classification results</span>
+<span class="sd">        :rtype: List[ClassificationResult]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ed_classify_srv</span><span class="p">(</span><span class="n">ids</span><span class="o">=</span><span class="n">ids</span><span class="p">,</span> <span class="n">unknown_probability</span><span class="o">=</span><span class="n">unknown_threshold</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">error_msg</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;While classifying entities: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">res</span><span class="o">.</span><span class="n">error_msg</span><span class="p">)</span>
+
+        <span class="n">posteriors</span> <span class="o">=</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">distr</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">distr</span><span class="o">.</span><span class="n">probabilities</span><span class="p">))</span> <span class="k">for</span> <span class="n">distr</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">posteriors</span><span class="p">]</span>
+
+        <span class="c1"># Filter on types if types is not None</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ClassificationResult</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="n">exp_val</span><span class="p">,</span> <span class="n">exp_prob</span><span class="p">,</span> <span class="n">distr</span><span class="p">)</span> <span class="k">for</span> <span class="n">_id</span><span class="p">,</span> <span class="n">exp_val</span><span class="p">,</span> <span class="n">exp_prob</span><span class="p">,</span> <span class="n">distr</span>
+                <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">ids</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">expected_values</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">expected_value_probabilities</span><span class="p">,</span> <span class="n">posteriors</span><span class="p">)</span> <span class="k">if</span>
+                <span class="n">types</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">exp_val</span> <span class="ow">in</span> <span class="n">types</span><span class="p">]</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+<div class="viewcode-block" id="ED.save_image"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.save_image">[docs]</a>    <span class="k">def</span> <span class="nf">save_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">path_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">os</span>
+        <span class="kn">import</span> <span class="nn">time</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">home_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;HOME&quot;</span><span class="p">]</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">home_dir</span> <span class="o">+</span> <span class="s2">&quot;/ed/kinect/&quot;</span> <span class="o">+</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">path_suffix</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">path_suffix</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">-%H-%M-%S&quot;</span><span class="p">)</span>
+
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">filename</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ed_get_image_srv</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">error_msg</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not save image: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">res</span><span class="o">.</span><span class="n">error_msg</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span> <span class="o">+</span> <span class="s2">&quot;.rgbd&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">rgbd_data</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">json_meta_data</span><span class="p">)</span>
+
+        <span class="c1"># rgbd to png</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;rosrun rgbd rgbd_to_rgb_png </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span> <span class="o">+</span> <span class="s2">&quot;.rgbd&quot;</span><span class="p">))</span>  <span class="c1"># ToDo: very very very ugly</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+    <span class="nd">@deprecated</span>
+    <span class="k">def</span> <span class="nf">mesh_entity_in_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="c1"># Takes the biggest one in view</span>
+        <span class="c1"># return self._ed_mesh_entity_in_view_srv(id=id, type=type)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;[world_model_ed.py] Function &#39;mesh_entity_in_view&#39; is obsolete.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+    <span class="c1">#                                                MISC</span>
+    <span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ED.get_full_id"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.get_full_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_full_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">short_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get an entity&#39;s full ID based on the first characters of its ID like you can do with git hashes&quot;&quot;&quot;</span>
+        <span class="n">all_entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entities</span><span class="p">()</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">fill_id</span><span class="p">:</span> <span class="n">fill_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">short_id</span><span class="p">),</span> <span class="p">[</span><span class="n">entity</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">all_entities</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">matches</span></div>
+
+<div class="viewcode-block" id="ED.ray_trace"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.ray_trace">[docs]</a>    <span class="k">def</span> <span class="nf">ray_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pose</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Performs a ray trace</span>
+
+<span class="sd">        :param pose: geometry_msg PoseStamped. Position is the origin of ray. x-axis is pointing in the ray direction</span>
+<span class="sd">        :return: RayTraceResult. This struct contains intersection_point (geometry_msgs/PoseStamped) and entity_id</span>
+<span class="sd">            (string)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ed_ray_trace_srv</span><span class="p">(</span><span class="n">raytrace_pose</span><span class="o">=</span><span class="n">pose</span><span class="p">)</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+<div class="viewcode-block" id="ED._transform_center_point_to_map"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED._transform_center_point_to_map">[docs]</a>    <span class="k">def</span> <span class="nf">_transform_center_point_to_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pointstamped</span><span class="p">):</span>
+        <span class="n">point_in_map</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">tf_transform</span><span class="p">(</span><span class="n">pointstamped</span><span class="o">.</span><span class="n">point</span><span class="p">,</span> <span class="n">pointstamped</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span><span class="p">,</span> <span class="s2">&quot;/map&quot;</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">point_in_map</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+<div class="viewcode-block" id="ED._publish_marker"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED._publish_marker">[docs]</a>    <span class="k">def</span> <span class="nf">_publish_marker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center_point</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+        <span class="n">marker</span> <span class="o">=</span> <span class="n">visualization_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Marker</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">center_point</span><span class="o">.</span><span class="n">frame_id</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">center_point</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">center_point</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">center_point</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">z</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">lifetime</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">20.0</span><span class="p">)</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">radius</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">radius</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">radius</span>
+
+        <span class="n">marker</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_marker_publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ED.sync_furniture_poses"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.sync_furniture_poses">[docs]</a>    <span class="k">def</span> <span class="nf">sync_furniture_poses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Syncs the furniture poses of the world model to disc. Hereto, it</span>
+<span class="sd">        i) gets all entities and filters these on being furniture</span>
+<span class="sd">        ii) loads the current ed object models file</span>
+<span class="sd">        iii) iterates over the furniture object entities (i) and the data in the dict (ii). If the IDs match, the pose</span>
+<span class="sd">             of (ii) is updated with the pose of (i)</span>
+<span class="sd">        iv) dump the updated dict to the models file</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get all entities</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_entities</span><span class="p">()</span>
+        <span class="n">furniture_objects</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)]</span>
+
+        <span class="c1"># Load the model.yaml of the current environment</span>
+        <span class="c1"># ToDo: make sure that this works</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rospkg</span><span class="o">.</span><span class="n">RosPack</span><span class="p">()</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="s2">&quot;ed_object_models&quot;</span><span class="p">),</span> <span class="s2">&quot;models&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ROBOT_ENV&quot;</span><span class="p">),</span>
+                                <span class="s2">&quot;model.yaml&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">file_data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">composition_list</span> <span class="o">=</span> <span class="n">file_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;composition&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">composition_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No composition in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+        <span class="c1"># Iterate over all furniture objects</span>
+        <span class="k">for</span> <span class="n">wm_object</span> <span class="ow">in</span> <span class="n">furniture_objects</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">file_object</span> <span class="ow">in</span> <span class="n">composition_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">wm_object</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">file_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                    <span class="c1"># Yeehah, we found something we need to update</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">wm_object</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">GetRPY</span><span class="p">()</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="n">wm_object</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span>
+                    <span class="n">file_object</span><span class="p">[</span><span class="s1">&#39;pose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">pos</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">pos</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="n">pos</span><span class="o">.</span><span class="n">z</span><span class="p">(),</span> <span class="s1">&#39;Z&#39;</span><span class="p">:</span> <span class="n">Z</span><span class="p">}</span>
+
+        <span class="c1"># Dump the data to file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">file_data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ED.detect_people"><a class="viewcode-back" href="../../api/robot_skills/world_model_ed/index.html#robot_skills.world_model_ed.ED.detect_people">[docs]</a>    <span class="k">def</span> <span class="nf">detect_people</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">cam_info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detect people in the given color message, depth image aided by the depth camera&#39;s camera info</span>
+
+<span class="sd">        :param rgb: Color image</span>
+<span class="sd">        :type rgb: sensor_msgs/Image</span>
+<span class="sd">        :param depth: Depth image</span>
+<span class="sd">        :type depth: sensor_msgs/Image</span>
+<span class="sd">        :param cam_info: CamInfo for the camera that recorded the depth image.</span>
+<span class="sd">        :type cam_info: sensor_msgs/CamInfo</span>
+<span class="sd">        :return: bool success and a list strings with the IDs of the detected persons</span>
+<span class="sd">        :rtype: (bool, [str])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ed_detect_people_srv</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">cam_info</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">detected_person_ids</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;_ed_detect_people_srv failed!: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[]</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

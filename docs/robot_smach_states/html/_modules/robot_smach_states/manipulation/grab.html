@@ -1,0 +1,577 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.manipulation.grab &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.manipulation.grab</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.manipulation.grab</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">PyKDL</span> <span class="k">as</span> <span class="nn">kdl</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+<span class="kn">import</span> <span class="nn">tf2_ros</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.robot</span> <span class="k">import</span> <span class="n">Robot</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">VectorStamped</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">Entity</span>
+<span class="kn">from</span> <span class="nn">robot_skills.arm.arms</span> <span class="k">import</span> <span class="n">PublicArm</span><span class="p">,</span> <span class="n">GripperTypes</span>
+<span class="kn">from</span> <span class="nn">..utility</span> <span class="k">import</span> <span class="n">check_arm_requirements</span><span class="p">,</span> <span class="n">ResolveArm</span>
+<span class="kn">from</span> <span class="nn">..util.designators</span> <span class="k">import</span> <span class="n">check_type</span>
+<span class="kn">from</span> <span class="nn">..navigation.navigate_to_grasp</span> <span class="k">import</span> <span class="n">NavigateToGrasp</span>
+<span class="kn">from</span> <span class="nn">..manipulation.grasp_point_determination</span> <span class="k">import</span> <span class="n">GraspPointDeterminant</span>
+<span class="kn">from</span> <span class="nn">..util.designators.arm</span> <span class="k">import</span> <span class="n">ArmDesignator</span>
+<span class="kn">from</span> <span class="nn">..util.designators.core</span> <span class="k">import</span> <span class="n">Designator</span>
+
+
+<div class="viewcode-block" id="PrepareEdGrasp"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/grab/index.html#robot_smach_states.manipulation.grab.PrepareEdGrasp">[docs]</a><span class="k">class</span> <span class="nc">PrepareEdGrasp</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="n">REQUIRED_ARM_PROPERTIES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;required_gripper_types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">GripperTypes</span><span class="o">.</span><span class="n">GRASPING</span><span class="p">],</span>
+                               <span class="s2">&quot;required_trajectories&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;prepare_grasp&quot;</span><span class="p">],</span> <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">arm</span><span class="p">,</span> <span class="n">grab_entity</span><span class="p">):</span>
+        <span class="c1"># type: (Robot, ArmDesignator, Designator) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the arm in the appropriate position before actually grabbing</span>
+
+<span class="sd">        :param robot: robot to execute state with</span>
+<span class="sd">        :param arm: Designator that resolves to the arm to grasp with</span>
+<span class="sd">        :param grab_entity: Designator that resolves to the entity to grab. e.g EntityByIdDesignator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Assign member variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="n">arm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grab_entity_designator</span> <span class="o">=</span> <span class="n">grab_entity</span>
+
+        <span class="n">check_type</span><span class="p">(</span><span class="n">grab_entity</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PrepareEdGrasp.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/grab/index.html#robot_smach_states.manipulation.grab.PrepareEdGrasp.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grab_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">entity</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve grab_entity&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">move_to_inspect_pose</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">vector</span><span class="o">=</span><span class="n">entity</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/map&quot;</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+        <span class="n">segm_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">update_kinect</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="n">arm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">arm</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve arm&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="c1"># Torso up (non-blocking)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="c1"># Arm to position in a safe way</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">move_to_pregrasp_pose</span><span class="p">(</span><span class="n">arm</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+
+        <span class="c1"># Open gripper</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+
+        <span class="c1"># Make sure the head looks at the entity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">vector</span><span class="o">=</span><span class="n">entity</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/map&quot;</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s1">&#39;succeeded&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="PickUp"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/grab/index.html#robot_smach_states.manipulation.grab.PickUp">[docs]</a><span class="k">class</span> <span class="nc">PickUp</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="n">REQUIRED_ARM_PROPERTIES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;required_gripper_types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">GripperTypes</span><span class="o">.</span><span class="n">GRASPING</span><span class="p">],</span>
+                               <span class="s2">&quot;required_goals&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;carrying_pose&quot;</span><span class="p">],</span> <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">arm</span><span class="p">,</span> <span class="n">grab_entity</span><span class="p">,</span> <span class="n">check_occupancy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pick up an item given an arm and an entity to be picked up</span>
+
+<span class="sd">        :param robot: robot to execute this state with</span>
+<span class="sd">        :param arm: Designator that resolves to the arm to grasp with</span>
+<span class="sd">        :param grab_entity: Designator that resolves to the entity to grab. e.g EntityByIdDesignator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Assign member variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="n">arm</span>
+        <span class="n">check_type</span><span class="p">(</span><span class="n">grab_entity</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grab_entity_designator</span> <span class="o">=</span> <span class="n">grab_entity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gpd</span> <span class="o">=</span> <span class="n">GraspPointDeterminant</span><span class="p">(</span><span class="n">robot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_occupancy</span> <span class="o">=</span> <span class="n">check_occupancy</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">get_arm</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">REQUIRED_ARM_PROPERTIES</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>\
+            <span class="s2">&quot;None of the available arms meets all this class&#39;s requirements: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">REQUIRED_ARM_PROPERTIES</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PickUp.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/grab/index.html#robot_smach_states.manipulation.grab.PickUp.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">grab_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grab_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">grab_entity</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve grab_entity&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="n">arm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">arm</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve arm&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="n">goal_map</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="n">grab_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Transform to base link frame</span>
+            <span class="n">goal_bl</span> <span class="o">=</span> <span class="n">goal_map</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span><span class="o">+</span><span class="s1">&#39;/base_link&#39;</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">goal_bl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;Transformation of goal to base failed&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+        <span class="k">except</span> <span class="n">tf2_ros</span><span class="o">.</span><span class="n">TransformException</span> <span class="k">as</span> <span class="n">tfe</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;Transformation of goal to base failed: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tfe</span><span class="p">))</span>
+            <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+
+        <span class="c1"># Make sure the torso and the arm are done</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># This is needed because the head is not entirely still when the</span>
+        <span class="c1"># look_at_point function finishes</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+
+        <span class="c1"># Resolve the entity again because we want the latest pose</span>
+        <span class="n">updated_grab_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grab_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;ID to update: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grab_entity</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">updated_grab_entity</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not resolve the updated grab_entity, &quot;</span>
+                         <span class="s2">&quot;this should not happen [CHECK WHY THIS IS HAPPENING]&quot;</span><span class="p">)</span>
+            <span class="n">grab_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">associate</span><span class="p">(</span><span class="n">original_entity</span><span class="o">=</span><span class="n">grab_entity</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Updated pose of entity (dx, dy, dz) : (</span><span class="si">%f</span><span class="s2">, </span><span class="si">%f</span><span class="s2">, </span><span class="si">%f</span><span class="s2">)&quot;</span> <span class="o">%</span>
+                          <span class="p">(</span><span class="n">updated_grab_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">grab_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span>
+                           <span class="n">updated_grab_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="n">grab_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span>
+                           <span class="n">updated_grab_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">-</span> <span class="n">grab_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()))</span>
+            <span class="n">grab_entity</span> <span class="o">=</span> <span class="n">updated_grab_entity</span>
+
+        <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+        <span class="c1"># Grasp point determination</span>
+        <span class="n">grasp_framestamped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gpd</span><span class="o">.</span><span class="n">get_grasp_pose</span><span class="p">(</span><span class="n">grab_entity</span><span class="p">,</span> <span class="n">arm</span><span class="p">)</span>
+
+        <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+        <span class="n">goal_map</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="n">grab_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="c1"># In case grasp point determination didn&#39;t work</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">grasp_framestamped</span><span class="p">:</span>
+            <span class="n">goal_bl</span> <span class="o">=</span> <span class="n">goal_map</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/base_link&#39;</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">goal_bl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># We do have a grasp pose, given as a kdl frame in map</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">tf_listener</span><span class="o">.</span><span class="n">waitForTransform</span><span class="p">(</span><span class="s2">&quot;/map&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/base_link&quot;</span><span class="p">,</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+                                                        <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+                <span class="c1"># Transform to base link frame</span>
+                <span class="n">goal_bl</span> <span class="o">=</span> <span class="n">grasp_framestamped</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/base_link&quot;</span><span class="p">,</span>
+                                                            <span class="n">tf_listener</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">goal_bl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+            <span class="k">except</span> <span class="n">tf2_ros</span><span class="o">.</span><span class="n">TransformException</span> <span class="k">as</span> <span class="n">tfe</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;Transformation of goal to base failed: </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tfe</span><span class="p">))</span>
+                <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+
+        <span class="c1"># Pre-grasp --&gt; this is only necessary when using visual servoing</span>
+        <span class="c1"># rospy.loginfo(&#39;Starting Pre-grasp&#39;)</span>
+        <span class="c1"># if not arm.send_goal(goal_bl.x, goal_bl.y, goal_bl.z, 0, 0, 0,</span>
+        <span class="c1">#                      frame_id=&#39;/&#39;+self.robot.robot_name+&#39;/base_link&#39;,</span>
+        <span class="c1">#                      timeout=20, pre_grasp=True, first_joint_pos_only=True</span>
+        <span class="c1">#                      ):</span>
+        <span class="c1">#     rospy.logerr(&#39;Pre-grasp failed:&#39;)</span>
+        <span class="c1">#     arm.reset()</span>
+        <span class="c1">#     arm.gripper.send_goal(&#39;close&#39;, timeout=None)</span>
+        <span class="c1">#     return &#39;failed&#39;</span>
+
+        <span class="c1"># Grasp</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Start grasping&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">arm</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">goal_bl</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pre_grasp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allowed_touch_objects</span><span class="o">=</span><span class="p">[</span><span class="n">grab_entity</span><span class="o">.</span><span class="n">id</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s1">&#39;I am sorry but I cannot move my arm to the object position&#39;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;Grasp failed&#39;</span><span class="p">)</span>
+            <span class="n">arm</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+
+        <span class="c1"># Close gripper</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">)</span>
+
+        <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">occupied_by</span> <span class="o">=</span> <span class="n">grab_entity</span>
+
+        <span class="c1"># Lift</span>
+        <span class="n">goal_bl</span> <span class="o">=</span> <span class="n">grasp_framestamped</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/base_link&quot;</span><span class="p">,</span>
+                                                    <span class="n">tf_listener</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Start lifting&#39;</span><span class="p">)</span>
+        <span class="n">roll</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="n">goal_bl</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">(</span><span class="n">goal_bl</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">)</span>  <span class="c1"># Add 5 cm</span>
+        <span class="n">goal_bl</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">RPY</span><span class="p">(</span><span class="n">roll</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Update the roll</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Start lift&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">arm</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">goal_bl</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">allowed_touch_objects</span><span class="o">=</span><span class="p">[</span><span class="n">grab_entity</span><span class="o">.</span><span class="n">id</span><span class="p">]):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;Failed lift&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Retract</span>
+        <span class="n">goal_bl</span> <span class="o">=</span> <span class="n">grasp_framestamped</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/base_link&#39;</span><span class="p">,</span>
+                                                    <span class="n">tf_listener</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Start retracting&#39;</span><span class="p">)</span>
+        <span class="n">roll</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="n">goal_bl</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">(</span><span class="n">goal_bl</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Retract 10 cm</span>
+        <span class="n">goal_bl</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">(</span><span class="n">goal_bl</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">)</span>  <span class="c1"># Go 5 cm higher</span>
+        <span class="n">goal_bl</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">RPY</span><span class="p">(</span><span class="n">roll</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># Update the roll</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Start retract&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">arm</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">goal_bl</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">allowed_touch_objects</span><span class="o">=</span><span class="p">[</span><span class="n">grab_entity</span><span class="o">.</span><span class="n">id</span><span class="p">]):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;Failed retract&#39;</span><span class="p">)</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">force_drive</span><span class="p">(</span><span class="o">-</span><span class="mf">0.125</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="c1"># Update Kinect once again to make sure the object disappears from ED</span>
+        <span class="n">segm_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">update_kinect</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">grab_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="n">arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Carrying pose</span>
+        <span class="c1"># rospy.loginfo(&#39;start moving to carrying pose&#39;)</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">send_joint_goal</span><span class="p">(</span><span class="s1">&#39;carrying_pose&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;succeeded&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_occupancy</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="p">,</span> <span class="s1">&#39;grasp_sensor&#39;</span><span class="p">):</span>
+            <span class="c1"># Check if the object is present in the gripper</span>
+            <span class="k">if</span> <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">grasp_sensor</span><span class="o">.</span><span class="n">object_in_gripper_measurement</span><span class="o">.</span><span class="n">is_empty</span><span class="p">:</span>
+                <span class="c1"># If state is empty, grasp has failed</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;failed&quot;</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Gripper is not holding an object&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Whoops, something went terribly wrong&quot;</span><span class="p">)</span>
+                <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">occupied_by</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Set the object the arm is holding to None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># State is holding, grasp succeeded.</span>
+                <span class="c1"># If unknown: sensor not there, assume gripper is holding and hope for the best</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;succeeded&quot;</span>
+                <span class="k">if</span> <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">grasp_sensor</span><span class="o">.</span><span class="n">object_in_gripper_measurement</span><span class="o">.</span><span class="n">is_unknown</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;GripperMeasurement unknown&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Reset head</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="PickUp.associate"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/grab/index.html#robot_smach_states.manipulation.grab.PickUp.associate">[docs]</a>    <span class="k">def</span> <span class="nf">associate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original_entity</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tries to associate the original entity with one of the entities in the world model. This is useful if</span>
+<span class="sd">        after an update, the original entity is no longer present in the world model. If no good map can be found,</span>
+<span class="sd">        the original entity will be returned as the associated entity.</span>
+
+<span class="sd">        :param original_entity:</span>
+<span class="sd">        :return: associated entity</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get all entities</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entities</span><span class="p">()</span>
+
+        <span class="c1"># Remove all entities with a shape. These are probably not the ones we want to grasp</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">):</span>
+                <span class="n">entities</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span>
+                          <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">entity</span><span class="p">:</span> <span class="n">entity</span><span class="o">.</span><span class="n">distance_to_3d</span><span class="p">(</span><span class="n">original_entity</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">entities</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">original_entity</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>  <span class="c1"># Objects Less than 5 cm apart might be associated</span>
+            <span class="k">return</span> <span class="n">entities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">original_entity</span></div>
+
+<div class="viewcode-block" id="PickUp.distance"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/grab/index.html#robot_smach_states.manipulation.grab.PickUp.distance">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Computes the distance between two entities &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">e1</span><span class="o">.</span><span class="n">distance_to_3d</span><span class="p">(</span><span class="n">e2</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ResetOnFailure"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/grab/index.html#robot_smach_states.manipulation.grab.ResetOnFailure">[docs]</a><span class="k">class</span> <span class="nc">ResetOnFailure</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Class to reset the robot after a grab has failed &quot;&quot;&quot;</span>
+
+    <span class="n">REQUIRED_ARM_PROPERTIES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;required_gripper_types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">GripperTypes</span><span class="o">.</span><span class="n">GRASPING</span><span class="p">],</span> <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">arm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param arm: arm designator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="n">arm</span>
+
+<div class="viewcode-block" id="ResetOnFailure.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/grab/index.html#robot_smach_states.manipulation.grab.ResetOnFailure.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Execute hook &quot;&quot;&quot;</span>
+        <span class="n">arm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">==</span> <span class="s2">&quot;amigo&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>  <span class="c1"># Move up to make resetting of the arm safer.</span>
+        <span class="k">if</span> <span class="n">arm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>  <span class="c1"># Sends a goal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>  <span class="c1"># And cancels it...</span>
+        <span class="k">if</span> <span class="n">arm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">arm</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s1">&#39;done&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="Grab"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/grab/index.html#robot_smach_states.manipulation.grab.Grab">[docs]</a><span class="k">class</span> <span class="nc">Grab</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">arm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let the given robot move to an entity and grab that entity using some arm</span>
+
+<span class="sd">        :param robot: Robot to use</span>
+<span class="sd">        :param item: Designator that resolves to the item to grab. E.g. EntityByIdDesignator</span>
+<span class="sd">        :param arm: Designator that resolves to the arm to use for grabbing. Eg. UnoccupiedArmDesignator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Check types or designator resolve types</span>
+        <span class="n">check_type</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+        <span class="n">check_type</span><span class="p">(</span><span class="n">arm</span><span class="p">,</span> <span class="n">PublicArm</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;RESOLVE_ARM&#39;</span><span class="p">,</span> <span class="n">ResolveArm</span><span class="p">(</span><span class="n">arm</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;NAVIGATE_TO_GRAB&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;NAVIGATE_TO_GRAB&#39;</span><span class="p">,</span> <span class="n">NavigateToGrasp</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">arm</span><span class="p">,</span> <span class="n">item</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;unreachable&#39;</span><span class="p">:</span> <span class="s1">&#39;RESET_FAILURE&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;goal_not_defined&#39;</span><span class="p">:</span> <span class="s1">&#39;RESET_FAILURE&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;arrived&#39;</span><span class="p">:</span> <span class="s1">&#39;PREPARE_GRASP&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;PREPARE_GRASP&#39;</span><span class="p">,</span> <span class="n">PrepareEdGrasp</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">arm</span><span class="p">,</span> <span class="n">item</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;GRAB&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;RESET_FAILURE&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GRAB&#39;</span><span class="p">,</span> <span class="n">PickUp</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">arm</span><span class="p">,</span> <span class="n">item</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;done&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;RESET_FAILURE&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;RESET_FAILURE&quot;</span><span class="p">,</span> <span class="n">ResetOnFailure</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">arm</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">})</span>
+
+        <span class="n">check_arm_requirements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

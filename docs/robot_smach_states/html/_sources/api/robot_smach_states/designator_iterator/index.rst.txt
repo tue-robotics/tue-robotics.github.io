@@ -1,0 +1,64 @@
+:mod:`robot_smach_states.designator_iterator`
+=============================================
+
+.. py:module:: robot_smach_states.designator_iterator
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_smach_states.designator_iterator.IterateDesignator
+
+
+
+.. py:class:: IterateDesignator(collection_des, element_des)
+
+   Bases: :class:`smach.State`
+
+   Iterate over a designator that resolves to a collection.
+
+   The collection is resolved on the fist time the state is called AND after is was exhausted.
+
+   Once the collection is exhausted, the outcome will be 'stop_iteration'.
+   The next time the state is executed, the collection will be resolved again
+
+   :param collection_des: Designator with a iterable resolve_type
+   :param element_des: Writeable designator with a resolve_type that should match the element type of the collection
+
+   >>> collection_des = ds.Designator(['a', 'b', 'c'])
+   >>> element_des = ds.VariableDesignator(resolve_type=str)
+   >>>
+   >>> iterator = IterateDesignator(collection_des, element_des.writeable)
+   >>>
+   >>> assert iterator.execute() == 'next'
+   >>> assert element_des.resolve() == 'a'
+   >>>
+   >>> assert iterator.execute() == 'next'
+   >>> assert element_des.resolve() == 'b'
+   >>>
+   >>> assert iterator.execute() == 'next'
+   >>> assert element_des.resolve() == 'c'
+   >>>
+   >>> assert iterator.execute() == 'stop_iteration'
+   >>> assert element_des.resolve() == 'c'
+   >>>
+   >>> assert iterator.execute() == 'next'
+   >>> assert element_des.resolve() == 'a'
+   >>>
+   >>> assert iterator.execute() == 'next'
+   >>> assert element_des.resolve() == 'b'
+   >>>
+   >>> assert iterator.execute() == 'next'
+   >>> assert element_des.resolve() == 'c'
+   >>>
+   >>> assert iterator.execute() == 'stop_iteration'
+
+   .. method:: execute(self, userdata=None)
+
+
+

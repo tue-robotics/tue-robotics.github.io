@@ -1,0 +1,279 @@
+:mod:`robot_skills.util.kdl_conversions`
+========================================
+
+.. py:module:: robot_skills.util.kdl_conversions
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.util.kdl_conversions.FrameStamped
+   robot_skills.util.kdl_conversions.VectorStamped
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   robot_skills.util.kdl_conversions.frame_stamped
+   robot_skills.util.kdl_conversions.point_msg_to_kdl_vector
+   robot_skills.util.kdl_conversions.kdl_vector_to_point_msg
+   robot_skills.util.kdl_conversions.kdl_rotation_to_quaternion_msg
+   robot_skills.util.kdl_conversions.quaternion_msg_to_kdl_rotation
+   robot_skills.util.kdl_conversions.pose_msg_to_kdl_frame
+   robot_skills.util.kdl_conversions.kdl_frame_to_pose_msg
+   robot_skills.util.kdl_conversions.kdl_frame_stamped_to_pose_stamped_msg
+   robot_skills.util.kdl_conversions.kdl_frame_from_XYZRPY
+   robot_skills.util.kdl_conversions.kdl_frame_stamped_from_pose_stamped_msg
+   robot_skills.util.kdl_conversions.kdl_frame_stamped_from_XYZRPY
+   robot_skills.util.kdl_conversions.kdl_vector_stamped_from_point_stamped_msg
+   robot_skills.util.kdl_conversions.kdl_vector_stamped_to_point_stamped
+
+
+.. py:class:: FrameStamped(frame, frame_id, stamp=None)
+
+   Bases: :class:`object`
+
+   Kdl alternative for a geometry_msgs.PoseStamped.
+
+   This class consists of a kdl.Frame and the frame_id w.r.t which the Frame is defined
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+   .. method:: projectToFrame(self, frame_id, tf_listener)
+
+      Computes a new FrameStamped from this frame in the requested frame ID
+
+      :param frame_id: (str) frame id of the new FrameStamped
+      :param tf_listener: (TF Listener) tf listener used for the computation of the transformation
+      :return: (FrameStamped) with provided frame id
+
+
+   .. method:: extractVectorStamped(self)
+
+      Extract only the position of this FrameStamped, without the orientation but with the frame_id metadata
+
+      :return: VectorStamped
+      >>> fs = FrameStamped(kdl.Frame(kdl.Rotation.Quaternion(1, 0, 0, 0), kdl.Vector(1, 2, 3)), "/map")
+      >>> fs.extractVectorStamped()
+      VectorStamped([           1,           2,           3] @ /map)
+
+
+
+.. function:: frame_stamped(frame_id, x, y, z, roll=0, pitch=0, yaw=0)
+
+   Creates a FrameStamped object from the provided parameters
+
+   :param frame_id: string with frame id
+   :param x:
+   :param y:
+   :param z:
+   :param roll:
+   :param pitch:
+   :param yaw:
+   :return:
+
+
+.. py:class:: VectorStamped(x=0, y=0, z=0, frame_id='/map', vector=None)
+
+   Bases: :class:`object`
+
+   The most base type
+
+   x.__init__(...) initializes x; see help(type(x)) for signature
+
+   .. method:: __repr__(self)
+
+      x.__repr__() <==> repr(x)
+
+
+   .. method:: projectToFrame(self, frame_id, tf_listener)
+
+
+   .. method:: __eq__(self, other)
+
+
+   .. method:: __ne__(self, other)
+
+
+
+.. function:: point_msg_to_kdl_vector(point)
+
+   Convert a ROS geometry_msgs.msg.Point message to a PyKDL.Vector object
+
+   :type point:  geometry_msgs.msg.Point
+   :rtype: PyKDL.Vector
+
+   >>> point = gm.Point(1, 2, 3)
+   >>> v = point_msg_to_kdl_vector(point)
+   >>> v.x()
+   1.0
+   >>> v.y()
+   2.0
+   >>> v.z()
+   3.0
+
+
+.. function:: kdl_vector_to_point_msg(vector)
+
+   Convert a PyKDL.Vector object to a ROS geometry_msgs.msg.Point message
+
+   :type vector: PyKDL.Vector
+   :rtype: geometry_msgs.msg.Point
+
+   >>> vector = kdl.Vector(1, 2, 3)
+   >>> point = kdl_vector_to_point_msg(vector)
+   >>> point.x
+   1.0
+   >>> point.y
+   2.0
+   >>> point.z
+   3.0
+
+
+.. function:: kdl_rotation_to_quaternion_msg(rotation)
+
+   Convert a PyKDL.Rotation object to a ROS geometry_msgs.msg.Quaternion message
+
+   :param rotation: Rotation to be converted
+   :type rotation: PyKDL.Rotation
+   :rtype: geometry_msgs.msg.Quaternion
+
+   >>> rot = kdl.Rotation.Quaternion(1, 0, 0, 0)
+   >>> quat_msg = kdl_rotation_to_quaternion_msg(rot)
+   >>> (quat_msg.x, quat_msg.y, quat_msg.z, quat_msg.w)
+   (1.0, 0.0, 0.0, 0.0)
+   >>> from math import pi
+   >>> rot = kdl.Rotation.RPY(pi/2, 0, 0)
+   >>> quat_msg = kdl_rotation_to_quaternion_msg(rot)
+   >>> (quat_msg.x, quat_msg.y, quat_msg.z, quat_msg.w)
+   (0.7071067811865475, 0.0, 0.0, 0.7071067811865476)
+
+
+.. function:: quaternion_msg_to_kdl_rotation(quaternion)
+
+   Convert a geometry_msgs.msg.Quaternion message to a ROS PyKDL.Rotation object
+
+   :param quaternion: Rotation to be converted
+   :type quaternion: geometry_msgs.msg.Quaternion
+   :rtype: PyKDL.Rotation
+
+   >>> quat_msg = gm.Quaternion(1.0, 0.0, 0.0, 1.0)
+   >>> rot = quaternion_msg_to_kdl_rotation(quat_msg)
+   >>> rot.GetRPY()
+   (1.5707963267948966, -0.0, 0.0)
+
+
+.. function:: pose_msg_to_kdl_frame(pose)
+
+   Convert a geometry_msgs.msg.Pose message to a PyKDL.Frame object
+
+   :param pose: Pose to be converted
+   :type pose: geometry_msgs.msg.Pose
+   :rtype: PyKDL.Frame
+
+   >>> pose = gm.Pose(gm.Point(1, 2, 3), gm.Quaternion(1, 0, 0, 0))
+   >>> frame = pose_msg_to_kdl_frame(pose)
+   >>> frame.p
+   [           1,           2,           3]
+   >>> frame.M.GetQuaternion()
+   (1.0, 0.0, 0.0, 0.0)
+
+
+.. function:: kdl_frame_to_pose_msg(frame)
+
+   Convert a ROS PyKDL.Frame object to a geometry_msgs.msg.Pose message
+
+   :param frame: Frame to be converted
+   :type frame: PyKDL.Frame
+   :rtype: geometry_msgs.msg.Pose
+
+   >>> frame = kdl.Frame(kdl.Rotation.Quaternion(1, 0, 0, 0), kdl.Vector(1, 2, 3))
+   >>> pose = kdl_frame_to_pose_msg(frame)
+   >>> (pose.position.x, pose.position.y, pose.position.z)
+   (1.0, 2.0, 3.0)
+   >>> (pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
+   (1.0, 0.0, 0.0, 0.0)
+
+
+.. function:: kdl_frame_stamped_to_pose_stamped_msg(frame_stamped)
+
+   Convert a ROS PyKDL.Frame object to a geometry_msgs.msg.Pose message
+
+   :param frame: Frame to be converted
+   :type frame: PyKDL.Frame
+   :rtype: geometry_msgs.msg.Pose
+
+   >>> frame = kdl.Frame(kdl.Rotation.Quaternion(1, 0, 0, 0), kdl.Vector(1, 2, 3))
+   >>> pose = kdl_frame_to_pose_msg(frame)
+   >>> (pose.position.x, pose.position.y, pose.position.z)
+   (1.0, 2.0, 3.0)
+   >>> (pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
+   (1.0, 0.0, 0.0, 0.0)
+
+
+.. function:: kdl_frame_from_XYZRPY(x=0, y=0, z=0, roll=0, pitch=0, yaw=0)
+
+   Create a PyKDL.Frame from raw scalars
+
+   :param x: The X value of the position
+   :param y: The Y value of the position
+   :param z: The Z value of the position
+   :param roll: The roll of the orientation
+   :param pitch: The pitch of the orientation
+   :param yaw: The yaw of the orientation
+   :return: the given position and orientation represented as a kdl.Frame
+   :rtype: PyKDL.Frame
+
+
+.. function:: kdl_frame_stamped_from_pose_stamped_msg(pose_stamped)
+
+   Convert a PoseStamped to FrameStamped
+
+   :param pose_stamped: the PoseStamped to be converted
+   :return: FrameStamped
+
+
+.. function:: kdl_frame_stamped_from_XYZRPY(x=0, y=0, z=0, roll=0, pitch=0, yaw=0, frame_id='/map')
+
+   Create a FrameStamped from raw scalars
+
+   :param x: The X value of the position
+   :param y: The Y value of the position
+   :param z: The Z value of the position
+   :param roll: The roll of the orientation
+   :param pitch: The pitch of the orientation
+   :param yaw: The yaw of the orientation
+   :param frame_id: the frame_id in which the frame is defined
+   :return: the given position and orientation represented as a kdl.Frame
+   :rtype: FrameStamped
+
+
+.. function:: kdl_vector_stamped_from_point_stamped_msg(point_stamped)
+
+   Convert a PointStamped to VectorStamped
+
+   :param point_stamped: the PointStamped to be converted
+   :return: VectorStamped
+
+
+.. function:: kdl_vector_stamped_to_point_stamped(vector_stamped)
+
+   Convert a VectorStamped to a PointStamped
+
+   :param vector_stamped the VectorStamped to be converted
+   :return: PointStamped
+
+

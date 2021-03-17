@@ -1,0 +1,661 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.robot &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.robot</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.robot</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">geometry_msgs</span>
+<span class="kn">from</span> <span class="nn">diagnostic_msgs.msg</span> <span class="k">import</span> <span class="n">DiagnosticArray</span>
+<span class="kn">from</span> <span class="nn">sensor_msgs.msg</span> <span class="k">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">JointState</span>
+<span class="kn">from</span> <span class="nn">std_msgs.msg</span> <span class="k">import</span> <span class="n">String</span>
+
+<span class="c1"># TU/e</span>
+<span class="kn">from</span> <span class="nn">.arm</span> <span class="k">import</span> <span class="n">arms</span>
+<span class="kn">from</span> <span class="nn">.functionalities.add_functionalities</span> <span class="k">import</span> <span class="n">add_functionalities</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="n">CONNECTION_TIMEOUT</span> <span class="o">=</span> <span class="mf">10.0</span>  <span class="c1"># Timeout: all ROS connections must be alive within this duration</span>
+
+
+<div class="viewcode-block" id="Robot"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot">[docs]</a><span class="k">class</span> <span class="nc">Robot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface to all parts of the robot.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">wait_services</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param robot_name: Name of the robot</span>
+<span class="sd">        :type robot_name: str</span>
+<span class="sd">        :param wait_services: Not used anymore</span>
+<span class="sd">        :type wait_services: bool</span>
+<span class="sd">        :param tf_listener: tf_listener object</span>
+<span class="sd">        :type tf_listener: Optional[tf.TransformListener]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">wait_services</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;(Robot) wait_services is not used anymore and will be removed in the future&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">=</span> <span class="n">robot_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">TransformListener</span><span class="p">()</span> <span class="k">if</span> <span class="n">tf_listener</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tf_listener</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">configured</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Body parts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="c1"># Ensuring arms have a fixed order of iteration.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arms</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># type: OrderedDict[arms.Arm]</span>
+
+        <span class="c1"># Ignore diagnostics: parts that are not present in the real robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ignored_parts</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Miscellaneous</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pub_target</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;/target_location&quot;</span><span class="p">,</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Pose2D</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_link_frame</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="o">+</span><span class="s2">&quot;/base_link&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/image_from_ros&#39;</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/message_from_ros&#39;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Check hardware status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hardware_status_sub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/hardware_status&quot;</span><span class="p">,</span> <span class="n">DiagnosticArray</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_hardware_status</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">laser_topic</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="o">+</span><span class="s2">&quot;/base_laser/scan&quot;</span>
+
+<div class="viewcode-block" id="Robot.get_joint_states"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.get_joint_states">[docs]</a>    <span class="k">def</span> <span class="nf">get_joint_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">wait_for_message</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/joint_states&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">),</span> <span class="n">JointState</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">position</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Robot.add_body_part"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.add_body_part">[docs]</a>    <span class="k">def</span> <span class="nf">add_body_part</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partname</span><span class="p">,</span> <span class="n">bodypart</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a bodypart to the robot. This is added to the parts dict and set as an attribute</span>
+
+<span class="sd">        :param partname: name of the bodypart</span>
+<span class="sd">        :param bodypart: bodypart object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="n">partname</span><span class="p">]</span> <span class="o">=</span> <span class="n">bodypart</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partname</span><span class="p">,</span> <span class="n">bodypart</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Robot.add_arm_part"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.add_arm_part">[docs]</a>    <span class="k">def</span> <span class="nf">add_arm_part</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arm_name</span><span class="p">,</span> <span class="n">arm_part</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an arm part to the robot. This is added to the parts dictionary as well.</span>
+
+<span class="sd">        :param arm_name: Name of the arm part.</span>
+<span class="sd">        :param arm_part: Arm part object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Don&#39;t add the arm to the robot object to avoid direct access from challenge code.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="n">arm_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">arm_part</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arms</span><span class="p">[</span><span class="n">arm_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">arm_part</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">arms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ToDo: remove this property per September 2020</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s1">&#39;Arms should be private and therefore not be called directly. The only interface that should be &#39;</span>
+                      <span class="s1">&#39;used is the get_arm function. Change your code, you are invading private property!&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arms</span>
+
+<div class="viewcode-block" id="Robot.configure"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This should be run at the end of the constructor of a child class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">add_functionalities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># at the end of robot construction add functionalities</span>
+        <span class="c1"># Wait for connections</span>
+        <span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Waiting for ROS connections&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">connected</span> <span class="ow">and</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">CONNECTION_TIMEOUT</span><span class="p">:</span>
+            <span class="n">connected_hypot</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">bodypart</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">connected_hypot</span> <span class="o">=</span> <span class="n">connected_hypot</span> <span class="ow">and</span> <span class="n">bodypart</span><span class="o">.</span><span class="n">wait_for_connections</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">log_failing_connections</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">connected_hypot</span><span class="p">:</span>
+                <span class="n">connected</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Will wait for another </span><span class="si">{}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">CONNECTION_TIMEOUT</span> <span class="o">-</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()))</span>
+
+        <span class="c1"># If connected: log how low it took</span>
+        <span class="k">if</span> <span class="n">connected</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Connecting took </span><span class="si">{}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">e</span><span class="o">-</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Else: check again but now do log the errors</span>
+            <span class="k">for</span> <span class="n">bodypart</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">bodypart</span><span class="o">.</span><span class="n">wait_for_connections</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">log_failing_connections</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">operational</span><span class="p">:</span>
+            <span class="n">not_operational_parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">part</span><span class="o">.</span><span class="n">operational</span><span class="p">]</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Not all hardware operational: </span><span class="si">{parts}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parts</span><span class="o">=</span><span class="n">not_operational_parts</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">configured</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Robot.reset"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">partname</span><span class="p">,</span> <span class="n">bodypart</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Resetting </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">partname</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;hero&#39;</span> <span class="ow">and</span> <span class="n">partname</span> <span class="o">==</span> <span class="s1">&#39;torso&#39;</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Skipping reset of </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">partname</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bodypart</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Robot.reset_all_arms"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.reset_all_arms">[docs]</a>    <span class="k">def</span> <span class="nf">reset_all_arms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arm_timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">close_gripper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gripper_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset all arms of the robot, and by default, close their grippers.</span>
+
+<span class="sd">        The arm is always reset, the gripper is closed if &#39;close_gripper&#39; is True (which is the default).</span>
+
+<span class="sd">        :param arm_timeout: How long to wait for resetting the arm, by default 0.0</span>
+<span class="sd">        :param close_gripper: By default &#39;True&#39;, which closes the gripper. If False, the gripper is not activated,</span>
+<span class="sd">        :param gripper_timeout: If specified and &#39;close_gripper&#39; holds, timeout for closing the gripper.</span>
+<span class="sd">            If not specified, gripper movement uses &#39;arm_timeout&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">arm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arms</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">close_gripper</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">gripper_timeout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">gripper_timeout</span> <span class="o">=</span> <span class="n">arm_timeout</span>
+                <span class="n">arm</span><span class="o">.</span><span class="n">send_gripper_goal</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">gripper_timeout</span><span class="p">)</span>
+
+            <span class="n">arm</span><span class="o">.</span><span class="n">selfreset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Robot.standby"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.standby">[docs]</a>    <span class="k">def</span> <span class="nf">standby</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;amigo&#39;</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;Standby only works for amigo&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_all_arms</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_down</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">torso</span><span class="o">.</span><span class="n">low</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lights</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Robot.publish_target"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.publish_target">[docs]</a>    <span class="k">def</span> <span class="nf">publish_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pub_target</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Pose2D</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Robot.tf_transform_pose"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.tf_transform_pose">[docs]</a>    <span class="k">def</span> <span class="nf">tf_transform_pose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="n">output_pose</span> <span class="o">=</span> <span class="n">geometry_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">PointStamped</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="o">.</span><span class="n">waitForTransform</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">ps</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span><span class="p">,</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="p">(),</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">2.0</span><span class="p">))</span>
+        <span class="n">output_pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="o">.</span><span class="n">transformPose</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output_pose</span></div>
+
+<div class="viewcode-block" id="Robot.get_arm"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.get_arm">[docs]</a>    <span class="k">def</span> <span class="nf">get_arm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">required_gripper_types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desired_gripper_types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">required_goals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desired_goals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">required_trajectories</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desired_trajectories</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">required_arm_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">force_sensor_required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">required_objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desired_objects</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find an arm that has the needed and hopefully the desired properties.</span>
+<span class="sd">        Does not give an arm if all needed properties cannot be satisfied. An</span>
+<span class="sd">        arm returned by the call will not be able to do anything you didn&#39;t ask</span>
+<span class="sd">        for, except for objects held by it.</span>
+
+<span class="sd">        :param required_gripper_types: Collection of gripper types that must all be</span>
+<span class="sd">                available. None means grippers are not needed.</span>
+<span class="sd">        :param desired_gripper_types: Collection of gripper types from GripperTypes,</span>
+<span class="sd">                where one or more may be selected. None means no grippers are desired.</span>
+
+<span class="sd">        :param required_goals: Collection of joint goals that must all be available.</span>
+<span class="sd">                None means no joint goals are needed.</span>
+<span class="sd">        :param desired_goals: Collection of joint goals where one or more may be</span>
+<span class="sd">                selected. None means no joint goals are desired.</span>
+
+<span class="sd">        :param required_trajectories: Collection of joint trajectories that must all</span>
+<span class="sd">                be available. None means no joint trajectories are needed.</span>
+<span class="sd">        :param desired_trajectories: Collection of joint trajectories where one or</span>
+<span class="sd">                more may be selected. None means no joint trajectories are desired.</span>
+
+<span class="sd">        :param required_arm_name: Name of the arm that is needed. If set, no</span>
+<span class="sd">                other arm will be considered. None means any arm will do.</span>
+
+<span class="sd">        :param force_sensor_required: Bool specifying whether a force_sensor is needed or not.</span>
+
+<span class="sd">        :param required_objects: Collection of objects that the arm must have. Special</span>
+<span class="sd">                pseudo-objects PseudoObjects.ANY and PseudoObjects.EMPTY may be used</span>
+<span class="sd">                too in the collection, although they do not make much sense when used</span>
+<span class="sd">                together with other objects. None means there are no required objects.</span>
+<span class="sd">        :param desired_objects: Collection of objects that the arm may have. None</span>
+<span class="sd">                means there are no desired objects.</span>
+
+<span class="sd">        :return: An Arm of the robot with the requested properties, or None.</span>
+<span class="sd">                Note that the arm will never do more than you requested.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">discarded_reasons</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Reasons why arms are discarded.</span>
+
+        <span class="c1"># Check that collection arguments are really a collection of objects, but not strings.</span>
+        <span class="c1"># Because then you might accidentally pass a GripperType instead of a [GripperType], which is a List</span>
+        <span class="k">def</span> <span class="nf">seq_or_none</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">or</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">seq_or_none</span><span class="p">(</span><span class="n">required_gripper_types</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">seq_or_none</span><span class="p">(</span><span class="n">desired_gripper_types</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">seq_or_none</span><span class="p">(</span><span class="n">required_goals</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">seq_or_none</span><span class="p">(</span><span class="n">desired_goals</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">seq_or_none</span><span class="p">(</span><span class="n">required_trajectories</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">seq_or_none</span><span class="p">(</span><span class="n">desired_trajectories</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">force_sensor_required</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">seq_or_none</span><span class="p">(</span><span class="n">required_objects</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">seq_or_none</span><span class="p">(</span><span class="n">desired_objects</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">arm_name</span><span class="p">,</span> <span class="n">arm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arms</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">arm</span><span class="o">.</span><span class="n">operational</span><span class="p">:</span>
+                <span class="n">discarded_reasons</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">arm_name</span><span class="p">,</span> <span class="s2">&quot;not operational&quot;</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Name</span>
+            <span class="k">if</span> <span class="n">required_arm_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">arm_name</span> <span class="o">!=</span> <span class="n">required_arm_name</span><span class="p">:</span>
+                <span class="n">discarded_reasons</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">arm_name</span><span class="p">,</span> <span class="s2">&quot;required arm name failed&quot;</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Grippers</span>
+            <span class="n">matching_grippers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">required_gripper_types</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">arm</span><span class="o">.</span><span class="n">collect_gripper_types</span><span class="p">(</span><span class="n">req_type</span><span class="p">)</span> <span class="k">for</span> <span class="n">req_type</span> <span class="ow">in</span> <span class="n">required_gripper_types</span><span class="p">]</span>
+                <span class="n">all_matched</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">match_list</span> <span class="k">for</span> <span class="n">match_list</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">all_matched</span><span class="p">:</span>
+                    <span class="n">discarded_reasons</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">arm_name</span><span class="p">,</span> <span class="s2">&quot;required gripper type failed&quot;</span><span class="p">))</span>
+                    <span class="k">continue</span>
+
+                <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                    <span class="n">matching_grippers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">desired_gripper_types</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">arm</span><span class="o">.</span><span class="n">collect_gripper_types</span><span class="p">(</span><span class="n">des_type</span><span class="p">)</span> <span class="k">for</span> <span class="n">des_type</span> <span class="ow">in</span> <span class="n">desired_gripper_types</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                    <span class="n">matching_grippers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
+
+            <span class="c1"># Goals</span>
+            <span class="n">matching_goals</span> <span class="o">=</span> <span class="n">_collect_needs_desires</span><span class="p">(</span><span class="n">required_goals</span><span class="p">,</span> <span class="n">desired_goals</span><span class="p">,</span> <span class="n">arm</span><span class="o">.</span><span class="n">has_joint_goal</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">matching_goals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">discarded_reasons</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">arm_name</span><span class="p">,</span> <span class="s2">&quot;required goals failed&quot;</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Trajectories</span>
+            <span class="n">matching_trajectories</span> <span class="o">=</span> <span class="n">_collect_needs_desires</span><span class="p">(</span><span class="n">required_trajectories</span><span class="p">,</span> <span class="n">desired_trajectories</span><span class="p">,</span>
+                                                           <span class="n">arm</span><span class="o">.</span><span class="n">has_joint_trajectory</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">matching_trajectories</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">discarded_reasons</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">arm_name</span><span class="p">,</span> <span class="s2">&quot;required trajectories failed&quot;</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Force sensor availability</span>
+            <span class="k">if</span> <span class="n">force_sensor_required</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">arm</span><span class="p">,</span> <span class="s2">&quot;force_sensor&quot;</span><span class="p">):</span>
+                <span class="n">discarded_reasons</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">arm_name</span><span class="p">,</span> <span class="s2">&quot;should have a force sensor but hasn&#39;t&quot;</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Objects</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_required_obj</span><span class="p">(</span><span class="n">arm</span><span class="p">,</span> <span class="n">required_objects</span><span class="p">):</span>
+                <span class="n">discarded_reasons</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">arm_name</span><span class="p">,</span> <span class="s2">&quot;required objects failed&quot;</span><span class="p">))</span>
+                <span class="k">continue</span>
+            <span class="c1"># Desired objects not checked currently.</span>
+
+            <span class="c1"># Unlike the other properties, it is likely not exactly known what objects will be used.</span>
+            <span class="c1"># For this reason, it seems better not to limit objects to the set specified in required</span>
+            <span class="c1"># _objects and desired_objects.</span>
+            <span class="c1"># uses_objects = (required_objects is not None or desired_objects is not None)</span>
+
+            <span class="c1"># ToDO: HACK for not specifying any requirements:</span>
+            <span class="c1"># We often want to use the arm for object manipulation, so this is always needed</span>
+            <span class="n">uses_objects</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># (required_objects is not None or desired_objects is not None)</span>
+
+            <span class="c1"># Success!</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_grippers</span><span class="p">:</span>
+                <span class="n">default_gripper</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">default_gripper</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">matching_grippers</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">arms</span><span class="o">.</span><span class="n">PublicArm</span><span class="p">(</span><span class="n">arm</span><span class="p">,</span> <span class="n">matching_grippers</span><span class="p">,</span> <span class="n">default_gripper</span><span class="p">,</span> <span class="n">uses_objects</span><span class="p">,</span>
+                                  <span class="n">force_sensor_required</span><span class="p">,</span> <span class="n">matching_goals</span><span class="p">,</span> <span class="n">matching_trajectories</span><span class="p">)</span>
+
+        <span class="c1"># No arm matched. Dump why.</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Failed to find a matching arm, reasons: &quot;</span> <span class="o">+</span>
+               <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">reason</span> <span class="ow">in</span> <span class="n">discarded_reasons</span><span class="p">))</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Robot._check_required_obj"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot._check_required_obj">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_required_obj</span><span class="p">(</span><span class="n">arm</span><span class="p">,</span> <span class="n">obj_collection</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the object requirement.</span>
+
+<span class="sd">        :param arm: Arm to check.</span>
+<span class="sd">        :param obj_collection: Objects to find. None means the empty requirement</span>
+<span class="sd">                (arm may have anything, including nothng).</span>
+<span class="sd">        :return: Whether the requirement holds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">obj_collection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">cur_obj</span> <span class="o">=</span> <span class="n">arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">occupied_by</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_collection</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="n">arms</span><span class="o">.</span><span class="n">PseudoObjects</span><span class="o">.</span><span class="n">ANY</span><span class="p">:</span>  <span class="c1"># Any object, but not empty.</span>
+                <span class="k">if</span> <span class="n">cur_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">obj</span> <span class="o">==</span> <span class="n">arms</span><span class="o">.</span><span class="n">PseudoObjects</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">:</span>  <span class="c1"># Arm must be empty.</span>
+                <span class="k">if</span> <span class="n">cur_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">obj</span> <span class="o">!=</span> <span class="n">cur_obj</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Robot.close"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">partname</span><span class="p">,</span> <span class="n">bodypart</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">bodypart</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">operational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: if all parts are operational</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">bodypart</span><span class="o">.</span><span class="n">operational</span> <span class="k">for</span> <span class="n">bodypart</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+<div class="viewcode-block" id="Robot.handle_hardware_status"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.handle_hardware_status">[docs]</a>    <span class="k">def</span> <span class="nf">handle_hardware_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diagnostic_array</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        hardware_status callback to determine if the bodypart is operational</span>
+
+<span class="sd">        :param msg: diagnostic_msgs.msg.DiagnosticArray</span>
+<span class="sd">        :return: no return</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">diagnostic_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">diagnostic_status</span><span class="o">.</span><span class="n">name</span><span class="p">:</span><span class="n">diagnostic_status</span> <span class="k">for</span> <span class="n">diagnostic_status</span> <span class="ow">in</span> <span class="n">diagnostic_array</span><span class="o">.</span><span class="n">status</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Pass a dict mapping the name to the item.</span>
+            <span class="c1"># Bodypart.handle_hardware_status needs to find the element relevant to itself</span>
+            <span class="c1"># iterating over the array would be done be each bodypart, but with a dict they can just look theirs up.</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ignored_parts</span><span class="p">:</span>
+                <span class="n">part</span><span class="o">.</span><span class="n">process_hardware_status</span><span class="p">(</span><span class="n">diagnostic_dict</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Robot.move_to_inspect_pose"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.move_to_inspect_pose">[docs]</a>    <span class="k">def</span> <span class="nf">move_to_inspect_pose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inspection_position</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This poses the robot for an inspect.</span>
+
+<span class="sd">        :param inspection_position: kdl.Frame with the pose of the entity to be inspected.</span>
+<span class="sd">        :return: boolean, false if something went wrong.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;move_to_inspect_pose() not implemented for </span><span class="si">{}</span><span class="s2"> object&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Robot.move_to_pregrasp_pose"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.move_to_pregrasp_pose">[docs]</a>    <span class="k">def</span> <span class="nf">move_to_pregrasp_pose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arm</span><span class="p">,</span> <span class="n">grasp_position</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This poses the robot for an inspect.</span>
+
+<span class="sd">        :param arm: PublicArm to use for grasping the target</span>
+<span class="sd">        :param grasp_position: kdl.Frame with the pose of the entity to be grasp.</span>
+<span class="sd">        :return: boolean, false if something went wrong.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;move_to_grasp_pose() not implemented for </span><span class="si">{}</span><span class="s2"> object&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Robot.move_to_hmi_pose"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.move_to_hmi_pose">[docs]</a>    <span class="k">def</span> <span class="nf">move_to_hmi_pose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This poses the robot for conversations.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;move_to_hmi_pose() not implemented for </span><span class="si">{}</span><span class="s2"> object&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">))</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Robot.go_to_driving_pose"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.go_to_driving_pose">[docs]</a>    <span class="k">def</span> <span class="nf">go_to_driving_pose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This poses the robot for driving.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;go_to_driving_pose() not implemented for </span><span class="si">{}</span><span class="s2"> object&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">))</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Robot.__enter__"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.__enter__">[docs]</a>    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Robot.__exit__"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot.Robot.__exit__">[docs]</a>    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_val</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_val</span><span class="p">,</span> <span class="n">trace</span><span class="p">)):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Robot exited with </span><span class="si">{0}</span><span class="s2">,</span><span class="si">{1}</span><span class="s2">,</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exception_type</span><span class="p">,</span> <span class="n">exception_val</span><span class="p">,</span> <span class="n">trace</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="_collect_needs_desires"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot._collect_needs_desires">[docs]</a><span class="k">def</span> <span class="nf">_collect_needs_desires</span><span class="p">(</span><span class="n">needs</span><span class="p">,</span> <span class="n">desires</span><span class="p">,</span> <span class="n">test_func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param needs: Collection of needed values. None means nothing is needed.</span>
+<span class="sd">    :param desires: Collection of desired values, None means nothing is desired.</span>
+<span class="sd">    :param test_func: Function that takes a value and returns whether the value is available.</span>
+<span class="sd">    :return: Needed and subset of the desired values, or None if the needs can&#39;t be met.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">founds</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">needs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">founds</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_collect_available</span><span class="p">(</span><span class="n">needs</span><span class="p">,</span> <span class="n">test_func</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">founds</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">needs</span><span class="p">):</span>  <span class="c1"># All needs must be met.</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">desires</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">founds</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_collect_available</span><span class="p">(</span><span class="n">desires</span><span class="p">,</span> <span class="n">test_func</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">founds</span></div>
+
+
+<div class="viewcode-block" id="_collect_available"><a class="viewcode-back" href="../../api/robot_skills/robot/index.html#robot_skills.robot._collect_available">[docs]</a><span class="k">def</span> <span class="nf">_collect_available</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">test_func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param values: Collection of values that must be tested.</span>
+<span class="sd">    :param test_func: Function that takes a value and returns whether the value is available.</span>
+<span class="sd">    :return: Subset of values that is found to be available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">founds</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">test_func</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="n">founds</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">founds</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

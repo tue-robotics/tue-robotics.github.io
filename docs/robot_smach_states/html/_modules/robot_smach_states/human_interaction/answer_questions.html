@@ -1,0 +1,483 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.human_interaction.answer_questions &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.human_interaction.answer_questions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.human_interaction.answer_questions</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+<span class="kn">from</span> <span class="nn">hmi</span> <span class="k">import</span> <span class="n">HMIResult</span><span class="p">,</span> <span class="n">TimeoutException</span>
+<span class="kn">from</span> <span class="nn">robot_skills.robot</span> <span class="k">import</span> <span class="n">Robot</span>
+
+
+<div class="viewcode-block" id="answer"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer">[docs]</a><span class="k">def</span> <span class="nf">answer</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">knowledge</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">crowd_data</span><span class="p">):</span>
+    <span class="c1"># type: (Robot, object, HMIResult, dict) -&gt; bool</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Robot answers the heard question</span>
+
+<span class="sd">    :param robot: robot api object</span>
+<span class="sd">    :param knowledge: common knowledge data struct</span>
+<span class="sd">    :param res: HMIResult what has been understood</span>
+<span class="sd">    :param crowd_data: data about the crowd</span>
+
+<span class="sd">    :return: if successfully answered the question, else False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;actions&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">semantics</span><span class="p">:</span>
+        <span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Your question was &#39;</span><span class="si">%s</span><span class="s2">&#39; but I don&#39;t know the answer&quot;</span> <span class="o">%</span> <span class="n">res</span><span class="o">.</span><span class="n">sentence</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Pass on the provided crowd_data to the real answering function.</span>
+    <span class="k">def</span> <span class="nf">answer_crowd_questions</span><span class="p">(</span><span class="n">_action</span><span class="p">,</span> <span class="n">_knowledge</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">crowd_data</span><span class="p">:</span>
+            <span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I&#39;m sorry but I don&#39;t know anything about a crowd.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">answer_count_people</span><span class="p">(</span><span class="n">_action</span><span class="p">,</span> <span class="n">_knowledge</span><span class="p">,</span> <span class="n">crowd_data</span><span class="p">)</span>
+
+    <span class="n">assignments</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;random_gender&#39;</span><span class="p">:</span>     <span class="n">answer_random_gender</span><span class="p">,</span>
+                   <span class="s1">&#39;answer&#39;</span><span class="p">:</span>            <span class="n">answer_predefined_questions</span><span class="p">,</span>
+                   <span class="s1">&#39;count&#39;</span><span class="p">:</span>             <span class="n">answer_crowd_questions</span><span class="p">,</span>
+                   <span class="s1">&#39;find_placement&#39;</span><span class="p">:</span>    <span class="n">answer_placement_location</span><span class="p">,</span>
+                   <span class="s1">&#39;count_placement&#39;</span><span class="p">:</span>   <span class="n">answer_count_placement</span><span class="p">,</span>
+                   <span class="s1">&#39;find_object&#39;</span><span class="p">:</span>       <span class="n">answer_find_objects</span><span class="p">,</span>
+                   <span class="s1">&#39;find_category&#39;</span><span class="p">:</span>     <span class="n">answer_find_category</span><span class="p">,</span>
+                   <span class="s1">&#39;return_category&#39;</span><span class="p">:</span>   <span class="n">answer_object_category</span><span class="p">,</span>
+                   <span class="s1">&#39;return_color&#39;</span><span class="p">:</span>      <span class="n">answer_object_color</span><span class="p">,</span>
+                   <span class="s1">&#39;compare_sizes&#39;</span><span class="p">:</span>     <span class="n">answer_compare_objects_sizes</span><span class="p">,</span>
+                   <span class="s1">&#39;compare_weight&#39;</span><span class="p">:</span>    <span class="n">answer_compare_objects_weight</span><span class="p">,</span>
+                   <span class="s1">&#39;compare_category&#39;</span><span class="p">:</span>  <span class="n">answer_compare_objects_categories</span><span class="p">,</span>
+                   <span class="s1">&#39;count_object_cat&#39;</span><span class="p">:</span>  <span class="n">answer_count_objects_in_category</span><span class="p">,</span>
+                   <span class="p">}</span>
+
+    <span class="n">ans</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;actions&#39;</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;action&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">action</span><span class="p">:</span>
+                <span class="n">ans</span> <span class="o">=</span> <span class="s2">&quot;Sorry, I cannot </span><span class="si">%s</span><span class="s2">. I don&#39;t know the answer.&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">])</span>
+                <span class="k">continue</span>
+
+            <span class="n">func</span> <span class="o">=</span> <span class="n">assignments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">action</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ans</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">knowledge</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Whoops&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ans</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Question was: &#39;</span><span class="si">%s</span><span class="s2">&#39;?&quot;</span> <span class="o">%</span> <span class="n">res</span><span class="o">.</span><span class="n">sentence</span><span class="p">)</span>
+        <span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;The answer is </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ans</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="answer_random_gender"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_random_gender">[docs]</a><span class="k">def</span> <span class="nf">answer_random_gender</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">__</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;A male&quot;</span><span class="p">,</span> <span class="s2">&quot;A female&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="answer_predefined_questions"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_predefined_questions">[docs]</a><span class="k">def</span> <span class="nf">answer_predefined_questions</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;solution&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="answer_count_people"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_count_people">[docs]</a><span class="k">def</span> <span class="nf">answer_count_people</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">crowd_data</span><span class="p">):</span>
+    <span class="n">crowd_properties</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;people&#39;</span><span class="p">,</span> <span class="s1">&#39;crowd_size&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;children&#39;</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;adults&#39;</span><span class="p">,</span> <span class="s1">&#39;adults&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;elders&#39;</span><span class="p">,</span> <span class="s1">&#39;elders&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;males&#39;</span><span class="p">,</span> <span class="s1">&#39;males&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;females&#39;</span><span class="p">,</span> <span class="s1">&#39;females&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;men&#39;</span><span class="p">,</span> <span class="s1">&#39;men&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;women&#39;</span><span class="p">,</span> <span class="s1">&#39;women&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;boys&#39;</span><span class="p">,</span> <span class="s1">&#39;boys&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;girls&#39;</span><span class="p">,</span> <span class="s1">&#39;girls&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;waiving&#39;</span><span class="p">,</span> <span class="s1">&#39;waiving&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;raising_left&#39;</span><span class="p">,</span> <span class="s1">&#39;raising_left&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;raising_right&#39;</span><span class="p">,</span> <span class="s1">&#39;raising_right&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;pointing_left&#39;</span><span class="p">,</span> <span class="s1">&#39;pointing_left&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;pointing_right&#39;</span><span class="p">,</span> <span class="s1">&#39;pointing_right&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;laying&#39;</span><span class="p">,</span> <span class="s1">&#39;laying&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s1">&#39;sitting&#39;</span><span class="p">,</span> <span class="s1">&#39;sitting&#39;</span><span class="p">)]</span>
+
+    <span class="k">for</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">property_value</span> <span class="ow">in</span> <span class="n">crowd_properties</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">property_name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;In the crowd are </span><span class="si">%d</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">crowd_data</span><span class="p">[</span><span class="n">property_value</span><span class="p">],</span> <span class="n">property_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;I dont know&#39;</span></div>
+
+
+<div class="viewcode-block" id="answer_placement_location"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_placement_location">[docs]</a><span class="k">def</span> <span class="nf">answer_placement_location</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">common_knowledge</span><span class="p">):</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span>
+    <span class="n">locations</span> <span class="o">=</span> <span class="p">[</span><span class="n">loc</span> <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">locations</span> <span class="k">if</span> <span class="n">loc</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">room</span> <span class="o">=</span> <span class="n">locations</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;room&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s1">&#39;The </span><span class="si">%s</span><span class="s1"> can be found in the </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">room</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;I dont know that object&#39;</span></div>
+
+
+<div class="viewcode-block" id="answer_count_placement"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_count_placement">[docs]</a><span class="k">def</span> <span class="nf">answer_count_placement</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">common_knowledge</span><span class="p">):</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span>
+
+    <span class="n">locations</span> <span class="o">=</span> <span class="p">[</span><span class="n">loc</span> <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">locations</span> <span class="k">if</span> <span class="n">loc</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">room</span> <span class="o">=</span> <span class="n">locations</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;room&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">loc</span> <span class="o">==</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="s1">&#39;There is one </span><span class="si">%s</span><span class="s1"> in the </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">room</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;There are no </span><span class="si">%s</span><span class="s1"> in the </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">room</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;I should count but I dont know that object </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">entity</span></div>
+
+
+<div class="viewcode-block" id="answer_find_objects"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_find_objects">[docs]</a><span class="k">def</span> <span class="nf">answer_find_objects</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">common_knowledge</span><span class="p">):</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">objects</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">cat</span> <span class="o">=</span> <span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+        <span class="n">loc</span><span class="p">,</span> <span class="n">area_name</span> <span class="o">=</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">get_object_category_location</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;You can find the </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">area_name</span><span class="p">,</span> <span class="n">loc</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;I should find </span><span class="si">%s</span><span class="s1"> but I dont know </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">entity</span></div>
+
+
+<div class="viewcode-block" id="answer_find_category"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_find_category">[docs]</a><span class="k">def</span> <span class="nf">answer_find_category</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">common_knowledge</span><span class="p">):</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span>
+    <span class="n">loc</span><span class="p">,</span> <span class="n">area_name</span> <span class="o">=</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">get_object_category_location</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;You can find the </span><span class="si">%s</span><span class="s1"> on the </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">loc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="answer_object_category"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_object_category">[docs]</a><span class="k">def</span> <span class="nf">answer_object_category</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">common_knowledge</span><span class="p">):</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">objects</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">cat</span> <span class="o">=</span> <span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s1">&#39;The </span><span class="si">%s</span><span class="s1"> belongs to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">cat</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;I should name a category but I dont know what is </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">entity</span></div>
+
+
+<div class="viewcode-block" id="answer_object_color"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_object_color">[docs]</a><span class="k">def</span> <span class="nf">answer_object_color</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">common_knowledge</span><span class="p">):</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">objects</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s1">&#39;The color of </span><span class="si">%s</span><span class="s1"> is </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;I should name the color but I dont know </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">entity</span></div>
+
+
+<div class="viewcode-block" id="answer_compare_objects_sizes"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_compare_objects_sizes">[docs]</a><span class="k">def</span> <span class="nf">answer_compare_objects_sizes</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">common_knowledge</span><span class="p">):</span>
+    <span class="n">entity_a</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity_a&#39;</span><span class="p">]</span>
+    <span class="n">entity_b</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity_b&#39;</span><span class="p">]</span>
+    <span class="n">objects_a</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">objects</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity_a</span><span class="p">]</span>
+    <span class="n">objects_b</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">objects</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity_b</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects_a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects_b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">vol_a</span> <span class="o">=</span> <span class="n">objects_a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;volume&#39;</span><span class="p">]</span>
+        <span class="n">vol_b</span> <span class="o">=</span> <span class="n">objects_b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;volume&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">vol_a</span> <span class="o">&gt;</span> <span class="n">vol_b</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;The object </span><span class="si">%s</span><span class="s1"> is bigger than the object </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity_a</span><span class="p">,</span> <span class="n">entity_b</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">vol_a</span> <span class="o">&lt;</span> <span class="n">vol_b</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;The object </span><span class="si">%s</span><span class="s1"> is smaller than the object </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity_a</span><span class="p">,</span> <span class="n">entity_b</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;The objects </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1"> have exactly the same volume&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity_a</span><span class="p">,</span> <span class="n">entity_b</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;I dont know these objects&#39;</span></div>
+
+
+<div class="viewcode-block" id="answer_compare_objects_weight"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_compare_objects_weight">[docs]</a><span class="k">def</span> <span class="nf">answer_compare_objects_weight</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">common_knowledge</span><span class="p">):</span>
+    <span class="n">entity_a</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity_a&#39;</span><span class="p">]</span>
+    <span class="n">entity_b</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity_b&#39;</span><span class="p">]</span>
+    <span class="n">objects_a</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">objects</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity_a</span><span class="p">]</span>
+    <span class="n">objects_b</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">objects</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity_b</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects_a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects_b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">w_a</span> <span class="o">=</span> <span class="n">objects_a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+        <span class="n">w_b</span> <span class="o">=</span> <span class="n">objects_b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">w_a</span> <span class="o">&gt;</span> <span class="n">w_b</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;The object </span><span class="si">%s</span><span class="s1"> is heavier than the object </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity_a</span><span class="p">,</span> <span class="n">entity_b</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">w_a</span> <span class="o">&lt;</span> <span class="n">w_b</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;The object </span><span class="si">%s</span><span class="s1"> is lighter than the object </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity_a</span><span class="p">,</span> <span class="n">entity_b</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;The objects </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1"> have exactly the same weight&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity_a</span><span class="p">,</span> <span class="n">entity_b</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;I dont know these objects&#39;</span></div>
+
+
+<div class="viewcode-block" id="answer_compare_objects_categories"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_compare_objects_categories">[docs]</a><span class="k">def</span> <span class="nf">answer_compare_objects_categories</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">common_knowledge</span><span class="p">):</span>
+    <span class="n">entity_a</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity_a&#39;</span><span class="p">]</span>
+    <span class="n">entity_b</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity_b&#39;</span><span class="p">]</span>
+    <span class="n">objects_a</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">objects</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity_a</span><span class="p">]</span>
+    <span class="n">objects_b</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">objects</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity_b</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects_a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects_b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">cat_a</span> <span class="o">=</span> <span class="n">objects_a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+        <span class="n">cat_b</span> <span class="o">=</span> <span class="n">objects_b</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cat_a</span> <span class="o">==</span> <span class="n">cat_b</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;Both objects belong to the same category </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">cat_a</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;These objects belong to different categories&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;I dont know these objects&#39;</span></div>
+
+
+<div class="viewcode-block" id="answer_count_objects_in_category"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.answer_count_objects_in_category">[docs]</a><span class="k">def</span> <span class="nf">answer_count_objects_in_category</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">common_knowledge</span><span class="p">):</span>
+    <span class="n">entity</span> <span class="o">=</span> <span class="n">action</span><span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">]</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">common_knowledge</span><span class="o">.</span><span class="n">objects</span> <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entity</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;The number of objects in category </span><span class="si">%s</span><span class="s1"> is </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HearAndAnswerQuestions"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.HearAndAnswerQuestions">[docs]</a><span class="k">class</span> <span class="nc">HearAndAnswerQuestions</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">knowledge</span><span class="p">,</span> <span class="n">num_questions</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hear_time</span><span class="o">=</span><span class="mf">20.0</span><span class="p">):</span>
+        <span class="c1"># type: (Robot, str, object, int, float) -&gt; str</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Robot hears and answers questions.</span>
+
+<span class="sd">        :param robot: robot api object</span>
+<span class="sd">        :param grammar: grammar for speech to text</span>
+<span class="sd">        :param knowledge: knowledge data struct</span>
+<span class="sd">        :param num_questions: number of questions to be heard and answered</span>
+<span class="sd">        :param hear_time: timeout for speech to text</span>
+<span class="sd">        :return: &quot;done&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">],</span> <span class="n">input_keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;crowd_data&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_questions</span> <span class="o">=</span> <span class="n">num_questions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hear_time</span> <span class="o">=</span> <span class="n">hear_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grammar</span> <span class="o">=</span> <span class="n">grammar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">knowledge</span> <span class="o">=</span> <span class="n">knowledge</span>
+
+<div class="viewcode-block" id="HearAndAnswerQuestions.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/answer_questions/index.html#robot_smach_states.human_interaction.answer_questions.HearAndAnswerQuestions.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">crowd_data</span> <span class="o">=</span> <span class="n">userdata</span><span class="o">.</span><span class="n">crowd_data</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;No crowd data in userdata&quot;</span><span class="p">)</span>
+            <span class="n">crowd_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_standing_person</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_questions</span><span class="p">):</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">hmi</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;Question?&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grammar</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hear_time</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">TimeoutException</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I did not hear you. Please ask me the next question!&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">answer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">knowledge</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">crowd_data</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Please ask me the next question!&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;done&quot;</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

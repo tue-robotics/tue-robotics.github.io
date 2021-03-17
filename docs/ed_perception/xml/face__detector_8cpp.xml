@@ -1,0 +1,467 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="face__detector_8cpp" kind="file" language="C++">
+    <compoundname>face_detector.cpp</compoundname>
+    <includes refid="face__detector_8h" local="yes">face_detector.h</includes>
+    <includes local="yes">ed/measurement.h</includes>
+    <includes local="no">ed/entity.h</includes>
+    <includes local="no">ed/error_context.h</includes>
+    <includes local="no">rgbd/Image.h</includes>
+    <includes local="no">rgbd/View.h</includes>
+    <includes local="no">boost/filesystem.hpp</includes>
+    <includes refid="shared__methods_8h" local="yes">shared_methods.h</includes>
+    <incdepgraph>
+      <node id="156">
+        <label>rgbd/View.h</label>
+      </node>
+      <node id="148">
+        <label>opencv/cv.h</label>
+      </node>
+      <node id="145">
+        <label>face_detector.cpp</label>
+        <link refid="face__detector_8cpp"/>
+        <childnode refid="146" relation="include">
+        </childnode>
+        <childnode refid="152" relation="include">
+        </childnode>
+        <childnode refid="153" relation="include">
+        </childnode>
+        <childnode refid="154" relation="include">
+        </childnode>
+        <childnode refid="155" relation="include">
+        </childnode>
+        <childnode refid="156" relation="include">
+        </childnode>
+        <childnode refid="157" relation="include">
+        </childnode>
+        <childnode refid="158" relation="include">
+        </childnode>
+      </node>
+      <node id="146">
+        <label>face_detector.h</label>
+        <link refid="face__detector_8h"/>
+        <childnode refid="147" relation="include">
+        </childnode>
+        <childnode refid="148" relation="include">
+        </childnode>
+        <childnode refid="149" relation="include">
+        </childnode>
+        <childnode refid="150" relation="include">
+        </childnode>
+        <childnode refid="151" relation="include">
+        </childnode>
+      </node>
+      <node id="158">
+        <label>shared_methods.h</label>
+        <link refid="shared__methods_8h"/>
+        <childnode refid="149" relation="include">
+        </childnode>
+        <childnode refid="152" relation="include">
+        </childnode>
+        <childnode refid="153" relation="include">
+        </childnode>
+      </node>
+      <node id="147">
+        <label>ed/perception/module.h</label>
+      </node>
+      <node id="150">
+        <label>opencv2/imgproc/imgproc.hpp</label>
+      </node>
+      <node id="151">
+        <label>opencv2/objdetect/objdetect.hpp</label>
+      </node>
+      <node id="152">
+        <label>ed/measurement.h</label>
+      </node>
+      <node id="157">
+        <label>boost/filesystem.hpp</label>
+      </node>
+      <node id="149">
+        <label>opencv2/highgui/highgui.hpp</label>
+      </node>
+      <node id="155">
+        <label>rgbd/Image.h</label>
+      </node>
+      <node id="153">
+        <label>ed/entity.h</label>
+      </node>
+      <node id="154">
+        <label>ed/error_context.h</label>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">*<sp/>Author:<sp/>Luis<sp/>Fererira</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*<sp/>E-mail:<sp/>luisfferreira@outlook.com</highlight></codeline>
+<codeline lineno="4"><highlight class="comment">*<sp/>Date:<sp/>January<sp/>2015</highlight></codeline>
+<codeline lineno="5"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="face__detector_8h" kindref="compound">face_detector.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;ed/measurement.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ed/entity.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ed/error_context.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;rgbd/Image.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;rgbd/View.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/filesystem.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="shared__methods_8h" kindref="compound">shared_methods.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="classFaceDetector_1ab7ecd6d1c9fe5d343fc4f7631467cb78" refkind="member"><highlight class="normal"><ref refid="classFaceDetector_1ab7ecd6d1c9fe5d343fc4f7631467cb78" kindref="member">FaceDetector::FaceDetector</ref>()<sp/>:<sp/><ref refid="namespaceed" kindref="compound">ed</ref>::perception::Module(</highlight><highlight class="stringliteral">&quot;face_detector&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="23"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;registerPropertyServed(</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;registerPropertyServed(</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="26"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="classFaceDetector_1a3aa4f1c3b08ef02351ec458dd90b04e2" refkind="member"><highlight class="normal"><ref refid="classFaceDetector_1a3aa4f1c3b08ef02351ec458dd90b04e2" kindref="member">FaceDetector::~FaceDetector</ref>()</highlight></codeline>
+<codeline lineno="32"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>destroy<sp/>the<sp/>debug<sp/>window</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classFaceDetector_1abcf6be5cd30797d7ed261dc00397dd4e" kindref="member">debug_mode_</ref>)</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::destroyWindow(</highlight><highlight class="stringliteral">&quot;Face<sp/>Detector<sp/>Output&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="38"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="classFaceDetector_1aa49e0b4c1536b5d1abb572739a46df87" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classFaceDetector_1aa49e0b4c1536b5d1abb572739a46df87" kindref="member">FaceDetector::configureClassification</ref>(<ref refid="classtue_1_1config_1_1ReaderWriter" kindref="compound" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">tue::Configuration</ref><sp/>config)</highlight></codeline>
+<codeline lineno="43"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>default<sp/>values<sp/>in<sp/>case<sp/>configure(...)<sp/>is<sp/>not<sp/>called!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1abcf6be5cd30797d7ed261dc00397dd4e" kindref="member">debug_mode_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a350461a0550562bcd77507b737607b8c" kindref="member">classifier_front_scale_factor_</ref><sp/>=<sp/>1.2;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1afbf62985d3e7a31b4392190032c3ecc3" kindref="member">classifier_front_min_neighbours_</ref><sp/>=<sp/>3;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a0004a8fb51ce6720465ec057dc015924" kindref="member">classif_front_min_size_</ref><sp/>=<sp/>cv::Size(20,20);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1afc60b7b7d9b2c07f57c3b2c3519ddf7d" kindref="member">classifier_profile_scale_factor_</ref>=<sp/>1.2;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1aa8e1d1a32ffaf38914fe5f297d4ef6bd" kindref="member">classifier_profile_min_neighbours_</ref><sp/>=<sp/>3;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1ae12e0d17743ab4c6601796b679c19a53" kindref="member">classif_profile_min_size_</ref><sp/>=<sp/>cv::Size(20,20);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a80ac3827fe7ce7c5dfb176c01ffdcf30" kindref="member">debug_folder_</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;/tmp/face_detector/&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>load<sp/>training<sp/>files<sp/>for<sp/>frontal<sp/>classifier</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref><sp/>cascade_front_files_path_;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(config.<ref refid="classtue_1_1config_1_1ReaderWriter_1a6b49f39a05ada8016feb604bb2f801e8" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">value</ref>(</highlight><highlight class="stringliteral">&quot;cascade_front_files_path&quot;</highlight><highlight class="normal">,<sp/>cascade_front_files_path_))</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="classFaceDetector_1a98be541e62f0be2395452beaea443116" kindref="member">classifier_front_</ref>.load(cascade_front_files_path_))</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>config.<ref refid="classtue_1_1config_1_1ReaderWriter_1a8ba1330000033af24b733671ebff4618" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">addError</ref>(</highlight><highlight class="stringliteral">&quot;Unable<sp/>to<sp/>load<sp/>front<sp/>haar<sp/>cascade<sp/>files<sp/>(&quot;</highlight><highlight class="normal"><sp/>+<sp/>cascade_front_files_path_<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;)&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>load<sp/>training<sp/>files<sp/>for<sp/>profile<sp/>classifier</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref><sp/>cascade_profile_files_path_;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(config.<ref refid="classtue_1_1config_1_1ReaderWriter_1a6b49f39a05ada8016feb604bb2f801e8" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">value</ref>(</highlight><highlight class="stringliteral">&quot;cascade_profile_front_path&quot;</highlight><highlight class="normal">,<sp/>cascade_profile_files_path_))</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="classFaceDetector_1a604a9ccfcb3feddd5f453136a0466a97" kindref="member">classifier_profile_</ref>.load(cascade_profile_files_path_))</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>config.<ref refid="classtue_1_1config_1_1ReaderWriter_1a8ba1330000033af24b733671ebff4618" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">addError</ref>(</highlight><highlight class="stringliteral">&quot;Unable<sp/>to<sp/>load<sp/>profile<sp/>haar<sp/>cascade<sp/>files<sp/>(&quot;</highlight><highlight class="normal"><sp/>+<sp/>cascade_profile_files_path_<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;)&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(config.<ref refid="classtue_1_1config_1_1ReaderWriter_1aca1899a8a8e02880e49d08ac65d675af" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">hasError</ref>())</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!config.<ref refid="classtue_1_1config_1_1ReaderWriter_1a6b49f39a05ada8016feb604bb2f801e8" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">value</ref>(</highlight><highlight class="stringliteral">&quot;debug_mode&quot;</highlight><highlight class="normal">,<sp/><ref refid="classFaceDetector_1abcf6be5cd30797d7ed261dc00397dd4e" kindref="member">debug_mode_</ref>,<sp/>tue::OPTIONAL))</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ed::log::info()<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Parameter<sp/>&apos;debug_mode&apos;<sp/>not<sp/>found.<sp/>Using<sp/>default:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="classFaceDetector_1abcf6be5cd30797d7ed261dc00397dd4e" kindref="member">debug_mode_</ref><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!config.<ref refid="classtue_1_1config_1_1ReaderWriter_1a6b49f39a05ada8016feb604bb2f801e8" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">value</ref>(</highlight><highlight class="stringliteral">&quot;debug_folder&quot;</highlight><highlight class="normal">,<sp/><ref refid="classFaceDetector_1a80ac3827fe7ce7c5dfb176c01ffdcf30" kindref="member">debug_folder_</ref>,<sp/>tue::OPTIONAL))</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ed::log::info()<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Parameter<sp/>&apos;debug_folder&apos;<sp/>not<sp/>found.<sp/>Using<sp/>default:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="classFaceDetector_1a80ac3827fe7ce7c5dfb176c01ffdcf30" kindref="member">debug_folder_</ref><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!config.<ref refid="classtue_1_1config_1_1ReaderWriter_1a6b49f39a05ada8016feb604bb2f801e8" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">value</ref>(</highlight><highlight class="stringliteral">&quot;classifier_front_scale_factor&quot;</highlight><highlight class="normal">,<sp/><ref refid="classFaceDetector_1a350461a0550562bcd77507b737607b8c" kindref="member">classifier_front_scale_factor_</ref>,<sp/>tue::OPTIONAL))</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ed::log::info()<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Parameter<sp/>&apos;classifier_front_scale_factor&apos;<sp/>not<sp/>found.<sp/>Using<sp/>default:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="classFaceDetector_1a350461a0550562bcd77507b737607b8c" kindref="member">classifier_front_scale_factor_</ref><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!config.<ref refid="classtue_1_1config_1_1ReaderWriter_1a6b49f39a05ada8016feb604bb2f801e8" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">value</ref>(</highlight><highlight class="stringliteral">&quot;classifier_front_min_neighbours&quot;</highlight><highlight class="normal">,<sp/><ref refid="classFaceDetector_1afbf62985d3e7a31b4392190032c3ecc3" kindref="member">classifier_front_min_neighbours_</ref>,<sp/>tue::OPTIONAL))</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ed::log::info()<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Parameter<sp/>&apos;classifier_front_min_neighbours&apos;<sp/>not<sp/>found.<sp/>Using<sp/>default:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="classFaceDetector_1afbf62985d3e7a31b4392190032c3ecc3" kindref="member">classifier_front_min_neighbours_</ref><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!config.<ref refid="classtue_1_1config_1_1ReaderWriter_1a6b49f39a05ada8016feb604bb2f801e8" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">value</ref>(</highlight><highlight class="stringliteral">&quot;classifier_profile_scale_factor&quot;</highlight><highlight class="normal">,<sp/><ref refid="classFaceDetector_1afc60b7b7d9b2c07f57c3b2c3519ddf7d" kindref="member">classifier_profile_scale_factor_</ref>,<sp/>tue::OPTIONAL))</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ed::log::info()<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Parameter<sp/>&apos;classifier_profile_scale_factor&apos;<sp/>not<sp/>found.<sp/>Using<sp/>default:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="classFaceDetector_1afc60b7b7d9b2c07f57c3b2c3519ddf7d" kindref="member">classifier_profile_scale_factor_</ref><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!config.<ref refid="classtue_1_1config_1_1ReaderWriter_1a6b49f39a05ada8016feb604bb2f801e8" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">value</ref>(</highlight><highlight class="stringliteral">&quot;classifier_profile_min_neighbours&quot;</highlight><highlight class="normal">,<sp/><ref refid="classFaceDetector_1aa8e1d1a32ffaf38914fe5f297d4ef6bd" kindref="member">classifier_profile_min_neighbours_</ref>,<sp/>tue::OPTIONAL))</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ed::log::info()<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Parameter<sp/>&apos;classifier_profile_min_neighbours&apos;<sp/>not<sp/>found.<sp/>Using<sp/>default:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="classFaceDetector_1aa8e1d1a32ffaf38914fe5f297d4ef6bd" kindref="member">classifier_profile_min_neighbours_</ref><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classFaceDetector_1abcf6be5cd30797d7ed261dc00397dd4e" kindref="member">debug_mode_</ref>)</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>clean<sp/>the<sp/>debug<sp/>folder<sp/>if<sp/>debugging<sp/>is<sp/>active</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boost::filesystem::path<sp/>dir(<ref refid="classFaceDetector_1a80ac3827fe7ce7c5dfb176c01ffdcf30" kindref="member">debug_folder_</ref>);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boost::filesystem::remove_all(dir);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>boost::filesystem::create_directories(dir);</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>boost::filesystem::filesystem_error&amp;<sp/>e)</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(e.code()<sp/>==<sp/>boost::system::errc::permission_denied)</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ed::log::error()<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;boost::filesystem<sp/>permission<sp/>denied&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ed::log::error()<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;boost::filesystem<sp/>failed<sp/>with<sp/>error:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>e.code().message()<sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>create<sp/>debug<sp/>window</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::namedWindow(</highlight><highlight class="stringliteral">&quot;Face<sp/>Detector<sp/>Output&quot;</highlight><highlight class="normal">,<sp/>CV_WINDOW_AUTOSIZE);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="110"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114" refid="classFaceDetector_1a9e0e8e09a2f0150819a5908fffdd38a0" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classFaceDetector_1a9e0e8e09a2f0150819a5908fffdd38a0" kindref="member">FaceDetector::classify</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ed::Entity&amp;<sp/>e,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref>&amp;<sp/>property,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ed::perception::CategoricalDistribution&amp;<sp/>prior,</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ed::perception::ClassificationOutput&amp;<sp/>output)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="116"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(property<sp/>!=<sp/></highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal"><sp/>&amp;&amp;<sp/>property<sp/>!=<sp/></highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>we<sp/>already<sp/>know<sp/>that<sp/>this<sp/>is<sp/>not<sp/>going<sp/>to<sp/>be<sp/>a<sp/>human,<sp/>skip<sp/>face<sp/>detection<sp/>altogether</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>prior_human;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(prior.getScore(</highlight><highlight class="stringliteral">&quot;human&quot;</highlight><highlight class="normal">,<sp/>prior_human)<sp/>&amp;&amp;<sp/>prior_human<sp/>==<sp/>0)</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>----------<sp/>Prepare<sp/>measurement<sp/>----------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Get<sp/>the<sp/>best<sp/>measurement<sp/>from<sp/>the<sp/>entity</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/>ed::MeasurementConstPtr<sp/>msr<sp/>=<sp/>e.lastMeasurement();</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!msr)</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>get<sp/>color<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>color_image<sp/>=<sp/>msr-&gt;image()-&gt;getRGBImage();</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>get<sp/>depth<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>depth_image<sp/>=<sp/>msr-&gt;image()-&gt;getDepthImage();</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Mask<sp/>color<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::Rect<sp/>rgb_roi;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::Mat<sp/>color_image_masked<sp/>=<sp/><ref refid="namespaceed_1_1perception_1a413612f00bc280a501d6bec293fe48c3" kindref="member">ed::perception::maskImage</ref>(color_image,<sp/>msr-&gt;imageMask(),<sp/>rgb_roi);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>----------<sp/>Detect<sp/>faces<sp/>----------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;cv::Rect&gt;</ref><sp/>faces_front;</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;cv::Rect&gt;</ref><sp/>faces_profile;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Detect<sp/>faces<sp/>in<sp/>the<sp/>measurment<sp/>and<sp/>assert<sp/>the<sp/>results</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classFaceDetector_1a26df52d83303bbc9b899f7e301d2570a" kindref="member">DetectFaces</ref>(color_image_masked(rgb_roi),<sp/>faces_front,<sp/>faces_profile))</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>write<sp/>face<sp/>information<sp/>to<sp/>config<sp/>if<sp/>a<sp/>frontal<sp/>face<sp/>was<sp/>found</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>face_counter<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(faces_front.size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output.<ref refid="cpp/container/vector/data" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">data</ref>.writeArray(</highlight><highlight class="stringliteral">&quot;faces_front&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a6858b8b6d999ecdfb769ca1ca585cb82" kindref="member">writeFaceDetectionResult</ref>(*msr,<sp/>rgb_roi,<sp/>faces_front,<sp/>face_counter,<sp/>output.data);</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output.data.endArray();</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>write<sp/>face<sp/>information<sp/>to<sp/>config<sp/>if<sp/>a<sp/>profile<sp/>face<sp/>was<sp/>found</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(faces_profile.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output.data.writeArray(</highlight><highlight class="stringliteral">&quot;faces_profile&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a6858b8b6d999ecdfb769ca1ca585cb82" kindref="member">writeFaceDetectionResult</ref>(*msr,<sp/>rgb_roi,<sp/>faces_profile,<sp/>face_counter,<sp/>output.<ref refid="cpp/container/vector/data" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">data</ref>);</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output.data.endArray();</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(property<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>output.likelihood.setScore(</highlight><highlight class="stringliteral">&quot;human&quot;</highlight><highlight class="normal">,<sp/>1);</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(property<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!faces_front.empty())</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a0010a93f06e85a41869a263b31b9b4c5" kindref="member">recognizeFace</ref>(color_image_masked(rgb_roi),<sp/>faces_front[0],<sp/>output);</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="180"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184" refid="classFaceDetector_1a1147fce67d90512fd0de7feeb76dec68" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classFaceDetector_1a1147fce67d90512fd0de7feeb76dec68" kindref="member">FaceDetector::addTrainingInstance</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ed::Entity&amp;<sp/>e,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref>&amp;<sp/>property,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref>&amp;<sp/>value)</highlight></codeline>
+<codeline lineno="185"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/io/cout" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::cout</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;FaceDetector::addTrainingInstance&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(property<sp/>!=<sp/></highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a0abdcb055ca558af35ba8fc6056b3251" kindref="member">face_data_</ref>.<ref refid="cpp/container/set/insert" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">insert</ref>(value);</highlight></codeline>
+<codeline lineno="192"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight></codeline>
+<codeline lineno="196" refid="classFaceDetector_1a26df52d83303bbc9b899f7e301d2570a" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classFaceDetector_1a26df52d83303bbc9b899f7e301d2570a" kindref="member">FaceDetector::DetectFaces</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>cropped_img,</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;cv::Rect&gt;</ref>&amp;<sp/>faces_front,</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;cv::Rect&gt;</ref>&amp;<sp/>faces_profile)</highlight><highlight class="keyword"><sp/>const</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/>cv::Mat<sp/>cascade_img;</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;cv::Rect&gt;::iterator</ref><sp/>face_it;</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>create<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/>cropped_img.copyTo(cascade_img);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>increase<sp/>contrast<sp/>of<sp/>the<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/>normalize(cascade_img,<sp/>cascade_img,<sp/>0,<sp/>255,<sp/>cv::NORM_MINMAX,<sp/>CV_8UC1);</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>detect<sp/>frontal<sp/>faces</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a98be541e62f0be2395452beaea443116" kindref="member">classifier_front_</ref>.detectMultiScale(cascade_img,</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faces_front,</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a350461a0550562bcd77507b737607b8c" kindref="member">classifier_front_scale_factor_</ref>,</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1afbf62985d3e7a31b4392190032c3ecc3" kindref="member">classifier_front_min_neighbours_</ref>,</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0|CV_HAAR_SCALE_IMAGE,</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a0004a8fb51ce6720465ec057dc015924" kindref="member">classif_front_min_size_</ref>);</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>discard<sp/>face<sp/>if<sp/>its<sp/>not<sp/>close<sp/>to<sp/>the<sp/>top<sp/>of<sp/>the<sp/>region,<sp/>false<sp/>positive</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/>face_it<sp/>=<sp/>faces_front.<ref refid="cpp/container/vector/begin" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">begin</ref>();</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<sp/>;<sp/>face_it<sp/>!=<sp/>faces_front.<ref refid="cpp/container/vector/end" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">end</ref>();<sp/>)<sp/>{</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>allowed<sp/>area<sp/>is<sp/>the<sp/>full<sp/>width<sp/>and<sp/>three<sp/>times<sp/>the<sp/>size<sp/>of<sp/>the<sp/>detected<sp/>face</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Rect<sp/>allowed_area<sp/>(0,<sp/>0,<sp/>cropped_img.cols,<sp/>face_it-&gt;height<sp/>*<sp/>3);</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>test<sp/>if<sp/>the<sp/>rectangles<sp/>intersect</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<sp/>!(allowed_area<sp/>&amp;<sp/>*face_it).area())<sp/>{</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>face_it<sp/>=<sp/>faces_front.<ref refid="cpp/container/vector/erase" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">erase</ref>(face_it);</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++face_it;</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"></highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>only<sp/>search<sp/>profile<sp/>faces<sp/>if<sp/>the<sp/>frontal<sp/>face<sp/>detection<sp/>failed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(faces_front.<ref refid="cpp/container/vector/empty" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">empty</ref>())</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1a604a9ccfcb3feddd5f453136a0466a97" kindref="member">classifier_profile_</ref>.detectMultiScale(cascade_img,</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>faces_profile,</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1afc60b7b7d9b2c07f57c3b2c3519ddf7d" kindref="member">classifier_profile_scale_factor_</ref>,</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1aa8e1d1a32ffaf38914fe5f297d4ef6bd" kindref="member">classifier_profile_min_neighbours_</ref>,</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>0|CV_HAAR_SCALE_IMAGE,</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classFaceDetector_1ae12e0d17743ab4c6601796b679c19a53" kindref="member">classif_profile_min_size_</ref>);</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"></highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>discard<sp/>face<sp/>if<sp/>its<sp/>not<sp/>close<sp/>to<sp/>the<sp/>top<sp/>of<sp/>the<sp/>region,<sp/>false<sp/>positive</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>face_it<sp/>=<sp/>faces_profile.<ref refid="cpp/container/vector/begin" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">begin</ref>();</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<sp/>;<sp/>face_it<sp/>!=<sp/>faces_profile.<ref refid="cpp/container/vector/end" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">end</ref>();<sp/>)<sp/>{</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>allowed<sp/>area<sp/>is<sp/>the<sp/>full<sp/>width<sp/>and<sp/>three<sp/>times<sp/>the<sp/>size<sp/>of<sp/>the<sp/>detected<sp/>face</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Rect<sp/>allowed_area<sp/>(0,<sp/>0,<sp/>cropped_img.cols,<sp/>face_it-&gt;height<sp/>*<sp/>3);</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"></highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>test<sp/>if<sp/>the<sp/>rectangles<sp/>intersect</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<sp/>!(allowed_area<sp/>&amp;<sp/>*face_it).area())<sp/>{</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>face_it<sp/>=<sp/>faces_profile.<ref refid="cpp/container/vector/erase" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">erase</ref>(face_it);</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++face_it;</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"></highlight></codeline>
+<codeline lineno="256"><highlight class="normal"></highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>debug<sp/>mode<sp/>is<sp/>active<sp/>and<sp/>faces<sp/>were<sp/>found</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classFaceDetector_1abcf6be5cd30797d7ed261dc00397dd4e" kindref="member">debug_mode_</ref>)</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Mat<sp/>debugImg(cropped_img);</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"></highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>faces_front.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>();<sp/>j++)</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::rectangle(debugImg,<sp/>faces_front[j],<sp/>cv::Scalar(0,<sp/>255,<sp/>0),<sp/>2,<sp/>CV_AA);</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"></highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>faces_profile.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>();<sp/>j++)</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::rectangle(debugImg,<sp/>faces_profile[j],<sp/>cv::Scalar(0,<sp/>0,<sp/>255),<sp/>2,<sp/>CV_AA);</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"></highlight></codeline>
+<codeline lineno="268"><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::imwrite(<ref refid="classFaceDetector_1a80ac3827fe7ce7c5dfb176c01ffdcf30" kindref="member">debug_folder_</ref><sp/>+<sp/>ed::Entity::generateID().c_str()<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;_face_detector.png&quot;</highlight><highlight class="normal">,<sp/>debugImg);</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::imshow(</highlight><highlight class="stringliteral">&quot;Face<sp/>Detector<sp/>Output&quot;</highlight><highlight class="normal">,<sp/>debugImg);</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"></highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>return<sp/>true<sp/>if<sp/>a<sp/>face<sp/>was<sp/>found</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(!faces_front.<ref refid="cpp/container/vector/empty" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">empty</ref>()<sp/>||<sp/>!faces_profile.<ref refid="cpp/container/vector/empty" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">empty</ref>());</highlight></codeline>
+<codeline lineno="275"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"></highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="278"><highlight class="normal"></highlight></codeline>
+<codeline lineno="279" refid="classFaceDetector_1a0010a93f06e85a41869a263b31b9b4c5" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classFaceDetector_1a0010a93f06e85a41869a263b31b9b4c5" kindref="member">FaceDetector::recognizeFace</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>image,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Rect&amp;<sp/>roi,<sp/>ed::perception::ClassificationOutput&amp;<sp/>output)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="280"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classFaceDetector_1a0abdcb055ca558af35ba8fc6056b3251" kindref="member">face_data_</ref>.<ref refid="cpp/container/set/empty" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">empty</ref>())</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"></highlight></codeline>
+<codeline lineno="284"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>cv::Mat<sp/>img<sp/>=<sp/>image.clone();</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="285"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>cv::rectangle(img,<sp/>roi,<sp/>cv::Scalar(0,<sp/>0,<sp/>255),<sp/>2);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>cv::imshow(&quot;person&quot;,<sp/>img);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="287"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>cv::imshow(&quot;face_roi&quot;,<sp/>image(roi));</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="288"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/>cv::waitKey();</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"></highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO:<sp/>replace<sp/>this<sp/>with<sp/>real<sp/>face<sp/>recognition!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="291"><highlight class="normal"></highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/>output.likelihood.setScore(*<ref refid="classFaceDetector_1a0abdcb055ca558af35ba8fc6056b3251" kindref="member">face_data_</ref>.<ref refid="cpp/container/set/begin" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">begin</ref>(),<sp/>1);</highlight></codeline>
+<codeline lineno="293"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"></highlight></codeline>
+<codeline lineno="295"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="296"><highlight class="normal"></highlight></codeline>
+<codeline lineno="297" refid="classFaceDetector_1a6858b8b6d999ecdfb769ca1ca585cb82" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classFaceDetector_1a6858b8b6d999ecdfb769ca1ca585cb82" kindref="member">FaceDetector::writeFaceDetectionResult</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ed::Measurement&amp;<sp/>msr,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Rect&amp;<sp/>rgb_roi,</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;cv::Rect&gt;</ref>&amp;<sp/>rgb_face_rois,</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>face_counter,<sp/><ref refid="classtue_1_1config_1_1ReaderWriter" kindref="compound" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">tue::Configuration</ref>&amp;<sp/>result)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="300"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>get<sp/>color<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>color_image<sp/>=<sp/>msr.image()-&gt;getRGBImage();</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"></highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>get<sp/>color<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>cv::Mat&amp;<sp/>depth_image<sp/>=<sp/>msr.image()-&gt;getDepthImage();</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"></highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Calculate<sp/>size<sp/>factor<sp/>between<sp/>depth<sp/>and<sp/>rgb<sp/>images</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f_depth_rgb<sp/>=<sp/>(double)depth_image.cols<sp/>/<sp/>color_image.cols;</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"></highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Create<sp/>depth<sp/>view</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classrgbd_1_1View" kindref="compound" external="/home/amigo/ros/melodic/system/build/docs/rgbd/tags">rgbd::View</ref><sp/>depth_view(*msr.image(),<sp/>depth_image.cols);</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"></highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>rgb_face_rois.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>();<sp/>j++)</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Rect<sp/>rgb_face_roi<sp/>=<sp/>rgb_face_rois[j];</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rgb_face_roi.x<sp/>+=<sp/>rgb_roi.x;</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rgb_face_roi.y<sp/>+=<sp/>rgb_roi.y;</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"></highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classFaceDetector_1abcf6be5cd30797d7ed261dc00397dd4e" kindref="member">debug_mode_</ref>)</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceed_1_1perception_1ae86099089bde0e5f31637491c13ad1bf" kindref="member">ed::perception::saveDebugImage</ref>(</highlight><highlight class="stringliteral">&quot;face_detector-rgb&quot;</highlight><highlight class="normal">,<sp/>color_image(rgb_face_roi));</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.<ref refid="classtue_1_1config_1_1ReaderWriter_1ac0dc1a5ff68ef52d627abec100d2ddce" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">addArrayItem</ref>();</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"></highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.<ref refid="classtue_1_1config_1_1ReaderWriter_1a58933352b47f0bd6ac78af40987a5c73" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">setValue</ref>(</highlight><highlight class="stringliteral">&quot;index&quot;</highlight><highlight class="normal">,<sp/>face_counter);</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"></highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>add<sp/>2D<sp/>location<sp/>of<sp/>the<sp/>face</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.<ref refid="classtue_1_1config_1_1ReaderWriter_1a58933352b47f0bd6ac78af40987a5c73" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">setValue</ref>(</highlight><highlight class="stringliteral">&quot;x&quot;</highlight><highlight class="normal">,<sp/>rgb_face_roi.x);</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.<ref refid="classtue_1_1config_1_1ReaderWriter_1a58933352b47f0bd6ac78af40987a5c73" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">setValue</ref>(</highlight><highlight class="stringliteral">&quot;y&quot;</highlight><highlight class="normal">,<sp/>rgb_face_roi.y);</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.<ref refid="classtue_1_1config_1_1ReaderWriter_1a58933352b47f0bd6ac78af40987a5c73" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">setValue</ref>(</highlight><highlight class="stringliteral">&quot;width&quot;</highlight><highlight class="normal">,<sp/>rgb_face_roi.width);</highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.<ref refid="classtue_1_1config_1_1ReaderWriter_1a58933352b47f0bd6ac78af40987a5c73" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">setValue</ref>(</highlight><highlight class="stringliteral">&quot;height&quot;</highlight><highlight class="normal">,<sp/>rgb_face_roi.height);</highlight></codeline>
+<codeline lineno="331"><highlight class="normal"></highlight></codeline>
+<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Compute<sp/>face<sp/>roi<sp/>for<sp/>depth<sp/>image</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Rect<sp/>depth_face_roi(f_depth_rgb<sp/>*<sp/>rgb_face_roi.x,<sp/>f_depth_rgb<sp/>*<sp/>rgb_face_roi.y,</highlight></codeline>
+<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>f_depth_rgb<sp/>*<sp/>rgb_face_roi.width,<sp/>f_depth_rgb<sp/>*<sp/>rgb_face_roi.height);</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"></highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classFaceDetector_1abcf6be5cd30797d7ed261dc00397dd4e" kindref="member">debug_mode_</ref>)</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceed_1_1perception_1ae86099089bde0e5f31637491c13ad1bf" kindref="member">ed::perception::saveDebugImage</ref>(</highlight><highlight class="stringliteral">&quot;face_detector-depth&quot;</highlight><highlight class="normal">,<sp/>depth_image(depth_face_roi));</highlight></codeline>
+<codeline lineno="338"><highlight class="normal"></highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Mat<sp/>face_area<sp/>=<sp/>depth_image(depth_face_roi);</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>avg_depth<sp/>=<sp/><ref refid="namespaceed_1_1perception_1a96b420de07e8be8fa447c28435cc4b43" kindref="member">ed::perception::getMedianDepth</ref>(face_area);</highlight></codeline>
+<codeline lineno="341"><highlight class="normal"></highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(avg_depth<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>calculate<sp/>the<sp/>center<sp/>point<sp/>of<sp/>the<sp/>face</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv::Point2i<sp/>p_2d(depth_face_roi.x<sp/>+<sp/>depth_face_roi.width/2,</highlight></codeline>
+<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>depth_face_roi.y<sp/>+<sp/>depth_face_roi.height/2);</highlight></codeline>
+<codeline lineno="347"><highlight class="normal"></highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classgeo_1_1Vector3" kindref="compound" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Vector3</ref><sp/>projection<sp/>=<sp/>depth_view.getRasterizer().project2Dto3D(p_2d.x,<sp/>p_2d.y)<sp/>*<sp/>avg_depth;</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classgeo_1_1Vector3" kindref="compound" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">geo::Vector3</ref><sp/>point_map<sp/>=<sp/>msr.sensorPose()<sp/>*<sp/>projection;</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"></highlight></codeline>
+<codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>add<sp/>3D<sp/>location<sp/>of<sp/>the<sp/>face</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.<ref refid="classtue_1_1config_1_1ReaderWriter_1a58933352b47f0bd6ac78af40987a5c73" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">setValue</ref>(</highlight><highlight class="stringliteral">&quot;map_x&quot;</highlight><highlight class="normal">,<sp/>point_map.<ref refid="classgeo_1_1Vector3_1a76c1080f7771ddba6188926a9a1f129c" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">x</ref>);</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.<ref refid="classtue_1_1config_1_1ReaderWriter_1a58933352b47f0bd6ac78af40987a5c73" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">setValue</ref>(</highlight><highlight class="stringliteral">&quot;map_y&quot;</highlight><highlight class="normal">,<sp/>point_map.<ref refid="classgeo_1_1Vector3_1aaf3667dc32f8d47f4c688c31a4f6cc7b" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">y</ref>);</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.<ref refid="classtue_1_1config_1_1ReaderWriter_1a58933352b47f0bd6ac78af40987a5c73" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">setValue</ref>(</highlight><highlight class="stringliteral">&quot;map_z&quot;</highlight><highlight class="normal">,<sp/>point_map.<ref refid="classgeo_1_1Vector3_1a33be4b901c043e52a5e6de937de4650e" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/geolib2/tags">z</ref>);</highlight></codeline>
+<codeline lineno="355"><highlight class="normal"></highlight></codeline>
+<codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="358"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/io/cout" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::cout</ref><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;[ED<sp/>FACE<sp/>DETECTOR]<sp/>Could<sp/>not<sp/>calculate<sp/>face&apos;s<sp/>average<sp/>depth.<sp/>Map<sp/>coordinates<sp/>might<sp/>be<sp/>incorrect!&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/><ref refid="cpp/io/manip/endl" kindref="compound" external="/home/amigo/.local/lib/python2.7/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::endl</ref>;</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="361"><highlight class="normal"></highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.<ref refid="classtue_1_1config_1_1ReaderWriter_1a66bba67a49bc1b62d16f8db70e67a1ec" kindref="member" external="/home/amigo/ros/melodic/system/build/docs/tue_config/tags">endArrayItem</ref>();</highlight></codeline>
+<codeline lineno="363"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>face_counter++;</highlight></codeline>
+<codeline lineno="364"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="365"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="366"><highlight class="normal"></highlight></codeline>
+<codeline lineno="367"><highlight class="normal">ED_REGISTER_PERCEPTION_MODULE(<ref refid="classFaceDetector" kindref="compound">FaceDetector</ref>)</highlight></codeline>
+    </programlisting>
+    <location file="plugins/face_detector.cpp"/>
+  </compounddef>
+</doxygen>

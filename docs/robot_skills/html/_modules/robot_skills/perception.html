@@ -1,0 +1,538 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.perception &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.perception</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.perception</h1><div class="highlight"><pre>
+<span></span><span class="c1"># System</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Condition</span><span class="p">,</span> <span class="n">Event</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">from</span> <span class="nn">people_recognition_msgs.srv</span> <span class="k">import</span> <span class="n">RecognizePeople3D</span>
+<span class="kn">from</span> <span class="nn">sensor_msgs.msg</span> <span class="k">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">CameraInfo</span>
+<span class="kn">from</span> <span class="nn">std_srvs.srv</span> <span class="k">import</span> <span class="n">Empty</span>
+<span class="kn">import</span> <span class="nn">message_filters</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">image_recognition_msgs.srv</span> <span class="k">import</span> <span class="n">Annotate</span><span class="p">,</span> <span class="n">Recognize</span><span class="p">,</span> <span class="n">RecognizeResponse</span><span class="p">,</span> <span class="n">GetFaceProperties</span>
+<span class="kn">from</span> <span class="nn">image_recognition_msgs.msg</span> <span class="k">import</span> <span class="n">Annotation</span>
+<span class="kn">from</span> <span class="nn">rgbd_msgs.srv</span> <span class="k">import</span> <span class="n">Project2DTo3D</span>
+<span class="kn">from</span> <span class="nn">robot_skills.robot_part</span> <span class="k">import</span> <span class="n">RobotPart</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">VectorStamped</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.image_operations</span> <span class="k">import</span> <span class="n">img_recognitions_to_rois</span><span class="p">,</span> <span class="n">img_cutout</span>
+
+
+<div class="viewcode-block" id="Perception"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception">[docs]</a><span class="k">class</span> <span class="nc">Perception</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">,</span> <span class="n">image_topic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">projection_srv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">camera_base_ns</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Perception</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="n">tf_listener</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">image_topic</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_topic</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/top_kinect/rgb/image&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_topic</span> <span class="o">=</span> <span class="n">image_topic</span>
+
+        <span class="k">if</span> <span class="n">projection_srv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">projection_srv_name</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/top_kinect/project_2d_to_3d&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">projection_srv_name</span> <span class="o">=</span> <span class="n">projection_srv</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_base_ns</span> <span class="o">=</span> <span class="n">camera_base_ns</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_lazy_sub</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_cv</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_last_image</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_annotate_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span>
+            <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/people_recognition/face_recognition/annotate&#39;</span><span class="p">,</span> <span class="n">Annotate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recognize_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span>
+            <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/people_recognition/face_recognition/recognize&#39;</span><span class="p">,</span> <span class="n">Recognize</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span>
+            <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/people_recognition/face_recognition/clear&#39;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_face_properties_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span>
+            <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/people_recognition/face_recognition/get_face_properties&#39;</span><span class="p">,</span> <span class="n">GetFaceProperties</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_projection_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="n">projection_srv_name</span><span class="p">,</span> <span class="n">Project2DTo3D</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_person_recognition_3d_srv</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/people_recognition/detect_people_3d&#39;</span><span class="p">,</span> <span class="n">RecognizePeople3D</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Perception.close"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Perception._image_cb"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception._image_cb">[docs]</a>    <span class="k">def</span> <span class="nf">_image_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_cv</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_last_image</span> <span class="o">=</span> <span class="n">image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_cv</span><span class="o">.</span><span class="n">notify</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_cv</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Perception.get_image"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.get_image">[docs]</a>    <span class="k">def</span> <span class="nf">get_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="c1"># lazy subscribe to the rgb(d) camera</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_lazy_sub</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Creating subscriber&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_camera_lazy_sub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_topic</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image_cb</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;lazy subscribe to </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_lazy_sub</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;getting one image...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_cv</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_last_image</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timeout</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_last_image</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;len(self._camera_last_image): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_camera_last_image</span><span class="o">.</span><span class="n">data</span><span class="p">)))</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;self._camera_last_image: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_camera_last_image</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+                <span class="k">return</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_camera_cv</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;no image received from </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_lazy_sub</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_camera_last_image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_camera_cv</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;got </span><span class="si">%d</span><span class="s2"> bytes of image data&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">image</span></div>
+
+<div class="viewcode-block" id="Perception.project_roi"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.project_roi">[docs]</a>    <span class="k">def</span> <span class="nf">project_roi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Projects a region of interest of a depth image to a 3D Point. Hereto, a service is used</span>
+
+<span class="sd">        :param roi: sensor_msgs/RegionOfInterest</span>
+<span class="sd">        :param frame_id: if specified, the result is transformed into this frame id</span>
+<span class="sd">        :return: VectorStamped object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_rois</span><span class="p">(</span><span class="n">rois</span><span class="o">=</span><span class="p">[</span><span class="n">roi</span><span class="p">])</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Convert to VectorStamped</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">z</span><span class="p">,</span>
+                               <span class="n">frame_id</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span><span class="p">)</span>
+
+        <span class="c1"># If necessary, transform the point</span>
+        <span class="k">if</span> <span class="n">frame_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Transforming roi to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">frame_id</span><span class="p">))</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">projectToFrame</span><span class="p">(</span><span class="n">frame_id</span><span class="o">=</span><span class="n">frame_id</span><span class="p">,</span> <span class="n">tf_listener</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tf_listener</span><span class="p">)</span>
+
+        <span class="c1"># Return the result</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Perception.project_rois"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.project_rois">[docs]</a>    <span class="k">def</span> <span class="nf">project_rois</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rois</span><span class="p">):</span>
+        <span class="c1"># Call the service with the provided Region of Interest</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_projection_srv</span><span class="p">(</span><span class="n">rois</span><span class="o">=</span><span class="n">rois</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;project_roi failed&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;project_rois response: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">points</span></div>
+
+    <span class="c1"># OpenFace</span>
+<div class="viewcode-block" id="Perception._get_faces"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception._get_faces">[docs]</a>    <span class="k">def</span> <span class="nf">_get_faces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">image</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_image</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recognize_srv</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Found </span><span class="si">%d</span><span class="s1"> face(s) in the image&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">recognitions</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Can&#39;t connect to face recognition service: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">RecognizeResponse</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Can&#39;t detect faces: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="Perception.learn_person"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.learn_person">[docs]</a>    <span class="k">def</span> <span class="nf">learn_person</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;operator&#39;</span><span class="p">):</span>
+        <span class="n">HEIGHT_TRESHOLD</span> <span class="o">=</span> <span class="mi">88</span>
+        <span class="n">WIDTH_TRESHOLD</span> <span class="o">=</span> <span class="mi">88</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_image</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Can&#39;t get image: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">raw_recognitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_faces</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">recognitions</span>
+        <span class="n">recognitions</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">raw_recognitions</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="n">HEIGHT_TRESHOLD</span> <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="n">WIDTH_TRESHOLD</span><span class="p">]</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Found </span><span class="si">%d</span><span class="s1"> valid face(s)&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">recognitions</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">recognitions</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Too many faces: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">recognitions</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">recognition</span> <span class="o">=</span> <span class="n">recognitions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;annotating that face as </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_annotate_srv</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">annotations</span><span class="o">=</span><span class="p">[</span><span class="n">Annotation</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">roi</span><span class="o">=</span><span class="n">recognition</span><span class="o">.</span><span class="n">roi</span><span class="p">)])</span>
+        <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Can&#39;t connect to person learning service: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Can&#39;t learn a person: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Perception.detect_faces"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.detect_faces">[docs]</a>    <span class="k">def</span> <span class="nf">detect_faces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stamp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Snap an image with the camera and return the recognized faces.</span>
+
+<span class="sd">        :param image: image to use for recognition</span>
+<span class="sd">        :type image: sensor_msgs/Image</span>
+<span class="sd">        :param stamp: Return recognitions and stamp</span>
+<span class="sd">        :type stamp: bool</span>
+<span class="sd">        :return: recognitions of the faces</span>
+<span class="sd">        :rtype: list[image_recognition_msgs/Recognition]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">image</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_image</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">stamp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_faces</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">recognitions</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_faces</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">recognitions</span></div>
+
+<div class="viewcode-block" id="Perception.get_best_face_recognition"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.get_best_face_recognition">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_best_face_recognition</span><span class="p">(</span><span class="n">recognitions</span><span class="p">,</span> <span class="n">desired_label</span><span class="p">,</span> <span class="n">probability_threshold</span><span class="o">=</span><span class="mf">4.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the Recognition with the highest probability of having the desired_label.</span>
+<span class="sd">        Assumes that the probability distributions in Recognition are already sorted by probability (descending, highest first)</span>
+
+<span class="sd">        :param recognitions: The recognitions to select the best one with desired_label from</span>
+<span class="sd">        :type recognitions: list[image_recognition_msgs/Recognition]</span>
+<span class="sd">        :param desired_label: what label to look for in the recognitions</span>
+<span class="sd">        :type desired_label: str</span>
+<span class="sd">        :param probability_threshold: only accept recognitions with probability higher than threshold</span>
+<span class="sd">        :type probability_threshold: double</span>
+<span class="sd">        :return: the best recognition matching the given desired_label</span>
+<span class="sd">        :rtype image_recognition_msgs/Recognition</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;get_best_face_recognition: recognitions = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">recognitions</span><span class="p">))</span>
+
+        <span class="c1"># Only take detections with operator</span>
+        <span class="c1"># detections = []</span>
+        <span class="c1"># The old implementation took, for each recognition, the (label, prob) pairs where label==desired_label.</span>
+        <span class="c1"># Other pairs in the same distribution may have higher probability.</span>
+        <span class="c1"># When the best_recognition is picked, it picked the recognition where the probability for the desired_label is hhighest comapared to other recognitions. BUT: a recognitions highest probability may be for a different label</span>
+        <span class="c1"># because the selection only compares matching labels, not looking at the probability of non-matching pairs.</span>
+        <span class="c1"># For example: we have 2 recognitions.</span>
+        <span class="c1">#   in recognition 1, A has 50%, desired_label has 30%, B has 20%.</span>
+        <span class="c1">#   in recognition 2, B has 60%, desired_label has 35%, A has 5%.</span>
+        <span class="c1"># Then, recognition 2 has the highest probability for the desired_label and is thus picked.</span>
+        <span class="c1"># Because we take the [0]&#39;th index of the distribution, that name is B</span>
+        <span class="c1">#</span>
+        <span class="c1"># Solution: because the probability distributions are sorted, just take the probability distribution where the desired label has the highest probability.</span>
+        <span class="c1">#for recog in recognitions:</span>
+        <span class="c1">#    for cp in recog.categorical_distribution.probabilities:</span>
+        <span class="c1">#        if cp.label == desired_label:</span>
+        <span class="c1">#            detections.append((recog, cp.probability))</span>
+
+        <span class="c1"># Sort based on probability</span>
+        <span class="c1">#if detections:</span>
+        <span class="c1">#    sorted_detections = sorted(detections, key=lambda det: det[1])</span>
+        <span class="c1">#    best_detection = sorted_detections[0][0]  # A CategoricalDistribution in a Recognition is already ordered, max prob is at [0]</span>
+        <span class="c1">#else:</span>
+        <span class="c1">#    best_detection = None</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Probability threshold </span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">probability_threshold</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">recog</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">recognitions</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{index}</span><span class="s2">: </span><span class="si">{dist}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+                                                   <span class="n">dist</span><span class="o">=</span><span class="p">[(</span><span class="n">cp</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">probability</span><span class="p">))</span> <span class="k">for</span> <span class="n">cp</span> <span class="ow">in</span> <span class="n">recog</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">probabilities</span><span class="p">]))</span>
+
+        <span class="n">matching_recognitions</span> <span class="o">=</span> <span class="p">[</span><span class="n">recog</span> <span class="k">for</span> <span class="n">recog</span> <span class="ow">in</span> <span class="n">recognitions</span> <span class="k">if</span> \
+                <span class="n">recog</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">probabilities</span> <span class="ow">and</span> \
+                <span class="n">recog</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">probabilities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="n">desired_label</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">matching_recognitions</span><span class="p">:</span>
+            <span class="n">best_recognition</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">matching_recognitions</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">recog</span><span class="p">:</span> <span class="n">recog</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">probabilities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">best_recognition</span> <span class="k">if</span> <span class="n">best_recognition</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">probabilities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">probability</span> <span class="o">&gt;</span> <span class="n">probability_threshold</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># TODO: Maybe so something smart with selecting a recognition where the desired_label is not the most probable for a recognition?</span></div>
+
+<div class="viewcode-block" id="Perception.clear_face"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.clear_face">[docs]</a>    <span class="k">def</span> <span class="nf">clear_face</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        clearing all faces from the OpenFace node.</span>
+
+<span class="sd">        :return: no return</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;clearing all learned faces&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear_srv</span><span class="p">()</span></div>
+
+    <span class="c1"># Skybiometry</span>
+<div class="viewcode-block" id="Perception.get_face_properties"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.get_face_properties">[docs]</a>    <span class="k">def</span> <span class="nf">get_face_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the face properties of all faces or in an image. If faces is provided, image is ignored. If both aren&#39;t</span>
+<span class="sd">        provided, an image is collected.</span>
+
+<span class="sd">        :param faces: images of all faces</span>
+<span class="sd">        :type faces: list[sensor_msgs/Image]</span>
+<span class="sd">        :param image: image containing the faces</span>
+<span class="sd">        :type image: sensor_msgs/Image</span>
+<span class="sd">        :return: list of face properties</span>
+<span class="sd">        :rtype: list[image_recognition_msgs/FaceProperties]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">faces</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">image</span><span class="p">:</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_image</span><span class="p">()</span>
+            <span class="n">face_recognitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detect_faces</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">)</span>
+            <span class="n">rois</span> <span class="o">=</span> <span class="n">img_recognitions_to_rois</span><span class="p">(</span><span class="n">face_recognitions</span><span class="p">)</span>
+            <span class="n">faces</span> <span class="o">=</span> <span class="n">img_cutout</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">rois</span><span class="p">)</span>
+
+        <span class="n">face_properties</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">face_properties_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_face_properties_srv</span><span class="p">(</span><span class="n">faces</span><span class="p">)</span>
+            <span class="n">face_properties</span> <span class="o">=</span> <span class="n">face_properties_response</span><span class="o">.</span><span class="n">properties_array</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">faces</span><span class="p">)</span>
+
+        <span class="n">face_log</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> - &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="nb">repr</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">face_properties</span><span class="p">])</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;face_properties:</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">face_log</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">face_properties</span></div>
+
+<div class="viewcode-block" id="Perception.get_rgb_depth_caminfo"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.get_rgb_depth_caminfo">[docs]</a>    <span class="k">def</span> <span class="nf">get_rgb_depth_caminfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get an rgb image and and depth image, along with camera info for the depth camera.</span>
+<span class="sd">        The returned tuple can serve as input for world_model_ed.ED.detect_people.</span>
+
+<span class="sd">        :param timeout: How long to wait until the images are all collected.</span>
+<span class="sd">        :return: tuple(rgb, depth, depth_info) or a None if no images could be gathered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">depth_info</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Received rgb, depth, cam_info&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">depth_info</span><span class="p">)</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+        <span class="c1"># camera topics</span>
+        <span class="n">depth_info_sub</span> <span class="o">=</span> <span class="n">message_filters</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/depth_registered/camera_info&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_camera_base_ns</span><span class="p">),</span>
+                                                    <span class="n">CameraInfo</span><span class="p">)</span>
+        <span class="n">depth_sub</span> <span class="o">=</span> <span class="n">message_filters</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/depth_registered/image&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_camera_base_ns</span><span class="p">),</span> <span class="n">Image</span><span class="p">)</span>
+        <span class="n">rgb_sub</span> <span class="o">=</span> <span class="n">message_filters</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/rgb/image_raw&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_camera_base_ns</span><span class="p">),</span> <span class="n">Image</span><span class="p">)</span>
+
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">message_filters</span><span class="o">.</span><span class="n">ApproximateTimeSynchronizer</span><span class="p">([</span><span class="n">rgb_sub</span><span class="p">,</span> <span class="n">depth_sub</span><span class="p">,</span> <span class="n">depth_info_sub</span><span class="p">],</span>
+                                                         <span class="n">queue_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                         <span class="n">slop</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">registerCallback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">ts</span><span class="p">,</span> <span class="n">depth_info_sub</span><span class="p">,</span> <span class="n">depth_sub</span><span class="p">,</span> <span class="n">rgb_sub</span><span class="p">,</span> <span class="n">callback</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Perception.detect_person_3d"><a class="viewcode-back" href="../../api/robot_skills/perception/index.html#robot_skills.perception.Perception.detect_person_3d">[docs]</a>    <span class="k">def</span> <span class="nf">detect_person_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">depth_info</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_person_recognition_3d_srv</span><span class="p">(</span><span class="n">image_rgb</span><span class="o">=</span><span class="n">rgb</span><span class="p">,</span> <span class="n">image_depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span> <span class="n">camera_info_depth</span><span class="o">=</span><span class="n">depth_info</span><span class="p">)</span><span class="o">.</span><span class="n">people</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

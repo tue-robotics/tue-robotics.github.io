@@ -1,0 +1,756 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.human_interaction.find_people_in_room &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.human_interaction.find_people_in_room</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.human_interaction.find_people_in_room</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">import</span> <span class="nn">robot_smach_states</span> <span class="k">as</span> <span class="nn">states</span>
+<span class="kn">import</span> <span class="nn">robot_smach_states.util.designators</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util</span> <span class="k">import</span> <span class="n">kdl_conversions</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">Entity</span>
+
+
+<div class="viewcode-block" id="FindPeople"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/find_people_in_room/index.html#robot_smach_states.human_interaction.find_people_in_room.FindPeople">[docs]</a><span class="k">class</span> <span class="nc">FindPeople</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Smach state to find a person. The robot looks around and tries to find</span>
+<span class="sd">    people in its view.</span>
+
+<span class="sd">    &gt;&gt;&gt; from robot_skills.mockbot import Mockbot</span>
+<span class="sd">    &gt;&gt;&gt; robot = Mockbot()</span>
+<span class="sd">    &gt;&gt;&gt; # Designator to store the result</span>
+<span class="sd">    &gt;&gt;&gt; des = ds.VariableDesignator(resolve_type=[Entity])</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; sm = FindPeople(robot=robot, properties={&#39;id&#39;: &#39;NAME&#39;}, found_people_designator=des.writeable)</span>
+<span class="sd">    &gt;&gt;&gt; # sm.execute()</span>
+<span class="sd">    &gt;&gt;&gt; # des.resolve()</span>
+
+<span class="sd">    Entity(id=something, )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query_entity_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">found_people_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">look_distance</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">speak</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nearest</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">attempts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">search_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                 <span class="n">look_range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">look_steps</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialization method</span>
+
+<span class="sd">        :param robot: robot api object</span>
+<span class="sd">        :param properties: (dict) (default: None) keyvalue pair of the properties a person must</span>
+<span class="sd">            possess. None as a value for a property would search for all possible</span>
+<span class="sd">            values of the property.</span>
+<span class="sd">        :param query_entity_designator: (default: None) An entity designator to match all found</span>
+<span class="sd">            people to</span>
+<span class="sd">        :param found_people_designator: (default: None) A designator to write the search result to.</span>
+<span class="sd">            The designator always has a list of found people written to it.</span>
+<span class="sd">        :param look_distance: (float) (default: 10.0) The distance (radius) which the robot must look at</span>
+<span class="sd">        :param speak: (bool) (default: False) If True, the robot will speak while trying to find</span>
+<span class="sd">            a named person</span>
+<span class="sd">        :param strict: (bool) (default: True)  Only used if properties is not None AND the {key:value} pair of a</span>
+<span class="sd">            property has non None values.</span>
+<span class="sd">            If set to True then only people with all specified</span>
+<span class="sd">            properties are returned, else all people with at least one true property.</span>
+<span class="sd">            Example:</span>
+<span class="sd">                properties = {&#39;tags&#39;: [&#39;LWave&#39;, &#39;RWave&#39;, &#39;LHolding&#39;, &#39;RHolding&#39;]}</span>
+<span class="sd">                strict = True</span>
+<span class="sd">                    This will return a list of people who have the tags:</span>
+<span class="sd">                        &#39;LWave&#39; AND &#39;RWave&#39; AND &#39;LHolding&#39; AND &#39;RHolding&#39;</span>
+
+<span class="sd">                strict = False</span>
+<span class="sd">                    This will return a list of people who have the tags:</span>
+<span class="sd">                        &#39;LWave&#39; OR &#39;RWave&#39; OR &#39;LHolding&#39; OR &#39;RHolding&#39;</span>
+
+<span class="sd">        :param nearest: (bool) (default: False) If True, selects the people nearest to the robot who match the</span>
+<span class="sd">            requirements posed using the properties, query_entity_designator, look distance and strict arguments</span>
+<span class="sd">        :param attempts: (int) (default: 1) Max number of search attempts</span>
+<span class="sd">        :param search_timeout: (float) (default: 60) maximum time the robot is allowed to search</span>
+<span class="sd">        :param look_range: (tuple of size 2) (default: (-np.pi/2, np.pi/2)) from what to what head angle should the</span>
+<span class="sd">            robot search</span>
+<span class="sd">        :param look_steps: (int) (default: 8) How many steps does it take in that range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;found&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_properties</span> <span class="o">=</span> <span class="n">properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_look_distance</span> <span class="o">=</span> <span class="n">look_distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_speak</span> <span class="o">=</span> <span class="n">speak</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strict</span> <span class="o">=</span> <span class="n">strict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nearest</span> <span class="o">=</span> <span class="n">nearest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attempts</span> <span class="o">=</span> <span class="n">attempts</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_search_timeout</span> <span class="o">=</span> <span class="n">search_timeout</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_look_angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">look_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">look_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">look_steps</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">found_people_designator</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">is_writeable</span><span class="p">(</span><span class="n">found_people_designator</span><span class="p">)</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">found_people_designator</span><span class="p">,</span> <span class="p">[</span><span class="n">Entity</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_found_people_designator</span> <span class="o">=</span> <span class="n">found_people_designator</span>
+
+        <span class="k">if</span> <span class="n">query_entity_designator</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">query_entity_designator</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_query_entity_designator</span> <span class="o">=</span> <span class="n">query_entity_designator</span>
+
+<div class="viewcode-block" id="FindPeople.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/find_people_in_room/index.html#robot_smach_states.human_interaction.find_people_in_room.FindPeople.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">look_angles</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">person_label</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_properties</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">person_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_properties</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+                <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">person_label</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">)</span>
+                <span class="n">person_label</span> <span class="o">=</span> <span class="n">person_label</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">person_label</span><span class="p">,</span> <span class="s1">&#39;resolve&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">person_label</span>
+
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Trying to find </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">person_label</span><span class="p">))</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c1"># The try except is to check if a named person is queried for</span>
+                <span class="c1"># in the properties. If there is none then exception is raised</span>
+                <span class="c1"># and nothing is to be done with it</span>
+                <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_speak</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">please look at me while I am looking for you&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">person_label</span><span class="o">+</span><span class="s1">&#39;, &#39;</span> <span class="k">if</span> <span class="n">person_label</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="n">head_goals</span> <span class="o">=</span> <span class="p">[</span><span class="n">kdl_conversions</span><span class="o">.</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_look_distance</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span>
+                                                    <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_look_distance</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span>
+                                                    <span class="n">z</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+                                                    <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/</span><span class="si">%s</span><span class="s2">/base_link&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">robot_name</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_look_angles</span><span class="p">]</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">attempts</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">()</span> <span class="ow">and</span> <span class="n">attempts</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempts</span> <span class="ow">and</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_timeout</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+                <span class="k">return</span> <span class="s1">&#39;failed&#39;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">head_goals</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">head_goals</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+
+            <span class="n">found_people_ids</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>  <span class="c1"># TODO: parametrize</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">get_rgb_depth_caminfo</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span><span class="p">:</span>
+                    <span class="n">success</span><span class="p">,</span> <span class="n">found_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">detect_people</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_image_data</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Could not get_rgb_depth_caminfo&quot;</span><span class="p">)</span>
+                    <span class="n">success</span><span class="p">,</span> <span class="n">found_ids</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[]</span>
+                <span class="n">found_people_ids</span> <span class="o">+=</span> <span class="n">found_ids</span>
+
+            <span class="c1"># Use only unique IDs in the odd case ED sees the same people twice</span>
+            <span class="n">found_people</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span> <span class="k">for</span> <span class="n">eid</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">found_people_ids</span><span class="p">)]</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2"> people: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">found_people</span><span class="p">),</span> <span class="n">found_people</span><span class="p">))</span>
+            <span class="n">found_people</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">found_people</span> <span class="k">if</span> <span class="n">p</span><span class="p">]</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> people remaining after None-check&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">found_people</span><span class="p">)))</span>
+
+            <span class="n">robot_pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span>
+            <span class="c1"># TODO: Check probable bug here</span>
+            <span class="n">found_people</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">robot_pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_look_distance</span><span class="p">,</span>
+                                  <span class="n">found_people</span><span class="p">)</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> people remaining after distance &lt; </span><span class="si">{}</span><span class="s2">-check&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">found_people</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_look_distance</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_properties</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">found_people</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_check_person_property</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">found_people</span><span class="p">)</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> people remaining after </span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2"> check&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">found_people</span><span class="p">),</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+            <span class="n">result_people</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query_entity_designator</span><span class="p">:</span>
+                <span class="n">query_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">query_entity</span><span class="p">:</span>
+                    <span class="n">result_people</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">query_entity</span><span class="o">.</span><span class="n">in_volume</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">extractVectorStamped</span><span class="p">(),</span> <span class="s1">&#39;in&#39;</span><span class="p">),</span>
+                                           <span class="n">found_people</span><span class="p">)</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> result_people remaining after &#39;in&#39;-&#39;</span><span class="si">{}</span><span class="s2">&#39; check&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result_people</span><span class="p">),</span> <span class="n">query_entity</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+                    <span class="c1"># If people not in query_entity then try if query_entity in</span>
+                    <span class="c1"># people</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">result_people</span><span class="p">:</span>
+                        <span class="c1"># This is for a future feature when object recognition</span>
+                        <span class="c1"># becomes more advanced</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">result_people</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">in_volume</span><span class="p">(</span><span class="n">query_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">extractVectorStamped</span><span class="p">(),</span> <span class="s1">&#39;in&#39;</span><span class="p">),</span>
+                                                   <span class="n">found_people</span><span class="p">)</span>
+                            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span>
+                                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> result_people remaining after &#39;in&#39;-&#39;</span><span class="si">{}</span><span class="s2">&#39; check&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result_people</span><span class="p">),</span> <span class="n">query_entity</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result_people</span> <span class="o">=</span> <span class="n">found_people</span>
+
+            <span class="k">if</span> <span class="n">result_people</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nearest</span><span class="p">:</span>
+                    <span class="n">result_people</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">robot_pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">person_label</span> <span class="ow">and</span> \
+                    <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_person_property</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">person_label</span><span class="p">),</span> <span class="n">result_people</span><span class="p">)</span> \
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_speak</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I think I found </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">person_label</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_found_people_designator</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_found_people_designator</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result_people</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="s1">&#39;found&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Could not find people meeting the requirements&quot;</span><span class="p">)</span>
+                <span class="c1"># rate.sleep()</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Exceeded trial or time limit&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;failed&#39;</span></div>
+
+<div class="viewcode-block" id="FindPeople._check_person_property"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/find_people_in_room/index.html#robot_smach_states.human_interaction.find_people_in_room.FindPeople._check_person_property">[docs]</a>    <span class="k">def</span> <span class="nf">_check_person_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">,</span> <span class="n">prop_value</span><span class="p">):</span>
+        <span class="n">person_attr_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">person_properties</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;For person </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2"> is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">,</span> <span class="n">person_attr_val</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">prop_value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strict</span><span class="p">:</span>
+                <span class="c1"># Making the conditon less strict to increase search domain</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Executing strict=True&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">person_attr_val</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">sub_list</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">prop_value</span><span class="p">,</span> <span class="n">person_attr_val</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">sub_list</span> <span class="o">==</span> <span class="n">prop_value</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">person_attr_val</span> <span class="o">==</span> <span class="n">prop_value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">person_attr_val</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+                        <span class="ow">and</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">prop_value</span><span class="p">,</span> <span class="n">person_attr_val</span><span class="p">)</span>
+                    <span class="p">)</span> <span class="ow">or</span> <span class="n">person_attr_val</span> <span class="ow">in</span> <span class="n">prop_value</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Executing strict=False&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">person_attr_val</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;By passing strict check&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<div class="viewcode-block" id="FindFirstPerson"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/find_people_in_room/index.html#robot_smach_states.human_interaction.find_people_in_room.FindFirstPerson">[docs]</a><span class="k">class</span> <span class="nc">FindFirstPerson</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper around FindPeople to get the first person that matches the search criteria</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">robot</span><span class="p">,</span>
+                 <span class="n">found_person_designator</span><span class="p">,</span>
+                 <span class="n">properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">query_entity_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">look_distance</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+                 <span class="n">speak</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">nearest</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">attempts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">search_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                 <span class="n">look_range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span>
+                 <span class="n">look_steps</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialization method</span>
+
+<span class="sd">        :param robot: robot api object</span>
+<span class="sd">        :param found_person_designator: A designator to write the search result to.</span>
+<span class="sd">        :param properties: (dict) (default: None) keyvalue pair of the properties a person must</span>
+<span class="sd">            possess. None as a value for a property would search for all possible</span>
+<span class="sd">            values of the property.</span>
+<span class="sd">        :param query_entity_designator: (default: None) An entity designator to match all found</span>
+<span class="sd">            people to</span>
+<span class="sd">        :param look_distance: (float) (default: 10.0) The distance (radius) which the robot must look at</span>
+<span class="sd">        :param speak: (bool) (default: False) If True, the robot will speak while trying to find</span>
+<span class="sd">            a named person</span>
+<span class="sd">        :param strict: (bool) (default: True)  Only used if properties is not None AND the {key:value} pair of a</span>
+<span class="sd">            property has non None values.</span>
+<span class="sd">            If set to True then only people with all specified</span>
+<span class="sd">            properties are returned, else all people with at least one true property.</span>
+<span class="sd">            Example:</span>
+<span class="sd">                properties = {&#39;tags&#39;: [&#39;LWave&#39;, &#39;RWave&#39;, &#39;LHolding&#39;, &#39;RHolding&#39;]}</span>
+<span class="sd">                strict = True</span>
+<span class="sd">                    This will return a list of people who have the tags:</span>
+<span class="sd">                        &#39;LWave&#39; AND &#39;RWave&#39; AND &#39;LHolding&#39; AND &#39;RHolding&#39;</span>
+
+<span class="sd">                strict = False</span>
+<span class="sd">                    This will return a list of people who have the tags:</span>
+<span class="sd">                        &#39;LWave&#39; OR &#39;RWave&#39; OR &#39;LHolding&#39; OR &#39;RHolding&#39;</span>
+
+<span class="sd">        :param nearest: (bool) (default: False) If True, selects the people nearest to the robot who match the</span>
+<span class="sd">            requirements posed using the properties, query_entity_designator, look distance and strict arguments</span>
+<span class="sd">        :param attempts: (int) (default: 1) Max number of search attempts</span>
+<span class="sd">        :param search_timeout: (float) (default: 60) maximum time the robot is allowed to search</span>
+<span class="sd">        :param look_range: (tuple of size 2) (default: (-np.pi/2, np.pi/2)) from what to what head angle should the</span>
+<span class="sd">            robot search</span>
+<span class="sd">        :param look_steps: (int) (default: 8) How many steps does it take in that range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FindFirstPerson</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;found&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">])</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">is_writeable</span><span class="p">(</span><span class="n">found_person_designator</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">found_person_designator</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+
+        <span class="n">found_people_designator</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">VariableDesignator</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="p">[</span><span class="n">Entity</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;new_people&#39;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;FIND_PEOPLE&quot;</span><span class="p">,</span>
+                     <span class="n">FindPeople</span><span class="p">(</span>
+                         <span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span>
+                         <span class="n">properties</span><span class="o">=</span><span class="n">properties</span><span class="p">,</span>
+                         <span class="n">query_entity_designator</span><span class="o">=</span><span class="n">query_entity_designator</span><span class="p">,</span>
+                         <span class="n">found_people_designator</span><span class="o">=</span><span class="n">found_people_designator</span><span class="o">.</span><span class="n">writeable</span><span class="p">,</span>
+                         <span class="n">look_distance</span><span class="o">=</span><span class="n">look_distance</span><span class="p">,</span>
+                         <span class="n">speak</span><span class="o">=</span><span class="n">speak</span><span class="p">,</span>
+                         <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
+                         <span class="n">nearest</span><span class="o">=</span><span class="n">nearest</span><span class="p">,</span>
+                         <span class="n">attempts</span><span class="o">=</span><span class="n">attempts</span><span class="p">,</span>
+                         <span class="n">search_timeout</span><span class="o">=</span><span class="n">search_timeout</span><span class="p">,</span>
+                         <span class="n">look_range</span><span class="o">=</span><span class="n">look_range</span><span class="p">,</span>
+                         <span class="n">look_steps</span><span class="o">=</span><span class="n">look_steps</span><span class="p">),</span>
+                     <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+                         <span class="s1">&#39;found&#39;</span><span class="p">:</span> <span class="s1">&#39;GET_FIRST_ITERATE&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span>
+                     <span class="p">})</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;GET_FIRST_ITERATE&quot;</span><span class="p">,</span>
+                     <span class="n">states</span><span class="o">.</span><span class="n">IterateDesignator</span><span class="p">(</span><span class="n">found_people_designator</span><span class="p">,</span>
+                                              <span class="n">found_person_designator</span><span class="p">),</span>
+                     <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;next&#39;</span><span class="p">:</span> <span class="s1">&#39;found&#39;</span><span class="p">,</span>
+                                  <span class="s1">&#39;stop_iteration&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="SetPoseFirstFoundPersonToEntity"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/find_people_in_room/index.html#robot_smach_states.human_interaction.find_people_in_room.SetPoseFirstFoundPersonToEntity">[docs]</a><span class="k">class</span> <span class="nc">SetPoseFirstFoundPersonToEntity</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper around FirstFoundPerson and addition of UpdateDestEntityPoseWithSrcEntity of top of it</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">robot</span><span class="p">,</span>
+                 <span class="n">dst_entity_designator</span><span class="p">,</span>
+                 <span class="n">dst_entity_type</span><span class="o">=</span><span class="s2">&quot;waypoint&quot;</span><span class="p">,</span>
+                 <span class="n">found_person_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">query_entity_designator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">look_distance</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+                 <span class="n">speak</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">nearest</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">attempts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">search_timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                 <span class="n">look_range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span>
+                 <span class="n">look_steps</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialization method</span>
+
+<span class="sd">        :param robot: robot api object</span>
+<span class="sd">        :param dst_entity_designator: A designator of an Entity whose pose must be updated.</span>
+<span class="sd">        :param dst_entity_type: (str) (default: waypoint) Type of the destination entity</span>
+<span class="sd">        :param found_person_designator: (default: None) A designator to write the search result to.</span>
+<span class="sd">        :param properties: (dict) (default: None) keyvalue pair of the properties a person must</span>
+<span class="sd">            possess. None as a value for a property would search for all possible</span>
+<span class="sd">            values of the property.</span>
+<span class="sd">        :param query_entity_designator: (default: None) An entity designator to match all found</span>
+<span class="sd">            people to</span>
+<span class="sd">        :param look_distance: (float) (default: 10.0) The distance (radius) which the robot must look at</span>
+<span class="sd">        :param speak: (bool) (default: False) If True, the robot will speak while trying to find</span>
+<span class="sd">            a named person</span>
+<span class="sd">        :param strict: (bool) (default: True)  Only used if properties is not None AND the {key:value} pair of a</span>
+<span class="sd">            property has non None values.</span>
+<span class="sd">            If set to True then only people with all specified</span>
+<span class="sd">            properties are returned, else all people with at least one true property.</span>
+<span class="sd">            Example:</span>
+<span class="sd">                properties = {&#39;tags&#39;: [&#39;LWave&#39;, &#39;RWave&#39;, &#39;LHolding&#39;, &#39;RHolding&#39;]}</span>
+<span class="sd">                strict = True</span>
+<span class="sd">                    This will return a list of people who have the tags:</span>
+<span class="sd">                        &#39;LWave&#39; AND &#39;RWave&#39; AND &#39;LHolding&#39; AND &#39;RHolding&#39;</span>
+
+<span class="sd">                strict = False</span>
+<span class="sd">                    This will return a list of people who have the tags:</span>
+<span class="sd">                        &#39;LWave&#39; OR &#39;RWave&#39; OR &#39;LHolding&#39; OR &#39;RHolding&#39;</span>
+
+<span class="sd">        :param nearest: (bool) (default: False) If True, selects the people nearest to the robot who match the</span>
+<span class="sd">            requirements posed using the properties, query_entity_designator, look distance and strict arguments</span>
+<span class="sd">        :param attempts: (int) (default: 1) Max number of search attempts</span>
+<span class="sd">        :param search_timeout: (float) (default: 60) maximum time the robot is allowed to search</span>
+<span class="sd">        :param look_range: (tuple of size 2) (default: (-np.pi/2, np.pi/2)) from what to what head angle should the</span>
+<span class="sd">            robot search</span>
+<span class="sd">        :param look_steps: (int) (default: 8) How many steps does it take in that range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SetPoseFirstFoundPersonToEntity</span><span class="p">,</span>
+              <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found_person_designator</span><span class="p">:</span>
+            <span class="n">found_person_designator</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">VariableDesignator</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">Entity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;new_person&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">writeable</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;FIND_FIRST_PERSON&quot;</span><span class="p">,</span>
+                     <span class="n">FindFirstPerson</span><span class="p">(</span>
+                         <span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span>
+                         <span class="n">found_person_designator</span><span class="o">=</span><span class="n">found_person_designator</span><span class="p">,</span>
+                         <span class="n">properties</span><span class="o">=</span><span class="n">properties</span><span class="p">,</span>
+                         <span class="n">query_entity_designator</span><span class="o">=</span><span class="n">query_entity_designator</span><span class="p">,</span>
+                         <span class="n">look_distance</span><span class="o">=</span><span class="n">look_distance</span><span class="p">,</span>
+                         <span class="n">speak</span><span class="o">=</span><span class="n">speak</span><span class="p">,</span>
+                         <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
+                         <span class="n">nearest</span><span class="o">=</span><span class="n">nearest</span><span class="p">,</span>
+                         <span class="n">attempts</span><span class="o">=</span><span class="n">attempts</span><span class="p">,</span>
+                         <span class="n">search_timeout</span><span class="o">=</span><span class="n">search_timeout</span><span class="p">,</span>
+                         <span class="n">look_range</span><span class="o">=</span><span class="n">look_range</span><span class="p">,</span>
+                         <span class="n">look_steps</span><span class="o">=</span><span class="n">look_steps</span><span class="p">),</span>
+                     <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+                         <span class="s1">&#39;found&#39;</span><span class="p">:</span> <span class="s1">&#39;UPDATE_POSE&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span>
+                     <span class="p">})</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;UPDATE_POSE&quot;</span><span class="p">,</span>
+                     <span class="n">states</span><span class="o">.</span><span class="n">UpdateDestEntityPoseWithSrcEntity</span><span class="p">(</span>
+                         <span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span>
+                         <span class="n">src_entity_designator</span><span class="o">=</span><span class="n">found_person_designator</span><span class="p">,</span>
+                         <span class="n">dst_entity_designator</span><span class="o">=</span><span class="n">dst_entity_designator</span><span class="p">,</span>
+                         <span class="n">dst_entity_type</span><span class="o">=</span><span class="n">dst_entity_type</span><span class="p">),</span>
+                     <span class="n">transitions</span><span class="o">=</span><span class="p">{</span>
+                         <span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;done&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;failed&#39;</span>
+                     <span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="_DecideNavigateState"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/find_people_in_room/index.html#robot_smach_states.human_interaction.find_people_in_room._DecideNavigateState">[docs]</a><span class="k">class</span> <span class="nc">_DecideNavigateState</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Helper state to decide whether to use a NavigateToWaypoint or a NavigateToRoom state</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">waypoint_designator</span><span class="p">,</span> <span class="n">room_designator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize method</span>
+
+<span class="sd">        :param robot: Robot API object</span>
+<span class="sd">        :param waypoint_designator: EdEntityDesignator that should resolve to a waypoint</span>
+<span class="sd">        :param room_designator: EdEntityDesignator that should resolve to the room in which the waypoint is located</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;waypoint&quot;</span><span class="p">,</span> <span class="s2">&quot;room&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waypoint_designator</span> <span class="o">=</span> <span class="n">waypoint_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_room_designator</span> <span class="o">=</span> <span class="n">room_designator</span>
+
+<div class="viewcode-block" id="_DecideNavigateState.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/find_people_in_room/index.html#robot_smach_states.human_interaction.find_people_in_room._DecideNavigateState.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ud</span><span class="p">):</span>
+
+        <span class="c1"># First: see if the waypoint exists</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waypoint_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">entity</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;waypoint&quot;</span>
+
+        <span class="c1"># If not: try the room</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_room_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">entity</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;room&quot;</span>
+
+        <span class="k">return</span> <span class="s2">&quot;none&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="FindPeopleInRoom"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/find_people_in_room/index.html#robot_smach_states.human_interaction.find_people_in_room.FindPeopleInRoom">[docs]</a><span class="k">class</span> <span class="nc">FindPeopleInRoom</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Uses NavigateToWaypoint or NavigateToRoom and subsequently tries to find people in that room</span>
+<span class="sd">    in that room.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">found_people_designator</span><span class="p">,</span>
+                 <span class="n">look_range</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span>
+                 <span class="n">look_steps</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param area: (str) if a waypoint &quot;&lt;area&gt;_waypoint&quot; is present in the world model, the robot will navigate</span>
+<span class="sd">            to this waypoint. Else, it will navigate to the room called &quot;&lt;area&gt;&quot;</span>
+<span class="sd">        :param name: (str) Name of the person to look for</span>
+<span class="sd">        :param discard_other_labels: (bool) Whether or not to discard faces based on label</span>
+<span class="sd">        :param found_person_designator: (Designator) A designator that will resolve to the found object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;found&quot;</span><span class="p">,</span> <span class="s2">&quot;not_found&quot;</span><span class="p">])</span>
+
+        <span class="n">waypoint_designator</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">EntityByIdDesignator</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">room</span> <span class="o">+</span> <span class="s2">&quot;_waypoint&quot;</span><span class="p">)</span>
+        <span class="n">room_designator</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">EntityByIdDesignator</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">room</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">check_type</span><span class="p">(</span><span class="n">found_people_designator</span><span class="p">,</span> <span class="p">[</span><span class="n">Entity</span><span class="p">])</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">is_writeable</span><span class="p">(</span><span class="n">found_people_designator</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;DECIDE_NAVIGATE_STATE&quot;</span><span class="p">,</span>
+                                   <span class="n">_DecideNavigateState</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span> <span class="n">waypoint_designator</span><span class="o">=</span><span class="n">waypoint_designator</span><span class="p">,</span>
+                                                        <span class="n">room_designator</span><span class="o">=</span><span class="n">room_designator</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;waypoint&quot;</span><span class="p">:</span> <span class="s2">&quot;NAVIGATE_TO_WAYPOINT&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;room&quot;</span><span class="p">:</span> <span class="s2">&quot;NAVIGATE_TO_ROOM&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;none&quot;</span><span class="p">:</span> <span class="s2">&quot;not_found&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;NAVIGATE_TO_WAYPOINT&quot;</span><span class="p">,</span>
+                                   <span class="n">states</span><span class="o">.</span><span class="n">NavigateToWaypoint</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span>
+                                                             <span class="n">waypoint_designator</span><span class="o">=</span><span class="n">waypoint_designator</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.15</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arrived&quot;</span><span class="p">:</span> <span class="s2">&quot;FIND_PEOPLE&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;unreachable&quot;</span><span class="p">:</span> <span class="s2">&quot;not_found&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;goal_not_defined&quot;</span><span class="p">:</span> <span class="s2">&quot;not_found&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;NAVIGATE_TO_ROOM&quot;</span><span class="p">,</span> <span class="n">states</span><span class="o">.</span><span class="n">NavigateToRoom</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span>
+                                                                             <span class="n">entity_designator_room</span><span class="o">=</span><span class="n">room_designator</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arrived&quot;</span><span class="p">:</span> <span class="s2">&quot;FIND_PEOPLE&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;unreachable&quot;</span><span class="p">:</span> <span class="s2">&quot;not_found&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;goal_not_defined&quot;</span><span class="p">:</span> <span class="s2">&quot;not_found&quot;</span><span class="p">})</span>
+
+            <span class="c1"># Wait for the operator to appear and detect what he&#39;s pointing at</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;FIND_PEOPLE&quot;</span><span class="p">,</span>
+                                   <span class="n">FindPeople</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span>
+                                              <span class="n">query_entity_designator</span><span class="o">=</span><span class="n">room_designator</span><span class="p">,</span>
+                                              <span class="n">found_people_designator</span><span class="o">=</span><span class="n">found_people_designator</span><span class="p">,</span>
+                                              <span class="n">speak</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                              <span class="n">look_range</span><span class="o">=</span><span class="n">look_range</span><span class="p">,</span>
+                                              <span class="n">look_steps</span><span class="o">=</span><span class="n">look_steps</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;found&quot;</span><span class="p">:</span> <span class="s2">&quot;found&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="s2">&quot;not_found&quot;</span><span class="p">})</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="kn">import</span> <span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+
+    <span class="c1"># from robot_skills import get_robot</span>
+    <span class="c1">#</span>
+    <span class="c1"># if len(sys.argv) &gt; 1:</span>
+    <span class="c1">#     robot_name = sys.argv[1]</span>
+    <span class="c1">#     _area = sys.argv[2]</span>
+    <span class="c1">#</span>
+    <span class="c1">#     rospy.init_node(&#39;test_find_people_in_room&#39;)</span>
+    <span class="c1">#     _robot = get_robot(robot_name)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     people = ds.VariableDesignator(resolve_type=[Entity])</span>
+    <span class="c1">#     sm = FindPeopleInRoom(_robot, _area, people.writeable)</span>
+    <span class="c1">#     sm.execute()</span>
+    <span class="c1">#</span>
+    <span class="c1">#     rospy.loginfo(&quot;Found {}&quot;.format(people.resolve()))</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#     print(&quot;Please provide robot name as argument.&quot;)</span>
+    <span class="c1">#     exit(1)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

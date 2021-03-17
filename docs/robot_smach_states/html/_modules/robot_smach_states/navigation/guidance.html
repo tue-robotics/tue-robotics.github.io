@@ -1,0 +1,619 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.navigation.guidance &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.navigation.guidance</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.navigation.guidance</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module contains states to guide an operator to a designated location.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+<span class="kn">import</span> <span class="nn">PyKDL</span> <span class="k">as</span> <span class="nn">kdl</span>
+
+<span class="c1"># Robot skills</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">VectorStamped</span>
+<span class="kn">from</span> <span class="nn">..utility</span> <span class="k">import</span> <span class="n">WaitTime</span>
+<span class="kn">from</span> <span class="nn">..util.designators</span> <span class="k">import</span> <span class="n">EdEntityDesignator</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">navigation</span>
+<span class="kn">from</span> <span class="nn">..human_interaction.human_interaction</span> <span class="k">import</span> <span class="n">Say</span>
+<span class="kn">from</span> <span class="nn">.constraint_functions</span> <span class="k">import</span> <span class="n">symbolic_constraint</span><span class="p">,</span> <span class="n">look_at_constraint</span><span class="p">,</span> <span class="n">combine_constraints</span>
+
+
+<div class="viewcode-block" id="_detect_operator_behind_robot"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance._detect_operator_behind_robot">[docs]</a><span class="k">def</span> <span class="nf">_detect_operator_behind_robot</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="c1"># type: (Robot, float, float) -&gt; bool</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if a person is within &lt;radius&gt; of the position &lt;distance&gt; behind the &lt;robot&gt;</span>
+
+<span class="sd">    :param robot: (Robot) api object</span>
+<span class="sd">    :param distance: (float) follow distance</span>
+<span class="sd">    :param radius: (float) radius around the position at &lt;distance&gt; behind the robot</span>
+<span class="sd">    :return: (bool) whether an operator was detected</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image_data</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">perception</span><span class="o">.</span><span class="n">get_rgb_depth_caminfo</span><span class="p">()</span>
+    <span class="n">success</span><span class="p">,</span> <span class="n">found_people_ids</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">detect_people</span><span class="p">(</span><span class="o">*</span><span class="n">image_data</span><span class="p">)</span>
+    <span class="n">found_people</span> <span class="o">=</span> <span class="p">[</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entity</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span> <span class="k">for</span> <span class="n">id_</span> <span class="ow">in</span> <span class="n">found_people_ids</span><span class="p">]</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2"> people: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">found_people</span><span class="p">),</span> <span class="n">found_people</span><span class="p">))</span>
+    <span class="n">found_people</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">found_people</span> <span class="k">if</span> <span class="n">p</span><span class="p">]</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> people remaining after None-check&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">found_people</span><span class="p">)))</span>
+
+    <span class="c1"># Assume the operator is a set distance behind the robot</span>
+    <span class="n">base_pose</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span>
+    <span class="n">expected_person_pos</span> <span class="o">=</span> <span class="n">base_pose</span><span class="o">.</span><span class="n">frame</span> <span class="o">*</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="o">-</span><span class="n">distance</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Base pos, expected person pos: </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">base_pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">expected_person_pos</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">person</span> <span class="ow">in</span> <span class="n">found_people</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">Person at </span><span class="si">{}</span><span class="s2">, distance: </span><span class="si">{}</span><span class="s2"> (radius = </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">person</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">expected_person_pos</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">(),</span>
+            <span class="n">radius</span>
+        <span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">expected_person_pos</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">radius</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="TourGuide"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.TourGuide">[docs]</a><span class="k">class</span> <span class="nc">TourGuide</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">x_threshold</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">y_threshold</span><span class="o">=</span><span class="mf">1.5</span><span class="p">):</span>
+        <span class="c1"># type: (Robot, float, float) -&gt; ()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # Class to describe furniture near the robot.</span>
+
+<span class="sd">        :param robot: (Robot) api object</span>
+<span class="sd">        :param x_threshold: (float) threshold determining when a piece of furniture is close enough to be described [m]</span>
+<span class="sd">        :param y_threshold: (float) threshold determining when a piece of furniture is close enough to be described [m]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="c1"># Properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x_threshold</span> <span class="o">=</span> <span class="n">x_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y_threshold</span> <span class="o">=</span> <span class="n">y_threshold</span>
+
+        <span class="c1"># State</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_furniture_entities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_room_entities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_furniture_entities_room</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map room entities to furniture entities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_passed_room_ids</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Will contain the ids of the rooms that are passed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_passed_furniture_ids</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Will contain the ids of the furniture that is passed</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TourGuide.describe_near_objects"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.TourGuide.describe_near_objects">[docs]</a>    <span class="k">def</span> <span class="nf">describe_near_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; string</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Describes near objects based on the robots current position</span>
+<span class="sd">        :return: A description of the robots surroundings</span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_room</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_passed_room_ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_passed_room_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;describe entering room: </span><span class="si">{}</span><span class="s2">.</span><span class="se">\t</span><span class="s2"> passed rooms is now </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_passed_room_ids</span><span class="p">))</span>
+            <span class="k">return</span> <span class="s2">&quot;We now enter the </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="c1"># not entering a new room, checking furniture</span>
+        <span class="n">furniture_objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_furniture_entities_room</span><span class="p">[</span><span class="n">room</span><span class="p">]</span>  <span class="c1"># Furniture objects in our current room</span>
+        <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">furniture_objects</span><span class="p">:</span>  <span class="c1"># type: Entity</span>
+            <span class="c1"># Check if in passed ids</span>
+            <span class="k">if</span> <span class="n">entity</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_passed_furniture_ids</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Compute the pose of the entity w.r.t. the &#39;path&#39;</span>
+            <span class="n">entity_relative_pose</span> <span class="o">=</span> <span class="n">position</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">Inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span>
+
+            <span class="c1"># Check the distance</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">entity_relative_pose</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">())</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x_threshold</span> <span class="ow">and</span> \
+                    <span class="nb">abs</span><span class="p">(</span><span class="n">entity_relative_pose</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y_threshold</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_passed_furniture_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">side</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span> <span class="k">if</span> <span class="n">entity_relative_pose</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="s2">&quot;right&quot;</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span>
+                    <span class="s2">&quot;describe passing entity: </span><span class="si">{}</span><span class="s2">.</span><span class="se">\t</span><span class="s2"> passed entities is now </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">_passed_furniture_ids</span><span class="p">))</span>
+                <span class="k">return</span> <span class="s2">&quot;On our </span><span class="si">{}</span><span class="s2"> you can see the </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">side</span><span class="p">,</span> <span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="c1"># no furniture passed, nothing of interest</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="TourGuide.initialize"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.TourGuide.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entities</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_furniture_entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">entity</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">entity</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_room_entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">room</span> <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;room&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Match the furniture entities to rooms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_furniture_entities_room</span> <span class="o">=</span> <span class="p">{</span><span class="n">room</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_room_entities</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_furniture_entities</span><span class="p">:</span>  <span class="c1"># type: Entity</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_room</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">) not in any room&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_furniture_entities_room</span><span class="p">[</span><span class="n">room</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">) is in the </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_pose</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">room</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_passed_room_ids</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Will contain the ids of the rooms that are passed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_passed_furniture_ids</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Will contain the ids of the furniture that is passed</span>
+
+        <span class="c1"># get initial room</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_room</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_passed_room_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;position (</span><span class="si">{}</span><span class="s2">) not in any room&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+
+        <span class="c1"># get initial entities</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x_threshold</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y_threshold</span><span class="p">)</span>
+        <span class="n">close_entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entities</span><span class="p">(</span><span class="n">center_point</span><span class="o">=</span><span class="n">position</span><span class="o">.</span><span class="n">extractVectorStamped</span><span class="p">(),</span> <span class="n">radius</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">close_furniture_entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">entity</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">close_entities</span> <span class="k">if</span> <span class="n">entity</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="s2">&quot;furniture&quot;</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">close_furniture_entities</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_passed_furniture_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;TourGuide: passed rooms: </span><span class="si">{}</span><span class="s2">.</span><span class="se">\t</span><span class="s2"> passed entities </span><span class="si">{}</span><span class="s2">&quot;</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_passed_room_ids</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_passed_furniture_ids</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TourGuide.reset"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.TourGuide.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets the passed room ids and the passed furniture ids</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_passed_room_ids</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Will contain the ids of the rooms that are passed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_passed_furniture_ids</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Will contain the ids of the furniture that is passed</span></div>
+
+<div class="viewcode-block" id="TourGuide.get_room"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.TourGuide.get_room">[docs]</a>    <span class="k">def</span> <span class="nf">get_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="c1"># type: (kdl.Vector) -&gt; Entity</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the given position is in one of the provided rooms</span>
+
+<span class="sd">        :param position: position to check. N.B.: it is assumed this is w.r.t. the same frame as the room entities</span>
+<span class="sd">        :type position: kdl.Vector</span>
+<span class="sd">        :return: room entity</span>
+<span class="sd">        :rtype: Entity</span>
+<span class="sd">        :raises: (RuntimeError)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_room_entities</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">in_volume</span><span class="p">(</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">vector</span><span class="o">=</span><span class="n">position</span><span class="p">),</span> <span class="s2">&quot;in&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">room</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Position </span><span class="si">{}</span><span class="s2"> is not in any room&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">position</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="ExecutePlanGuidance"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.ExecutePlanGuidance">[docs]</a><span class="k">class</span> <span class="nc">ExecutePlanGuidance</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Similar to the &quot;executePlan&quot; smach state. The only difference is that after driving for x meters, &quot;check for</span>
+<span class="sd">    operator&quot; is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">operator_distance</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">operator_radius</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="c1"># type: (Robot, float, float) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param robot: (Robot) robot api object</span>
+<span class="sd">        :param operator_distance: (float) check for the operator to be within this range of the robot</span>
+<span class="sd">        :param operator_radius: (float) from the point behind the robot defined by `distance`, the person must be within</span>
+<span class="sd">            this radius</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;arrived&quot;</span><span class="p">,</span> <span class="s2">&quot;blocked&quot;</span><span class="p">,</span> <span class="s2">&quot;preempted&quot;</span><span class="p">,</span> <span class="s2">&quot;lost_operator&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_distance_threshold</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Only check if the operator is there once we&#39;ve driven for this distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_distance</span> <span class="o">=</span> <span class="n">operator_distance</span>  <span class="c1"># Operator is expected to follow the robot around this distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operator_radius</span> <span class="o">=</span> <span class="n">operator_radius</span>  <span class="c1"># Operator is expected to be within this radius around the position</span>
+        <span class="c1"># defined by the follow distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tourguide</span> <span class="o">=</span> <span class="n">TourGuide</span><span class="p">(</span><span class="n">robot</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExecutePlanGuidance.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.ExecutePlanGuidance.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># Look backwards to have the operator in view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">look_at_point</span><span class="p">(</span><span class="n">VectorStamped</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.75</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base_link_frame</span><span class="p">))</span>
+
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)</span>  <span class="c1"># Loop at 10 Hz</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">old_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_position</span><span class="p">()</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;execute: preempt_requested&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;preempted&quot;</span>
+
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getStatus</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;arrived&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;arrived&quot;</span>
+            <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;blocked&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;blocked&quot;</span>
+
+            <span class="n">new_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_position</span><span class="p">()</span>
+            <span class="n">distance</span> <span class="o">+=</span> <span class="p">(</span><span class="n">new_position</span> <span class="o">-</span> <span class="n">old_position</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+            <span class="n">old_position</span> <span class="o">=</span> <span class="n">new_position</span>
+            <span class="k">if</span> <span class="n">distance</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_threshold</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span>
+                    <span class="s2">&quot;Distance </span><span class="si">{}</span><span class="s2"> exceeds threshold </span><span class="si">{}</span><span class="s2">, check for operator&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_threshold</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_operator</span><span class="p">():</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Lost operator while guiding, cancelling plan&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="s2">&quot;lost_operator&quot;</span>
+
+            <span class="n">sentence</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tourguide</span><span class="o">.</span><span class="n">describe_near_objects</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">sentence</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+
+            <span class="n">rate</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ExecutePlanGuidance.reset_tourguide"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.ExecutePlanGuidance.reset_tourguide">[docs]</a>    <span class="k">def</span> <span class="nf">reset_tourguide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets the internal state of the tourguide so that all operators get complete information if this guide state</span>
+<span class="sd">        is used more than once.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tourguide</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ExecutePlanGuidance._check_operator"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.ExecutePlanGuidance._check_operator">[docs]</a>    <span class="k">def</span> <span class="nf">_check_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the operator is still sufficiently close</span>
+
+<span class="sd">        :return: (bool)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># ToDo: make robust (use time stamp?)</span>
+        <span class="k">return</span> <span class="n">_detect_operator_behind_robot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_distance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator_radius</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExecutePlanGuidance._get_base_position"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.ExecutePlanGuidance._get_base_position">[docs]</a>    <span class="k">def</span> <span class="nf">_get_base_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; kdl.Vector</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the base position as a kdl Vector</span>
+
+<span class="sd">        :return: (kdl Vector) with current base position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frame_stamped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span></div></div>
+
+
+<div class="viewcode-block" id="WaitForOperator"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.WaitForOperator">[docs]</a><span class="k">class</span> <span class="nc">WaitForOperator</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="c1"># type: (Robot, float, float, float) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Smach state to check if the operator is still following the robot.</span>
+
+<span class="sd">        :param robot: (Robot) robot api object</span>
+<span class="sd">        :param timeout: (float) if the operator has not been detected for this period, &quot;is_lost&quot; will be returned</span>
+<span class="sd">        :param distance: (float) check for the operator to be within this range of the robot [m]</span>
+<span class="sd">        :param radius: (float) from the point behind the robot defined by `distance`, the person must be within this</span>
+<span class="sd">            radius [m]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;is_following&quot;</span><span class="p">,</span> <span class="s2">&quot;is_lost&quot;</span><span class="p">,</span> <span class="s2">&quot;preempted&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span> <span class="o">=</span> <span class="n">distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span> <span class="o">=</span> <span class="n">radius</span>
+
+<div class="viewcode-block" id="WaitForOperator.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.WaitForOperator.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ud</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;It seems that we have lost each other. Please stand one meter behind me.&quot;</span><span class="p">)</span>
+
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">t_start</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+
+            <span class="c1"># Check if the operator is there</span>
+            <span class="k">if</span> <span class="n">_detect_operator_behind_robot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radius</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;There you are&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;is_following&quot;</span>
+
+            <span class="c1"># Check timeout</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Guide - Wait for operator: timeout </span><span class="si">{}</span><span class="s2"> exceeded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">))</span>
+                <span class="k">return</span> <span class="s2">&quot;is_lost&quot;</span>
+
+            <span class="n">rate</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="s2">&quot;preempted&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="Guide"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.Guide">[docs]</a><span class="k">class</span> <span class="nc">Guide</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">constraint_function</span><span class="p">,</span> <span class="n">operator_distance</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">operator_radius</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="c1"># type: (Robot, function, float, float) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Base Smach state to guide an operator to a designated position</span>
+
+<span class="sd">        :param robot: (Robot) robot api object</span>
+<span class="sd">        :param operator_distance: (float) check for the operator to be within this range of the robot</span>
+<span class="sd">        :param operator_radius: (float) from the point behind the robot defined by `distance`, the person must be within this radius</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;arrived&quot;</span><span class="p">,</span> <span class="s2">&quot;unreachable&quot;</span><span class="p">,</span> <span class="s2">&quot;goal_not_defined&quot;</span><span class="p">,</span> <span class="s2">&quot;lost_operator&quot;</span><span class="p">,</span> <span class="s2">&quot;preempted&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operator_distance</span> <span class="o">=</span> <span class="n">operator_distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operator_radius</span> <span class="o">=</span> <span class="n">operator_radius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_plan</span> <span class="o">=</span> <span class="n">ExecutePlanGuidance</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span>
+                                                <span class="n">operator_distance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">operator_distance</span><span class="p">,</span>
+                                                <span class="n">operator_radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">operator_radius</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="nd">@smach</span><span class="o">.</span><span class="n">cb_interface</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">])</span>
+            <span class="k">def</span> <span class="nf">_reset_mentioned_entities</span><span class="p">(</span><span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                Resets the entities that have been mentioned so that the robot will mention all entities to all</span>
+<span class="sd">                 operators</span>
+<span class="sd">                 &quot;&quot;&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">execute_plan</span><span class="o">.</span><span class="n">reset_tourguide</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;done&quot;</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;RESET_MENTIONED_ENTITIES&quot;</span><span class="p">,</span>
+                                   <span class="n">smach</span><span class="o">.</span><span class="n">CBState</span><span class="p">(</span><span class="n">_reset_mentioned_entities</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="s2">&quot;SAY_BEHIND&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;SAY_BEHIND&quot;</span><span class="p">,</span>
+                                   <span class="n">Say</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="s2">&quot;Please stand behind me and look at me&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;spoken&quot;</span><span class="p">:</span> <span class="s2">&quot;WAIT&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;WAIT&quot;</span><span class="p">,</span>
+                                   <span class="n">WaitTime</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">waittime</span><span class="o">=</span><span class="mf">3.0</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;waited&quot;</span><span class="p">:</span> <span class="s2">&quot;GET_PLAN&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;preempted&quot;</span><span class="p">:</span> <span class="s2">&quot;preempted&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;GET_PLAN&quot;</span><span class="p">,</span> <span class="n">navigation</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span> <span class="n">constraint_function</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;unreachable&quot;</span><span class="p">:</span> <span class="s2">&quot;unreachable&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;goal_not_defined&quot;</span><span class="p">:</span> <span class="s2">&quot;goal_not_defined&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;goal_ok&quot;</span><span class="p">:</span> <span class="s2">&quot;EXECUTE_PLAN&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;EXECUTE_PLAN&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_plan</span><span class="p">,</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arrived&quot;</span><span class="p">:</span> <span class="s2">&quot;arrived&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;blocked&quot;</span><span class="p">:</span> <span class="s2">&quot;PLAN_BLOCKED&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;preempted&quot;</span><span class="p">:</span> <span class="s2">&quot;preempted&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;lost_operator&quot;</span><span class="p">:</span> <span class="s2">&quot;WAIT_FOR_OPERATOR&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;WAIT_FOR_OPERATOR&quot;</span><span class="p">,</span>
+                                   <span class="n">WaitForOperator</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span>
+                                                   <span class="n">distance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">operator_distance</span><span class="p">,</span>
+                                                   <span class="n">radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">operator_radius</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;is_following&quot;</span><span class="p">:</span> <span class="s2">&quot;GET_PLAN&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;is_lost&quot;</span><span class="p">:</span> <span class="s2">&quot;lost_operator&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;PLAN_BLOCKED&quot;</span><span class="p">,</span> <span class="n">navigation</span><span class="o">.</span><span class="n">planBlocked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;blocked&quot;</span><span class="p">:</span> <span class="s2">&quot;GET_PLAN&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;free&quot;</span><span class="p">:</span> <span class="s2">&quot;EXECUTE_PLAN&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="GuideToSymbolic"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/guidance/index.html#robot_smach_states.navigation.guidance.GuideToSymbolic">[docs]</a><span class="k">class</span> <span class="nc">GuideToSymbolic</span><span class="p">(</span><span class="n">Guide</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Guidance class to navigate to a semantically annotated goal, e.g., in front of the dinner table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">entity_designator_area_name_map</span><span class="p">,</span> <span class="n">entity_lookat_designator</span><span class="p">,</span> <span class="n">operator_distance</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">operator_radius</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="c1"># type: (Robot, dict, EdEntityDesignator, float, float) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param entity_designator_area_name_map: dictionary mapping EdEntityDesignators to a string or designator</span>
+<span class="sd">            resolving to a string, representing the area, e.g., entity_designator_area_name_map[&lt;EdEntity&gt;] = &#39;in_front_of&#39;.</span>
+<span class="sd">        :param entity_lookat_designator: EdEntityDesignator defining the entity the robot should look at. This is used</span>
+<span class="sd">            to compute the orientation constraint.</span>
+<span class="sd">        :param operator_distance: (float) check for the operator to be within this range of the robot [m]</span>
+<span class="sd">        :param operator_radius: (float) from the point behind the robot defined by `distance`, the person must be within</span>
+<span class="sd">            this radius [m]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">constr_fun</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">combine_constraints</span><span class="p">(</span>
+            <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="n">symbolic_constraint</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">entity_designator_area_name_map</span><span class="p">),</span>
+             <span class="k">lambda</span><span class="p">:</span> <span class="n">look_at_constraint</span><span class="p">(</span><span class="n">entity_lookat_designator</span><span class="p">)]</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GuideToSymbolic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span>
+                                              <span class="n">constraint_function</span><span class="o">=</span><span class="n">constr_fun</span><span class="p">,</span>
+                                              <span class="n">operator_distance</span><span class="o">=</span><span class="n">operator_distance</span><span class="p">,</span>
+                                              <span class="n">operator_radius</span><span class="o">=</span><span class="n">operator_radius</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

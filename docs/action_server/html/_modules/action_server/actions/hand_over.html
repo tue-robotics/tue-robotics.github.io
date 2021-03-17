@@ -1,0 +1,394 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>action_server.actions.hand_over &mdash; action_server 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> action_server
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">action_server</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>action_server.actions.hand_over</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for action_server.actions.hand_over</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">action</span> <span class="k">import</span> <span class="n">Action</span><span class="p">,</span> <span class="n">ConfigurationData</span>
+<span class="kn">from</span> <span class="nn">entity_description</span> <span class="k">import</span> <span class="n">resolve_entity_description</span>
+
+<span class="kn">import</span> <span class="nn">rospy</span>
+
+
+<div class="viewcode-block" id="HandOver"><a class="viewcode-back" href="../../../api/action_server/actions/hand_over/index.html#action_server.actions.hand_over.HandOver">[docs]</a><span class="k">class</span> <span class="nc">HandOver</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The HandOver class implements the action to hand over an object to a person.</span>
+
+<span class="sd">    Parameters to pass to the configure() method are &#39;source-location&#39; (required), &#39;target-location&#39; (required) and</span>
+<span class="sd">    an object to bring (required).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Action</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_field_prompts</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;target-location&#39;</span><span class="p">:</span> <span class="s2">&quot; Who would you like me to hand the object? &quot;</span><span class="p">,</span>
+                                        <span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="s2">&quot; What would you like me to hand over? &quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_skills</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="HandOver.Semantics"><a class="viewcode-back" href="../../../api/action_server/actions/hand_over/index.html#action_server.actions.hand_over.HandOver.Semantics">[docs]</a>    <span class="k">class</span> <span class="nc">Semantics</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_location</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_location</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="HandOver._parse_semantics"><a class="viewcode-back" href="../../../api/action_server/actions/hand_over/index.html#action_server.actions.hand_over.HandOver._parse_semantics">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_semantics</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">):</span>
+        <span class="n">semantics</span> <span class="o">=</span> <span class="n">HandOver</span><span class="o">.</span><span class="n">Semantics</span><span class="p">()</span>
+
+        <span class="n">semantics</span><span class="o">.</span><span class="n">target_location</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">[</span><span class="s1">&#39;target-location&#39;</span><span class="p">])</span>
+        <span class="n">semantics</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;source-location&#39;</span> <span class="ow">in</span> <span class="n">semantics_dict</span><span class="p">:</span>
+            <span class="n">semantics</span><span class="o">.</span><span class="n">source_location</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">[</span><span class="s1">&#39;source-location&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">semantics</span></div>
+
+<div class="viewcode-block" id="HandOver.Context"><a class="viewcode-back" href="../../../api/action_server/actions/hand_over/index.html#action_server.actions.hand_over.HandOver.Context">[docs]</a>    <span class="k">class</span> <span class="nc">Context</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="HandOver._parse_context"><a class="viewcode-back" href="../../../api/action_server/actions/hand_over/index.html#action_server.actions.hand_over.HandOver._parse_context">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_context</span><span class="p">(</span><span class="n">context_dict</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">HandOver</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;arm-designator&#39;</span> <span class="ow">in</span> <span class="n">context_dict</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="n">context_dict</span><span class="p">[</span><span class="s1">&#39;arm-designator&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">context_dict</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">context_dict</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;location&#39;</span> <span class="ow">in</span> <span class="n">context_dict</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">context_dict</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">context</span></div>
+
+<div class="viewcode-block" id="HandOver._configure"><a class="viewcode-back" href="../../../api/action_server/actions/hand_over/index.html#action_server.actions.hand_over.HandOver._configure">[docs]</a>    <span class="k">def</span> <span class="nf">_configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="c1"># Parse semantics and context to a convenient object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">semantics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_semantics</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_context</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="c1"># Express the initial conditions in rules based on input</span>
+        <span class="c1"># We assume we already got the object if previous action passed an arm, an object and this object has the</span>
+        <span class="c1"># required type, or the required type is a reference.</span>
+        <span class="n">got_object</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">arm_designator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="ow">or</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;reference&#39;</span><span class="p">))</span>
+        <span class="c1"># If precondition not met, request prior action from the task manager</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">got_object</span><span class="p">:</span>
+            <span class="c1"># Request pick_up action</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">required_context</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;pick-up&#39;</span><span class="p">}</span>
+            <span class="k">if</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span> <span class="ow">and</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;reference&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">required_context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="s1">&#39;object&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">context</span> <span class="ow">and</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">required_context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]}</span>
+
+            <span class="k">if</span> <span class="s1">&#39;source-location&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">required_context</span><span class="p">[</span><span class="s1">&#39;source-location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;source-location&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;location&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">context</span> <span class="ow">and</span> <span class="s1">&#39;id&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">required_context</span><span class="p">[</span><span class="s1">&#39;source-location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+            <span class="c1"># If necessary request an object from the given category</span>
+            <span class="c1"># ToDo this needs the grammar to make a difference between CATEGORY and NAMED_OBJECT</span>
+            <span class="k">if</span> <span class="s1">&#39;category&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">required_context</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">]</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Now we can assume we picked up the item!</span>
+        <span class="c1"># We should have navigated to the place where we should hand over</span>
+        <span class="n">at_destination</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
+                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">target_location</span> <span class="ow">or</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">target_location</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;reference&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">at_destination</span><span class="p">:</span>
+            <span class="c1"># Request navigation action</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">required_context</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;navigate-to&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;target-location&#39;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">[</span><span class="s1">&#39;target-location&#39;</span><span class="p">]}</span>
+            <span class="k">return</span>
+        <span class="c1"># We can now assume that we are at the destination for handover!</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Bring the action!&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="HandOver._handover"><a class="viewcode-back" href="../../../api/action_server/actions/hand_over/index.html#action_server.actions.hand_over.HandOver._handover">[docs]</a>    <span class="k">def</span> <span class="nf">_handover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO: Move this code to the handover smach state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I will hand over the </span><span class="si">{}</span><span class="s2"> now&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+        <span class="n">arm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">arm_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">send_joint_goal</span><span class="p">(</span><span class="s1">&#39;handover_to_human&#39;</span><span class="p">)</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Please take it from my gripper.&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">attempt</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">arm</span><span class="o">.</span><span class="n">handover_to_human</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Please take it from my gripper.&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">attempt</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I will open my gripper now.&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">update_entity</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">arm</span><span class="o">.</span><span class="n">occupied_by</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;remove&#39;</span><span class="p">)</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">send_gripper_goal</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">)</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+
+        <span class="n">arm</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">()</span>
+
+        <span class="n">arm</span><span class="o">.</span><span class="n">occupied_by</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="HandOver._start"><a class="viewcode-back" href="../../../api/action_server/actions/hand_over/index.html#action_server.actions.hand_over.HandOver._start">[docs]</a>    <span class="k">def</span> <span class="nf">_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Handover</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_handover</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">source_location</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; I brought a </span><span class="si">{}</span><span class="s2"> from </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                                                                     <span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">source_location</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                                                                     <span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">target_location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot; I brought a </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                                                             <span class="bp">self</span><span class="o">.</span><span class="n">semantics</span><span class="o">.</span><span class="n">target_location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HandOver._cancel"><a class="viewcode-back" href="../../../api/action_server/actions/hand_over/index.html#action_server.actions.hand_over.HandOver._cancel">[docs]</a>    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;bring_test&#39;</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+    <span class="n">robot_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;amigo&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.amigo</span> <span class="k">import</span> <span class="n">Amigo</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">elif</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;sergio&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.sergio</span> <span class="k">import</span> <span class="n">Sergio</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.mockbot</span> <span class="k">import</span> <span class="n">Mockbot</span> <span class="k">as</span> <span class="n">Robot</span>
+
+    <span class="n">robot</span> <span class="o">=</span> <span class="n">Robot</span><span class="p">()</span>
+
+    <span class="n">action</span> <span class="o">=</span> <span class="n">HandOver</span><span class="p">()</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigurationData</span><span class="p">({</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;hand-over&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="s1">&#39;cabinet&#39;</span><span class="p">},</span>
+                                <span class="s1">&#39;source-location&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;cabinet&#39;</span><span class="p">},</span>
+                                <span class="s1">&#39;target-location&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;dinner_table&#39;</span><span class="p">}})</span>
+
+    <span class="n">action</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

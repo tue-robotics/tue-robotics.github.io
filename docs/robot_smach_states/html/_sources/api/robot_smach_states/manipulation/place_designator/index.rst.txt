@@ -1,0 +1,90 @@
+:mod:`robot_smach_states.manipulation.place_designator`
+=======================================================
+
+.. py:module:: robot_smach_states.manipulation.place_designator
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   robot_smach_states.manipulation.place_designator.EmptySpotDesignator
+
+
+
+.. py:class:: EmptySpotDesignator(robot, place_location_designator, arm_designator, area=None, name=None)
+
+   Bases: :class:`robot_smach_states.util.designators.Designator`
+
+   Designates an empty spot on the empty placement-shelve.
+   It does this by querying ED for entities that occupy some space.
+       If the result is no entities, then we found an open spot.
+
+   To test this in the robotics_test_lab with amigo-console:
+   robot = amigo
+   CABINET = "bookcase"
+   PLACE_SHELF = "shelf2"
+   cabinet = ds.EntityByIdDesignator(robot, id=CABINET, name="pick_shelf")
+   arm = ds.UnoccupiedArmDesignator(robot, {})
+   place_position = ds.LockingDesignator(EmptySpotDesignator(robot, cabinet, arm, name="placement", area=PLACE_SHELF),
+                                         name="place_position")
+
+   Designate an empty spot (as PoseStamped) on some designated entity
+   :param robot: Robot whose worldmodel to use
+   :param place_location_designator: Designator resolving to an Entity, e.g. EntityByIdDesignator
+   :param arm_designator: Designator resolving to an arm robot part, e.g. OccupiedArmDesignator
+   :param area: (optional) area where the item should be placed
+   :param name: name for introspection purposes
+
+   .. method:: _resolve(self)
+
+      :return: Where can an object be placed
+      :returns: FrameStamped
+
+
+   .. method:: _is_poi_unoccupied(self, frame_stamped, surface_entity)
+
+
+   .. method:: _distance_to_poi_area_heuristic(self, frame_stamped, base_pose, arm)
+
+      :return: direct distance between a point and and the place offset of the arm
+      :rtype: double [meters]
+
+
+   .. method:: _distance_to_poi_area(self, frame_stamped, arm)
+
+      :return: length of the path the robot would need to drive to place at the given point
+      :rtype: int [plan steps]
+
+
+   .. method:: _create_marker(self, x, y, z)
+
+
+   .. method:: _create_selection_marker(self, selected_pose)
+
+
+   .. method:: _determine_points_of_interest_with_area(self, entity, area)
+
+      Determines the points of interest using an area
+      :type entity: Entity
+      :param area: str indicating which volume of the entity to look at
+      :rtype: [FrameStamped]
+
+
+   .. method:: _determine_points_of_interest(self, center_frame, z_max, convex_hull)
+
+      Determine candidates for place poses
+      :param center_frame: kdl.Frame, center of the Entity to place on top of
+      :param z_max: float, height of the entity to place on, w.r.t. the entity
+      :param convex_hull: [kdl.Vector], convex hull of the entity
+      :return: [FrameStamped] of candidates for placing
+
+
+   .. method:: __repr__(self)
+
+
+

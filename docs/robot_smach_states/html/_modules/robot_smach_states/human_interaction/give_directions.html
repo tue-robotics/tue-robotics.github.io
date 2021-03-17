@@ -1,0 +1,495 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.human_interaction.give_directions &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.human_interaction.give_directions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.human_interaction.give_directions</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">PyKDL</span> <span class="k">as</span> <span class="nn">kdl</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.robot</span> <span class="k">import</span> <span class="n">Robot</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">Entity</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">point_msg_to_kdl_vector</span><span class="p">,</span> <span class="n">VectorStamped</span>
+
+<span class="c1"># Robot Smach States</span>
+<span class="kn">from</span> <span class="nn">..navigation.constraint_functions.symbolic_constraints</span> <span class="k">import</span> <span class="n">symbolic_constraint</span>
+<span class="kn">from</span> <span class="nn">..util.designators.ed_designators</span> <span class="k">import</span> <span class="n">Designator</span>
+
+
+<div class="viewcode-block" id="GiveDirections"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/give_directions/index.html#robot_smach_states.human_interaction.give_directions.GiveDirections">[docs]</a><span class="k">class</span> <span class="nc">GiveDirections</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Robot tells the operator how to get to a certain entity</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">entity_designator</span><span class="p">,</span> <span class="n">x_threshold</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">y_threshold</span><span class="o">=</span><span class="mf">1.5</span><span class="p">):</span>
+        <span class="c1"># type: (Robot, Designator, float, float) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Init</span>
+
+<span class="sd">        :param robot: API object</span>
+<span class="sd">        :type robot: Robot</span>
+<span class="sd">        :param entity_designator: resolving to the entity the operator wants to go to</span>
+<span class="sd">        :type entity_designator: Designator</span>
+<span class="sd">        :param x_threshold: if the entity is closer than this distance in x-direction w.r.t. the path frame</span>
+<span class="sd">            it is considered &#39;passed&#39;</span>
+<span class="sd">        :type x_threshold: float</span>
+<span class="sd">        :param y_threshold: if the entity is closer than this distance in y-direction w.r.t. the path frame</span>
+<span class="sd">            it is considered &#39;passed&#39;</span>
+<span class="sd">        :type y_threshold: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">GiveDirections</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;succeeded&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entity_designator</span> <span class="o">=</span> <span class="n">entity_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x_threshold</span> <span class="o">=</span> <span class="n">x_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y_threshold</span> <span class="o">=</span> <span class="n">y_threshold</span>
+
+<div class="viewcode-block" id="GiveDirections.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/give_directions/index.html#robot_smach_states.human_interaction.give_directions.GiveDirections.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Get the constraints for the global planner</span>
+        <span class="n">nav_constraints</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">goal_entity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entity_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>  <span class="c1"># type: Entity</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Resolved to Entity: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">goal_entity</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">goal_entity</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Cannot give directions if I don&#39;t know where to go&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I&#39;m sorry but I don&#39;t know where you want to go&quot;</span><span class="p">,</span> <span class="n">mood</span><span class="o">=</span><span class="s2">&quot;sad&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+        <span class="k">if</span> <span class="n">goal_entity</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="s2">&quot;room&quot;</span><span class="p">):</span>
+            <span class="n">possible_areas</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">possible_areas</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;in_front_of&quot;</span><span class="p">,</span> <span class="s2">&quot;near&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">possible_areas</span><span class="p">:</span>
+            <span class="n">nav_constraints</span><span class="p">[</span><span class="n">area</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbolic_constraint</span><span class="p">(</span>
+                <span class="n">robot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="p">,</span>
+                <span class="n">entity_designator_area_name_map</span><span class="o">=</span><span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_entity_designator</span><span class="p">:</span> <span class="n">area</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nav_constraints</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Cannot give directions if I don&#39;t know where to go&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I&#39;m sorry but I don&#39;t know where you want to go&quot;</span><span class="p">,</span> <span class="n">mood</span><span class="o">=</span><span class="s2">&quot;sad&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="c1"># Call the global planner for the shortest path to this entity</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">nav_con</span> <span class="ow">in</span> <span class="n">nav_constraints</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="n">position_constraint</span><span class="o">=</span><span class="n">nav_con</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;No path to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">goal_entity</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;I&#39;m sorry but I don&#39;t know how to get to the </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">goal_entity</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+            <span class="k">return</span> <span class="s2">&quot;failed&quot;</span>
+
+        <span class="c1"># Convert the path to a list of kdl Vectors</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">all</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;map&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path</span><span class="p">])),</span> <span class="s2">&quot;Not all path poses are defined w.r.t. &#39;map&#39;&quot;</span>
+        <span class="n">kdl_path</span> <span class="o">=</span> <span class="p">[</span><span class="n">point_msg_to_kdl_vector</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path</span><span class="p">]</span>
+
+        <span class="c1"># Get all entities</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entities</span><span class="p">()</span>
+        <span class="n">room_entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">room</span> <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;room&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Log the time we start iterating</span>
+        <span class="n">t_start</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="c1"># Match the path to rooms</span>
+        <span class="n">passed_room_ids</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Will contain the ids of the rooms that are passed</span>
+        <span class="k">for</span> <span class="n">position</span><span class="p">,</span> <span class="n">next_position</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">kdl_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">kdl_path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">room</span> <span class="o">=</span> <span class="n">get_room</span><span class="p">(</span><span class="n">room_entities</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">passed_room_ids</span><span class="p">:</span>
+                <span class="n">passed_room_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">final_room_entry_pose</span> <span class="o">=</span> <span class="n">create_frame_from_points</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">next_position</span><span class="p">)</span>
+
+        <span class="c1"># With this information: start creating the text for the robot</span>
+        <span class="n">sentence</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">passed_room_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot;We are now in the </span><span class="si">{}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">passed_room_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">passed_room_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot;We will pass through &quot;</span>
+                <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot;the </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">passed_room_ids</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">passed_room_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">passed_room_ids</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
+                        <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot;, the </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">room</span><span class="p">)</span>
+                    <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot; and the </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">passed_room_ids</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot;We will enter the </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">passed_room_ids</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># Check where the goal is upon entering the room</span>
+        <span class="n">entity_pose_path</span> <span class="o">=</span> <span class="n">final_room_entry_pose</span><span class="o">.</span><span class="n">Inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">goal_entity</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">frame</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">entity_pose_path</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">entity_pose_path</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">())</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;angle = </span><span class="si">{}</span><span class="s2"> rad, </span><span class="si">{}</span><span class="s2"> degrees&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">angle</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+            <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot;The </span><span class="si">{}</span><span class="s2"> will be in front of you.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">goal_entity</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">side</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span> <span class="k">if</span> <span class="n">angle</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="s2">&quot;right&quot;</span>
+            <span class="n">sentence</span> <span class="o">+=</span> <span class="s2">&quot;The </span><span class="si">{}</span><span class="s2"> is on your </span><span class="si">{}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">goal_entity</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">side</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Directions computation took </span><span class="si">{}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+
+        <span class="c1"># ToDo&#39;s:</span>
+        <span class="c1"># * Improve texts</span>
+        <span class="c1"># * Break up this execute method into more (standalone/static) methods to improve readability and re-usability</span>
+
+        <span class="k">return</span> <span class="s2">&quot;succeeded&quot;</span></div>
+
+<div class="viewcode-block" id="GiveDirections.get_entity_pose_in_path"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/give_directions/index.html#robot_smach_states.human_interaction.give_directions.GiveDirections.get_entity_pose_in_path">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_entity_pose_in_path</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">next_point</span><span class="p">,</span> <span class="n">entity_pose</span><span class="p">):</span>
+        <span class="c1"># type: (kdl.Vector, kdl.Vector, kdl.Frame) -&gt; kdl.Frame</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the entity pose w.r.t. the virtual frame that is spanned by the two points</span>
+
+<span class="sd">        :param point: First point in fixed frame</span>
+<span class="sd">        :type point: kdl.Vector</span>
+<span class="sd">        :param next_point: Next point in fixed frame</span>
+<span class="sd">        :type next_point: kdl.Vector</span>
+<span class="sd">        :param entity_pose: (kdl.Frame) Entity pose in fixed frame</span>
+<span class="sd">        :type entity_pose: kdl.Frame</span>
+<span class="sd">        :return: Entity pose in virtual &#39;path&#39; frame</span>
+<span class="sd">        :rtype: kdl.Frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Determine a 6D path pose</span>
+        <span class="n">path_pose</span> <span class="o">=</span> <span class="n">create_frame_from_points</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">next_point</span><span class="p">)</span>
+
+        <span class="c1"># Transform entity pose into path frame</span>
+        <span class="n">entity_pose_path</span> <span class="o">=</span> <span class="n">path_pose</span><span class="o">.</span><span class="n">Inverse</span><span class="p">()</span> <span class="o">*</span> <span class="n">entity_pose</span>
+
+        <span class="k">return</span> <span class="n">entity_pose_path</span></div></div>
+
+
+<div class="viewcode-block" id="create_frame_from_points"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/give_directions/index.html#robot_smach_states.human_interaction.give_directions.create_frame_from_points">[docs]</a><span class="k">def</span> <span class="nf">create_frame_from_points</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">):</span>
+    <span class="c1"># type: (kdl.Vector, kdl.Vector) -&gt; kdl.Frame</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a frame from two points. The origin of the frame is the first point. The x-direction points into the</span>
+<span class="sd">    direction of the next point</span>
+
+<span class="sd">    :param p0: Origin of the frame</span>
+<span class="sd">    :type p0: kdl.Vector</span>
+<span class="sd">    :param p1: x-direction of the frame will point to this vector</span>
+<span class="sd">    :type p1: kdl.Vector</span>
+<span class="sd">    :return: Created frame</span>
+<span class="sd">    :rtype: kdl.Frame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unit_x</span> <span class="o">=</span> <span class="n">p1</span> <span class="o">-</span> <span class="n">p0</span>  <span class="c1"># difference</span>
+    <span class="n">unit_x</span><span class="o">.</span><span class="n">Normalize</span><span class="p">()</span>  <span class="c1"># normalize it so that Norm is 1.0</span>
+    <span class="n">unit_y</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">RPY</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">unit_x</span>
+    <span class="n">unit_z</span> <span class="o">=</span> <span class="n">unit_x</span> <span class="o">*</span> <span class="n">unit_y</span>  <span class="c1"># cross-product</span>
+    <span class="n">rotation</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="p">(</span><span class="n">unit_x</span><span class="p">,</span> <span class="n">unit_y</span><span class="p">,</span> <span class="n">unit_z</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">rotation</span><span class="p">,</span> <span class="n">p0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="in_room"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/give_directions/index.html#robot_smach_states.human_interaction.give_directions.in_room">[docs]</a><span class="k">def</span> <span class="nf">in_room</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+    <span class="c1"># type: (Entity, kdl.Vector) -&gt; bool</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if the given position is in the given room</span>
+
+<span class="sd">    :param room: Room entity</span>
+<span class="sd">    :type room: Entity</span>
+<span class="sd">    :param position: position to check. N.B.: it is assumed this is w.r.t. the same frame as the room</span>
+<span class="sd">        entities</span>
+<span class="sd">    :type position: kdl.Vector</span>
+<span class="sd">    :return: whether or not the position is in the room</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">room</span><span class="o">.</span><span class="n">in_volume</span><span class="p">(</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">vector</span><span class="o">=</span><span class="n">position</span><span class="p">),</span> <span class="s2">&quot;in&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="get_room"><a class="viewcode-back" href="../../../api/robot_smach_states/human_interaction/give_directions/index.html#robot_smach_states.human_interaction.give_directions.get_room">[docs]</a><span class="k">def</span> <span class="nf">get_room</span><span class="p">(</span><span class="n">rooms</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+    <span class="c1"># type: (list[Entity], kdl.Vector) -&gt; Entity</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks if the given position is in one of the provided rooms</span>
+
+<span class="sd">    :param rooms: list(Entity) containing all room entities</span>
+<span class="sd">    :type rooms: list[Entity]</span>
+<span class="sd">    :param position: position to check. N.B.: it is assumed this is w.r.t. the same frame as the room entities</span>
+<span class="sd">    :type position: kdl.Vector</span>
+<span class="sd">    :return: room entity</span>
+<span class="sd">    :rtype: Entity</span>
+<span class="sd">    :raises: (RuntimeError)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">rooms</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">in_room</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">room</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Position </span><span class="si">{}</span><span class="s2"> is not in any room&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">position</span><span class="p">))</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># The code in this __main__ are for testing purposes. Once the ToDos of the smach state are processed, this</span>
+    <span class="c1"># can/should be moved to a different file (or CI test)</span>
+
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">robot_smach_states.util.designators</span> <span class="k">as</span> <span class="nn">ds</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="k">def</span> <span class="nf">_test_rooms</span><span class="p">(</span><span class="n">robot</span><span class="p">):</span>
+        <span class="c1"># type: (Robot) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tests the &#39;get room&#39; method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">entities</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entities</span><span class="p">()</span>
+        <span class="n">room_entities</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;room&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">):</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">room</span> <span class="o">=</span> <span class="n">get_room</span><span class="p">(</span><span class="n">room_entities</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Position </span><span class="si">{}</span><span class="s2"> is in the </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">room</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;give_directions&#39;</span><span class="p">)</span>
+
+    <span class="n">robot_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;amigo&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.amigo</span> <span class="k">import</span> <span class="n">Amigo</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">elif</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;sergio&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.sergio</span> <span class="k">import</span> <span class="n">Sergio</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">elif</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;hero&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.hero</span> <span class="k">import</span> <span class="n">Hero</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;unknown robot&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="n">robot</span> <span class="o">=</span> <span class="n">Robot</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">furniture_id</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">furniture_id</span> <span class="o">=</span> <span class="s2">&quot;bed&quot;</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Waiting for tf cache to be filled&quot;</span><span class="p">)</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># wait for tf cache to be filled</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Testing the &#39;get_room&#39; method&quot;</span><span class="p">)</span>
+    <span class="n">_test_rooms</span><span class="p">(</span><span class="n">robot</span><span class="p">)</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Starting giving directions to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">furniture_id</span><span class="p">))</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">GiveDirections</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span>
+                           <span class="n">entity_designator</span><span class="o">=</span><span class="n">ds</span><span class="o">.</span><span class="n">EntityByIdDesignator</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">furniture_id</span><span class="p">))</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

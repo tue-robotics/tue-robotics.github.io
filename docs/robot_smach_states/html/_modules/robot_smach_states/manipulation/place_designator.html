@@ -1,0 +1,481 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.manipulation.place_designator &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.manipulation.place_designator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.manipulation.place_designator</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">PyKDL</span> <span class="k">as</span> <span class="nn">kdl</span>
+<span class="kn">from</span> <span class="nn">visualization_msgs.msg</span> <span class="k">import</span> <span class="n">MarkerArray</span><span class="p">,</span> <span class="n">Marker</span>
+
+<span class="c1"># TUe robotics</span>
+<span class="kn">from</span> <span class="nn">robot_skills.arm.arms</span> <span class="k">import</span> <span class="n">PublicArm</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.entity</span> <span class="k">import</span> <span class="n">Entity</span>
+<span class="kn">from</span> <span class="nn">robot_skills.util.kdl_conversions</span> <span class="k">import</span> <span class="n">kdl_frame_stamped_from_XYZRPY</span><span class="p">,</span> <span class="n">FrameStamped</span>
+<span class="kn">from</span> <span class="nn">..util.designators</span> <span class="k">import</span> <span class="n">Designator</span><span class="p">,</span> <span class="n">check_resolve_type</span>
+<span class="kn">from</span> <span class="nn">cb_base_navigation_msgs.msg</span> <span class="k">import</span> <span class="n">PositionConstraint</span>
+<span class="kn">from</span> <span class="nn">..util.geometry_helpers</span> <span class="k">import</span> <span class="n">offsetConvexHull</span>
+
+
+<div class="viewcode-block" id="EmptySpotDesignator"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/place_designator/index.html#robot_smach_states.manipulation.place_designator.EmptySpotDesignator">[docs]</a><span class="k">class</span> <span class="nc">EmptySpotDesignator</span><span class="p">(</span><span class="n">Designator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Designates an empty spot on the empty placement-shelve.</span>
+<span class="sd">    It does this by querying ED for entities that occupy some space.</span>
+<span class="sd">        If the result is no entities, then we found an open spot.</span>
+
+<span class="sd">    To test this in the robotics_test_lab with amigo-console:</span>
+<span class="sd">    robot = amigo</span>
+<span class="sd">    CABINET = &quot;bookcase&quot;</span>
+<span class="sd">    PLACE_SHELF = &quot;shelf2&quot;</span>
+<span class="sd">    cabinet = ds.EntityByIdDesignator(robot, id=CABINET, name=&quot;pick_shelf&quot;)</span>
+<span class="sd">    arm = ds.UnoccupiedArmDesignator(robot, {})</span>
+<span class="sd">    place_position = ds.LockingDesignator(EmptySpotDesignator(robot, cabinet, arm, name=&quot;placement&quot;, area=PLACE_SHELF),</span>
+<span class="sd">                                          name=&quot;place_position&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">place_location_designator</span><span class="p">,</span> <span class="n">arm_designator</span><span class="p">,</span> <span class="n">area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Designate an empty spot (as PoseStamped) on some designated entity</span>
+<span class="sd">        :param robot: Robot whose worldmodel to use</span>
+<span class="sd">        :param place_location_designator: Designator resolving to an Entity, e.g. EntityByIdDesignator</span>
+<span class="sd">        :param arm_designator: Designator resolving to an arm robot part, e.g. OccupiedArmDesignator</span>
+<span class="sd">        :param area: (optional) area where the item should be placed</span>
+<span class="sd">        :param name: name for introspection purposes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EmptySpotDesignator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">FrameStamped</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="n">check_resolve_type</span><span class="p">(</span><span class="n">place_location_designator</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">place_location_designator</span> <span class="o">=</span> <span class="n">place_location_designator</span>
+
+        <span class="n">check_resolve_type</span><span class="p">(</span><span class="n">arm_designator</span><span class="p">,</span> <span class="n">PublicArm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span> <span class="o">=</span> <span class="n">arm_designator</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_distance</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># Distance to table edge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spacing</span> <span class="o">=</span> <span class="mf">0.15</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_area</span> <span class="o">=</span> <span class="n">area</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nav_threshold</span> <span class="o">=</span> <span class="mf">0.3</span>   <span class="c1"># Distance we are willing to drive further for better edge_score</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">marker_pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/empty_spots&#39;</span><span class="p">,</span> <span class="n">MarkerArray</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">marker_array</span> <span class="o">=</span> <span class="n">MarkerArray</span><span class="p">()</span>
+
+<div class="viewcode-block" id="EmptySpotDesignator._resolve"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/place_designator/index.html#robot_smach_states.manipulation.place_designator.EmptySpotDesignator._resolve">[docs]</a>    <span class="k">def</span> <span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: Where can an object be placed</span>
+<span class="sd">        :returns: FrameStamped</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">place_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">place_location_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">place_frame</span> <span class="o">=</span> <span class="n">FrameStamped</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="n">place_location</span><span class="o">.</span><span class="n">_pose</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/map&quot;</span><span class="p">)</span>
+
+        <span class="c1"># points_of_interest = []</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_area</span><span class="p">:</span>
+            <span class="n">vectors_of_interest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_points_of_interest_with_area</span><span class="p">(</span><span class="n">place_location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_area</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vectors_of_interest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_points_of_interest</span><span class="p">(</span><span class="n">place_frame</span><span class="o">.</span><span class="n">frame</span><span class="p">,</span> <span class="n">z_max</span><span class="o">=</span><span class="n">place_location</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">z_max</span><span class="p">,</span>
+                                                                    <span class="n">convex_hull</span><span class="o">=</span><span class="n">place_location</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">convex_hull</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">FrameStamped</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vectors_of_interest</span><span class="p">)</span>
+
+        <span class="n">open_POIs</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">pose</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_poi_unoccupied</span><span class="p">(</span><span class="n">pose</span><span class="p">,</span> <span class="n">place_location</span><span class="p">),</span> <span class="n">vectors_of_interest</span><span class="p">)</span>
+
+        <span class="n">base_pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span>
+        <span class="n">arm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arm_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">open_POIs_dist</span> <span class="o">=</span> <span class="p">[(</span><span class="n">poi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_to_poi_area_heuristic</span><span class="p">(</span><span class="n">poi</span><span class="p">,</span> <span class="n">base_pose</span><span class="p">,</span> <span class="n">arm</span><span class="p">))</span> <span class="k">for</span> <span class="n">poi</span> <span class="ow">in</span> <span class="n">open_POIs</span><span class="p">]</span>
+
+        <span class="c1"># We don&#39;t care about small differences</span>
+        <span class="n">open_POIs_dist</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">open_POIs_dist</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">open_POIs_dist</span> <span class="k">if</span> <span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">open_POIs_dist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nav_threshold</span><span class="p">]</span>
+
+        <span class="n">open_POIs_dist</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="n">tup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">edge_score</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># sorts in place</span>
+
+        <span class="k">for</span> <span class="n">poi</span> <span class="ow">in</span> <span class="n">open_POIs_dist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance_to_poi_area</span><span class="p">(</span><span class="n">poi</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">arm</span><span class="p">):</span>
+                <span class="n">selection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_selection_marker</span><span class="p">(</span><span class="n">poi</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">marker_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">MarkerArray</span><span class="p">([</span><span class="n">selection</span><span class="p">]))</span>
+                <span class="k">return</span> <span class="n">poi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Could not find an empty spot&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="EmptySpotDesignator._is_poi_unoccupied"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/place_designator/index.html#robot_smach_states.manipulation.place_designator.EmptySpotDesignator._is_poi_unoccupied">[docs]</a>    <span class="k">def</span> <span class="nf">_is_poi_unoccupied</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_stamped</span><span class="p">,</span> <span class="n">surface_entity</span><span class="p">):</span>
+        <span class="n">entities_at_poi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">ed</span><span class="o">.</span><span class="n">get_entities</span><span class="p">(</span><span class="n">center_point</span><span class="o">=</span><span class="n">frame_stamped</span><span class="o">.</span><span class="n">extractVectorStamped</span><span class="p">(),</span>
+                                                     <span class="n">radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_spacing</span><span class="p">)</span>
+        <span class="n">entities_at_poi</span> <span class="o">=</span> <span class="p">[</span><span class="n">entity</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities_at_poi</span> <span class="k">if</span> <span class="n">entity</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">surface_entity</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">entities_at_poi</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EmptySpotDesignator._distance_to_poi_area_heuristic"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/place_designator/index.html#robot_smach_states.manipulation.place_designator.EmptySpotDesignator._distance_to_poi_area_heuristic">[docs]</a>    <span class="k">def</span> <span class="nf">_distance_to_poi_area_heuristic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_stamped</span><span class="p">,</span> <span class="n">base_pose</span><span class="p">,</span> <span class="n">arm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: direct distance between a point and and the place offset of the arm</span>
+<span class="sd">        :rtype: double [meters]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bo</span> <span class="o">=</span> <span class="n">arm</span><span class="o">.</span><span class="n">base_offset</span>
+
+        <span class="n">offset_pose</span> <span class="o">=</span> <span class="n">base_pose</span><span class="o">.</span><span class="n">frame</span> <span class="o">*</span> <span class="n">bo</span>
+        <span class="n">offset_pose_x</span> <span class="o">=</span> <span class="n">offset_pose</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">offset_pose_y</span> <span class="o">=</span> <span class="n">offset_pose</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">offset_pose_x</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="n">offset_pose_y</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dist</span></div>
+
+<div class="viewcode-block" id="EmptySpotDesignator._distance_to_poi_area"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/place_designator/index.html#robot_smach_states.manipulation.place_designator.EmptySpotDesignator._distance_to_poi_area">[docs]</a>    <span class="k">def</span> <span class="nf">_distance_to_poi_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_stamped</span><span class="p">,</span> <span class="n">arm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: length of the path the robot would need to drive to place at the given point</span>
+<span class="sd">        :rtype: int [plan steps]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_offset</span> <span class="o">=</span> <span class="n">arm</span><span class="o">.</span><span class="n">base_offset</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">base_offset</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">base_offset</span><span class="o">.</span><span class="n">y</span><span class="p">())</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+        <span class="n">radius</span> <span class="o">-=</span> <span class="mf">0.1</span>
+        <span class="n">ro</span> <span class="o">=</span> <span class="s2">&quot;(x-</span><span class="si">%f</span><span class="s2">)^2+(y-</span><span class="si">%f</span><span class="s2">)^2 &lt; </span><span class="si">%f</span><span class="s2">^2&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span> <span class="o">+</span> <span class="mf">0.075</span><span class="p">)</span>
+        <span class="n">ri</span> <span class="o">=</span> <span class="s2">&quot;(x-</span><span class="si">%f</span><span class="s2">)^2+(y-</span><span class="si">%f</span><span class="s2">)^2 &gt; </span><span class="si">%f</span><span class="s2">^2&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">radius</span> <span class="o">-</span> <span class="mf">0.075</span><span class="p">)</span>
+        <span class="n">pos_constraint</span> <span class="o">=</span> <span class="n">PositionConstraint</span><span class="p">(</span><span class="n">constraint</span><span class="o">=</span><span class="n">ri</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span> <span class="n">ro</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame_id</span><span class="p">)</span>
+
+        <span class="n">plan_to_poi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="n">pos_constraint</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">plan_to_poi</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">plan_to_poi</span><span class="p">)</span>
+            <span class="c1"># print &quot;Distance to {fs}: {dist}&quot;.format(dist=distance, fs=frame_stamped.frame.p)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">distance</span></div>
+
+<div class="viewcode-block" id="EmptySpotDesignator._create_marker"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/place_designator/index.html#robot_smach_states.manipulation.place_designator.EmptySpotDesignator._create_marker">[docs]</a>    <span class="k">def</span> <span class="nf">_create_marker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="n">marker</span> <span class="o">=</span> <span class="n">Marker</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">marker_array</span><span class="o">.</span><span class="n">markers</span><span class="p">)</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="s2">&quot;/map&quot;</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">marker</span><span class="o">.</span><span class="n">lifetime</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">marker</span></div>
+
+<div class="viewcode-block" id="EmptySpotDesignator._create_selection_marker"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/place_designator/index.html#robot_smach_states.manipulation.place_designator.EmptySpotDesignator._create_selection_marker">[docs]</a>    <span class="k">def</span> <span class="nf">_create_selection_marker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected_pose</span><span class="p">):</span>
+        <span class="n">marker</span> <span class="o">=</span> <span class="n">Marker</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">marker_array</span><span class="o">.</span><span class="n">markers</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">selected_pose</span><span class="o">.</span><span class="n">frame_id</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">selected_pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">selected_pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">selected_pose</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mf">0.7</span>
+
+        <span class="n">marker</span><span class="o">.</span><span class="n">lifetime</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">30.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">marker</span></div>
+
+<div class="viewcode-block" id="EmptySpotDesignator._determine_points_of_interest_with_area"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/place_designator/index.html#robot_smach_states.manipulation.place_designator.EmptySpotDesignator._determine_points_of_interest_with_area">[docs]</a>    <span class="k">def</span> <span class="nf">_determine_points_of_interest_with_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Determines the points of interest using an area</span>
+<span class="sd">        :type entity: Entity</span>
+<span class="sd">        :param area: str indicating which volume of the entity to look at</span>
+<span class="sd">        :rtype: [FrameStamped]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># We want to give it a convex hull using the designated area</span>
+
+        <span class="k">if</span> <span class="n">area</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entity</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">box</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">volumes</span><span class="p">[</span><span class="n">area</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="s2">&quot;bottom_area&quot;</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Entity </span><span class="si">{0}</span><span class="s2"> has no shape with a bottom_area&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+        <span class="c1"># Now we&#39;re sure to have the correct bounding box</span>
+        <span class="c1"># Make sure we offset the bottom of the box</span>
+        <span class="n">top_z</span> <span class="o">=</span> <span class="n">box</span><span class="o">.</span><span class="n">min_corner</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">-</span> <span class="mf">0.04</span>  <span class="c1"># 0.04 is the usual offset</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_points_of_interest</span><span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">_pose</span><span class="p">,</span> <span class="n">top_z</span><span class="p">,</span> <span class="n">box</span><span class="o">.</span><span class="n">bottom_area</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EmptySpotDesignator._determine_points_of_interest"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/place_designator/index.html#robot_smach_states.manipulation.place_designator.EmptySpotDesignator._determine_points_of_interest">[docs]</a>    <span class="k">def</span> <span class="nf">_determine_points_of_interest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center_frame</span><span class="p">,</span> <span class="n">z_max</span><span class="p">,</span> <span class="n">convex_hull</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine candidates for place poses</span>
+<span class="sd">        :param center_frame: kdl.Frame, center of the Entity to place on top of</span>
+<span class="sd">        :param z_max: float, height of the entity to place on, w.r.t. the entity</span>
+<span class="sd">        :param convex_hull: [kdl.Vector], convex hull of the entity</span>
+<span class="sd">        :return: [FrameStamped] of candidates for placing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">convex_hull</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;determine_points_of_interest: Empty convex hull&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="c1"># Convert convex hull to map frame</span>
+        <span class="n">ch</span> <span class="o">=</span> <span class="n">offsetConvexHull</span><span class="p">(</span><span class="n">convex_hull</span><span class="p">,</span> <span class="n">center_frame</span><span class="p">)</span>
+
+        <span class="c1"># Loop over hulls</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">marker_array</span><span class="o">.</span><span class="n">markers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ch</span><span class="p">)):</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">ch</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">ch</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">ch</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="n">ch</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+
+            <span class="n">length</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">ch</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_distance</span>
+            <span class="k">while</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_distance</span><span class="p">):</span>
+                <span class="c1"># Point on edge</span>
+                <span class="n">xs</span> <span class="o">=</span> <span class="n">ch</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">d</span> <span class="o">/</span> <span class="n">length</span> <span class="o">*</span> <span class="n">dx</span>
+                <span class="n">ys</span> <span class="o">=</span> <span class="n">ch</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="n">d</span> <span class="o">/</span> <span class="n">length</span> <span class="o">*</span> <span class="n">dy</span>
+
+                <span class="c1"># Shift point inwards and fill message</span>
+                <span class="n">fs</span> <span class="o">=</span> <span class="n">kdl_frame_stamped_from_XYZRPY</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">xs</span> <span class="o">-</span> <span class="n">dy</span> <span class="o">/</span> <span class="n">length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_distance</span><span class="p">,</span>
+                                                   <span class="n">y</span><span class="o">=</span><span class="n">ys</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">/</span> <span class="n">length</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_distance</span><span class="p">,</span>
+                                                   <span class="n">z</span><span class="o">=</span><span class="n">center_frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">+</span> <span class="n">z_max</span><span class="p">,</span>
+                                                   <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/map&quot;</span><span class="p">)</span>
+
+                <span class="c1"># It&#39;s nice to put an object on the middle of a long edge. In case of a cabinet, e.g., this might</span>
+                <span class="c1"># prevent the robot from hitting the cabinet edges</span>
+                <span class="c1"># print &quot;Length: {}, edge score: {}&quot;.format(length, min(d, length-d))</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s1">&#39;edge_score&#39;</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">length</span><span class="o">-</span><span class="n">d</span><span class="p">))</span>
+
+                <span class="n">points</span> <span class="o">+=</span> <span class="p">[</span><span class="n">fs</span><span class="p">]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">marker_array</span><span class="o">.</span><span class="n">markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_marker</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">fs</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">fs</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()))</span>
+
+                <span class="c1"># ToDo: check if still within hull???</span>
+                <span class="n">d</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spacing</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">marker_pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">marker_array</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">points</span></div>
+
+<div class="viewcode-block" id="EmptySpotDesignator.__repr__"><a class="viewcode-back" href="../../../api/robot_smach_states/manipulation/place_designator/index.html#robot_smach_states.manipulation.place_designator.EmptySpotDesignator.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;EmptySpotDesignator(place_location_designator=</span><span class="si">{}</span><span class="s2">, name=&#39;</span><span class="si">{}</span><span class="s2">&#39;, area=&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span>\
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">place_location_designator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_area</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

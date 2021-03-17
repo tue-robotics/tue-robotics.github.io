@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="monitor_8py" kind="file" language="Python">
+    <compoundname>monitor.py</compoundname>
+    <innerclass refid="classdragonfly_1_1windows_1_1monitor_1_1__monitor__info__t" prot="public">dragonfly::windows::monitor::_monitor_info_t</innerclass>
+    <innerclass refid="classdragonfly_1_1windows_1_1monitor_1_1__rect__t" prot="public">dragonfly::windows::monitor::_rect_t</innerclass>
+    <innerclass refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor" prot="public">dragonfly::windows::monitor::Monitor</innerclass>
+    <innernamespace refid="namespacedragonfly_1_1windows_1_1monitor">dragonfly::windows::monitor</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacedragonfly_1_1windows_1_1monitor" refkind="compound"><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">#<sp/>This<sp/>file<sp/>is<sp/>part<sp/>of<sp/>Dragonfly.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">#<sp/>(c)<sp/>Copyright<sp/>2007,<sp/>2008<sp/>by<sp/>Christo<sp/>Butcher</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Licensed<sp/>under<sp/>the<sp/>LGPL.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Dragonfly<sp/>is<sp/>free<sp/>software:<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or<sp/>modify<sp/>it<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>as<sp/>published<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>by<sp/>the<sp/>Free<sp/>Software<sp/>Foundation,<sp/>either<sp/>version<sp/>3<sp/>of<sp/>the<sp/>License,<sp/>or<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Dragonfly<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,<sp/>but<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>License<sp/>along<sp/>with<sp/>Dragonfly.<sp/><sp/>If<sp/>not,<sp/>see<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>&lt;http://www.gnu.org/licenses/&gt;.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="22"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>This<sp/>file<sp/>offers<sp/>an<sp/>interface<sp/>to<sp/>the<sp/>Win32<sp/>information<sp/>about</highlight></codeline>
+<codeline lineno="23"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>available<sp/>monitors<sp/>(a.k.a.<sp/>screens,<sp/>displays).</highlight></codeline>
+<codeline lineno="24"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>win32gui</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>ctypes</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>logging</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>.rectangle<sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Rectangle</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment">#---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment">#<sp/>List<sp/>of<sp/>monitors<sp/>that<sp/>will<sp/>be<sp/>filled<sp/>when<sp/>this<sp/>module<sp/>is<sp/>loaded.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="namespacedragonfly_1_1windows_1_1monitor_1a0a17b43fec6bd6d1d84e7e292dde49dc" refkind="member"><highlight class="normal">monitors<sp/>=<sp/>[]</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">#===========================================================================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Monitor<sp/>class<sp/>for<sp/>storing<sp/>info<sp/>about<sp/>single<sp/>display<sp/>monitor.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor" kindref="compound">Monitor</ref>(object):</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1acff81c29895293f658b174a42fd93fa4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>_log<sp/>=<sp/>logging.getLogger(</highlight><highlight class="stringliteral">&quot;monitor.init&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#-----------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Methods<sp/>for<sp/>initialization<sp/>and<sp/>introspection.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1ae839294bb6bf99bfabed2847b4ade7a0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1ae839294bb6bf99bfabed2847b4ade7a0" kindref="member">__init__</ref>(self,<sp/>handle,<sp/>rectangle):</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">assert</highlight><highlight class="normal"><sp/>isinstance(handle,<sp/>(int,<sp/>long))</highlight></codeline>
+<codeline lineno="52" refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1ae257564072c48fa5b5ac7bb3381a191b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1ae257564072c48fa5b5ac7bb3381a191b" kindref="member">_handle</ref><sp/>=<sp/>handle</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">assert</highlight><highlight class="normal"><sp/>isinstance(rectangle,<sp/>Rectangle)</highlight></codeline>
+<codeline lineno="54" refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1af1ab0367a26a92ea95be17c6619a111b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1af1ab0367a26a92ea95be17c6619a111b" kindref="member">_rectangle</ref><sp/>=<sp/>rectangle</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56" refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1a22c4fd31683ab037d054a45eed7cd3c2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1a22c4fd31683ab037d054a45eed7cd3c2" kindref="member">__str__</ref>(self):</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;%s(%d)&quot;</highlight><highlight class="normal"><sp/>%<sp/>(self.__class__.__name__,<sp/>self.<ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1ae257564072c48fa5b5ac7bb3381a191b" kindref="member">_handle</ref>)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#-----------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Methods<sp/>that<sp/>control<sp/>attribute<sp/>access.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1a451fac36edf8c004666a5dec9f7c9fb3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1a451fac36edf8c004666a5dec9f7c9fb3" kindref="member">_set_handle</ref>(self,<sp/>handle):</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">assert</highlight><highlight class="normal"><sp/>isinstance(handle,<sp/>(int,<sp/>long))</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1ae257564072c48fa5b5ac7bb3381a191b" kindref="member">_handle</ref><sp/>=<sp/>handle</highlight></codeline>
+<codeline lineno="65" refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1ad7c44377641b31e6496a4bef34d219a3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>handle<sp/>=<sp/>property(fget=</highlight><highlight class="keyword">lambda</highlight><highlight class="normal"><sp/>self:<sp/>self.<ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1ae257564072c48fa5b5ac7bb3381a191b" kindref="member">_handle</ref>,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fset=_set_handle,</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>doc=</highlight><highlight class="stringliteral">&quot;Protected<sp/>access<sp/>to<sp/>handle<sp/>attribute.&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1a0988665fb6dea0d29c9f5457bcc0a6ee" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1a0988665fb6dea0d29c9f5457bcc0a6ee" kindref="member">_set_rectangle</ref>(self,<sp/>rectangle):</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">assert</highlight><highlight class="normal"><sp/>isinstance(rectangle,<sp/>Rectangle)</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1af1ab0367a26a92ea95be17c6619a111b" kindref="member">_rectangle</ref><sp/>=<sp/>rectangle<sp/></highlight><highlight class="comment">#<sp/>Should<sp/>make<sp/>a<sp/>copy??</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1aa07332c25eb74dd67153ccfdf1cfd9b4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>rectangle<sp/>=<sp/>property(fget=</highlight><highlight class="keyword">lambda</highlight><highlight class="normal"><sp/>self:<sp/>self.<ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor_1af1ab0367a26a92ea95be17c6619a111b" kindref="member">_rectangle</ref>,</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fset=_set_rectangle,</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>doc=</highlight><highlight class="stringliteral">&quot;Protected<sp/>access<sp/>to<sp/>rectangle<sp/>attribute.&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment">#===========================================================================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Monitor<sp/>info<sp/>retrieval<sp/>below<sp/>lightly<sp/>inspired<sp/>by<sp/>the<sp/>following<sp/>recipe:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/>http://code.activestate.com/recipes/460509/<sp/>by<sp/>Martin<sp/>Dengler<sp/>(2005)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/>More<sp/>info<sp/>available<sp/>here:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/>http://msdn.microsoft.com/en-us/library/ms534809.aspx</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83" refid="classdragonfly_1_1windows_1_1monitor_1_1__rect__t" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1windows_1_1monitor_1_1__rect__t" kindref="compound">_rect_t</ref>(ctypes.Structure):</highlight></codeline>
+<codeline lineno="84" refid="classdragonfly_1_1windows_1_1monitor_1_1__rect__t_1ab8c17ac90177855bb9db3612a03a9c5e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>_fields_<sp/>=<sp/>[</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="stringliteral">&apos;left&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/>ctypes.c_long),</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="stringliteral">&apos;top&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/><sp/>ctypes.c_long),</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="stringliteral">&apos;right&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/>ctypes.c_long),</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="stringliteral">&apos;bottom&apos;</highlight><highlight class="normal">,<sp/><sp/>ctypes.c_long)</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>]</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="classdragonfly_1_1windows_1_1monitor_1_1__monitor__info__t" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1windows_1_1monitor_1_1__monitor__info__t" kindref="compound">_monitor_info_t</ref>(ctypes.Structure):</highlight></codeline>
+<codeline lineno="92" refid="classdragonfly_1_1windows_1_1monitor_1_1__monitor__info__t_1a8747242afcf25ed48248010a03b4a3e8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>_fields_<sp/>=<sp/>[</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="stringliteral">&apos;cbSize&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/><sp/>ctypes.c_ulong),</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="stringliteral">&apos;rcMonitor&apos;</highlight><highlight class="normal">,<sp/><sp/>_rect_t),</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="stringliteral">&apos;rcWork&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/><sp/>_rect_t),</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="stringliteral">&apos;dwFlags&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/>ctypes.c_ulong)</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>]</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="namespacedragonfly_1_1windows_1_1monitor_1a401380303af56a53a8998a43e9011e13" refkind="member"><highlight class="normal">callback_t<sp/>=<sp/>ctypes.WINFUNCTYPE(</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ctypes.c_int,</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ctypes.c_ulong,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ctypes.c_ulong,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ctypes.POINTER(_rect_t),</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ctypes.c_double</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacedragonfly_1_1windows_1_1monitor_1a1665cbe95d9e301dfcb4a3cfbad921f3" kindref="member">_callback</ref>(</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>hMonitor,<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Handle<sp/>to<sp/>display<sp/>monitor</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>hdcMonitor,<sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Handle<sp/>to<sp/>monitor<sp/>DC</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>lprcMonitor,<sp/><sp/></highlight><highlight class="comment">#<sp/>Intersection<sp/>rectangle<sp/>of<sp/>monitor</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dwData<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112" refid="namespacedragonfly_1_1windows_1_1monitor_1a1665cbe95d9e301dfcb4a3cfbad921f3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>):</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Retrieves<sp/>monitor<sp/>info.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/>info<sp/>=<sp/><ref refid="classdragonfly_1_1windows_1_1monitor_1_1__monitor__info__t" kindref="compound">_monitor_info_t</ref>()</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/>info.cbSize<sp/><sp/><sp/><sp/><sp/>=<sp/>ctypes.sizeof(_monitor_info_t)</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>info.rcMonitor<sp/><sp/>=<sp/><ref refid="classdragonfly_1_1windows_1_1monitor_1_1__rect__t" kindref="compound">_rect_t</ref>()</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/>info.rcWork<sp/><sp/><sp/><sp/><sp/>=<sp/><ref refid="classdragonfly_1_1windows_1_1monitor_1_1__rect__t" kindref="compound">_rect_t</ref>()</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/>res<sp/>=<sp/>ctypes.windll.user32.GetMonitorInfoA(hMonitor,<sp/>ctypes.byref(info))</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Store<sp/>monitor<sp/>info.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>handle<sp/>=<sp/>long(hMonitor)</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/>r<sp/>=<sp/>info.rcWork</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>rectangle<sp/>=<sp/><ref refid="classdragonfly_1_1windows_1_1rectangle_1_1Rectangle" kindref="compound">Rectangle</ref>(r.left,<sp/>r.top,<sp/>r.right<sp/>-<sp/>r.left,<sp/>r.bottom<sp/>-<sp/>r.top)</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>monitor<sp/>=<sp/><ref refid="classdragonfly_1_1windows_1_1monitor_1_1Monitor" kindref="compound">Monitor</ref>(handle,<sp/>rectangle)</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>Monitor._log.debug(</highlight><highlight class="stringliteral">&quot;Found<sp/>monitor<sp/>%s<sp/>with<sp/>geometry<sp/>%s.&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>%<sp/>(monitor,<sp/>rectangle))</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>monitors.append(monitor)</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Continue<sp/>enumerating<sp/>monitors.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">True</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Enumerate<sp/>monitors<sp/>and<sp/>build<sp/>Dragonfly&apos;s<sp/>monitor<sp/>list<sp/>when<sp/>this</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/>module<sp/>is<sp/>loaded.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="135" refid="namespacedragonfly_1_1windows_1_1monitor_1abe60589a9ca387e28b881405f9f546f2" refkind="member"><highlight class="normal">res<sp/>=<sp/>ctypes.windll.user32.EnumDisplayMonitors(0,<sp/>0,<sp/><ref refid="namespacedragonfly_1_1windows_1_1monitor_1a401380303af56a53a8998a43e9011e13" kindref="member">callback_t</ref>(_callback),<sp/>0)</highlight></codeline>
+    </programlisting>
+    <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/windows/monitor.py"/>
+  </compounddef>
+</doxygen>

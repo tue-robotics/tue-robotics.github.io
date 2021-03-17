@@ -1,0 +1,507 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_skills.util.kdl_conversions &mdash; robot_skills 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> robot_skills
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_skills</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_skills.util.kdl_conversions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_skills.util.kdl_conversions</h1><div class="highlight"><pre>
+<span></span><span class="c1"># System</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span> <span class="nn">geometry_msgs.msg</span> <span class="k">as</span> <span class="nn">gm</span>
+<span class="kn">import</span> <span class="nn">PyKDL</span> <span class="k">as</span> <span class="nn">kdl</span>
+<span class="kn">import</span> <span class="nn">rospy</span>
+
+
+<div class="viewcode-block" id="FrameStamped"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.FrameStamped">[docs]</a><span class="k">class</span> <span class="nc">FrameStamped</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Kdl alternative for a geometry_msgs.PoseStamped.</span>
+
+<span class="sd">    This class consists of a kdl.Frame and the frame_id w.r.t which the Frame is defined&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">frame_id</span><span class="p">,</span> <span class="n">stamp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">frame_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">stamp</span>
+
+<div class="viewcode-block" id="FrameStamped.__repr__"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.FrameStamped.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">xyz</span> <span class="o">=</span> <span class="s2">&quot;(x=</span><span class="si">{x}</span><span class="s2">, y=</span><span class="si">{y}</span><span class="s2">, z=</span><span class="si">{z}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">z</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">())</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">GetRPY</span><span class="p">()</span>
+        <span class="n">rpy</span> <span class="o">=</span> <span class="s2">&quot;(r=</span><span class="si">{x}</span><span class="s2">, p=</span><span class="si">{y}</span><span class="s2">, y=</span><span class="si">{z}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;FrameStamped(pos:</span><span class="si">{pos}</span><span class="s2">, rot:</span><span class="si">{rot}</span><span class="s2"> @ </span><span class="si">{fid}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">xyz</span><span class="p">,</span> <span class="n">rot</span><span class="o">=</span><span class="n">rpy</span><span class="p">,</span> <span class="n">fid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FrameStamped.projectToFrame"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.FrameStamped.projectToFrame">[docs]</a>    <span class="k">def</span> <span class="nf">projectToFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_id</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes a new FrameStamped from this frame in the requested frame ID</span>
+
+<span class="sd">        :param frame_id: (str) frame id of the new FrameStamped</span>
+<span class="sd">        :param tf_listener: (TF Listener) tf listener used for the computation of the transformation</span>
+<span class="sd">        :return: (FrameStamped) with provided frame id</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tf_listener</span><span class="o">.</span><span class="n">waitForTransform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_id</span><span class="p">,</span> <span class="n">frame_id</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">transformed_pose</span> <span class="o">=</span> <span class="n">tf_listener</span><span class="o">.</span><span class="n">transformPose</span><span class="p">(</span><span class="n">frame_id</span><span class="p">,</span> <span class="n">kdl_frame_stamped_to_pose_stamped_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">kdl_frame_stamped_from_pose_stamped_msg</span><span class="p">(</span><span class="n">transformed_pose</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FrameStamped.extractVectorStamped"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.FrameStamped.extractVectorStamped">[docs]</a>    <span class="k">def</span> <span class="nf">extractVectorStamped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Extract only the position of this FrameStamped, without the orientation but with the frame_id metadata</span>
+
+<span class="sd">        :return: VectorStamped</span>
+<span class="sd">        &gt;&gt;&gt; fs = FrameStamped(kdl.Frame(kdl.Rotation.Quaternion(1, 0, 0, 0), kdl.Vector(1, 2, 3)), &quot;/map&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; fs.extractVectorStamped()</span>
+<span class="sd">        VectorStamped([           1,           2,           3] @ /map)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">VectorStamped</span><span class="p">(</span><span class="n">frame_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_id</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="frame_stamped"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.frame_stamped">[docs]</a><span class="k">def</span> <span class="nf">frame_stamped</span><span class="p">(</span><span class="n">frame_id</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">roll</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates a FrameStamped object from the provided parameters</span>
+
+<span class="sd">    :param frame_id: string with frame id</span>
+<span class="sd">    :param x:</span>
+<span class="sd">    :param y:</span>
+<span class="sd">    :param z:</span>
+<span class="sd">    :param roll:</span>
+<span class="sd">    :param pitch:</span>
+<span class="sd">    :param yaw:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">FrameStamped</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">RPY</span><span class="p">(</span><span class="n">roll</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">yaw</span><span class="p">),</span>
+                                        <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)),</span>
+                        <span class="n">frame_id</span><span class="o">=</span><span class="n">frame_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VectorStamped"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.VectorStamped">[docs]</a><span class="k">class</span> <span class="nc">VectorStamped</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/map&quot;</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">vector</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vector</span> <span class="o">=</span> <span class="n">vector</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vector</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">frame_id</span>
+
+<div class="viewcode-block" id="VectorStamped.__repr__"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.VectorStamped.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;VectorStamped(</span><span class="si">{vector}</span><span class="s2"> @ </span><span class="si">{fid}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vector</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vector</span><span class="p">,</span> <span class="n">fid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VectorStamped.projectToFrame"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.VectorStamped.projectToFrame">[docs]</a>    <span class="k">def</span> <span class="nf">projectToFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_id</span><span class="p">,</span> <span class="n">tf_listener</span><span class="p">):</span>
+        <span class="n">tf_listener</span><span class="o">.</span><span class="n">waitForTransform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_id</span><span class="p">,</span> <span class="n">frame_id</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">transformed_point</span> <span class="o">=</span> <span class="n">tf_listener</span><span class="o">.</span><span class="n">transformPoint</span><span class="p">(</span><span class="n">frame_id</span><span class="p">,</span> <span class="n">kdl_vector_stamped_to_point_stamped</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">kdl_vector_stamped_from_point_stamped_msg</span><span class="p">(</span><span class="n">transformed_point</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VectorStamped.__eq__"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.VectorStamped.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">VectorStamped</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">vector</span> <span class="ow">and</span> \
+                   <span class="bp">self</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">frame_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="VectorStamped.__ne__"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.VectorStamped.__ne__">[docs]</a>    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="point_msg_to_kdl_vector"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.point_msg_to_kdl_vector">[docs]</a><span class="k">def</span> <span class="nf">point_msg_to_kdl_vector</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a ROS geometry_msgs.msg.Point message to a PyKDL.Vector object</span>
+
+<span class="sd">    :type point:  geometry_msgs.msg.Point</span>
+<span class="sd">    :rtype: PyKDL.Vector</span>
+
+<span class="sd">    &gt;&gt;&gt; point = gm.Point(1, 2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; v = point_msg_to_kdl_vector(point)</span>
+<span class="sd">    &gt;&gt;&gt; v.x()</span>
+<span class="sd">    1.0</span>
+<span class="sd">    &gt;&gt;&gt; v.y()</span>
+<span class="sd">    2.0</span>
+<span class="sd">    &gt;&gt;&gt; v.z()</span>
+<span class="sd">    3.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">point</span><span class="o">.</span><span class="n">z</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="kdl_vector_to_point_msg"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.kdl_vector_to_point_msg">[docs]</a><span class="k">def</span> <span class="nf">kdl_vector_to_point_msg</span><span class="p">(</span><span class="n">vector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a PyKDL.Vector object to a ROS geometry_msgs.msg.Point message</span>
+
+<span class="sd">    :type vector: PyKDL.Vector</span>
+<span class="sd">    :rtype: geometry_msgs.msg.Point</span>
+
+<span class="sd">    &gt;&gt;&gt; vector = kdl.Vector(1, 2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; point = kdl_vector_to_point_msg(vector)</span>
+<span class="sd">    &gt;&gt;&gt; point.x</span>
+<span class="sd">    1.0</span>
+<span class="sd">    &gt;&gt;&gt; point.y</span>
+<span class="sd">    2.0</span>
+<span class="sd">    &gt;&gt;&gt; point.z</span>
+<span class="sd">    3.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">gm</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">vector</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">vector</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span> <span class="n">vector</span><span class="o">.</span><span class="n">z</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="kdl_rotation_to_quaternion_msg"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.kdl_rotation_to_quaternion_msg">[docs]</a><span class="k">def</span> <span class="nf">kdl_rotation_to_quaternion_msg</span><span class="p">(</span><span class="n">rotation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a PyKDL.Rotation object to a ROS geometry_msgs.msg.Quaternion message</span>
+
+<span class="sd">    :param rotation: Rotation to be converted</span>
+<span class="sd">    :type rotation: PyKDL.Rotation</span>
+<span class="sd">    :rtype: geometry_msgs.msg.Quaternion</span>
+
+<span class="sd">    &gt;&gt;&gt; rot = kdl.Rotation.Quaternion(1, 0, 0, 0)</span>
+<span class="sd">    &gt;&gt;&gt; quat_msg = kdl_rotation_to_quaternion_msg(rot)</span>
+<span class="sd">    &gt;&gt;&gt; (quat_msg.x, quat_msg.y, quat_msg.z, quat_msg.w)</span>
+<span class="sd">    (1.0, 0.0, 0.0, 0.0)</span>
+<span class="sd">    &gt;&gt;&gt; from math import pi</span>
+<span class="sd">    &gt;&gt;&gt; rot = kdl.Rotation.RPY(pi/2, 0, 0)</span>
+<span class="sd">    &gt;&gt;&gt; quat_msg = kdl_rotation_to_quaternion_msg(rot)</span>
+<span class="sd">    &gt;&gt;&gt; (quat_msg.x, quat_msg.y, quat_msg.z, quat_msg.w)</span>
+<span class="sd">    (0.7071067811865475, 0.0, 0.0, 0.7071067811865476)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">gm</span><span class="o">.</span><span class="n">Quaternion</span><span class="p">(</span><span class="o">*</span><span class="n">rotation</span><span class="o">.</span><span class="n">GetQuaternion</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="quaternion_msg_to_kdl_rotation"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.quaternion_msg_to_kdl_rotation">[docs]</a><span class="k">def</span> <span class="nf">quaternion_msg_to_kdl_rotation</span><span class="p">(</span><span class="n">quaternion</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a geometry_msgs.msg.Quaternion message to a ROS PyKDL.Rotation object</span>
+
+<span class="sd">    :param quaternion: Rotation to be converted</span>
+<span class="sd">    :type quaternion: geometry_msgs.msg.Quaternion</span>
+<span class="sd">    :rtype: PyKDL.Rotation</span>
+
+<span class="sd">    &gt;&gt;&gt; quat_msg = gm.Quaternion(1.0, 0.0, 0.0, 1.0)</span>
+<span class="sd">    &gt;&gt;&gt; rot = quaternion_msg_to_kdl_rotation(quat_msg)</span>
+<span class="sd">    &gt;&gt;&gt; rot.GetRPY()</span>
+<span class="sd">    (1.5707963267948966, -0.0, 0.0)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">Quaternion</span><span class="p">(</span><span class="n">quaternion</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">.</span><span class="n">w</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="pose_msg_to_kdl_frame"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.pose_msg_to_kdl_frame">[docs]</a><span class="k">def</span> <span class="nf">pose_msg_to_kdl_frame</span><span class="p">(</span><span class="n">pose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a geometry_msgs.msg.Pose message to a PyKDL.Frame object</span>
+
+<span class="sd">    :param pose: Pose to be converted</span>
+<span class="sd">    :type pose: geometry_msgs.msg.Pose</span>
+<span class="sd">    :rtype: PyKDL.Frame</span>
+
+<span class="sd">    &gt;&gt;&gt; pose = gm.Pose(gm.Point(1, 2, 3), gm.Quaternion(1, 0, 0, 0))</span>
+<span class="sd">    &gt;&gt;&gt; frame = pose_msg_to_kdl_frame(pose)</span>
+<span class="sd">    &gt;&gt;&gt; frame.p</span>
+<span class="sd">    [           1,           2,           3]</span>
+<span class="sd">    &gt;&gt;&gt; frame.M.GetQuaternion()</span>
+<span class="sd">    (1.0, 0.0, 0.0, 0.0)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rot</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">Quaternion</span><span class="p">(</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">pose</span><span class="o">.</span><span class="n">orientation</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="p">,</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">trans</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="kdl_frame_to_pose_msg"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.kdl_frame_to_pose_msg">[docs]</a><span class="k">def</span> <span class="nf">kdl_frame_to_pose_msg</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a ROS PyKDL.Frame object to a geometry_msgs.msg.Pose message</span>
+
+<span class="sd">    :param frame: Frame to be converted</span>
+<span class="sd">    :type frame: PyKDL.Frame</span>
+<span class="sd">    :rtype: geometry_msgs.msg.Pose</span>
+
+<span class="sd">    &gt;&gt;&gt; frame = kdl.Frame(kdl.Rotation.Quaternion(1, 0, 0, 0), kdl.Vector(1, 2, 3))</span>
+<span class="sd">    &gt;&gt;&gt; pose = kdl_frame_to_pose_msg(frame)</span>
+<span class="sd">    &gt;&gt;&gt; (pose.position.x, pose.position.y, pose.position.z)</span>
+<span class="sd">    (1.0, 2.0, 3.0)</span>
+<span class="sd">    &gt;&gt;&gt; (pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)</span>
+<span class="sd">    (1.0, 0.0, 0.0, 0.0)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pose</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">Pose</span><span class="p">()</span>
+    <span class="n">pose</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">kdl_vector_to_point_msg</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">pose</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="n">kdl_rotation_to_quaternion_msg</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pose</span></div>
+
+<div class="viewcode-block" id="kdl_frame_stamped_to_pose_stamped_msg"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.kdl_frame_stamped_to_pose_stamped_msg">[docs]</a><span class="k">def</span> <span class="nf">kdl_frame_stamped_to_pose_stamped_msg</span><span class="p">(</span><span class="n">frame_stamped</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a ROS PyKDL.Frame object to a geometry_msgs.msg.Pose message</span>
+
+<span class="sd">    :param frame: Frame to be converted</span>
+<span class="sd">    :type frame: PyKDL.Frame</span>
+<span class="sd">    :rtype: geometry_msgs.msg.Pose</span>
+
+<span class="sd">    &gt;&gt;&gt; frame = kdl.Frame(kdl.Rotation.Quaternion(1, 0, 0, 0), kdl.Vector(1, 2, 3))</span>
+<span class="sd">    &gt;&gt;&gt; pose = kdl_frame_to_pose_msg(frame)</span>
+<span class="sd">    &gt;&gt;&gt; (pose.position.x, pose.position.y, pose.position.z)</span>
+<span class="sd">    (1.0, 2.0, 3.0)</span>
+<span class="sd">    &gt;&gt;&gt; (pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)</span>
+<span class="sd">    (1.0, 0.0, 0.0, 0.0)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pose_stamped</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">PoseStamped</span><span class="p">()</span>
+    <span class="n">pose_stamped</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame_id</span>
+    <span class="n">pose_stamped</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">kdl_vector_to_point_msg</span><span class="p">(</span><span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">pose_stamped</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="n">kdl_rotation_to_quaternion_msg</span><span class="p">(</span><span class="n">frame_stamped</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pose_stamped</span></div>
+
+<div class="viewcode-block" id="kdl_frame_from_XYZRPY"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.kdl_frame_from_XYZRPY">[docs]</a><span class="k">def</span> <span class="nf">kdl_frame_from_XYZRPY</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">roll</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a PyKDL.Frame from raw scalars</span>
+
+<span class="sd">    :param x: The X value of the position</span>
+<span class="sd">    :param y: The Y value of the position</span>
+<span class="sd">    :param z: The Z value of the position</span>
+<span class="sd">    :param roll: The roll of the orientation</span>
+<span class="sd">    :param pitch: The pitch of the orientation</span>
+<span class="sd">    :param yaw: The yaw of the orientation</span>
+<span class="sd">    :return: the given position and orientation represented as a kdl.Frame</span>
+<span class="sd">    :rtype: PyKDL.Frame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">RPY</span><span class="p">(</span><span class="n">roll</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">yaw</span><span class="p">),</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="kdl_frame_stamped_from_pose_stamped_msg"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.kdl_frame_stamped_from_pose_stamped_msg">[docs]</a><span class="k">def</span> <span class="nf">kdl_frame_stamped_from_pose_stamped_msg</span><span class="p">(</span><span class="n">pose_stamped</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a PoseStamped to FrameStamped</span>
+
+<span class="sd">    :param pose_stamped: the PoseStamped to be converted</span>
+<span class="sd">    :return: FrameStamped&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pose_stamped</span><span class="p">,</span> <span class="n">gm</span><span class="o">.</span><span class="n">PoseStamped</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">FrameStamped</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="n">pose_msg_to_kdl_frame</span><span class="p">(</span><span class="n">pose_stamped</span><span class="o">.</span><span class="n">pose</span><span class="p">),</span>
+                        <span class="n">frame_id</span><span class="o">=</span><span class="n">pose_stamped</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span><span class="p">,</span>
+                        <span class="n">stamp</span><span class="o">=</span><span class="n">pose_stamped</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="kdl_frame_stamped_from_XYZRPY"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.kdl_frame_stamped_from_XYZRPY">[docs]</a><span class="k">def</span> <span class="nf">kdl_frame_stamped_from_XYZRPY</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">roll</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yaw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">frame_id</span><span class="o">=</span><span class="s2">&quot;/map&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a FrameStamped from raw scalars</span>
+
+<span class="sd">    :param x: The X value of the position</span>
+<span class="sd">    :param y: The Y value of the position</span>
+<span class="sd">    :param z: The Z value of the position</span>
+<span class="sd">    :param roll: The roll of the orientation</span>
+<span class="sd">    :param pitch: The pitch of the orientation</span>
+<span class="sd">    :param yaw: The yaw of the orientation</span>
+<span class="sd">    :param frame_id: the frame_id in which the frame is defined</span>
+<span class="sd">    :return: the given position and orientation represented as a kdl.Frame</span>
+<span class="sd">    :rtype: FrameStamped</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">FrameStamped</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">RPY</span><span class="p">(</span><span class="n">roll</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">yaw</span><span class="p">),</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)),</span>
+                        <span class="n">frame_id</span><span class="o">=</span><span class="n">frame_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="kdl_vector_stamped_from_point_stamped_msg"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.kdl_vector_stamped_from_point_stamped_msg">[docs]</a><span class="k">def</span> <span class="nf">kdl_vector_stamped_from_point_stamped_msg</span><span class="p">(</span><span class="n">point_stamped</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a PointStamped to VectorStamped</span>
+
+<span class="sd">    :param point_stamped: the PointStamped to be converted</span>
+<span class="sd">    :return: VectorStamped&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point_stamped</span><span class="p">,</span> <span class="n">gm</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">),</span> <span class="s2">&quot;point_stamped is not a geometry_msgs/PointStamped but a </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">point_stamped</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">VectorStamped</span><span class="p">(</span><span class="n">vector</span><span class="o">=</span><span class="n">point_msg_to_kdl_vector</span><span class="p">(</span><span class="n">point_stamped</span><span class="o">.</span><span class="n">point</span><span class="p">),</span>
+                         <span class="n">frame_id</span><span class="o">=</span><span class="n">point_stamped</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="kdl_vector_stamped_to_point_stamped"><a class="viewcode-back" href="../../../api/robot_skills/util/kdl_conversions/index.html#robot_skills.util.kdl_conversions.kdl_vector_stamped_to_point_stamped">[docs]</a><span class="k">def</span> <span class="nf">kdl_vector_stamped_to_point_stamped</span><span class="p">(</span><span class="n">vector_stamped</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a VectorStamped to a PointStamped</span>
+
+<span class="sd">    :param vector_stamped the VectorStamped to be converted</span>
+<span class="sd">    :return: PointStamped&quot;&quot;&quot;</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">PointStamped</span><span class="p">()</span>
+    <span class="n">ps</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">vector_stamped</span><span class="o">.</span><span class="n">frame_id</span>
+    <span class="n">ps</span><span class="o">.</span><span class="n">point</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">Point</span><span class="p">(</span><span class="n">vector_stamped</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span>
+                        <span class="n">vector_stamped</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">y</span><span class="p">(),</span>
+                        <span class="n">vector_stamped</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">z</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">ps</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

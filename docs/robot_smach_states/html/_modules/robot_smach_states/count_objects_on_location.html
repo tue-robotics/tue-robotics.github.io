@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>robot_smach_states.count_objects_on_location &mdash; robot_smach_states 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> robot_smach_states
+          
+
+          
+            
+            <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_smach_states</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>robot_smach_states.count_objects_on_location</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for robot_smach_states.count_objects_on_location</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">smach</span>
+<span class="kn">from</span> <span class="nn">.world_model</span> <span class="k">import</span> <span class="n">Inspect</span>
+<span class="kn">import</span> <span class="nn">robot_smach_states.util.designators</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="kn">from</span> <span class="nn">robot_skills.classification_result</span> <span class="k">import</span> <span class="n">ClassificationResult</span>
+
+
+<div class="viewcode-block" id="CountObjectsOnLocation"><a class="viewcode-back" href="../../api/robot_smach_states/count_objects_on_location/index.html#robot_smach_states.count_objects_on_location.CountObjectsOnLocation">[docs]</a><span class="k">class</span> <span class="nc">CountObjectsOnLocation</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">segmented_objects_designator</span><span class="p">,</span> <span class="n">num_objects_designator</span><span class="p">,</span>
+                 <span class="n">segmentation_area</span><span class="o">=</span><span class="s1">&#39;on_top_of&#39;</span><span class="p">,</span> <span class="n">object_type</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param location: Where to look for objects?</span>
+<span class="sd">        :param segmented_objects_designator: a VariableDesignator (resolve_type=ClassificationResult) that stores the</span>
+<span class="sd">            classification of an object</span>
+<span class="sd">        :param num_objects_designator: a VariableDesignator(resolve_type=int).writeable() that will store the number</span>
+<span class="sd">            of objects</span>
+<span class="sd">        :param segmentation_area: string defining where the objects are w.r.t. the entity, default = on_top_of</span>
+<span class="sd">        :param threshold: float for classification score. Entities whose classification score is lower are ignored</span>
+<span class="sd">            (i.e. are not added to the segmented_entity_ids_designator)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">,</span> <span class="s1">&#39;failed&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segmentation_area</span> <span class="o">=</span> <span class="n">segmentation_area</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">object_type</span> <span class="o">=</span> <span class="n">object_type</span>
+
+        <span class="n">ds</span><span class="o">.</span><span class="n">checks</span><span class="o">.</span><span class="n">is_writeable</span><span class="p">(</span><span class="n">num_objects_designator</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">checks</span><span class="o">.</span><span class="n">check_resolve_type</span><span class="p">(</span><span class="n">num_objects_designator</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_objects_designator</span> <span class="o">=</span> <span class="n">num_objects_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segmented_objects_designator</span> <span class="o">=</span> <span class="n">segmented_objects_designator</span>
+
+<div class="viewcode-block" id="CountObjectsOnLocation.execute"><a class="viewcode-back" href="../../api/robot_smach_states/count_objects_on_location/index.html#robot_smach_states.count_objects_on_location.CountObjectsOnLocation.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">object_classifications</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segmented_objects_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Segmented </span><span class="si">%d</span><span class="s2"> objects&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">object_classifications</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">object_classifications</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">object_classifications</span><span class="p">):</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;   - Object </span><span class="si">{i}</span><span class="s2"> is a &#39;</span><span class="si">{t}</span><span class="s2">&#39; (prob: </span><span class="si">{p}</span><span class="s2">, ID: </span><span class="si">{id}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                                                                        <span class="nb">id</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">probability</span><span class="p">))</span>
+
+            <span class="n">over_threshold</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">object_classifications</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">probability</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">]</span>
+
+            <span class="n">dropped</span> <span class="o">=</span> <span class="p">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">probability</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">object_classifications</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">probability</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">}</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Dropping </span><span class="si">{l}</span><span class="s2"> entities due to low class. score (&lt; </span><span class="si">{th}</span><span class="s2">): </span><span class="si">{dropped}</span><span class="s2">&quot;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">th</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="n">dropped</span><span class="o">=</span><span class="n">dropped</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">dropped</span><span class="p">)))</span>
+            <span class="n">object_classifications</span> <span class="o">=</span> <span class="n">over_threshold</span>
+
+            <span class="n">list_objects</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">object_classifications</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">object_type</span><span class="o">.</span><span class="n">resolve</span><span class="p">()]</span>
+            <span class="n">num_objects</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_objects</span><span class="p">)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Counted </span><span class="si">{}</span><span class="s2"> objects matching the query&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num_objects</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_objects_designator</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">num_objects</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;done&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;failed&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="InspectAndCount"><a class="viewcode-back" href="../../api/robot_smach_states/count_objects_on_location/index.html#robot_smach_states.count_objects_on_location.InspectAndCount">[docs]</a><span class="k">class</span> <span class="nc">InspectAndCount</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">where_to_count_designator</span><span class="p">,</span> <span class="n">type_to_count_designator</span><span class="p">,</span> <span class="n">count_designator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param where_to_count_designator: Where to look for objects?</span>
+<span class="sd">        :param type_to_count_designator: a VariableDesignator (resolve_type=string) that stores the type of the objects</span>
+<span class="sd">            that should be counted</span>
+<span class="sd">        :param count_designator:  VariableDesignator(resolve_type=int).writeable() that will store the number</span>
+<span class="sd">            of objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Done&#39;</span><span class="p">,</span> <span class="s1">&#39;Aborted&#39;</span><span class="p">])</span>
+
+        <span class="n">entities</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">VariableDesignator</span><span class="p">([],</span> <span class="n">resolve_type</span><span class="o">=</span><span class="p">[</span><span class="n">ClassificationResult</span><span class="p">])</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;INSPECT_TABLE&quot;</span><span class="p">,</span> <span class="n">Inspect</span><span class="p">(</span><span class="n">robot</span><span class="o">=</span><span class="n">robot</span><span class="p">,</span> <span class="n">entityDes</span><span class="o">=</span><span class="n">where_to_count_designator</span><span class="p">,</span>
+                                                            <span class="n">objectIDsDes</span><span class="o">=</span><span class="n">entities</span><span class="p">,</span>
+                                                            <span class="n">searchArea</span><span class="o">=</span><span class="s2">&quot;on_top_of&quot;</span><span class="p">,</span>
+                                                            <span class="n">navigation_area</span><span class="o">=</span><span class="s2">&quot;in_front_of&quot;</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="s2">&quot;COUNT&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="s2">&quot;Aborted&quot;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;COUNT&quot;</span><span class="p">,</span>
+                                   <span class="n">CountObjectsOnLocation</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span>
+                                                          <span class="n">location</span><span class="o">=</span><span class="n">where_to_count_designator</span><span class="p">,</span>
+                                                          <span class="n">segmented_objects_designator</span><span class="o">=</span><span class="n">entities</span><span class="p">,</span>
+                                                          <span class="n">object_type</span><span class="o">=</span><span class="n">type_to_count_designator</span><span class="p">,</span>
+                                                          <span class="n">num_objects_designator</span><span class="o">=</span><span class="n">count_designator</span><span class="o">.</span><span class="n">writeable</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;Done&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;failed&#39;</span><span class="p">:</span> <span class="s1">&#39;Aborted&#39;</span><span class="p">})</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>action_server.actions.count_and_tell &mdash; action_server 0.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../../',
+              VERSION:'0.0.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> action_server
+          
+
+          
+            
+            <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">action_server</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>action_server.actions.count_and_tell</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for action_server.actions.count_and_tell</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">action</span> <span class="k">import</span> <span class="n">Action</span><span class="p">,</span> <span class="n">ConfigurationData</span>
+<span class="kn">from</span> <span class="nn">entity_description</span> <span class="k">import</span> <span class="n">resolve_entity_description</span>
+
+<span class="kn">import</span> <span class="nn">rospy</span>
+<span class="kn">import</span> <span class="nn">robot_smach_states</span> <span class="k">as</span> <span class="nn">states</span>
+<span class="kn">import</span> <span class="nn">robot_smach_states.util.designators</span> <span class="k">as</span> <span class="nn">ds</span>
+
+
+<div class="viewcode-block" id="CountAndTell"><a class="viewcode-back" href="../../../api/action_server/actions/count_and_tell/index.html#action_server.actions.count_and_tell.CountAndTell">[docs]</a><span class="k">class</span> <span class="nc">CountAndTell</span><span class="p">(</span><span class="n">Action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The CountAndTell class implements the action to count the number of objects in a specific location and tell the</span>
+<span class="sd">        operator the amount of objects, the type and the location.</span>
+
+<span class="sd">    Parameters to pass to the configure() method are:</span>
+<span class="sd">     - `config` (required): the ConfigurationData defines the input data structure for configuration of an action i.e</span>
+<span class="sd">                            a JSON string with for this action a &quot;location&quot; and an &quot; object&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Action</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_skills</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;speech&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CountAndTell.Semantics"><a class="viewcode-back" href="../../../api/action_server/actions/count_and_tell/index.html#action_server.actions.count_and_tell.CountAndTell.Semantics">[docs]</a>    <span class="k">class</span> <span class="nc">Semantics</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="CountAndTell._parse_semantics"><a class="viewcode-back" href="../../../api/action_server/actions/count_and_tell/index.html#action_server.actions.count_and_tell.CountAndTell._parse_semantics">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_semantics</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">):</span>
+        <span class="n">semantics</span> <span class="o">=</span> <span class="n">CountAndTell</span><span class="o">.</span><span class="n">Semantics</span><span class="p">()</span>
+
+        <span class="n">semantics</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">])</span>
+        <span class="n">semantics</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">resolve_entity_description</span><span class="p">(</span><span class="n">semantics_dict</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">semantics</span></div>
+
+<div class="viewcode-block" id="CountAndTell._configure"><a class="viewcode-back" href="../../../api/action_server/actions/count_and_tell/index.html#action_server.actions.count_and_tell.CountAndTell._configure">[docs]</a>    <span class="k">def</span> <span class="nf">_configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+        <span class="n">semantics</span> <span class="o">=</span> <span class="n">CountAndTell</span><span class="o">.</span><span class="n">_parse_semantics</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">semantics</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_count_designator</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">VariableDesignator</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_where_to_count_designator</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">EntityByIdDesignator</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">semantics</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_what_to_count_designator</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">Designator</span><span class="p">(</span><span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_count_state_machine</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">InspectAndCount</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span>
+                                                           <span class="bp">self</span><span class="o">.</span><span class="n">_where_to_count_designator</span><span class="p">,</span>
+                                                           <span class="bp">self</span><span class="o">.</span><span class="n">_what_to_count_designator</span><span class="p">,</span>
+                                                           <span class="bp">self</span><span class="o">.</span><span class="n">_count_designator</span><span class="p">)</span>
+
+        <span class="c1"># Here we set up a message that is formatted further later, in self._start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;I counted {{c}} </span><span class="si">{t}</span><span class="s2">s on the </span><span class="si">{l}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="n">semantics</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                                                                                <span class="n">l</span><span class="o">=</span><span class="n">semantics</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="CountAndTell._start"><a class="viewcode-back" href="../../../api/action_server/actions/count_and_tell/index.html#action_server.actions.count_and_tell.CountAndTell._start">[docs]</a>    <span class="k">def</span> <span class="nf">_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_state_machine</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">==</span> <span class="s1">&#39;Aborted&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;I failed to count the objects.&quot;</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># This message is instantiated in _configure but leaves some stuff to be formatted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_count_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_execute_result</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CountAndTell._cancel"><a class="viewcode-back" href="../../../api/action_server/actions/count_and_tell/index.html#action_server.actions.count_and_tell.CountAndTell._cancel">[docs]</a>    <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">init_node</span><span class="p">(</span><span class="s1">&#39;say_test&#39;</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+    <span class="n">robot_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;amigo&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.amigo</span> <span class="k">import</span> <span class="n">Amigo</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">elif</span> <span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;sergio&#39;</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.sergio</span> <span class="k">import</span> <span class="n">Sergio</span> <span class="k">as</span> <span class="n">Robot</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">robot_skills.mockbot</span> <span class="k">import</span> <span class="n">Mockbot</span> <span class="k">as</span> <span class="n">Robot</span>
+
+    <span class="n">robot</span> <span class="o">=</span> <span class="n">Robot</span><span class="p">()</span>
+
+    <span class="n">action</span> <span class="o">=</span> <span class="n">CountAndTell</span><span class="p">()</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigurationData</span><span class="p">({</span><span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="s1">&#39;count-and-tell&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;counter&#39;</span><span class="p">},</span>
+                                <span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;apple&#39;</span><span class="p">}})</span>
+
+    <span class="n">action</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="n">action</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">_execute_result</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, tue-robotics.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
