@@ -104,3 +104,6 @@ docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE
 echo -e "\e[35m\e[1m tue-make --no-status python_orocos_kdl" "${INSTALL_BUILD_PKGS[*]}" "${BUILD_PKGS[*]}" "\e[0m"
 # shellcheck disable=SC2145
 docker exec -t tue-env bash -c "source ~/.bashrc; tue-make --no-status python_orocos_kdl ${INSTALL_BUILD_PKGS[*]} ${BUILD_PKGS[*]}" # Needs to be build to generate docs
+
+echo -e '\e[35m\e[1m catkin config --workspace $TUE_SYSTEM_DIR --no-blacklist\e[0m'
+docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --no-blacklist' # Clear blacklist
