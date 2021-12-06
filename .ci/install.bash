@@ -23,6 +23,9 @@ do
         --ssh-key=* )
             SSH_KEY="${i#*=}" ;;
 
+        --blacklist=* )
+            BLACKLIST="${BLACKLIST:+$BLACKLIST }${i#*=}" ;;
+
         * )
             # unknown option
             if [[ -n "$i" ]]
@@ -98,8 +101,8 @@ echo -e "\e[35m\e[1mtue-get install ros-python_orocos_kdl" "${INSTALL_BUILD_TARG
 # shellcheck disable=SC2145
 docker exec tue-env bash -c "source ~/.bashrc; tue-get install ros-python_orocos_kdl ${INSTALL_BUILD_TARGETS[*]}" # Needs to be installed fully as it needs to be build to generate docs
 
-echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --blacklist ed\e[0m'
-docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --blacklist ed' # It is an exec-depend of ed_object_models, but we don't need to build it
+echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --blacklist'"${BLACKLIST}"'\e[0m'
+docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --blacklist'"${BLACKLIST}" # It is an exec-depend of ed_object_models, but we don't need to build it
 
 echo -e "\e[35m\e[1mtue-make --no-status python_orocos_kdl" "${INSTALL_BUILD_PKGS[*]}" "${BUILD_PKGS[*]}" "\e[0m"
 # shellcheck disable=SC2145
