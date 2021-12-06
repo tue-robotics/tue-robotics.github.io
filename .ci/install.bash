@@ -102,12 +102,18 @@ echo -e "\e[35m\e[1mtue-get install ros-python_orocos_kdl" "${INSTALL_BUILD_TARG
 # shellcheck disable=SC2145
 docker exec tue-env bash -c "source ~/.bashrc; tue-get install ros-python_orocos_kdl ${INSTALL_BUILD_TARGETS[*]}" # Needs to be installed fully as it needs to be build to generate docs
 
-echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --blacklist' "${BLACKLIST}"'\e[0m'
-docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --blacklist' "${BLACKLIST}" # It is an exec-depend of ed_object_models, but we don't need to build it
+if [ -n "$BLACKLIST" ]
+then
+    echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --blacklist '"${BLACKLIST}"'\e[0m'
+    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --blacklist '"${BLACKLIST}"
+fi
 
 echo -e "\e[35m\e[1mtue-make --no-status python_orocos_kdl" "${INSTALL_BUILD_PKGS[*]}" "${BUILD_PKGS[*]}" "\e[0m"
 # shellcheck disable=SC2145
 docker exec -t tue-env bash -c "source ~/.bashrc; tue-make --no-status python_orocos_kdl ${INSTALL_BUILD_PKGS[*]} ${BUILD_PKGS[*]}" # Needs to be build to generate docs
 
-echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --no-blacklist\e[0m'
-docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --no-blacklist' # Clear blacklist
+if [ -n "$BLACKLIST" ]
+then
+    echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --no-blacklist\e[0m'
+    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --no-blacklist' # Clear blacklist
+fi
