@@ -23,7 +23,7 @@ do
         --ssh-key=* )
             SSH_KEY="${i#*=}" ;;
 
-        --blacklist=* )
+        --bl=* | --blacklist=* )
             BLACKLIST="${BLACKLIST:+$BLACKLIST }${i#*=}" ;;
 
         * )
