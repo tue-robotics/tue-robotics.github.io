@@ -23,8 +23,8 @@ do
         --ssh-key=* )
             SSH_KEY="${i#*=}" ;;
 
-        --bl=* | --blacklist=* )
-            BLACKLIST="${BLACKLIST:+$BLACKLIST }${i#*=}" ;;
+        --sl=* | --skiplist=* )
+            SKIPLIST="${SKIPLIST:+$SKIPLIST }${i#*=}" ;;
 
         * )
             # unknown option
@@ -38,7 +38,7 @@ do
 done
 
 echo -e "\e[35m\e[1mBRANCH       = ${BRANCH}\e[0m"
-echo -e "\e[35m\e[1mBLACKLIST    = ${BLACKLIST}\e[0m"
+echo -e "\e[35m\e[1mSKIPLIST    = ${SKIPLIST}\e[0m"
 
 # Set default value for IMAGE_NAME
 [ -z "$IMAGE_NAME" ] && IMAGE_NAME='tuerobotics/tue-env'
@@ -102,18 +102,18 @@ echo -e "\e[35m\e[1mtue-get install ros-python_orocos_kdl" "${INSTALL_BUILD_TARG
 # shellcheck disable=SC2145
 docker exec tue-env bash -c "source ~/.bashrc; tue-get install ros-python_orocos_kdl ${INSTALL_BUILD_TARGETS[*]}" # Needs to be installed fully as it needs to be build to generate docs
 
-if [ -n "$BLACKLIST" ]
+if [ -n "$SKIPLIST" ]
 then
-    echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --blacklist '"${BLACKLIST}"'\e[0m'
-    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --blacklist '"${BLACKLIST}"
+    echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --skiplist '"${SKIPLIST}"'\e[0m'
+    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --skiplist '"${SKIPLIST}"
 fi
 
 echo -e "\e[35m\e[1mtue-make --no-status python_orocos_kdl" "${INSTALL_BUILD_PKGS[*]}" "${BUILD_PKGS[*]}" "\e[0m"
 # shellcheck disable=SC2145
 docker exec -t tue-env bash -c "source ~/.bashrc; tue-make --no-status python_orocos_kdl ${INSTALL_BUILD_PKGS[*]} ${BUILD_PKGS[*]}" # Needs to be build to generate docs
 
-if [ -n "$BLACKLIST" ]
+if [ -n "$SKIPLIST" ]
 then
-    echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --no-blacklist\e[0m'
-    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --no-blacklist' # Clear blacklist
+    echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --no-skiplist\e[0m'
+    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --no-skiplist' # Clear skiplist
 fi
