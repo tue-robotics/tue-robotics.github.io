@@ -69,9 +69,17 @@ then
     DOCKER_MOUNT_KNOWN_HOSTS_ARGS="--mount type=bind,source=${HOME}/.ssh/known_hosts,target=/tmp/known_hosts_extra"
 fi
 
+DOCKER_HOME=$(docker run --name tue-env --rm "$IMAGE_NAME:$BRANCH_TAG" bash -c 'echo "$HOME"' | tr -d '\r')
+
+# Make sure the ~/.ccache folder exists
+mkdir -p "$HOME"/.ccache
+
 # Run the docker image along with setting new environment variables
 # shellcheck disable=SC2086
-docker run --detach --interactive --tty -e CI="true" -e BRANCH="${BRANCH}" --name tue-env ${DOCKER_MOUNT_KNOWN_HOSTS_ARGS} "${IMAGE_NAME}:${BRANCH_TAG}"
+docker run --detach --interactive --tty -e CI="true" -e BRANCH="${BRANCH}" --name tue-env --mount type=bind,source=${HOME}/.ccache,target=${DOCKER_HOME}/.ccache ${DOCKER_MOUNT_KNOWN_HOSTS_ARGS} "${IMAGE_NAME}:${BRANCH_TAG}"
+
+# Own the ~/.ccache folder for permissions
+docker exec -t tue-env bash -c "sudo chown 1000:1000 -R ~/.ccache"
 
 if [ "$MERGE_KNOWN_HOSTS" == "true" ]
 then
