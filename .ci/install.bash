@@ -45,10 +45,10 @@ echo -e "\e[35m\e[1mSKIPLIST    = ${SKIPLIST}\e[0m"
 echo -e "\e[35m\e[1mIMAGE_NAME   = ${IMAGE_NAME}\e[0m"
 
 # Determine docker tag if the same branch exists there
-BRANCH_TAG=$(echo "${BRANCH}" | tr '[:upper:]' '[:lower:]' | sed -e 's:/:_:g')
+BRANCH_TAG="$(echo "${BRANCH}" | tr '[:upper:]' '[:lower:]' | sed -e 's:/:_:g')-amd64"
 
 # Set the default fallback branch to latest
-MASTER_TAG="latest"
+MASTER_TAG="latest-amd64"
 
 # Remove any previously started containers if they exist (if not exist, still return true to let the script continue)
 docker stop tue-env  &> /dev/null || true
