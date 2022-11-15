@@ -12,7 +12,7 @@ do
             # unknown option
             if [[ -n "$i" ]]
             then
-                echo -e "\e[35m\e[1mUnknown input argument '$i'. Check CI yaml file \e[0m"
+                echo -e "\e[35m\e[1mUnknown input argument '$i'. Check CI yaml file\e[0m"
                 exit 1
             fi ;;
     esac
