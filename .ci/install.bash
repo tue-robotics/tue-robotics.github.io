@@ -24,13 +24,13 @@ do
             SSH_KEY="${i#*=}" ;;
 
         --sl=* | --skiplist=* )
-            SKIPLIST="${SKIPLIST:+$SKIPLIST }${i#*=}" ;;
+            SKIPLIST="${SKIPLIST:+${SKIPLIST} }${i#*=}" ;;
 
         * )
             # unknown option
             if [[ -n "$i" ]]
             then
-                echo -e "\e[35m\e[1mUnknown input argument '$i'. Check CI yaml file\e[0m"
+                echo -e "\e[35m\e[1mUnknown input argument '${i}'. Check CI yaml file\e[0m"
                 exit 1
             fi ;;
     esac
@@ -38,10 +38,10 @@ do
 done
 
 echo -e "\e[35m\e[1mBRANCH       = ${BRANCH}\e[0m"
-echo -e "\e[35m\e[1mSKIPLIST    = ${SKIPLIST}\e[0m"
+echo -e "\e[35m\e[1mSKIPLIST     = ${SKIPLIST}\e[0m"
 
 # Set default value for IMAGE_NAME
-[ -z "$IMAGE_NAME" ] && IMAGE_NAME='tuerobotics/tue-env-ros-noetic'
+[ -z "${IMAGE_NAME}" ] && IMAGE_NAME='tuerobotics/tue-env-ros-noetic'
 echo -e "\e[35m\e[1mIMAGE_NAME   = ${IMAGE_NAME}\e[0m"
 
 # Determine docker tag if the same branch exists there
@@ -69,7 +69,7 @@ then
     DOCKER_MOUNT_KNOWN_HOSTS_ARGS="--mount type=bind,source=${HOME}/.ssh/known_hosts,target=/tmp/known_hosts_extra"
 fi
 
-DOCKER_HOME=$(docker run --name tue-env --rm "$IMAGE_NAME:$BRANCH_TAG" bash -c 'echo "$HOME"' | tr -d '\r')
+DOCKER_HOME=$(docker run --name tue-env --rm "${IMAGE_NAME}:${BRANCH_TAG}" bash -c 'echo "${HOME}"' | tr -d '\r')
 
 # Make sure the ~/.ccache folder exists
 mkdir -p "$HOME"/.ccache
@@ -110,18 +110,18 @@ echo -e "\e[35m\e[1mtue-get install ros-python_orocos_kdl" "${INSTALL_BUILD_TARG
 # shellcheck disable=SC2145
 docker exec tue-env bash -c "source ~/.bashrc; tue-get install ros-python_orocos_kdl ${INSTALL_BUILD_TARGETS[*]}" # Needs to be installed fully as it needs to be build to generate docs
 
-if [ -n "$SKIPLIST" ]
+if [ -n "${SKIPLIST}" ]
 then
-    echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --skiplist '"${SKIPLIST}"'\e[0m'
-    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --skiplist '"${SKIPLIST}"
+    echo -e '\e[35m\e[1mcatkin config --workspace ${TUE_SYSTEM_DIR} --skiplist '"${SKIPLIST}"'\e[0m'
+    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace ${TUE_SYSTEM_DIR} --skiplist '"${SKIPLIST}"
 fi
 
 echo -e "\e[35m\e[1mtue-make --no-status -DCATKIN_ENABLE_TESTING=OFF python_orocos_kdl" "${INSTALL_BUILD_PKGS[*]}" "${BUILD_PKGS[*]}" "\e[0m"
 # shellcheck disable=SC2145
 docker exec -t tue-env bash -c "source ~/.bashrc; tue-make --no-status -DCATKIN_ENABLE_TESTING=OFF python_orocos_kdl ${INSTALL_BUILD_PKGS[*]} ${BUILD_PKGS[*]}" # Needs to be build to generate docs
 
-if [ -n "$SKIPLIST" ]
+if [ -n "${SKIPLIST}" ]
 then
-    echo -e '\e[35m\e[1mcatkin config --workspace $TUE_SYSTEM_DIR --no-skiplist\e[0m'
-    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace $TUE_SYSTEM_DIR --no-skiplist' # Clear skiplist
+    echo -e '\e[35m\e[1mcatkin config --workspace ${TUE_SYSTEM_DIR} --no-skiplist\e[0m'
+    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace ${TUE_SYSTEM_DIR} --no-skiplist' # Clear skiplist
 fi

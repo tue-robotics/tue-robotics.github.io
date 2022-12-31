@@ -18,7 +18,7 @@ build_pkgs = set()  # All packages that need to be build
 
 for pkg_path in packages:
     pkg = os.path.split(pkg_path)[-1]
-    
+
     # Messages need to build and require there depencies
     for msg_type in ["action", "msg", "srv"]:
         if os.path.isdir(os.path.join(pkg_path, msg_type)):
@@ -37,9 +37,6 @@ for pkg_path in packages:
                 break
         else:
             build_pkgs.add(pkg)
-
 print(
-    "INSTALL_BUILD_PKGS=({}); BUILD_PKGS=({})".format(
-        " ".join(install_build_pkgs.difference(skip_pkgs)), " ".join(build_pkgs.difference(skip_pkgs))
-    )
+    f"INSTALL_BUILD_PKGS=({' '.join(install_build_pkgs.difference(skip_pkgs))}); BUILD_PKGS=({' '.join(build_pkgs.difference(skip_pkgs))})"
 )
