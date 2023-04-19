@@ -29,6 +29,14 @@ jobs:
           key: ${{ runner.os }}-ccache-${{ steps.get-date.outputs.date }}
           restore-keys: |
             ${{ runner.os }}-ccache-
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ steps.get-date.outputs.date }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Install
         run: |
           GITHUB_REF=${GITHUB_REF#refs/heads/}
