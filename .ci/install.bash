@@ -74,12 +74,18 @@ DOCKER_HOME=$(docker run --name tue-env --rm "${IMAGE_NAME}:${BRANCH_TAG}" bash 
 # Make sure the ~/.ccache folder exists
 mkdir -p "$HOME"/.ccache
 
+# Make sure the ~/.cache/pip folder exists
+mkdir -p "$HOME"/.cache/pip
+
 # Run the docker image along with setting new environment variables
 # shellcheck disable=SC2086
-docker run --detach --interactive --tty -e CI="true" -e BRANCH="${BRANCH}" --name tue-env --mount type=bind,source=${HOME}/.ccache,target=${DOCKER_HOME}/.ccache ${DOCKER_MOUNT_KNOWN_HOSTS_ARGS} "${IMAGE_NAME}:${BRANCH_TAG}"
+docker run --detach --interactive --tty -e CI="true" -e BRANCH="${BRANCH}" --name tue-env --mount type=bind,source=${HOME}/.ccache,target=${DOCKER_HOME}/.ccache --mount type=bind,source=$HOME/.cache/pip,target=$DOCKER_HOME/.cache/pip ${DOCKER_MOUNT_KNOWN_HOSTS_ARGS} "${IMAGE_NAME}:${BRANCH_TAG}"
 
 # Own the ~/.ccache folder for permissions
 docker exec -t tue-env bash -c "sudo chown 1000:1000 -R ~/.ccache"
+
+# Own the ~/.cache/pip folder for permissions
+docker exec -t tue-env bash -c 'sudo chown "${USER}":"${USER}" -R ~/.cache/pip'
 
 if [ "$MERGE_KNOWN_HOSTS" == "true" ]
 then
@@ -125,3 +131,6 @@ then
     echo -e '\e[35m\e[1mcatkin config --workspace ${TUE_SYSTEM_DIR} --no-skiplist\e[0m'
     docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace ${TUE_SYSTEM_DIR} --no-skiplist' # Clear skiplist
 fi
+
+# Allow everyone to read ~/.cache/pip folder for caching inside CI pipelines
+docker exec -t tue-env bash -c 'sudo chmod -R a+r ~/.cache/pip'
