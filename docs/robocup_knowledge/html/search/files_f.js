@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['challenge_5fdemo_2epy_3894',['challenge_demo.py',['../siza__demo_2challenge__demo_8py.html',1,'']]],
+  ['challenge_5fgpsr_2epy_3895',['challenge_gpsr.py',['../siza__demo_2challenge__gpsr_8py.html',1,'']]],
+  ['challenge_5frips_2epy_3896',['challenge_rips.py',['../siza__demo_2challenge__rips_8py.html',1,'']]],
+  ['challenge_5fspr_2epy_3897',['challenge_spr.py',['../siza__demo_2challenge__spr_8py.html',1,'']]],
+  ['common_2epy_3898',['common.py',['../siza__demo_2common_8py.html',1,'']]],
+  ['r5cop_5fdemo_2epy_3899',['r5cop_demo.py',['../siza__demo_2r5cop__demo_8py.html',1,'']]],
+  ['scoped_5fallocator_3900',['scoped_allocator',['https://en.cppreference.com/w/cpp/header/scoped_allocator.html',1,'']]],
+  ['set_3901',['set',['https://en.cppreference.com/w/cpp/header/set.html',1,'']]],
+  ['setup_2epy_3902',['setup.py',['../setup_8py.html',1,'']]],
+  ['shared_5fmutex_3903',['shared_mutex',['https://en.cppreference.com/w/cpp/header/shared_mutex.html',1,'']]],
+  ['siza_5fdemo_2epy_3904',['siza_demo.py',['../siza__demo_8py.html',1,'']]],
+  ['span_3905',['span',['https://en.cppreference.com/w/cpp/header/span.html',1,'']]],
+  ['sstream_3906',['sstream',['https://en.cppreference.com/w/cpp/header/sstream.html',1,'']]],
+  ['stack_3907',['stack',['https://en.cppreference.com/w/cpp/header/stack.html',1,'']]],
+  ['stdexcept_3908',['stdexcept',['https://en.cppreference.com/w/cpp/header/stdexcept.html',1,'']]],
+  ['streambuf_3909',['streambuf',['https://en.cppreference.com/w/cpp/header/streambuf.html',1,'']]],
+  ['string_3910',['string',['https://en.cppreference.com/w/cpp/header/string.html',1,'']]],
+  ['string_5fview_3911',['string_view',['https://en.cppreference.com/w/cpp/header/string_view.html',1,'']]],
+  ['strstream_3912',['strstream',['https://en.cppreference.com/w/cpp/header/strstream.html',1,'']]],
+  ['syncstream_3913',['syncstream',['https://en.cppreference.com/w/cpp/header/syncstream.html',1,'']]],
+  ['system_5ferror_3914',['system_error',['https://en.cppreference.com/w/cpp/header/system_error.html',1,'']]]
+];

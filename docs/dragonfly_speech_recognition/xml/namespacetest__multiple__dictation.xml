@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="namespacetest__multiple__dictation" kind="namespace" language="Python">
+    <compoundname>test_multiple_dictation</compoundname>
+    <innerclass refid="classtest__multiple__dictation_1_1ConsecutiveDictationRule" prot="public">test_multiple_dictation::ConsecutiveDictationRule</innerclass>
+    <innerclass refid="classtest__multiple__dictation_1_1MixedDictationRule" prot="public">test_multiple_dictation::MixedDictationRule</innerclass>
+    <innerclass refid="classtest__multiple__dictation_1_1RecognitionAnalysisRule" prot="public">test_multiple_dictation::RecognitionAnalysisRule</innerclass>
+    <innerclass refid="classtest__multiple__dictation_1_1RepeatedDictationRule" prot="public">test_multiple_dictation::RepeatedDictationRule</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespacetest__multiple__dictation_1ab6886f7ebe16c680f9bcd68a1e7063b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>def</type>
+        <definition>def test_multiple_dictation.main</definition>
+        <argsstring>()</argsstring>
+        <name>main</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/examples/test_multiple_dictation.py" line="200" column="1" bodyfile="src/dragonfly_speech_recognition/dragonfly/dragonfly/examples/test_multiple_dictation.py" bodystart="200" bodyend="207"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><verbatim>Multiple dictation constructs
+===============================================================================
+
+This file is a showcase investigating the use and functionality of multiple
+dictation elements within Dragonfly speech recognition grammars.
+
+The first part of this file (i.e. the module&apos;s doc string) contains a 
+description of the functionality being investigated along with test code 
+and actual output in doctest format. This allows the reader to see what 
+really would happen, without needing to load the file into a speech 
+recognition engine and put effort into speaking all the showcased 
+commands.
+
+The test code below makes use of Dragonfly&apos;s built-in element testing tool.
+When run, it will connect to the speech recognition engine, load the element
+being tested, mimic recognitions, and process the recognized value.
+
+
+Multiple consecutive dictation elements
+-------------------------------------------------------------------------------
+
+&gt;&gt;&gt; tester = ElementTester(RuleRef(ConsecutiveDictationRule()))
+&gt;&gt;&gt; print(tester.recognize(&quot;consecutive Alice Bob Charlie&quot;))
+Recognition: &quot;consecutive Alice Bob Charlie&quot;
+Word and rule pairs: (&quot;1000000&quot; is &quot;dgndictation&quot;)
+ - consecutive (1)
+ - Alice (1000000)
+ - Bob (1000000)
+ - Charlie (1000000)
+Extras:
+ - dictation1: Alice
+ - dictation2: Bob
+ - dictation3: Charlie
+
+&gt;&gt;&gt; print(tester.recognize(&quot;consecutive Alice Bob&quot;))
+RecognitionFailure
+
+
+Mixed literal and dictation elements
+-------------------------------------------------------------------------------
+
+Here we will investigate mixed, i.e. interspersed, fixed literal command
+words and dynamic dictation elements. We will use the &quot;MixedDictationRule&quot;
+class which has a spec of
+&quot;mixed [&lt;dictation1&gt;] &lt;dictation2&gt; command &lt;dictation3&gt;&quot;.
+
+Note that &quot;&lt;dictation1&gt;&quot; was made optional instead of &quot;&lt;dictation2&gt;&quot; 
+because otherwise the first dictation elements would always gobble up 
+all dictated words. There would (by definition) be no way to distinguish 
+which words correspond with which dictation elements. Such consecutive 
+dictation elements should for that reason be avoided in real command 
+grammars. The way the spec is defined now, adds some interesting 
+dynamics, because of the order in which they dictation elements parse 
+the recognized words. However, do note that that order is well defined 
+but arbitrarily chosen. 
+
+&gt;&gt;&gt; tester = ElementTester(RuleRef(MixedDictationRule()))
+&gt;&gt;&gt; print(tester.recognize(&quot;mixed Alice Bob command Charlie&quot;))
+Recognition: &quot;mixed Alice Bob command Charlie&quot;
+Word and rule pairs: (&quot;1000000&quot; is &quot;dgndictation&quot;)
+ - mixed (1)
+ - Alice (1000000)
+ - Bob (1000000)
+ - command (1)
+ - Charlie (1000000)
+Extras:
+ - dictation1: Alice
+ - dictation2: Bob
+ - dictation3: Charlie
+
+&gt;&gt;&gt; print(tester.recognize(&quot;mixed Alice command Charlie&quot;))
+Recognition: &quot;mixed Alice command Charlie&quot;
+Word and rule pairs: (&quot;1000000&quot; is &quot;dgndictation&quot;)
+ - mixed (1)
+ - Alice (1000000)
+ - command (1)
+ - Charlie (1000000)
+Extras:
+ - dictation2: Alice
+ - dictation3: Charlie
+
+&gt;&gt;&gt; print(tester.recognize(&quot;mixed Alice Bob command&quot;))
+RecognitionFailure
+
+&gt;&gt;&gt; print(tester.recognize(&quot;mixed command Charlie&quot;))
+RecognitionFailure
+
+
+Repetition of dictation elements
+-------------------------------------------------------------------------------
+
+Now let&apos;s take a look at repetition of dictation elements. For this
+we will use the &quot;RepeatedDictationRule&quot; class, which defines its spec
+as a repetition of &quot;command &lt;dictation&gt;&quot;. I.e. &quot;command Alice&quot; will
+match, and &quot;command Alice command Bob&quot; will also match.
+
+Note that this rule is inherently ambiguous, given the lack of a
+clear definition of grouping or precedence rules for fixed literal
+words in commands, and dynamic dictation elements. As an example,
+&quot;command Alice command Bob&quot; could either match 2 repetitions with
+&quot;Alice&quot; and &quot;Bob&quot; as dictation values, or a single repetition with
+&quot;Alice command Bob&quot; as its only dictation value. The tests below
+the show which of these actually occurs.
+
+&gt;&gt;&gt; tester = ElementTester(RuleRef(RepeatedDictationRule()))
+&gt;&gt;&gt; print(tester.recognize(&quot;command Alice&quot;))
+Recognition: &quot;command Alice&quot;
+Word and rule pairs: (&quot;1000000&quot; is &quot;dgndictation&quot;)
+ - command (1)
+ - Alice (1000000)
+Extras:
+ - repetition: [[u&apos;command&apos;, NatlinkDictationContainer(Alice)]]
+
+&gt;&gt;&gt; print(tester.recognize(&quot;command Alice command Bob&quot;))
+Recognition: &quot;command Alice command Bob&quot;
+Word and rule pairs: (&quot;1000000&quot; is &quot;dgndictation&quot;)
+ - command (1)
+ - Alice (1000000)
+ - command (1000000)
+ - Bob (1000000)
+Extras:
+ - repetition: [[u&apos;command&apos;, NatlinkDictationContainer(Alice, command, Bob)]]</verbatim> </para>
+    </detaileddescription>
+    <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/examples/test_multiple_dictation.py" line="1" column="1"/>
+  </compounddef>
+</doxygen>

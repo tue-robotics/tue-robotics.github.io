@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['scoped_5fallocator_4130',['scoped_allocator',['https://en.cppreference.com/w/cpp/header/scoped_allocator.html',1,'']]],
+  ['scoped_5ftimer_2ecpp_4131',['scoped_timer.cpp',['../../../code_profiler/html/cpp/scoped__timer_8cpp.html.html',1,'']]],
+  ['scoped_5ftimer_2eh_4132',['scoped_timer.h',['../../../code_profiler/html/cpp/scoped__timer_8h.html.html',1,'']]],
+  ['serialization_2ecpp_4133',['serialization.cpp',['../../../geolib2/html/serialization_8cpp.html.html',1,'']]],
+  ['serialization_2eh_4134',['serialization.h',['../../../geolib2/html/serialization_8h.html.html',1,'']]],
+  ['set_4135',['set',['https://en.cppreference.com/w/cpp/header/set.html',1,'']]],
+  ['shape_2ecpp_4136',['Shape.cpp',['../../../geolib2/html/Shape_8cpp.html.html',1,'']]],
+  ['shape_2eh_4137',['Shape.h',['../../../geolib2/html/Shape_8h.html.html',1,'']]],
+  ['shapes_2ecpp_4138',['shapes.cpp',['../../../geolib2/html/shapes_8cpp.html.html',1,'']]],
+  ['shapes_2eh_4139',['shapes.h',['../../../geolib2/html/shapes_8h.html.html',1,'']]],
+  ['shared_5fmutex_4140',['shared_mutex',['https://en.cppreference.com/w/cpp/header/shared_mutex.html',1,'']]],
+  ['show_2ecpp_4141',['show.cpp',['../../../geolib2/html/show_8cpp.html.html',1,'']]],
+  ['span_4142',['span',['https://en.cppreference.com/w/cpp/header/span.html',1,'']]],
+  ['sstream_4143',['sstream',['https://en.cppreference.com/w/cpp/header/sstream.html',1,'']]],
+  ['stack_4144',['stack',['https://en.cppreference.com/w/cpp/header/stack.html',1,'']]],
+  ['statspublisher_2ecpp_4145',['StatsPublisher.cpp',['../../../code_profiler/html/cpp/StatsPublisher_8cpp.html.html',1,'']]],
+  ['statspublisher_2eh_4146',['StatsPublisher.h',['../../../code_profiler/html/cpp/StatsPublisher_8h.html.html',1,'']]],
+  ['stdexcept_4147',['stdexcept',['https://en.cppreference.com/w/cpp/header/stdexcept.html',1,'']]],
+  ['streambuf_4148',['streambuf',['https://en.cppreference.com/w/cpp/header/streambuf.html',1,'']]],
+  ['string_4149',['string',['https://en.cppreference.com/w/cpp/header/string.html',1,'']]],
+  ['string_5fview_4150',['string_view',['https://en.cppreference.com/w/cpp/header/string_view.html',1,'']]],
+  ['strstream_4151',['strstream',['https://en.cppreference.com/w/cpp/header/strstream.html',1,'']]],
+  ['syncstream_4152',['syncstream',['https://en.cppreference.com/w/cpp/header/syncstream.html',1,'']]],
+  ['system_5ferror_4153',['system_error',['https://en.cppreference.com/w/cpp/header/system_error.html',1,'']]]
+];

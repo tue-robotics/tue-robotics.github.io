@@ -1,0 +1,324 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="layered__costmap_8cpp" kind="file" language="C++">
+    <compoundname>layered_costmap.cpp</compoundname>
+    <includes refid="layered__costmap_8h" local="no">costmap_2d/layered_costmap.h</includes>
+    <includes refid="footprint_8h" local="no">costmap_2d/footprint.h</includes>
+    <includes local="no">cstdio</includes>
+    <includes local="no">string</includes>
+    <includes local="no">algorithm</includes>
+    <includes local="no">vector</includes>
+    <incdepgraph>
+      <node id="18">
+        <label>algorithm</label>
+        <link refid="cpp/header/algorithm" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="6">
+        <label>vector</label>
+        <link refid="cpp/header/vector" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="2">
+        <label>costmap_2d/layered_costmap.h</label>
+        <link refid="layered__costmap_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>costmap_2d/costmap_2d.h</label>
+        <link refid="costmap__2d_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>costmap_2d/cost_values.h</label>
+        <link refid="cost__values_8h"/>
+      </node>
+      <node id="7">
+        <label>queue</label>
+        <link refid="cpp/header/queue" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="8">
+        <label>geometry_msgs/Point.h</label>
+      </node>
+      <node id="9">
+        <label>boost/thread.hpp</label>
+      </node>
+      <node id="16">
+        <label>geometry_msgs/Point32.h</label>
+      </node>
+      <node id="14">
+        <label>geometry_msgs/Polygon.h</label>
+      </node>
+      <node id="17">
+        <label>cstdio</label>
+        <link refid="cpp/header/cstdio" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="4">
+        <label>costmap_2d/layer.h</label>
+        <link refid="layer_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>ros/ros.h</label>
+      </node>
+      <node id="12">
+        <label>costmap_2d/footprint.h</label>
+        <link refid="footprint_8h"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>geometry_msgs/PolygonStamped.h</label>
+      </node>
+      <node id="10">
+        <label>string</label>
+        <link refid="cpp/header/string" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="1">
+        <label>layered_costmap.cpp</label>
+        <link refid="layered__costmap_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>tf2_ros/buffer.h</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacecostmap__2d">costmap_2d</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*********************************************************************</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>Software<sp/>License<sp/>Agreement<sp/>(BSD<sp/>License)</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/><sp/>Copyright<sp/>(c)<sp/>2008,<sp/>2013,<sp/>Willow<sp/>Garage,<sp/>Inc.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/><sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/><sp/>Redistribution<sp/>and<sp/>use<sp/>in<sp/>source<sp/>and<sp/>binary<sp/>forms,<sp/>with<sp/>or<sp/>without</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/><sp/>modification,<sp/>are<sp/>permitted<sp/>provided<sp/>that<sp/>the<sp/>following<sp/>conditions</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/>are<sp/>met:</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>of<sp/>source<sp/>code<sp/>must<sp/>retain<sp/>the<sp/>above<sp/>copyright</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following<sp/>disclaimer.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>in<sp/>binary<sp/>form<sp/>must<sp/>reproduce<sp/>the<sp/>above</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>copyright<sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>disclaimer<sp/>in<sp/>the<sp/>documentation<sp/>and/or<sp/>other<sp/>materials<sp/>provided</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>with<sp/>the<sp/>distribution.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Neither<sp/>the<sp/>name<sp/>of<sp/>Willow<sp/>Garage,<sp/>Inc.<sp/>nor<sp/>the<sp/>names<sp/>of<sp/>its</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>contributors<sp/>may<sp/>be<sp/>used<sp/>to<sp/>endorse<sp/>or<sp/>promote<sp/>products<sp/>derived</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>from<sp/>this<sp/>software<sp/>without<sp/>specific<sp/>prior<sp/>written<sp/>permission.</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/><sp/>THIS<sp/>SOFTWARE<sp/>IS<sp/>PROVIDED<sp/>BY<sp/>THE<sp/>COPYRIGHT<sp/>HOLDERS<sp/>AND<sp/>CONTRIBUTORS</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/><sp/>&quot;AS<sp/>IS&quot;<sp/>AND<sp/>ANY<sp/>EXPRESS<sp/>OR<sp/>IMPLIED<sp/>WARRANTIES,<sp/>INCLUDING,<sp/>BUT<sp/>NOT</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/><sp/>LIMITED<sp/>TO,<sp/>THE<sp/>IMPLIED<sp/>WARRANTIES<sp/>OF<sp/>MERCHANTABILITY<sp/>AND<sp/>FITNESS</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*<sp/><sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE<sp/>ARE<sp/>DISCLAIMED.<sp/>IN<sp/>NO<sp/>EVENT<sp/>SHALL<sp/>THE</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/><sp/>COPYRIGHT<sp/>OWNER<sp/>OR<sp/>CONTRIBUTORS<sp/>BE<sp/>LIABLE<sp/>FOR<sp/>ANY<sp/>DIRECT,<sp/>INDIRECT,</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/>*<sp/><sp/>INCIDENTAL,<sp/>SPECIAL,<sp/>EXEMPLARY,<sp/>OR<sp/>CONSEQUENTIAL<sp/>DAMAGES<sp/>(INCLUDING,</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*<sp/><sp/>BUT<sp/>NOT<sp/>LIMITED<sp/>TO,<sp/>PROCUREMENT<sp/>OF<sp/>SUBSTITUTE<sp/>GOODS<sp/>OR<sp/>SERVICES;</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*<sp/><sp/>LOSS<sp/>OF<sp/>USE,<sp/>DATA,<sp/>OR<sp/>PROFITS;<sp/>OR<sp/>BUSINESS<sp/>INTERRUPTION)<sp/>HOWEVER</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*<sp/><sp/>CAUSED<sp/>AND<sp/>ON<sp/>ANY<sp/>THEORY<sp/>OF<sp/>LIABILITY,<sp/>WHETHER<sp/>IN<sp/>CONTRACT,<sp/>STRICT</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/>*<sp/><sp/>LIABILITY,<sp/>OR<sp/>TORT<sp/>(INCLUDING<sp/>NEGLIGENCE<sp/>OR<sp/>OTHERWISE)<sp/>ARISING<sp/>IN</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*<sp/><sp/>ANY<sp/>WAY<sp/>OUT<sp/>OF<sp/>THE<sp/>USE<sp/>OF<sp/>THIS<sp/>SOFTWARE,<sp/>EVEN<sp/>IF<sp/>ADVISED<sp/>OF<sp/>THE</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/>*<sp/><sp/>POSSIBILITY<sp/>OF<sp/>SUCH<sp/>DAMAGE.</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>Author:<sp/>Eitan<sp/>Marder-Eppstein</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>David<sp/>V.<sp/>Lu!!</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/>*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="layered__costmap_8h" kindref="compound">costmap_2d/layered_costmap.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="footprint_8h" kindref="compound">costmap_2d/footprint.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="cpp/header/cstdio" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">cstdio</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="cpp/header/string" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">string</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="cpp/header/algorithm" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">algorithm</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="cpp/header/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">vector</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacecostmap__2d" kindref="compound">costmap_2d</ref></highlight></codeline>
+<codeline lineno="48"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="classcostmap__2d_1_1LayeredCostmap_1a1200f12dd40104f81f8f2771bbec9d71" refkind="member"><highlight class="normal"><ref refid="classcostmap__2d_1_1LayeredCostmap_1a1200f12dd40104f81f8f2771bbec9d71" kindref="member">LayeredCostmap::LayeredCostmap</ref>(<ref refid="cpp/string/basic_string" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref><sp/>global_frame,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>rolling_window,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>track_unknown)<sp/>:</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>costmap_(),</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>global_frame_(global_frame),</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>rolling_window_(rolling_window),</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>current_(false),</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>minx_(0.0),</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>miny_(0.0),</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>maxx_(0.0),</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>maxy_(0.0),</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>bx0_(0),</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>bxn_(0),</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>by0_(0),</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>byn_(0),</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>initialized_(false),</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>size_locked_(false),</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>circumscribed_radius_(1.0),</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>inscribed_radius_(0.1)</highlight></codeline>
+<codeline lineno="67"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(track_unknown)</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a8a9f535f98f1ba4c0a74f88aa706bcd2" kindref="member">setDefaultValue</ref>(<ref refid="namespacecostmap__2d_1ae61ae84ebebea32544148f295779c4ef" kindref="member">NO_INFORMATION</ref>);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a8a9f535f98f1ba4c0a74f88aa706bcd2" kindref="member">setDefaultValue</ref>(<ref refid="namespacecostmap__2d_1aa367750132c78d35f962c9130c1a572c" kindref="member">FREE_SPACE</ref>);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="classcostmap__2d_1_1LayeredCostmap_1af4cf84d6594ab255ffe07ad33b35eed5" refkind="member"><highlight class="normal"><ref refid="classcostmap__2d_1_1LayeredCostmap_1af4cf84d6594ab255ffe07ad33b35eed5" kindref="member">LayeredCostmap::~LayeredCostmap</ref>()</highlight></codeline>
+<codeline lineno="75"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(<ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.size()<sp/>&gt;<sp/>0)</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.pop_back();</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="80"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82" refid="classcostmap__2d_1_1LayeredCostmap_1a8f8121ac0c6a2c5f267cf1cc07cfc40b" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a8f8121ac0c6a2c5f267cf1cc07cfc40b" kindref="member">LayeredCostmap::resizeMap</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>size_x,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>size_y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>resolution,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>origin_x,</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>origin_y,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>size_locked)</highlight></codeline>
+<codeline lineno="84"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/>boost::unique_lock&lt;Costmap2D::mutex_t&gt;<sp/>lock(*(<ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a0d03ac474a496bee0780d4b7f5b4a2f1" kindref="member">getMutex</ref>()));</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1aa2c55d9fd17fdccdef9f777a4c731d7c" kindref="member">size_locked_</ref><sp/>=<sp/>size_locked;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a95bae6eccd820a77d8040562e2a51118" kindref="member">resizeMap</ref>(size_x,<sp/>size_y,<sp/>resolution,<sp/>origin_x,<sp/>origin_y);</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">vector</ref>&lt;boost::shared_ptr&lt;Layer&gt;<sp/>&gt;::iterator<sp/>plugin<sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.begin();<sp/>plugin<sp/>!=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.end();</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>++plugin)</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/>(*plugin)-&gt;matchSize();</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="93"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classcostmap__2d_1_1LayeredCostmap_1ab598d6442277ba8299ba3c7b952662d6" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ab598d6442277ba8299ba3c7b952662d6" kindref="member">LayeredCostmap::updateMap</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>robot_x,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>robot_y,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>robot_yaw)</highlight></codeline>
+<codeline lineno="96"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Lock<sp/>for<sp/>the<sp/>remainder<sp/>of<sp/>this<sp/>function,<sp/>some<sp/>plugins<sp/>(e.g.<sp/>VoxelLayer)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>implement<sp/>thread<sp/>unsafe<sp/>updateBounds()<sp/>functions.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>boost::unique_lock&lt;Costmap2D::mutex_t&gt;<sp/>lock(*(<ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a0d03ac474a496bee0780d4b7f5b4a2f1" kindref="member">getMutex</ref>()));</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>we&apos;re<sp/>using<sp/>a<sp/>rolling<sp/>buffer<sp/>costmap...<sp/>we<sp/>need<sp/>to<sp/>update<sp/>the<sp/>origin<sp/>using<sp/>the<sp/>robot&apos;s<sp/>position</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classcostmap__2d_1_1LayeredCostmap_1aad3b81e2b41df0424c801aeda7222ff2" kindref="member">rolling_window_</ref>)</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>new_origin_x<sp/>=<sp/>robot_x<sp/>-<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a645ea4720d5cab8bcf662687cc81d087" kindref="member">getSizeInMetersX</ref>()<sp/>/<sp/>2;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>new_origin_y<sp/>=<sp/>robot_y<sp/>-<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1afb1d6cdc01d77452175487955e6aff4d" kindref="member">getSizeInMetersY</ref>()<sp/>/<sp/>2;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a5ca05c95f95e1408ca9e23d2e7f8987a" kindref="member">updateOrigin</ref>(new_origin_x,<sp/>new_origin_y);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.size()<sp/>==<sp/>0)</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ae8d6d1d9085ac2968b0efc849b443a25" kindref="member">minx_</ref><sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1abcb5b07fc2117f4f17f1c330fbceb876" kindref="member">miny_</ref><sp/>=<sp/>1e30;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a22740c3a181873dbfa30ce2bff2ae374" kindref="member">maxx_</ref><sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1aabdec50fe88d4189fb9dc4b082498f3a" kindref="member">maxy_</ref><sp/>=<sp/>-1e30;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">vector</ref>&lt;boost::shared_ptr&lt;Layer&gt;<sp/>&gt;::iterator<sp/>plugin<sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.begin();<sp/>plugin<sp/>!=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.end();</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++plugin)</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!(*plugin)-&gt;isEnabled())</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>prev_minx<sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ae8d6d1d9085ac2968b0efc849b443a25" kindref="member">minx_</ref>;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>prev_miny<sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1abcb5b07fc2117f4f17f1c330fbceb876" kindref="member">miny_</ref>;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>prev_maxx<sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a22740c3a181873dbfa30ce2bff2ae374" kindref="member">maxx_</ref>;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>prev_maxy<sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1aabdec50fe88d4189fb9dc4b082498f3a" kindref="member">maxy_</ref>;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>(*plugin)-&gt;updateBounds(robot_x,<sp/>robot_y,<sp/>robot_yaw,<sp/>&amp;<ref refid="classcostmap__2d_1_1LayeredCostmap_1ae8d6d1d9085ac2968b0efc849b443a25" kindref="member">minx_</ref>,<sp/>&amp;<ref refid="classcostmap__2d_1_1LayeredCostmap_1abcb5b07fc2117f4f17f1c330fbceb876" kindref="member">miny_</ref>,<sp/>&amp;<ref refid="classcostmap__2d_1_1LayeredCostmap_1a22740c3a181873dbfa30ce2bff2ae374" kindref="member">maxx_</ref>,<sp/>&amp;<ref refid="classcostmap__2d_1_1LayeredCostmap_1aabdec50fe88d4189fb9dc4b082498f3a" kindref="member">maxy_</ref>);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classcostmap__2d_1_1LayeredCostmap_1ae8d6d1d9085ac2968b0efc849b443a25" kindref="member">minx_</ref><sp/>&gt;<sp/>prev_minx<sp/>||<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1abcb5b07fc2117f4f17f1c330fbceb876" kindref="member">miny_</ref><sp/>&gt;<sp/>prev_miny<sp/>||<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a22740c3a181873dbfa30ce2bff2ae374" kindref="member">maxx_</ref><sp/>&lt;<sp/>prev_maxx<sp/>||<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1aabdec50fe88d4189fb9dc4b082498f3a" kindref="member">maxy_</ref><sp/>&lt;<sp/>prev_maxy)</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ROS_WARN_THROTTLE(1.0,<sp/></highlight><highlight class="stringliteral">&quot;Illegal<sp/>bounds<sp/>change,<sp/>was<sp/>[tl:<sp/>(%f,<sp/>%f),<sp/>br:<sp/>(%f,<sp/>%f)],<sp/>but<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;is<sp/>now<sp/>[tl:<sp/>(%f,<sp/>%f),<sp/>br:<sp/>(%f,<sp/>%f)].<sp/>The<sp/>offending<sp/>layer<sp/>is<sp/>%s&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>prev_minx,<sp/>prev_miny,<sp/>prev_maxx<sp/>,<sp/>prev_maxy,</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ae8d6d1d9085ac2968b0efc849b443a25" kindref="member">minx_</ref>,<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1abcb5b07fc2117f4f17f1c330fbceb876" kindref="member">miny_</ref>,<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a22740c3a181873dbfa30ce2bff2ae374" kindref="member">maxx_</ref><sp/>,<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1aabdec50fe88d4189fb9dc4b082498f3a" kindref="member">maxy_</ref>,</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(*plugin)-&gt;getName().c_str());</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>x0,<sp/>xn,<sp/>y0,<sp/>yn;</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1ae412173f42af7edba9996f86754b7cbf" kindref="member">worldToMapEnforceBounds</ref>(<ref refid="classcostmap__2d_1_1LayeredCostmap_1ae8d6d1d9085ac2968b0efc849b443a25" kindref="member">minx_</ref>,<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1abcb5b07fc2117f4f17f1c330fbceb876" kindref="member">miny_</ref>,<sp/>x0,<sp/>y0);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1ae412173f42af7edba9996f86754b7cbf" kindref="member">worldToMapEnforceBounds</ref>(<ref refid="classcostmap__2d_1_1LayeredCostmap_1a22740c3a181873dbfa30ce2bff2ae374" kindref="member">maxx_</ref>,<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1aabdec50fe88d4189fb9dc4b082498f3a" kindref="member">maxy_</ref>,<sp/>xn,<sp/>yn);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/>x0<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(0,<sp/>x0);</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/>xn<sp/>=<sp/><ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">(<ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a615a4186649d8970111f8a356906b320" kindref="member">getSizeInCellsX</ref>()),<sp/>xn<sp/>+<sp/>1);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/>y0<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(0,<sp/>y0);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/>yn<sp/>=<sp/><ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">(<ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a702f4ed109f94c8513500cf97ff066a4" kindref="member">getSizeInCellsY</ref>()),<sp/>yn<sp/>+<sp/>1);</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/>ROS_DEBUG(</highlight><highlight class="stringliteral">&quot;Updating<sp/>area<sp/>x:<sp/>[%d,<sp/>%d]<sp/>y:<sp/>[%d,<sp/>%d]&quot;</highlight><highlight class="normal">,<sp/>x0,<sp/>xn,<sp/>y0,<sp/>yn);</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(xn<sp/>&lt;<sp/>x0<sp/>||<sp/>yn<sp/>&lt;<sp/>y0)</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1aba344550cbc08bcc3a54c64290f8f568" kindref="member">resetMap</ref>(x0,<sp/>y0,<sp/>xn,<sp/>yn);</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">vector</ref>&lt;boost::shared_ptr&lt;Layer&gt;<sp/>&gt;::iterator<sp/>plugin<sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.begin();<sp/>plugin<sp/>!=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.end();</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++plugin)</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">((*plugin)-&gt;isEnabled())</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>(*plugin)-&gt;updateCosts(<ref refid="classcostmap__2d_1_1LayeredCostmap_1a8c435ef3f9992bdd43881118c98dae94" kindref="member">costmap_</ref>,<sp/>x0,<sp/>y0,<sp/>xn,<sp/>yn);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1af95ce322bdd923bbaec67e59b7f84e40" kindref="member">bx0_</ref><sp/>=<sp/>x0;</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ae914ca4fd3d63dcf25324e47f2828ad1" kindref="member">bxn_</ref><sp/>=<sp/>xn;</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1aa85075c57c9b43f45b4ada89ce8763e7" kindref="member">by0_</ref><sp/>=<sp/>y0;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ac21e7d0cd02548c579098a7f9486d2cd" kindref="member">byn_</ref><sp/>=<sp/>yn;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ad0667ff85987146c43ba1b703741eb6c" kindref="member">initialized_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="163"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165" refid="classcostmap__2d_1_1LayeredCostmap_1a7fdc879ceb88df60b51ee4e5f4a1ec6e" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a7fdc879ceb88df60b51ee4e5f4a1ec6e" kindref="member">LayeredCostmap::isCurrent</ref>()</highlight></codeline>
+<codeline lineno="166"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ab745c8c3f20f875a29c8778a37653734" kindref="member">current_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">vector</ref>&lt;boost::shared_ptr&lt;Layer&gt;<sp/>&gt;::iterator<sp/>plugin<sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.begin();<sp/>plugin<sp/>!=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.end();</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>++plugin)</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">((*plugin)-&gt;isEnabled())</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ab745c8c3f20f875a29c8778a37653734" kindref="member">current_</ref><sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ab745c8c3f20f875a29c8778a37653734" kindref="member">current_</ref><sp/>&amp;&amp;<sp/>(*plugin)-&gt;isCurrent();</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ab745c8c3f20f875a29c8778a37653734" kindref="member">current_</ref>;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177" refid="classcostmap__2d_1_1LayeredCostmap_1acf16f3d3636b7fbe6e28edbd32340464" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1acf16f3d3636b7fbe6e28edbd32340464" kindref="member">LayeredCostmap::setFootprint</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;geometry_msgs::Point&gt;</ref>&amp;<sp/>footprint_spec)</highlight></codeline>
+<codeline lineno="178"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a964fe6bc4cbd11fdf505ba3969969cfa" kindref="member">footprint_</ref><sp/>=<sp/>footprint_spec;</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><ref refid="namespacecostmap__2d_1a6eeafbd231ad1ec2de69e61754773742" kindref="member">costmap_2d::calculateMinAndMaxDistances</ref>(footprint_spec,<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1ae1fcca65994f4882980fc22905bbc9c4" kindref="member">inscribed_radius_</ref>,<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a7330d4fcd00c2a511348083506900a09" kindref="member">circumscribed_radius_</ref>);</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">vector</ref>&lt;boost::shared_ptr&lt;Layer&gt;<sp/>&gt;::iterator<sp/>plugin<sp/>=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.begin();<sp/>plugin<sp/>!=<sp/><ref refid="classcostmap__2d_1_1LayeredCostmap_1a2c149962ee923306c043d3cf0a29cafa" kindref="member">plugins_</ref>.end();</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>++plugin)</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/>(*plugin)-&gt;onFootprintChanged();</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="187"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>costmap_2d</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/layered_costmap.cpp"/>
+  </compounddef>
+</doxygen>

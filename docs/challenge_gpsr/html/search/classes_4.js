@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['day_4632',['day',['https://en.cppreference.com/w/cpp/chrono/day.html',1,'std::chrono']]],
+  ['days_4633',['days',['https://en.cppreference.com/w/cpp/chrono/duration.html',1,'std::chrono']]],
+  ['deca_4634',['deca',['https://en.cppreference.com/w/cpp/numeric/ratio/ratio.html',1,'std']]],
+  ['decay_4635',['decay',['https://en.cppreference.com/w/cpp/types/decay.html',1,'std']]],
+  ['decay_5ft_4636',['decay_t',['https://en.cppreference.com/w/cpp/types/decay.html',1,'std']]],
+  ['deci_4637',['deci',['https://en.cppreference.com/w/cpp/numeric/ratio/ratio.html',1,'std']]],
+  ['default_5fdelete_4638',['default_delete',['https://en.cppreference.com/w/cpp/memory/default_delete.html',1,'std']]],
+  ['default_5frandom_5fengine_4639',['default_random_engine',['https://en.cppreference.com/w/cpp/numeric/random.html',1,'std']]],
+  ['default_5fsearcher_4640',['default_searcher',['https://en.cppreference.com/w/cpp/utility/functional/default_searcher.html',1,'std::default_searcher'],['https://en.cppreference.com/w/cpp/experimental/default_searcher.html',1,'std::experimental::default_searcher']]],
+  ['defer_5flock_5ft_4641',['defer_lock_t',['https://en.cppreference.com/w/cpp/thread/lock_tag_t.html',1,'std']]],
+  ['deque_4642',['deque',['https://en.cppreference.com/w/cpp/container/deque.html',1,'std::deque'],['https://en.cppreference.com/w/cpp/container/deque.html',1,'std::pmr::deque']]],
+  ['detected_5for_4643',['detected_or',['https://en.cppreference.com/w/cpp/experimental/is_detected.html',1,'std::experimental']]],
+  ['detected_5for_5ft_4644',['detected_or_t',['https://en.cppreference.com/w/cpp/experimental/is_detected.html',1,'std::experimental']]],
+  ['directory_5fentry_4645',['directory_entry',['https://en.cppreference.com/w/cpp/experimental/fs/directory_entry.html',1,'std::experimental::filesystem::directory_entry'],['https://en.cppreference.com/w/cpp/filesystem/directory_entry.html',1,'std::filesystem::directory_entry']]],
+  ['directory_5fiterator_4646',['directory_iterator',['https://en.cppreference.com/w/cpp/experimental/fs/directory_iterator.html',1,'std::experimental::filesystem::directory_iterator'],['https://en.cppreference.com/w/cpp/filesystem/directory_iterator.html',1,'std::filesystem::directory_iterator']]],
+  ['directory_5foptions_4647',['directory_options',['https://en.cppreference.com/w/cpp/experimental/fs/directory_options.html',1,'std::experimental::filesystem::directory_options'],['https://en.cppreference.com/w/cpp/filesystem/directory_options.html',1,'std::filesystem::directory_options']]],
+  ['discard_5fblock_5fengine_4648',['discard_block_engine',['https://en.cppreference.com/w/cpp/numeric/random/discard_block_engine.html',1,'std']]],
+  ['discrete_5fdistribution_4649',['discrete_distribution',['https://en.cppreference.com/w/cpp/numeric/random/discrete_distribution.html',1,'std']]],
+  ['disjunction_4650',['disjunction',['https://en.cppreference.com/w/cpp/types/disjunction.html',1,'std::disjunction'],['https://en.cppreference.com/w/cpp/experimental/disjunction.html',1,'std::experimental::disjunction']]],
+  ['div_5ft_4651',['div_t',['https://en.cppreference.com/w/cpp/numeric/math/div.html',1,'std']]],
+  ['divides_4652',['divides',['https://en.cppreference.com/w/cpp/utility/functional/divides.html',1,'std']]],
+  ['domain_5ferror_4653',['domain_error',['https://en.cppreference.com/w/cpp/error/domain_error.html',1,'std']]],
+  ['duration_4654',['duration',['https://en.cppreference.com/w/cpp/chrono/duration.html',1,'std::chrono']]],
+  ['duration_5fvalues_4655',['duration_values',['https://en.cppreference.com/w/cpp/chrono/duration_values.html',1,'std::chrono']]],
+  ['dutch_4656',['Dutch',['../../../challenge_presentation/html/classchallenge__presentation_1_1presentation_1_1Dutch.html',1,'challenge_presentation::presentation::Dutch'],['../../../challenge_presentation/html/classchallenge__presentation_1_1presentation__hero_1_1Dutch.html',1,'challenge_presentation::presentation_hero::Dutch']]]
+];

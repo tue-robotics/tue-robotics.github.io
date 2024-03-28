@@ -1,0 +1,348 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="observation__buffer_8cpp" kind="file" language="C++">
+    <compoundname>observation_buffer.cpp</compoundname>
+    <includes refid="observation__buffer_8h" local="no">costmap_2d/observation_buffer.h</includes>
+    <includes local="no">tf2_geometry_msgs/tf2_geometry_msgs.h</includes>
+    <includes local="no">tf2_sensor_msgs/tf2_sensor_msgs.h</includes>
+    <includes local="no">sensor_msgs/point_cloud2_iterator.h</includes>
+    <incdepgraph>
+      <node id="9">
+        <label>sensor_msgs/PointCloud2.h</label>
+      </node>
+      <node id="4">
+        <label>list</label>
+        <link refid="cpp/header/list" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="3">
+        <label>vector</label>
+        <link refid="cpp/header/vector" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="8">
+        <label>geometry_msgs/Point.h</label>
+      </node>
+      <node id="11">
+        <label>boost/thread.hpp</label>
+      </node>
+      <node id="2">
+        <label>costmap_2d/observation_buffer.h</label>
+        <link refid="observation__buffer_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>ros/time.h</label>
+      </node>
+      <node id="12">
+        <label>tf2_geometry_msgs/tf2_geometry_msgs.h</label>
+      </node>
+      <node id="1">
+        <label>observation_buffer.cpp</label>
+        <link refid="observation__buffer_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>tf2_sensor_msgs/tf2_sensor_msgs.h</label>
+      </node>
+      <node id="5">
+        <label>string</label>
+        <link refid="cpp/header/string" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="7">
+        <label>costmap_2d/observation.h</label>
+        <link refid="observation_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>sensor_msgs/point_cloud2_iterator.h</label>
+      </node>
+      <node id="10">
+        <label>tf2_ros/buffer.h</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacecostmap__2d">costmap_2d</innernamespace>
+    <innernamespace refid="namespacetf2">tf2</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*********************************************************************</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>Software<sp/>License<sp/>Agreement<sp/>(BSD<sp/>License)</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/><sp/>Copyright<sp/>(c)<sp/>2008,<sp/>2013,<sp/>Willow<sp/>Garage,<sp/>Inc.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/><sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/><sp/>Redistribution<sp/>and<sp/>use<sp/>in<sp/>source<sp/>and<sp/>binary<sp/>forms,<sp/>with<sp/>or<sp/>without</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/><sp/>modification,<sp/>are<sp/>permitted<sp/>provided<sp/>that<sp/>the<sp/>following<sp/>conditions</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/>are<sp/>met:</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>of<sp/>source<sp/>code<sp/>must<sp/>retain<sp/>the<sp/>above<sp/>copyright</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following<sp/>disclaimer.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>in<sp/>binary<sp/>form<sp/>must<sp/>reproduce<sp/>the<sp/>above</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>copyright<sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>disclaimer<sp/>in<sp/>the<sp/>documentation<sp/>and/or<sp/>other<sp/>materials<sp/>provided</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>with<sp/>the<sp/>distribution.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Neither<sp/>the<sp/>name<sp/>of<sp/>Willow<sp/>Garage,<sp/>Inc.<sp/>nor<sp/>the<sp/>names<sp/>of<sp/>its</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>contributors<sp/>may<sp/>be<sp/>used<sp/>to<sp/>endorse<sp/>or<sp/>promote<sp/>products<sp/>derived</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>from<sp/>this<sp/>software<sp/>without<sp/>specific<sp/>prior<sp/>written<sp/>permission.</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/><sp/>THIS<sp/>SOFTWARE<sp/>IS<sp/>PROVIDED<sp/>BY<sp/>THE<sp/>COPYRIGHT<sp/>HOLDERS<sp/>AND<sp/>CONTRIBUTORS</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/><sp/>&quot;AS<sp/>IS&quot;<sp/>AND<sp/>ANY<sp/>EXPRESS<sp/>OR<sp/>IMPLIED<sp/>WARRANTIES,<sp/>INCLUDING,<sp/>BUT<sp/>NOT</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/><sp/>LIMITED<sp/>TO,<sp/>THE<sp/>IMPLIED<sp/>WARRANTIES<sp/>OF<sp/>MERCHANTABILITY<sp/>AND<sp/>FITNESS</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*<sp/><sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE<sp/>ARE<sp/>DISCLAIMED.<sp/>IN<sp/>NO<sp/>EVENT<sp/>SHALL<sp/>THE</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/><sp/>COPYRIGHT<sp/>OWNER<sp/>OR<sp/>CONTRIBUTORS<sp/>BE<sp/>LIABLE<sp/>FOR<sp/>ANY<sp/>DIRECT,<sp/>INDIRECT,</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/>*<sp/><sp/>INCIDENTAL,<sp/>SPECIAL,<sp/>EXEMPLARY,<sp/>OR<sp/>CONSEQUENTIAL<sp/>DAMAGES<sp/>(INCLUDING,</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*<sp/><sp/>BUT<sp/>NOT<sp/>LIMITED<sp/>TO,<sp/>PROCUREMENT<sp/>OF<sp/>SUBSTITUTE<sp/>GOODS<sp/>OR<sp/>SERVICES;</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*<sp/><sp/>LOSS<sp/>OF<sp/>USE,<sp/>DATA,<sp/>OR<sp/>PROFITS;<sp/>OR<sp/>BUSINESS<sp/>INTERRUPTION)<sp/>HOWEVER</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*<sp/><sp/>CAUSED<sp/>AND<sp/>ON<sp/>ANY<sp/>THEORY<sp/>OF<sp/>LIABILITY,<sp/>WHETHER<sp/>IN<sp/>CONTRACT,<sp/>STRICT</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/>*<sp/><sp/>LIABILITY,<sp/>OR<sp/>TORT<sp/>(INCLUDING<sp/>NEGLIGENCE<sp/>OR<sp/>OTHERWISE)<sp/>ARISING<sp/>IN</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*<sp/><sp/>ANY<sp/>WAY<sp/>OUT<sp/>OF<sp/>THE<sp/>USE<sp/>OF<sp/>THIS<sp/>SOFTWARE,<sp/>EVEN<sp/>IF<sp/>ADVISED<sp/>OF<sp/>THE</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/>*<sp/><sp/>POSSIBILITY<sp/>OF<sp/>SUCH<sp/>DAMAGE.</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>Author:<sp/>Eitan<sp/>Marder-Eppstein</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/>*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="observation__buffer_8h" kindref="compound">costmap_2d/observation_buffer.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;tf2_geometry_msgs/tf2_geometry_msgs.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;tf2_sensor_msgs/tf2_sensor_msgs.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sensor_msgs/point_cloud2_iterator.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std</ref>;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">tf2;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacecostmap__2d" kindref="compound">costmap_2d</ref></highlight></codeline>
+<codeline lineno="47"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="48" refid="classcostmap__2d_1_1ObservationBuffer_1a6a6840d481c0f6fabf5f9b2788bbd205" refkind="member"><highlight class="normal">ObservationBuffer::ObservationBuffer(</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>topic_name,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>observation_keep_time,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>expected_update_rate,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>min_obstacle_height,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>max_obstacle_height,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>obstacle_range,</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>raytrace_range,<sp/>tf2_ros::Buffer&amp;<sp/>tf2_buffer,<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>global_frame,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>sensor_frame,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>tf_tolerance)<sp/>:</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>tf2_buffer_(tf2_buffer),<sp/>observation_keep_time_(observation_keep_time),<sp/>expected_update_rate_(expected_update_rate),</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>last_updated_(ros::Time::now()),<sp/>global_frame_(global_frame),<sp/>sensor_frame_(sensor_frame),<sp/>topic_name_(topic_name),</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>min_obstacle_height_(min_obstacle_height),<sp/>max_obstacle_height_(max_obstacle_height),</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>obstacle_range_(obstacle_range),<sp/>raytrace_range_(raytrace_range),<sp/>tf_tolerance_(tf_tolerance)</highlight></codeline>
+<codeline lineno="56"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59" refid="classcostmap__2d_1_1ObservationBuffer_1ad14ce56a9f57bddfecd87d0c2cc2201d" refkind="member"><highlight class="normal"><ref refid="classcostmap__2d_1_1ObservationBuffer_1ad14ce56a9f57bddfecd87d0c2cc2201d" kindref="member">ObservationBuffer::~ObservationBuffer</ref>()</highlight></codeline>
+<codeline lineno="60"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="61"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="classcostmap__2d_1_1ObservationBuffer_1a078a1fab09eb0501fa9f205f818c4c73" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a078a1fab09eb0501fa9f205f818c4c73" kindref="member">ObservationBuffer::setGlobalFrame</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref><sp/>new_global_frame)</highlight></codeline>
+<codeline lineno="64"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/>ros::Time<sp/>transform_time<sp/>=<sp/>ros::Time::now();</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><ref refid="cpp/string/basic_string" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::string</ref><sp/>tf_error;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>geometry_msgs::TransformStamped<sp/>transformStamped;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="classcostmap__2d_1_1ObservationBuffer_1a73444bf190531d9180e474e9e608b32b" kindref="member">tf2_buffer_</ref>.canTransform(new_global_frame,<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a92c26d155177c15f23501fef11153afa" kindref="member">global_frame_</ref>,<sp/>transform_time,<sp/>ros::Duration(<ref refid="classcostmap__2d_1_1ObservationBuffer_1a236a04bad7c2cb033ae307e7b509e430" kindref="member">tf_tolerance_</ref>),<sp/>&amp;tf_error))</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>ROS_ERROR(</highlight><highlight class="stringliteral">&quot;Transform<sp/>between<sp/>%s<sp/>and<sp/>%s<sp/>with<sp/>tolerance<sp/>%.2f<sp/>failed:<sp/>%s.&quot;</highlight><highlight class="normal">,<sp/>new_global_frame.<ref refid="cpp/string/basic_string/c_str" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">c_str</ref>(),</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a92c26d155177c15f23501fef11153afa" kindref="member">global_frame_</ref>.<ref refid="cpp/string/basic_string/c_str" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">c_str</ref>(),<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a236a04bad7c2cb033ae307e7b509e430" kindref="member">tf_tolerance_</ref>,<sp/>tf_error.<ref refid="cpp/string/basic_string/c_str" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">c_str</ref>());</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><ref refid="cpp/container/list" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">list&lt;Observation&gt;::iterator</ref><sp/>obs_it;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(obs_it<sp/>=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.begin();<sp/>obs_it<sp/>!=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.end();<sp/>++obs_it)</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1Observation" kindref="compound">Observation</ref>&amp;<sp/>obs<sp/>=<sp/>*obs_it;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>geometry_msgs::PointStamped<sp/>origin;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>origin.header.frame_id<sp/>=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a92c26d155177c15f23501fef11153afa" kindref="member">global_frame_</ref>;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>origin.header.stamp<sp/>=<sp/>transform_time;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>origin.point<sp/>=<sp/>obs.<ref refid="classcostmap__2d_1_1Observation_1a8095d100ad18cc1c7864c69c82be4c08" kindref="member">origin_</ref>;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>we<sp/>need<sp/>to<sp/>transform<sp/>the<sp/>origin<sp/>of<sp/>the<sp/>observation<sp/>to<sp/>the<sp/>new<sp/>global<sp/>frame</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a73444bf190531d9180e474e9e608b32b" kindref="member">tf2_buffer_</ref>.transform(origin,<sp/>origin,<sp/>new_global_frame);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>obs.<ref refid="classcostmap__2d_1_1Observation_1a8095d100ad18cc1c7864c69c82be4c08" kindref="member">origin_</ref><sp/>=<sp/>origin.point;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>we<sp/>also<sp/>need<sp/>to<sp/>transform<sp/>the<sp/>cloud<sp/>of<sp/>the<sp/>observation<sp/>to<sp/>the<sp/>new<sp/>global<sp/>frame</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a73444bf190531d9180e474e9e608b32b" kindref="member">tf2_buffer_</ref>.transform(*(obs.<ref refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" kindref="member">cloud_</ref>),<sp/>*(obs.<ref refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" kindref="member">cloud_</ref>),<sp/>new_global_frame);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(TransformException&amp;<sp/>ex)</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ROS_ERROR(</highlight><highlight class="stringliteral">&quot;TF<sp/>Error<sp/>attempting<sp/>to<sp/>transform<sp/>an<sp/>observation<sp/>from<sp/>%s<sp/>to<sp/>%s:<sp/>%s&quot;</highlight><highlight class="normal">,<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a92c26d155177c15f23501fef11153afa" kindref="member">global_frame_</ref>.<ref refid="cpp/string/basic_string/c_str" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">c_str</ref>(),</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>new_global_frame.<ref refid="cpp/string/basic_string/c_str" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">c_str</ref>(),<sp/>ex.what());</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>now<sp/>we<sp/>need<sp/>to<sp/>update<sp/>our<sp/>global_frame<sp/>member</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a92c26d155177c15f23501fef11153afa" kindref="member">global_frame_</ref><sp/>=<sp/>new_global_frame;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108" refid="classcostmap__2d_1_1ObservationBuffer_1af1bdb755c1ed181b2108fc26826bc273" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1af1bdb755c1ed181b2108fc26826bc273" kindref="member">ObservationBuffer::bufferCloud</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>sensor_msgs::PointCloud2&amp;<sp/>cloud)</highlight></codeline>
+<codeline lineno="109"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/>geometry_msgs::PointStamped<sp/>global_origin;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>create<sp/>a<sp/>new<sp/>observation<sp/>on<sp/>the<sp/>list<sp/>to<sp/>be<sp/>populated</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.push_front(<ref refid="classcostmap__2d_1_1Observation" kindref="compound">Observation</ref>());</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>check<sp/>whether<sp/>the<sp/>origin<sp/>frame<sp/>has<sp/>been<sp/>set<sp/>explicitly<sp/>or<sp/>whether<sp/>we<sp/>should<sp/>get<sp/>it<sp/>from<sp/>the<sp/>cloud</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>origin_frame<sp/>=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1aab699cc1c65c2bda7fe0e9e1a1f6a380" kindref="member">sensor_frame_</ref><sp/>==<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal"><sp/>?<sp/>cloud.header.frame_id<sp/>:<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1aab699cc1c65c2bda7fe0e9e1a1f6a380" kindref="member">sensor_frame_</ref>;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>given<sp/>these<sp/>observations<sp/>come<sp/>from<sp/>sensors...<sp/>we&apos;ll<sp/>need<sp/>to<sp/>store<sp/>the<sp/>origin<sp/>pt<sp/>of<sp/>the<sp/>sensor</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>geometry_msgs::PointStamped<sp/>local_origin;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/>local_origin.header.stamp<sp/>=<sp/>cloud.header.stamp;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>local_origin.header.frame_id<sp/>=<sp/>origin_frame;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>local_origin.point.x<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>local_origin.point.y<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>local_origin.point.z<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a73444bf190531d9180e474e9e608b32b" kindref="member">tf2_buffer_</ref>.transform(local_origin,<sp/>global_origin,<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a92c26d155177c15f23501fef11153afa" kindref="member">global_frame_</ref>);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/>tf2::convert(global_origin.point,<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.front().origin_);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>make<sp/>sure<sp/>to<sp/>pass<sp/>on<sp/>the<sp/>raytrace/obstacle<sp/>range<sp/>of<sp/>the<sp/>observation<sp/>buffer<sp/>to<sp/>the<sp/>observations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.front().raytrace_range_<sp/>=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1af47e0ad64246605f41dacdcc7fca4edf" kindref="member">raytrace_range_</ref>;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.front().obstacle_range_<sp/>=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a688f4520b698c8ce3b766212e217c2a0" kindref="member">obstacle_range_</ref>;</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>sensor_msgs::PointCloud2<sp/>global_frame_cloud;</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>transform<sp/>the<sp/>point<sp/>cloud</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a73444bf190531d9180e474e9e608b32b" kindref="member">tf2_buffer_</ref>.transform(cloud,<sp/>global_frame_cloud,<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a92c26d155177c15f23501fef11153afa" kindref="member">global_frame_</ref>);</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>global_frame_cloud.header.stamp<sp/>=<sp/>cloud.header.stamp;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>now<sp/>we<sp/>need<sp/>to<sp/>remove<sp/>observations<sp/>from<sp/>the<sp/>cloud<sp/>that<sp/>are<sp/>below<sp/>or<sp/>above<sp/>our<sp/>height<sp/>thresholds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>sensor_msgs::PointCloud2&amp;<sp/>observation_cloud<sp/>=<sp/>*(<ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.front().cloud_);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/>observation_cloud.height<sp/>=<sp/>global_frame_cloud.height;</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/>observation_cloud.width<sp/>=<sp/>global_frame_cloud.width;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/>observation_cloud.fields<sp/>=<sp/>global_frame_cloud.fields;</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/>observation_cloud.is_bigendian<sp/>=<sp/>global_frame_cloud.is_bigendian;</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/>observation_cloud.point_step<sp/>=<sp/>global_frame_cloud.point_step;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/>observation_cloud.row_step<sp/>=<sp/>global_frame_cloud.row_step;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/>observation_cloud.is_dense<sp/>=<sp/>global_frame_cloud.is_dense;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>cloud_size<sp/>=<sp/>global_frame_cloud.height*global_frame_cloud.width;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>sensor_msgs::PointCloud2Modifier<sp/>modifier(observation_cloud);</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/>modifier.resize(cloud_size);</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>point_count<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>copy<sp/>over<sp/>the<sp/>points<sp/>that<sp/>are<sp/>within<sp/>our<sp/>height<sp/>bounds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/>sensor_msgs::PointCloud2Iterator&lt;float&gt;<sp/>iter_z(global_frame_cloud,<sp/></highlight><highlight class="stringliteral">&quot;z&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;unsigned char&gt;::const_iterator</ref><sp/>iter_global<sp/>=<sp/>global_frame_cloud.<ref refid="cpp/container/vector/data" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">data</ref>.begin(),<sp/>iter_global_end<sp/>=<sp/>global_frame_cloud.data.end();</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;unsigned char&gt;::iterator</ref><sp/>iter_obs<sp/>=<sp/>observation_cloud.<ref refid="cpp/container/vector/data" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">data</ref>.begin();</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(;<sp/>iter_global<sp/>!=<sp/>iter_global_end;<sp/>++iter_z,<sp/>iter_global<sp/>+=<sp/>global_frame_cloud.point_step)</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((*iter_z)<sp/>&lt;=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a238db75220517e998952c2b411f5ebae" kindref="member">max_obstacle_height_</ref></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>(*iter_z)<sp/>&gt;=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1aa4ac1ea1cf1ac01fd1a0cb3f779e623c" kindref="member">min_obstacle_height_</ref>)</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/algorithm/copy" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::copy</ref>(iter_global,<sp/>iter_global<sp/>+<sp/>global_frame_cloud.point_step,<sp/>iter_obs);</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>iter_obs<sp/>+=<sp/>global_frame_cloud.point_step;</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++point_count;</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>resize<sp/>the<sp/>cloud<sp/>for<sp/>the<sp/>number<sp/>of<sp/>legal<sp/>points</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/>modifier.<ref refid="cpp/container/vector/resize" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">resize</ref>(point_count);</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/>observation_cloud.header.stamp<sp/>=<sp/>cloud.header.stamp;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/>observation_cloud.header.frame_id<sp/>=<sp/>global_frame_cloud.header.frame_id;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(TransformException&amp;<sp/>ex)</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>an<sp/>exception<sp/>occurs,<sp/>we<sp/>need<sp/>to<sp/>remove<sp/>the<sp/>empty<sp/>observation<sp/>from<sp/>the<sp/>list</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.pop_front();</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/>ROS_ERROR(</highlight><highlight class="stringliteral">&quot;TF<sp/>Exception<sp/>that<sp/>should<sp/>never<sp/>happen<sp/>for<sp/>sensor<sp/>frame:<sp/>%s,<sp/>cloud<sp/>frame:<sp/>%s,<sp/>%s&quot;</highlight><highlight class="normal">,<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1aab699cc1c65c2bda7fe0e9e1a1f6a380" kindref="member">sensor_frame_</ref>.<ref refid="cpp/string/basic_string/c_str" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">c_str</ref>(),</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cloud.header.frame_id.c_str(),<sp/>ex.what());</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>the<sp/>update<sp/>was<sp/>successful,<sp/>we<sp/>want<sp/>to<sp/>update<sp/>the<sp/>last<sp/>updated<sp/>time</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a7c9909af13ffca0a992756d4704b05d6" kindref="member">last_updated_</ref><sp/>=<sp/>ros::Time::now();</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>we&apos;ll<sp/>also<sp/>remove<sp/>any<sp/>stale<sp/>observations<sp/>from<sp/>the<sp/>list</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a65b02e4c2e54d86b8e110fbabdab0659" kindref="member">purgeStaleObservations</ref>();</highlight></codeline>
+<codeline lineno="189"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight><highlight class="comment">//<sp/>returns<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>observations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="192" refid="classcostmap__2d_1_1ObservationBuffer_1aa89ff474cd6785349e3c0b2f49e2d738" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1aa89ff474cd6785349e3c0b2f49e2d738" kindref="member">ObservationBuffer::getObservations</ref>(<ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">vector&lt;Observation&gt;</ref>&amp;<sp/>observations)</highlight></codeline>
+<codeline lineno="193"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>first...<sp/>let&apos;s<sp/>make<sp/>sure<sp/>that<sp/>we<sp/>don&apos;t<sp/>have<sp/>any<sp/>stale<sp/>observations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a65b02e4c2e54d86b8e110fbabdab0659" kindref="member">purgeStaleObservations</ref>();</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>now<sp/>we&apos;ll<sp/>just<sp/>copy<sp/>the<sp/>observations<sp/>for<sp/>the<sp/>caller</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><ref refid="cpp/container/list" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">list&lt;Observation&gt;::iterator</ref><sp/>obs_it;</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(obs_it<sp/>=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.begin();<sp/>obs_it<sp/>!=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.end();<sp/>++obs_it)</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/>observations.<ref refid="cpp/container/vector/push_back" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">push_back</ref>(*obs_it);</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="203"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="205" refid="classcostmap__2d_1_1ObservationBuffer_1a65b02e4c2e54d86b8e110fbabdab0659" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a65b02e4c2e54d86b8e110fbabdab0659" kindref="member">ObservationBuffer::purgeStaleObservations</ref>()</highlight></codeline>
+<codeline lineno="206"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.empty())</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/list" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">list&lt;Observation&gt;::iterator</ref><sp/>obs_it<sp/>=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.begin();</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>we&apos;re<sp/>keeping<sp/>observations<sp/>for<sp/>no<sp/>time...<sp/>then<sp/>we&apos;ll<sp/>only<sp/>keep<sp/>one<sp/>observation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classcostmap__2d_1_1ObservationBuffer_1a29bc32d920027d37eaeb49e0975ae337" kindref="member">observation_keep_time_</ref><sp/>==<sp/>ros::Duration(0.0))</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.erase(++obs_it,<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.end());</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>otherwise...<sp/>we&apos;ll<sp/>have<sp/>to<sp/>loop<sp/>through<sp/>the<sp/>observations<sp/>to<sp/>see<sp/>which<sp/>ones<sp/>are<sp/>stale</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(obs_it<sp/>=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.begin();<sp/>obs_it<sp/>!=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.end();<sp/>++obs_it)</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1Observation" kindref="compound">Observation</ref>&amp;<sp/>obs<sp/>=<sp/>*obs_it;</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>check<sp/>if<sp/>the<sp/>observation<sp/>is<sp/>out<sp/>of<sp/>date...<sp/>and<sp/>if<sp/>it<sp/>is,<sp/>remove<sp/>it<sp/>and<sp/>those<sp/>that<sp/>follow<sp/>from<sp/>the<sp/>list</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((<ref refid="classcostmap__2d_1_1ObservationBuffer_1a7c9909af13ffca0a992756d4704b05d6" kindref="member">last_updated_</ref><sp/>-<sp/>obs.<ref refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" kindref="member">cloud_</ref>-&gt;header.stamp)<sp/>&gt;<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a29bc32d920027d37eaeb49e0975ae337" kindref="member">observation_keep_time_</ref>)</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.erase(obs_it,<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a9f2bf57b5de5b5dd70299dad223b0689" kindref="member">observation_list_</ref>.end());</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="229"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight></codeline>
+<codeline lineno="231" refid="classcostmap__2d_1_1ObservationBuffer_1a169930366d75cae5d78e7b069be4a042" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a169930366d75cae5d78e7b069be4a042" kindref="member">ObservationBuffer::isCurrent</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="232"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classcostmap__2d_1_1ObservationBuffer_1a10d0c3bc749c7a1710526616b0210cd3" kindref="member">expected_update_rate_</ref><sp/>==<sp/>ros::Duration(0.0))</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>current<sp/>=<sp/>(ros::Time::now()<sp/>-<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a7c9909af13ffca0a992756d4704b05d6" kindref="member">last_updated_</ref>).toSec()<sp/>&lt;=<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a10d0c3bc749c7a1710526616b0210cd3" kindref="member">expected_update_rate_</ref>.toSec();</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!current)</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/>ROS_WARN(</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;The<sp/>%s<sp/>observation<sp/>buffer<sp/>has<sp/>not<sp/>been<sp/>updated<sp/>for<sp/>%.2f<sp/>seconds,<sp/>and<sp/>it<sp/>should<sp/>be<sp/>updated<sp/>every<sp/>%.2f<sp/>seconds.&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a459fda9f6de13c20340ede0e85a5c26c" kindref="member">topic_name_</ref>.<ref refid="cpp/string/basic_string/c_str" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">c_str</ref>(),<sp/>(ros::Time::now()<sp/>-<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a7c9909af13ffca0a992756d4704b05d6" kindref="member">last_updated_</ref>).toSec(),<sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a10d0c3bc749c7a1710526616b0210cd3" kindref="member">expected_update_rate_</ref>.toSec());</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>current;</highlight></codeline>
+<codeline lineno="244"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"></highlight></codeline>
+<codeline lineno="246" refid="classcostmap__2d_1_1ObservationBuffer_1aeb595ff9e1f56003644f4b0743020cd3" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1aeb595ff9e1f56003644f4b0743020cd3" kindref="member">ObservationBuffer::resetLastUpdated</ref>()</highlight></codeline>
+<codeline lineno="247"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1ObservationBuffer_1a7c9909af13ffca0a992756d4704b05d6" kindref="member">last_updated_</ref><sp/>=<sp/>ros::Time::now();</highlight></codeline>
+<codeline lineno="249"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="250"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>costmap_2d</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/observation_buffer.cpp"/>
+  </compounddef>
+</doxygen>

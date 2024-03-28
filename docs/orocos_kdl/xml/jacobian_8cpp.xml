@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="jacobian_8cpp" kind="file" language="C++">
+    <compoundname>jacobian.cpp</compoundname>
+    <includes refid="jacobian_8hpp" local="yes">jacobian.hpp</includes>
+    <incdepgraph>
+      <node id="10">
+        <label>functional</label>
+        <link refid="cpp/header/functional" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="9">
+        <label>utilities/hash_combine.h</label>
+        <link refid="hash__combine_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>jacobian.cpp</label>
+        <link refid="jacobian_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>cstdlib</label>
+        <link refid="cpp/header/cstdlib" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="12">
+        <label>Eigen/Core</label>
+      </node>
+      <node id="3">
+        <label>frames.hpp</label>
+        <link refid="frames_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>jacobian.hpp</label>
+        <link refid="jacobian_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>cassert</label>
+        <link refid="cpp/header/cassert" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="5">
+        <label>utilities/utility.h</label>
+        <link refid="utility_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>frames.inl</label>
+        <link refid="frames_8inl"/>
+      </node>
+      <node id="8">
+        <label>cmath</label>
+        <link refid="cpp/header/cmath" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="4">
+        <label>utilities/kdl-config.h</label>
+        <link refid="kdl-config_8h"/>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceKDL">KDL</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>Copyright<sp/><sp/>(C)<sp/><sp/>2007<sp/><sp/>Ruben<sp/>Smits<sp/>&lt;ruben<sp/>dot<sp/>smits<sp/>at<sp/>intermodalics<sp/>dot<sp/>eu&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Version:<sp/>1.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Author:<sp/>Ruben<sp/>Smits<sp/>&lt;ruben<sp/>dot<sp/>smits<sp/>at<sp/>intermodalics<sp/>dot<sp/>eu&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Maintainer:<sp/>Ruben<sp/>Smits<sp/>&lt;ruben<sp/>dot<sp/>smits<sp/>at<sp/>intermodalics<sp/>dot<sp/>eu&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//<sp/>URL:<sp/>http://www.orocos.org/kdl</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>library<sp/>is<sp/>free<sp/>software;<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>modify<sp/>it<sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//<sp/>License<sp/>as<sp/>published<sp/>by<sp/>the<sp/>Free<sp/>Software<sp/>Foundation;<sp/>either</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/>version<sp/>2.1<sp/>of<sp/>the<sp/>License,<sp/>or<sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>library<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>but<sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//<sp/>License<sp/>along<sp/>with<sp/>this<sp/>library;<sp/>if<sp/>not,<sp/>write<sp/>to<sp/>the<sp/>Free<sp/>Software</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Foundation,<sp/>Inc.,<sp/>51<sp/>Franklin<sp/>St,<sp/>Fifth<sp/>Floor,<sp/>Boston,<sp/>MA<sp/><sp/>02110-1301<sp/><sp/>USA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="jacobian_8hpp" kindref="compound">jacobian.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceKDL" kindref="compound">KDL</ref></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="26" refid="classKDL_1_1Jacobian_1a7c31b866a79a9e20b9ace52654ad5da9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Jacobian_1a7c31b866a79a9e20b9ace52654ad5da9" kindref="member">Jacobian::Jacobian</ref>()</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="classKDL_1_1Jacobian_1a8ec8969578a37ecc4ec0970699efa827" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Jacobian_1a7c31b866a79a9e20b9ace52654ad5da9" kindref="member">Jacobian::Jacobian</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nr_of_columns):</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data(6,nr_of_columns)</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>.setZero();</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="classKDL_1_1Jacobian_1a2337e899a223ddda2298e40f1f07408d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Jacobian_1a7c31b866a79a9e20b9ace52654ad5da9" kindref="member">Jacobian::Jacobian</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>arg):</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data(arg.data)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="classKDL_1_1Jacobian_1ab95a6f65d3bcb8b5da78675269ba8c19" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/><ref refid="classKDL_1_1Jacobian_1ab95a6f65d3bcb8b5da78675269ba8c19" kindref="member">Jacobian::operator = </ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>arg)</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>=arg.<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="classKDL_1_1Jacobian_1a0b490c8dbac5d3c5359b0852fd7d60dc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Jacobian_1a0b490c8dbac5d3c5359b0852fd7d60dc" kindref="member">Jacobian::~Jacobian</ref>()</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="classKDL_1_1Jacobian_1a296c2e29811beb1769221f26d3e6556b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1a296c2e29811beb1769221f26d3e6556b" kindref="member">Jacobian::resize</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>new_nr_of_columns)</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>.conservativeResize(Eigen::NoChange,new_nr_of_columns);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59" refid="classKDL_1_1Jacobian_1a7e2f4f5e97aea744adfc317ebcf419a5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1a7e2f4f5e97aea744adfc317ebcf419a5" kindref="member">Jacobian::operator()</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j)</highlight><highlight class="keyword">const</highlight></codeline>
+<codeline lineno="60"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>(i,j);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="classKDL_1_1Jacobian_1ae2068e50defa55976433185af2d7edc5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/><ref refid="classKDL_1_1Jacobian_1a7e2f4f5e97aea744adfc317ebcf419a5" kindref="member">Jacobian::operator()</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j)</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>(i,j);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="classKDL_1_1Jacobian_1aceb13ee968c4b162b1f944539a5e0616" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1aceb13ee968c4b162b1f944539a5e0616" kindref="member">Jacobian::rows</ref>()</highlight><highlight class="keyword">const</highlight></codeline>
+<codeline lineno="70"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>.rows());</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">Jacobian::columns</ref>()</highlight><highlight class="keyword">const</highlight></codeline>
+<codeline lineno="75"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>.cols());</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79" refid="namespaceKDL_1aa2015ef4bf3ebb5f6defaf8bc1cf5184" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceKDL_1aa2015ef4bf3ebb5f6defaf8bc1cf5184" kindref="member">SetToZero</ref>(<ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>jac)</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>jac.<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>.setZero();</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84" refid="classKDL_1_1Jacobian_1a1002c33bdcab53e26c98d1521eb3ac7d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1a3fd746c265191f8a79ab9fae0d137479" kindref="member">Jacobian::changeRefPoint</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Vector" kindref="compound">Vector</ref>&amp;<sp/>base_AB){</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i=0;i&lt;<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>.cols();i++)</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classKDL_1_1Jacobian_1a3979dcece692c902643548f8979f6ca2" kindref="member">setColumn</ref>(i,this-&gt;<ref refid="classKDL_1_1Jacobian_1aa09bdd0332f437bd2db55a62f750aced" kindref="member">getColumn</ref>(i).RefPoint(base_AB));</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="namespaceKDL_1ae68d5c0d686d03b0a779f595083209c3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceKDL_1ae68d5c0d686d03b0a779f595083209c3" kindref="member">changeRefPoint</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>src1,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Vector" kindref="compound">Vector</ref>&amp;<sp/>base_AB,<sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>dest)</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(src1.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>()!=dest.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>())</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i=0;i&lt;src1.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>();i++)</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dest.<ref refid="classKDL_1_1Jacobian_1a3979dcece692c902643548f8979f6ca2" kindref="member">setColumn</ref>(i,src1.<ref refid="classKDL_1_1Jacobian_1aa09bdd0332f437bd2db55a62f750aced" kindref="member">getColumn</ref>(i).<ref refid="classKDL_1_1Twist_1abd257927af744c4b6e985edc22f0b667" kindref="member">RefPoint</ref>(base_AB));</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98" refid="classKDL_1_1Jacobian_1ae435c8487ef02ae21276084d3e8bbb13" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1afa20159619bb7d3ab4faae7fd0c03691" kindref="member">Jacobian::changeBase</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Rotation" kindref="compound">Rotation</ref>&amp;<sp/>rot){</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i=0;i&lt;<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>.cols();i++)</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classKDL_1_1Jacobian_1a3979dcece692c902643548f8979f6ca2" kindref="member">setColumn</ref>(i,rot*this-&gt;<ref refid="classKDL_1_1Jacobian_1aa09bdd0332f437bd2db55a62f750aced" kindref="member">getColumn</ref>(i));;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103" refid="namespaceKDL_1aa440186e9c44a521afa7e2e8816866a5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceKDL_1aa440186e9c44a521afa7e2e8816866a5" kindref="member">changeBase</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>src1,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Rotation" kindref="compound">Rotation</ref>&amp;<sp/>rot,<sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>dest)</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(src1.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>()!=dest.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>())</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i=0;i&lt;src1.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>();i++)</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dest.<ref refid="classKDL_1_1Jacobian_1a3979dcece692c902643548f8979f6ca2" kindref="member">setColumn</ref>(i,rot*src1.<ref refid="classKDL_1_1Jacobian_1aa09bdd0332f437bd2db55a62f750aced" kindref="member">getColumn</ref>(i));;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112" refid="classKDL_1_1Jacobian_1aabd1e9f0b2ff5f1dead2376958d27c95" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1a902ce9b838d432690e2a681c5796eddf" kindref="member">Jacobian::changeRefFrame</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Frame" kindref="compound">Frame</ref>&amp;<sp/>frame){</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i=0;i&lt;<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>.cols();i++)</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classKDL_1_1Jacobian_1a3979dcece692c902643548f8979f6ca2" kindref="member">setColumn</ref>(i,frame*this-&gt;<ref refid="classKDL_1_1Jacobian_1aa09bdd0332f437bd2db55a62f750aced" kindref="member">getColumn</ref>(i));</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117" refid="namespaceKDL_1a54141738e3da2da7cebea6bd59ed605b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceKDL_1a54141738e3da2da7cebea6bd59ed605b" kindref="member">changeRefFrame</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>src1,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Frame" kindref="compound">Frame</ref>&amp;<sp/>frame,<sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>dest)</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(src1.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>()!=dest.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>())</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i=0;i&lt;src1.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>();i++)</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dest.<ref refid="classKDL_1_1Jacobian_1a3979dcece692c902643548f8979f6ca2" kindref="member">setColumn</ref>(i,frame*src1.<ref refid="classKDL_1_1Jacobian_1aa09bdd0332f437bd2db55a62f750aced" kindref="member">getColumn</ref>(i));</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126" refid="classKDL_1_1Jacobian_1aa1775b56d478901f1c2a8f45e8596ea9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1aa1775b56d478901f1c2a8f45e8596ea9" kindref="member">Jacobian::operator ==</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>arg)</highlight><highlight class="keyword">const</highlight></codeline>
+<codeline lineno="127"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1a8ced141c7bfa86fa4060e4aba25c25bc" kindref="member">Equal</ref>((*</highlight><highlight class="keyword">this</highlight><highlight class="normal">),arg);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131" refid="classKDL_1_1Jacobian_1aab6805004b0d808aae598c4ae5f62b39" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1aab6805004b0d808aae598c4ae5f62b39" kindref="member">Jacobian::operator!=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>arg)</highlight><highlight class="keyword">const</highlight></codeline>
+<codeline lineno="132"><highlight class="keyword"><sp/><sp/><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!<ref refid="classKDL_1_1Jacobian_1a8ced141c7bfa86fa4060e4aba25c25bc" kindref="member">Equal</ref>((*</highlight><highlight class="keyword">this</highlight><highlight class="normal">),arg);</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136" refid="namespaceKDL_1ab56d49bccacc4c7d3725ee1a31a3a686" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="namespaceKDL_1afbaac359311f16d1bbd3ea75c4ea7463" kindref="member">Equal</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>a,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound">Jacobian</ref>&amp;<sp/>b,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>eps)</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(a.<ref refid="classKDL_1_1Jacobian_1aceb13ee968c4b162b1f944539a5e0616" kindref="member">rows</ref>()==b.<ref refid="classKDL_1_1Jacobian_1aceb13ee968c4b162b1f944539a5e0616" kindref="member">rows</ref>()&amp;&amp;a.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>()==b.<ref refid="classKDL_1_1Jacobian_1a8a49fa5fc952d21c4bbda5eb7c9e1e3a" kindref="member">columns</ref>()){</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(a.<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>-b.<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>).isZero(eps);</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144" refid="classKDL_1_1Jacobian_1aa09bdd0332f437bd2db55a62f750aced" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Twist" kindref="compound">Twist</ref><sp/><ref refid="classKDL_1_1Jacobian_1aa09bdd0332f437bd2db55a62f750aced" kindref="member">Jacobian::getColumn</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword"><sp/>const</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Twist" kindref="compound">Twist</ref>(<ref refid="classKDL_1_1Vector" kindref="compound">Vector</ref>(<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>(0,i),<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>(1,i),<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>(2,i)),<ref refid="classKDL_1_1Vector" kindref="compound">Vector</ref>(<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>(3,i),<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>(4,i),<ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>(5,i)));</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148" refid="classKDL_1_1Jacobian_1a3979dcece692c902643548f8979f6ca2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Jacobian_1a3979dcece692c902643548f8979f6ca2" kindref="member">Jacobian::setColumn</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Twist" kindref="compound">Twist</ref>&amp;<sp/>t){</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>.col(i).head&lt;3&gt;()=Eigen::Map&lt;const<sp/>Eigen::Vector3d&gt;(t.<ref refid="classKDL_1_1Twist_1adda560fbd643ba2448d519fce626b680" kindref="member">vel</ref>.<ref refid="classKDL_1_1Vector_1a97106b4583f8e2ecf39ed7682b945bd1" kindref="member">data</ref>);</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Jacobian_1a73cf18ac91b146f6be631a941d5bee3c" kindref="member">data</ref>.col(i).tail&lt;3&gt;()=Eigen::Map&lt;const<sp/>Eigen::Vector3d&gt;(t.<ref refid="classKDL_1_1Twist_1a5ab2bb436b67c902e9c7735c4df16eba" kindref="member">rot</ref>.<ref refid="classKDL_1_1Vector_1a97106b4583f8e2ecf39ed7682b945bd1" kindref="member">data</ref>);</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="src/jacobian.cpp"/>
+  </compounddef>
+</doxygen>

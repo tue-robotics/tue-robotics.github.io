@@ -1,0 +1,256 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classbase__local__planner_1_1WorldModel" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>base_local_planner::WorldModel</compoundname>
+    <derivedcompoundref refid="classbase__local__planner_1_1CostmapModel" prot="public" virt="non-virtual">base_local_planner::CostmapModel</derivedcompoundref>
+    <derivedcompoundref refid="classbase__local__planner_1_1PointGrid" prot="public" virt="non-virtual">base_local_planner::PointGrid</derivedcompoundref>
+    <derivedcompoundref refid="classbase__local__planner_1_1VoxelGridModel" prot="public" virt="non-virtual">base_local_planner::VoxelGridModel</derivedcompoundref>
+    <includes refid="world__model_8h" local="no">world_model.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classbase__local__planner_1_1WorldModel_1a36d4c808bc441e2b87b0ac038099993a" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>double</type>
+        <definition>virtual double base_local_planner::WorldModel::footprintCost</definition>
+        <argsstring>(const geometry_msgs::Point &amp;position, const std::vector&lt; geometry_msgs::Point &gt; &amp;footprint, double inscribed_radius, double circumscribed_radius)=0</argsstring>
+        <name>footprintCost</name>
+        <reimplementedby refid="classbase__local__planner_1_1CostmapModel_1a80d896d06af4f1c0bd5b61cd758743af">footprintCost</reimplementedby>
+        <reimplementedby refid="classbase__local__planner_1_1VoxelGridModel_1affcef4b1c4c95dd4209d36bd0d24fc14">footprintCost</reimplementedby>
+        <reimplementedby refid="classbase__local__planner_1_1PointGrid_1ae9398ded210128450fbdb86f231cf588">footprintCost</reimplementedby>
+        <param>
+          <type>const geometry_msgs::Point &amp;</type>
+          <declname>position</declname>
+        </param>
+        <param>
+          <type>const <ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; geometry_msgs::Point &gt; &amp;</type>
+          <declname>footprint</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>inscribed_radius</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>circumscribed_radius</declname>
+        </param>
+        <briefdescription>
+<para>Subclass will implement this method to check a footprint at a given position and orientation for legality in the world. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>position</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the robot in world coordinates </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>footprint</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The specification of the footprint of the robot in world coordinates </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>inscribed_radius</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The radius of the inscribed circle of the robot </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>circumscribed_radius</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The radius of the circumscribed circle of the robot </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Positive if all the points lie outside the footprint, negative otherwise: -1 if footprint covers at least a lethal obstacle cell, or -2 if footprint covers at least a no-information cell, or -3 if footprint is partially or totally outside of the map </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/world_model.h" line="100" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classbase__local__planner_1_1WorldModel_1a358fe0d75fefe46dda134ee6e3305f71" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double base_local_planner::WorldModel::footprintCost</definition>
+        <argsstring>(const geometry_msgs::Point &amp;position, const std::vector&lt; geometry_msgs::Point &gt; &amp;footprint, double inscribed_radius, double circumscribed_radius, double extra)</argsstring>
+        <name>footprintCost</name>
+        <param>
+          <type>const geometry_msgs::Point &amp;</type>
+          <declname>position</declname>
+        </param>
+        <param>
+          <type>const <ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; geometry_msgs::Point &gt; &amp;</type>
+          <declname>footprint</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>inscribed_radius</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>circumscribed_radius</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>extra</declname>
+        </param>
+        <briefdescription>
+<para>Checks if any obstacles in the costmap lie inside a convex footprint that is rasterized into the grid. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>position</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the robot in world coordinates </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>footprint</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The specification of the footprint of the robot in world coordinates </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>inscribed_radius</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The radius of the inscribed circle of the robot </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>circumscribed_radius</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The radius of the circumscribed circle of the robot </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Positive if all the points lie outside the footprint, negative otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/world_model.h" line="134" column="14" bodyfile="include/base_local_planner/world_model.h" bodystart="134" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classbase__local__planner_1_1WorldModel_1ac7e8dc9c77a2dd2fa77f5a27d812fd43" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double base_local_planner::WorldModel::footprintCost</definition>
+        <argsstring>(double x, double y, double theta, const std::vector&lt; geometry_msgs::Point &gt; &amp;footprint_spec, double inscribed_radius=0.0, double circumscribed_radius=0.0)</argsstring>
+        <name>footprintCost</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>theta</declname>
+        </param>
+        <param>
+          <type>const <ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; geometry_msgs::Point &gt; &amp;</type>
+          <declname>footprint_spec</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>inscribed_radius</declname>
+          <defval>0.0</defval>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>circumscribed_radius</declname>
+          <defval>0.0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/world_model.h" line="103" column="14" bodyfile="include/base_local_planner/world_model.h" bodystart="103" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="function" id="classbase__local__planner_1_1WorldModel_1a87c45611143fde55c4a2efb4d078471d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual base_local_planner::WorldModel::~WorldModel</definition>
+        <argsstring>()</argsstring>
+        <name>~WorldModel</name>
+        <briefdescription>
+<para>Subclass will implement a destructor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/world_model.h" line="142" column="15" bodyfile="include/base_local_planner/world_model.h" bodystart="142" bodyend="142"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classbase__local__planner_1_1WorldModel_1a577351de9f26b9fc6f702e1cceed84e4" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>base_local_planner::WorldModel::WorldModel</definition>
+        <argsstring>()</argsstring>
+        <name>WorldModel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/world_model.h" line="145" column="7" bodyfile="include/base_local_planner/world_model.h" bodystart="145" bodyend="145"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>An interface the trajectory controller uses to interact with the world regardless of the underlying world model. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>base_local_planner::CostmapModel</label>
+        <link refid="classbase__local__planner_1_1CostmapModel"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>base_local_planner::PointGrid</label>
+        <link refid="classbase__local__planner_1_1PointGrid"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>base_local_planner::VoxelGridModel</label>
+        <link refid="classbase__local__planner_1_1VoxelGridModel"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>base_local_planner::WorldModel</label>
+        <link refid="classbase__local__planner_1_1WorldModel"/>
+      </node>
+    </inheritancegraph>
+    <location file="include/base_local_planner/world_model.h" line="87" column="19" bodyfile="include/base_local_planner/world_model.h" bodystart="87" bodyend="146"/>
+    <listofallmembers>
+      <member refid="classbase__local__planner_1_1WorldModel_1a36d4c808bc441e2b87b0ac038099993a" prot="public" virt="pure-virtual"><scope>base_local_planner::WorldModel</scope><name>footprintCost</name></member>
+      <member refid="classbase__local__planner_1_1WorldModel_1ac7e8dc9c77a2dd2fa77f5a27d812fd43" prot="public" virt="non-virtual"><scope>base_local_planner::WorldModel</scope><name>footprintCost</name></member>
+      <member refid="classbase__local__planner_1_1WorldModel_1a358fe0d75fefe46dda134ee6e3305f71" prot="public" virt="non-virtual"><scope>base_local_planner::WorldModel</scope><name>footprintCost</name></member>
+      <member refid="classbase__local__planner_1_1WorldModel_1a577351de9f26b9fc6f702e1cceed84e4" prot="protected" virt="non-virtual"><scope>base_local_planner::WorldModel</scope><name>WorldModel</name></member>
+      <member refid="classbase__local__planner_1_1WorldModel_1a87c45611143fde55c4a2efb4d078471d" prot="public" virt="virtual"><scope>base_local_planner::WorldModel</scope><name>~WorldModel</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

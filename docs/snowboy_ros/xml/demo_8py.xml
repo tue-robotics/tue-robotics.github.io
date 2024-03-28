@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="demo_8py" kind="file" language="Python">
+    <compoundname>demo.py</compoundname>
+    <innernamespace refid="namespacedemo">demo</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacedemo" refkind="compound"><highlight class="keyword">import</highlight><highlight class="normal"><sp/>snowboydecoder</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>sys</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>signal</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5" refid="namespacedemo_1a323ddbe9b895630773bfcc96e64cd820" refkind="member"><highlight class="normal">interrupted<sp/>=<sp/></highlight><highlight class="keyword">False</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8" refid="namespacedemo_1a3f0e83a809ff2d70ecdfc0c6a6f85a07" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacedemo_1a3f0e83a809ff2d70ecdfc0c6a6f85a07" kindref="member">signal_handler</ref>(signal,<sp/>frame):</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">global</highlight><highlight class="normal"><sp/>interrupted</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/>interrupted<sp/>=<sp/></highlight><highlight class="keyword">True</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13" refid="namespacedemo_1a195033256659560cc6c7a8c021bddcb4" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacedemo_1a195033256659560cc6c7a8c021bddcb4" kindref="member">interrupt_callback</ref>():</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">global</highlight><highlight class="normal"><sp/>interrupted</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>interrupted</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>len(sys.argv)<sp/>==<sp/>1:</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Error:<sp/>need<sp/>to<sp/>specify<sp/>model<sp/>name&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Usage:<sp/>python<sp/>demo.py<sp/>your.model&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>sys.exit(-1)</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="namespacedemo_1afdaa6b6d6a72de879b40e4d6824a0c35" refkind="member"><highlight class="normal">model<sp/>=<sp/>sys.argv[1]</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">#<sp/>capture<sp/>SIGINT<sp/>signal,<sp/>e.g.,<sp/>Ctrl+C</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">signal.signal(signal.SIGINT,<sp/>signal_handler)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27" refid="namespacedemo_1a0c7129f681af48871b446575a26698de" refkind="member"><highlight class="normal">detector<sp/>=<sp/><ref refid="classsnowboydecoder_1_1HotwordDetector" kindref="compound">snowboydecoder.HotwordDetector</ref>(model,<sp/>sensitivity=0.5)</highlight></codeline>
+<codeline lineno="28"><highlight class="normal">print(</highlight><highlight class="stringliteral">&apos;Listening...<sp/>Press<sp/>Ctrl+C<sp/>to<sp/>exit&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">#<sp/>main<sp/>loop</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="namespacedemo_1a40f3a616b6a3202b48f18a65e3488411" refkind="member"><highlight class="normal">detector.start(detected_callback=snowboydecoder.play_audio_file,</highlight></codeline>
+<codeline lineno="32" refid="namespacedemo_1a236c8e69020c6ce53d7c456d4a1def35" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>interrupt_check=interrupt_callback,</highlight></codeline>
+<codeline lineno="33" refid="namespacedemo_1a31079469bbdb344f83bef0bff8008abd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sleep_time=0.03)</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal">detector.terminate()</highlight></codeline>
+    </programlisting>
+    <location file="3rdparty/snowboy/examples/Python/demo.py"/>
+  </compounddef>
+</doxygen>
