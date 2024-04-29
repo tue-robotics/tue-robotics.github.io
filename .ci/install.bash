@@ -122,8 +122,9 @@ docker exec tue-env bash -c "source ~/.bashrc; tue-get install ros-python_orocos
 
 if [ -n "${SKIPLIST}" ]
 then
-    echo -e '\e[35m\e[1mcatkin config --workspace ${TUE_SYSTEM_DIR} --skiplist '"${SKIPLIST}"'\e[0m'
-    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace ${TUE_SYSTEM_DIR} --skiplist '"${SKIPLIST}"
+    echo -e '\e[35m\e[1mcatkin config --workspace ${TUE_ENV_WS_DIR} --skiplist '"${SKIPLIST}"'\e[0m'
+    # TODO(anyone): remove variable logic when tue-env is updated to new variable names
+    docker exec -t tue-env bash -c 'source ~/.bashrc; [[ -v TUE_ENV_WS_DIR || ! -v TUE_WS_DIR ]] || TUE_ENV_WS_DIR=${TUE_WS_DIR}; catkin config --workspace ${TUE_ENV_WS_DIR} --skiplist '"${SKIPLIST}"
 fi
 
 echo -e "\e[35m\e[1mtue-make --no-status -DCATKIN_ENABLE_TESTING=OFF python_orocos_kdl" "${INSTALL_BUILD_PKGS[*]}" "${BUILD_PKGS[*]}" "\e[0m"
@@ -132,8 +133,9 @@ docker exec -t tue-env bash -c "source ~/.bashrc; tue-make --no-status -DCATKIN_
 
 if [ -n "${SKIPLIST}" ]
 then
-    echo -e '\e[35m\e[1mcatkin config --workspace ${TUE_SYSTEM_DIR} --no-skiplist\e[0m'
-    docker exec -t tue-env bash -c 'source ~/.bashrc; catkin config --workspace ${TUE_SYSTEM_DIR} --no-skiplist' # Clear skiplist
+    echo -e '\e[35m\e[1mcatkin config --workspace ${TUE_ENV_WS_DIR} --no-skiplist\e[0m'
+    # TODO(anyone): remove variable logic when tue-env is updated to new variable names
+    docker exec -t tue-env bash -c 'source ~/.bashrc; [[ -v TUE_ENV_WS_DIR || ! -v TUE_WS_DIR ]] || TUE_ENV_WS_DIR=${TUE_WS_DIR}; catkin config --workspace ${TUE_ENV_WS_DIR} --no-skiplist' # Clear skiplist
 fi
 
 # Allow everyone to read ~/.cache/pip folder for caching inside CI pipelines

@@ -19,7 +19,8 @@ do
     shift
 done
 
-TUE_SYSTEM_DIR=$(docker exec -t tue-env bash -c 'source ~/.bashrc; echo "${TUE_SYSTEM_DIR}"' | tr -d '\r')
+# TODO(anyone): remove variable logic when tue-env is updated to new variable names
+TUE_ENV_WS_DIR=$(docker exec -t tue-env bash -c 'source ~/.bashrc; [[ -v TUE_ENV_WS_DIR || ! -v TUE_WS_DIR ]] || TUE_ENV_WS_DIR=${TUE_WS_DIR}; echo "${TUE_ENV_WS_DIR}"' | tr -d '\r')
 
-echo -e "\e[35m\e[1mdocker cp tue-env:${TUE_SYSTEM_DIR}/docs .\e[0m"
-docker cp tue-env:"${TUE_SYSTEM_DIR}"/docs .
+echo -e "\e[35m\e[1mdocker cp tue-env:${TUE_ENV_WS_DIR}/docs .\e[0m"
+docker cp tue-env:"${TUE_ENV_WS_DIR}"/docs .
