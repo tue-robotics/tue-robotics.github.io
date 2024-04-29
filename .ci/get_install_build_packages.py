@@ -10,8 +10,13 @@ if len(sys.argv) >= 2:
 else:
     skip_pkgs = set()
 
-system_dir = os.getenv("TUE_SYSTEM_DIR")
-packages = (f.path for f in os.scandir(os.path.join(system_dir, "src")) if f.is_dir())
+# TODO(anyone): remove try...except when tue-env is updated to new variable names
+try:
+    ws_dir = os.environ["TUE_ENV_WS_DIR"]
+except KeyError:
+    ws_dir = os.environ["TUE_WS_DIR"]
+
+packages = (f.path for f in os.scandir(os.path.join(ws_dir, "src")) if f.is_dir())
 
 install_build_pkgs = set()  # All packages that need to be build and require all deps to be installed
 build_pkgs = set()  # All packages that need to be build
