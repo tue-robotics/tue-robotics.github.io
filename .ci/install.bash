@@ -69,7 +69,11 @@ then
     DOCKER_MOUNT_KNOWN_HOSTS_ARGS="--mount type=bind,source=${HOME}/.ssh/known_hosts,target=/tmp/known_hosts_extra"
 fi
 
-DOCKER_HOME=$(docker run --name tue-env --rm "${IMAGE_NAME}:${BRANCH_TAG}" bash -c 'echo "${HOME}"' | tr -d '\r')
+# Docker container can show a header on start-up. We don't want to capture it
+docker run --detach --tty --name tue-env "${IMAGE_NAME}:${BRANCH_TAG}"
+DOCKER_HOME=$(docker exec -t tue-env bash -c 'echo "${HOME}"' | tr -d '\r')
+docker stop tue-env  &> /dev/null || true
+docker rm tue-env &> /dev/null || true
 
 # Make sure the ~/.ccache folder exists
 mkdir -p "$HOME"/.ccache
@@ -108,7 +112,7 @@ docker cp "${BASEDIR}"/get_install_build_packages.py tue-env:"${DOCKER_HOME}"
 
 echo -e "\e[35m\e[1m~/get_message_packages.py base_local_planner costmap_2d\e[0m"
 eval "$(docker exec -t tue-env bash -c 'source ~/.bashrc; ${HOME}/get_install_build_packages.py base_local_planner costmap_2d' | tr -d '\r')" # Skip base_local_planner and costmap_2d as these take too much time
-INSTALL_BUILD_TARGETS=(${INSTALL_BUILD_PKGS[@]/#/ros-})
+INSTALL_BUILD_TARGETS=("${INSTALL_BUILD_PKGS[@]/#/ros-}")
 echo -e "\e[35m\e[1mINSTALL_BUILD_PKGS=" "${INSTALL_BUILD_PKGS[*]}" "\e[0m"
 echo -e "\e[35m\e[1mBUILD_PKGS=" "${BUILD_PKGS[*]}" "\e[0m"
 
