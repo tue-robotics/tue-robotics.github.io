@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="map__grid__cost__function_8cpp" kind="file" language="C++">
+    <compoundname>map_grid_cost_function.cpp</compoundname>
+    <includes refid="map__grid__cost__function_8h" local="no">base_local_planner/map_grid_cost_function.h</includes>
+    <incdepgraph>
+      <node id="5">
+        <label>vector</label>
+        <link refid="cpp/header/vector" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="4">
+        <label>base_local_planner/trajectory.h</label>
+        <link refid="trajectory_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iostream</label>
+        <link refid="cpp/header/iostream" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="13">
+        <label>base_local_planner/map_cell.h</label>
+        <link refid="map__cell_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>ros/console.h</label>
+      </node>
+      <node id="2">
+        <label>base_local_planner/map_grid_cost_function.h</label>
+        <link refid="map__grid__cost__function_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>base_local_planner/map_grid.h</label>
+        <link refid="map__grid_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>geometry_msgs/PoseStamped.h</label>
+      </node>
+      <node id="1">
+        <label>map_grid_cost_function.cpp</label>
+        <link refid="map__grid__cost__function_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>base_local_planner/trajectory_inc.h</label>
+        <link refid="trajectory__inc_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>ros/ros.h</label>
+      </node>
+      <node id="10">
+        <label>limits</label>
+        <link refid="cpp/header/limits" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="3">
+        <label>base_local_planner/trajectory_cost_function.h</label>
+        <link refid="trajectory__cost__function_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>costmap_2d/costmap_2d.h</label>
+        <link refid="costmap__2d_8h.html" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags"/>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacebase__local__planner">base_local_planner</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*********************************************************************</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>Software<sp/>License<sp/>Agreement<sp/>(BSD<sp/>License)</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/><sp/>Copyright<sp/>(c)<sp/>2008,<sp/>Willow<sp/>Garage,<sp/>Inc.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/><sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/><sp/>Redistribution<sp/>and<sp/>use<sp/>in<sp/>source<sp/>and<sp/>binary<sp/>forms,<sp/>with<sp/>or<sp/>without</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/><sp/>modification,<sp/>are<sp/>permitted<sp/>provided<sp/>that<sp/>the<sp/>following<sp/>conditions</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/>are<sp/>met:</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>of<sp/>source<sp/>code<sp/>must<sp/>retain<sp/>the<sp/>above<sp/>copyright</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following<sp/>disclaimer.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>in<sp/>binary<sp/>form<sp/>must<sp/>reproduce<sp/>the<sp/>above</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>copyright<sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>disclaimer<sp/>in<sp/>the<sp/>documentation<sp/>and/or<sp/>other<sp/>materials<sp/>provided</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>with<sp/>the<sp/>distribution.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Neither<sp/>the<sp/>name<sp/>of<sp/>Willow<sp/>Garage,<sp/>Inc.<sp/>nor<sp/>the<sp/>names<sp/>of<sp/>its</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>contributors<sp/>may<sp/>be<sp/>used<sp/>to<sp/>endorse<sp/>or<sp/>promote<sp/>products<sp/>derived</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>from<sp/>this<sp/>software<sp/>without<sp/>specific<sp/>prior<sp/>written<sp/>permission.</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/><sp/>THIS<sp/>SOFTWARE<sp/>IS<sp/>PROVIDED<sp/>BY<sp/>THE<sp/>COPYRIGHT<sp/>HOLDERS<sp/>AND<sp/>CONTRIBUTORS</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/><sp/>&quot;AS<sp/>IS&quot;<sp/>AND<sp/>ANY<sp/>EXPRESS<sp/>OR<sp/>IMPLIED<sp/>WARRANTIES,<sp/>INCLUDING,<sp/>BUT<sp/>NOT</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/><sp/>LIMITED<sp/>TO,<sp/>THE<sp/>IMPLIED<sp/>WARRANTIES<sp/>OF<sp/>MERCHANTABILITY<sp/>AND<sp/>FITNESS</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*<sp/><sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE<sp/>ARE<sp/>DISCLAIMED.<sp/>IN<sp/>NO<sp/>EVENT<sp/>SHALL<sp/>THE</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/><sp/>COPYRIGHT<sp/>OWNER<sp/>OR<sp/>CONTRIBUTORS<sp/>BE<sp/>LIABLE<sp/>FOR<sp/>ANY<sp/>DIRECT,<sp/>INDIRECT,</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/>*<sp/><sp/>INCIDENTAL,<sp/>SPECIAL,<sp/>EXEMPLARY,<sp/>OR<sp/>CONSEQUENTIAL<sp/>DAMAGES<sp/>(INCLUDING,</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*<sp/><sp/>BUT<sp/>NOT<sp/>LIMITED<sp/>TO,<sp/>PROCUREMENT<sp/>OF<sp/>SUBSTITUTE<sp/>GOODS<sp/>OR<sp/>SERVICES;</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*<sp/><sp/>LOSS<sp/>OF<sp/>USE,<sp/>DATA,<sp/>OR<sp/>PROFITS;<sp/>OR<sp/>BUSINESS<sp/>INTERRUPTION)<sp/>HOWEVER</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*<sp/><sp/>CAUSED<sp/>AND<sp/>ON<sp/>ANY<sp/>THEORY<sp/>OF<sp/>LIABILITY,<sp/>WHETHER<sp/>IN<sp/>CONTRACT,<sp/>STRICT</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/>*<sp/><sp/>LIABILITY,<sp/>OR<sp/>TORT<sp/>(INCLUDING<sp/>NEGLIGENCE<sp/>OR<sp/>OTHERWISE)<sp/>ARISING<sp/>IN</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*<sp/><sp/>ANY<sp/>WAY<sp/>OUT<sp/>OF<sp/>THE<sp/>USE<sp/>OF<sp/>THIS<sp/>SOFTWARE,<sp/>EVEN<sp/>IF<sp/>ADVISED<sp/>OF<sp/>THE</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/>*<sp/><sp/>POSSIBILITY<sp/>OF<sp/>SUCH<sp/>DAMAGE.</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>Author:<sp/>TKruse</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/>*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="map__grid__cost__function_8h" kindref="compound">base_local_planner/map_grid_cost_function.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacebase__local__planner" kindref="compound">base_local_planner</ref><sp/>{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a37e0fd0048db78bb703946b56daafe25" kindref="member">MapGridCostFunction::MapGridCostFunction</ref>(<ref refid="classcostmap__2d_1_1Costmap2D" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">costmap_2d::Costmap2D</ref>*<sp/>costmap,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>xshift,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>yshift,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_local_goal_function,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacebase__local__planner_1a5b9cbdd645f780317faf39a970c3824c" kindref="member">CostAggregationType</ref><sp/>aggregationType)<sp/>:</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>costmap_(costmap),</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>map_(costmap-&gt;getSizeInCellsX(),<sp/>costmap-&gt;getSizeInCellsY()),</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>aggregationType_(aggregationType),</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>xshift_(xshift),</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>yshift_(yshift),</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>is_local_goal_function_(is_local_goal_function),</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>stop_on_failure_(true)<sp/>{}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a07f336c23114bcd9ea8fa24462465277" kindref="member">MapGridCostFunction::setTargetPoses</ref>(<ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;geometry_msgs::PoseStamped&gt;</ref><sp/>target_poses)<sp/>{</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a22d5b7bb371a8b5593830029db9151a9" kindref="member">target_poses_</ref><sp/>=<sp/>target_poses;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1af3f80d67ddeefec5871b4828ddafb5dc" kindref="member">MapGridCostFunction::prepare</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a01f719e06199db21bc4aec99efe7ab2f" kindref="member">map_</ref>.<ref refid="classbase__local__planner_1_1MapGrid_1aaede39518e77d4eb1f7fc7766da5cb11" kindref="member">resetPathDist</ref>();</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1MapGridCostFunction_1a99f2abca88bdc9f339a76704f25d6654" kindref="member">is_local_goal_function_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a01f719e06199db21bc4aec99efe7ab2f" kindref="member">map_</ref>.<ref refid="classbase__local__planner_1_1MapGrid_1ab73fe99a7ad21b36a3178e26296945d5" kindref="member">setLocalGoal</ref>(*<ref refid="classbase__local__planner_1_1MapGridCostFunction_1a852583e42ce771a6741116986a063a64" kindref="member">costmap_</ref>,<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a22d5b7bb371a8b5593830029db9151a9" kindref="member">target_poses_</ref>);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a01f719e06199db21bc4aec99efe7ab2f" kindref="member">map_</ref>.<ref refid="classbase__local__planner_1_1MapGrid_1a8e3227190b9f67376ee2890f493079d5" kindref="member">setTargetCells</ref>(*<ref refid="classbase__local__planner_1_1MapGridCostFunction_1a852583e42ce771a6741116986a063a64" kindref="member">costmap_</ref>,<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a22d5b7bb371a8b5593830029db9151a9" kindref="member">target_poses_</ref>);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a0a9cdd8ffef9d7cfe3c7a8c38a6e6e33" kindref="member">MapGridCostFunction::getCellCosts</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>px,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>py)<sp/>{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>grid_dist<sp/>=<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a01f719e06199db21bc4aec99efe7ab2f" kindref="member">map_</ref>(px,<sp/>py).target_dist;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>grid_dist;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a4332b1fd1c72795c87fb5d3a427df476" kindref="member">MapGridCostFunction::scoreTrajectory</ref>(Trajectory<sp/>&amp;traj)<sp/>{</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>cost<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="77" refid="classbase__local__planner_1_1MapGridCostFunction_1a37e0fd0048db78bb703946b56daafe25" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1MapGridCostFunction_1abc402c1c11dafcb69ec5d82480b89296" kindref="member">aggregationType_</ref><sp/>==<sp/><ref refid="namespacebase__local__planner_1a5b9cbdd645f780317faf39a970c3824ca30dbe37fb900f8746f1c03a5a4ba12b2" kindref="member">Product</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>cost<sp/>=<sp/>1.0;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>px,<sp/>py,<sp/>pth;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>cell_x,<sp/>cell_y;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>grid_dist;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>traj.getPointsSize();<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>traj.getPoint(i,<sp/>px,<sp/>py,<sp/>pth);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>translate<sp/>point<sp/>forward<sp/>if<sp/>specified</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1MapGridCostFunction_1af72819f98ac6695d4ea025f0566bf1b5" kindref="member">xshift_</ref><sp/>!=<sp/>0.0)<sp/>{</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>px<sp/>=<sp/>px<sp/>+<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1af72819f98ac6695d4ea025f0566bf1b5" kindref="member">xshift_</ref><sp/>*<sp/>cos(pth);</highlight></codeline>
+<codeline lineno="90" refid="classbase__local__planner_1_1MapGridCostFunction_1a07f336c23114bcd9ea8fa24462465277" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>py<sp/>=<sp/>py<sp/>+<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1af72819f98ac6695d4ea025f0566bf1b5" kindref="member">xshift_</ref><sp/>*<sp/>sin(pth);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>translate<sp/>point<sp/>sideways<sp/>if<sp/>specified</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1MapGridCostFunction_1a3153c7d93524431e69f4fc5d72a6b4e6" kindref="member">yshift_</ref><sp/>!=<sp/>0.0)<sp/>{</highlight></codeline>
+<codeline lineno="94" refid="classbase__local__planner_1_1MapGridCostFunction_1af3f80d67ddeefec5871b4828ddafb5dc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>px<sp/>=<sp/>px<sp/>+<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a3153c7d93524431e69f4fc5d72a6b4e6" kindref="member">yshift_</ref><sp/>*<sp/>cos(pth<sp/>+<sp/>M_PI_2);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>py<sp/>=<sp/>py<sp/>+<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a3153c7d93524431e69f4fc5d72a6b4e6" kindref="member">yshift_</ref><sp/>*<sp/>sin(pth<sp/>+<sp/>M_PI_2);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//we<sp/>won&apos;t<sp/>allow<sp/>trajectories<sp/>that<sp/>go<sp/>off<sp/>the<sp/>map...<sp/>shouldn&apos;t<sp/>happen<sp/>that<sp/>often<sp/>anyways</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<sp/>!<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a852583e42ce771a6741116986a063a64" kindref="member">costmap_</ref>-&gt;<ref refid="classcostmap__2d_1_1Costmap2D_1a9a2c824d4cd3bcad3ac3435d81982986" kindref="member" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">worldToMap</ref>(px,<sp/>py,<sp/>cell_x,<sp/>cell_y))<sp/>{</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//we&apos;re<sp/>off<sp/>the<sp/>map</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ROS_WARN(</highlight><highlight class="stringliteral">&quot;Off<sp/>Map<sp/>%f,<sp/>%f&quot;</highlight><highlight class="normal">,<sp/>px,<sp/>py);</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-4.0;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>grid_dist<sp/>=<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a0a9cdd8ffef9d7cfe3c7a8c38a6e6e33" kindref="member">getCellCosts</ref>(cell_x,<sp/>cell_y);</highlight></codeline>
+<codeline lineno="105" refid="classbase__local__planner_1_1MapGridCostFunction_1a0a9cdd8ffef9d7cfe3c7a8c38a6e6e33" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//if<sp/>a<sp/>point<sp/>on<sp/>this<sp/>trajectory<sp/>has<sp/>no<sp/>clear<sp/>path<sp/>to<sp/>the<sp/>goal...<sp/>it<sp/>may<sp/>be<sp/>invalid</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1MapGridCostFunction_1a2d1f1bed6814ca5557eb2a9e04c2c670" kindref="member">stop_on_failure_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(grid_dist<sp/>==<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a01f719e06199db21bc4aec99efe7ab2f" kindref="member">map_</ref>.<ref refid="classbase__local__planner_1_1MapGrid_1af3db024faefa9420ec75b18d4da90cfe" kindref="member">obstacleCosts</ref>())<sp/>{</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-3.0;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(grid_dist<sp/>==<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1a01f719e06199db21bc4aec99efe7ab2f" kindref="member">map_</ref>.<ref refid="classbase__local__planner_1_1MapGrid_1a1b7145c6781d0d3703a1003b9f753420" kindref="member">unreachableCellCosts</ref>())<sp/>{</highlight></codeline>
+<codeline lineno="110" refid="classbase__local__planner_1_1MapGridCostFunction_1a4332b1fd1c72795c87fb5d3a427df476" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-2.0;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal">(<sp/><ref refid="classbase__local__planner_1_1MapGridCostFunction_1abc402c1c11dafcb69ec5d82480b89296" kindref="member">aggregationType_</ref><sp/>)<sp/>{</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="namespacebase__local__planner_1a5b9cbdd645f780317faf39a970c3824ca10a1a85cd52631b78010d22d9e0876c6" kindref="member">Last</ref>:</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>cost<sp/>=<sp/>grid_dist;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="namespacebase__local__planner_1a5b9cbdd645f780317faf39a970c3824ca84db60edcca5d364af84d7fab6d8e404" kindref="member">Sum</ref>:</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>cost<sp/>+=<sp/>grid_dist;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="namespacebase__local__planner_1a5b9cbdd645f780317faf39a970c3824ca30dbe37fb900f8746f1c03a5a4ba12b2" kindref="member">Product</ref>:</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(cost<sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cost<sp/>*=<sp/>grid_dist;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cost;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal">}<sp/></highlight><highlight class="comment">/*<sp/>namespace<sp/>base_local_planner<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/map_grid_cost_function.cpp"/>
+  </compounddef>
+</doxygen>

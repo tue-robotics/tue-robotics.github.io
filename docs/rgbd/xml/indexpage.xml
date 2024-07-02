@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="indexpage" kind="page">
+    <compoundname>index</compoundname>
+    <title>rgbd</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><ulink url="https://github.com/tue-robotics/rgbd/actions/workflows/main.yml"><image type="html" name="badge.svg" inline="yes"></image>
+</ulink></para>
+<para>The rgbd server reads data from a 3D sensor and publishes it in a compressed form. It provides a unified format for depthmaps combined with RGB data, which is more compact than a point cloud.</para>
+<sect1 id="index_1autotoc_md1">
+<title>Core classes</title>
+<para>All <bold>bold names</bold> are classes. The main interface types are shown to understand the differences between all classes. <image type="html" name="rgbd_classes.svg">core classes</image>
+ <image type="latex" name="rgbd_classes.svg">core classes</image>
+ <image type="rtf" name="rgbd_classes.svg">core classes</image>
+ <image type="docbook" name="rgbd_classes.svg">core classes</image>
+</para>
+<sect2 id="index_1autotoc_md2">
+<title>Typical usage</title>
+<para>For client applications, i.e., applications consuming <ref refid="classRGBD" kindref="compound">RGBD</ref> data, it is advised to use the <computeroutput>Client</computeroutput> class. If possible, this will obtain its images from shared memory using the <computeroutput>ClientSHM</computeroutput> class, which minimizes network and CPU usage. Otherwise it relies on data received as <computeroutput>rgbd_msgs::RGBD</computeroutput> messages through the <computeroutput>ClientRGBD</computeroutput> class. Data is typically obtained as instance of the <computeroutput><ref refid="classrgbd_1_1Image" kindref="compound">rgbd::Image</ref></computeroutput> class using the <computeroutput>nextImage</computeroutput> functions (see docstrings for more info).</para>
+<para>The <computeroutput>ClientROS</computeroutput> class is present in case no data is provided in <ref refid="classRGBD" kindref="compound">RGBD</ref> format. This is used, e.g., in the <computeroutput>ros_to_rgbd</computeroutput> node (see below).</para>
+<para>The <computeroutput>Server</computeroutput> class does exactly the opposite from the <computeroutput>Client</computeroutput> class. It receives an instance of an <computeroutput>rbgd::Image</computeroutput> and both (re-)sends this data as an <computeroutput>rgbd_msgs::RGBD</computeroutput> message over a <ref refid="classROS" kindref="compound">ROS</ref> topic and writes it to shared memory.</para>
+</sect2>
+</sect1>
+<sect1 id="index_1autotoc_md3">
+<title>Core nodes</title>
+<para>Shown the most important nodes and their structure <image type="html" name="rgbd_nodes.svg">core nodes</image>
+ <image type="latex" name="rgbd_nodes.svg">core nodes</image>
+ <image type="rtf" name="rgbd_nodes.svg">core nodes</image>
+ <image type="docbook" name="rgbd_nodes.svg">core nodes</image>
+</para>
+<sect2 id="index_1autotoc_md4">
+<title>Typical usage</title>
+<para>This package contains a number of nodes and tools. The most important ones are:</para>
+<para><itemizedlist>
+<listitem><para><computeroutput>rgbd_to_shm</computeroutput>: contains an instance of <computeroutput>ClientRGBD</computeroutput> that listens to <ref refid="classRGBD" kindref="compound">RGBD</ref> data received over a <computeroutput>rgbd_msgs::RGBD</computeroutput> topic and writes this to shared memory using an instance of a <computeroutput>ServerSHM</computeroutput>. By running this node, only one incoming connection for the <computeroutput>rgbd</computeroutput> messages is setup since all clients can subsequently use the shared memory. If your robot contains multiple computers, it is advised to run this node on each computer where (more than 1) <computeroutput>Client</computeroutput> instances are used.</para>
+</listitem><listitem><para><computeroutput>ros_to_rgbd</computeroutput>: converts &apos;standard&apos; <ref refid="classROS" kindref="compound">ROS</ref> messages (<computeroutput>sensor_msgs::Image</computeroutput> (color image and depth image) and <computeroutput>sensor_msgs::CameraInfo</computeroutput>) to the <computeroutput>rgbd_msgs::RGBD</computeroutput> format. Hereto, it uses instances of the <computeroutput>ClientROS</computeroutput> and the <computeroutput>Server</computeroutput> classes.</para>
+</listitem><listitem><para><computeroutput>rgbd_to_ros</computeroutput>: converts <computeroutput>rgbd_msgs::RGBD</computeroutput> messages to the &apos;standard&apos; <ref refid="classROS" kindref="compound">ROS</ref> format (<computeroutput>sensor_msgs::Image</computeroutput> (color image and depth image) and <computeroutput>sensor_msgs::CameraInfo</computeroutput>). Hereto, it uses an instance of the <computeroutput>Client</computeroutput> class as well as publishers for the RGB image, RGB camera info, depth image, depth camera info and pointcloud.</para>
+</listitem></itemizedlist>
+</para>
+</sect2>
+</sect1>
+<sect1 id="index_1autotoc_md5">
+<title>Notes</title>
+<para>In case you are developing camera drivers, it is advised to stick to the &apos;standard&apos; <ref refid="classROS" kindref="compound">ROS</ref> interfaces to minimize dependencies which enhances compatibility with other <ref refid="classROS" kindref="compound">ROS</ref> users. Use the <computeroutput>ros_to_rgbd</computeroutput> node and, if applicable, the <computeroutput>rgbd_to_shm</computeroutput> server to interface with your software if that&apos;s using the <computeroutput>Client</computeroutput> class.</para>
+</sect1>
+<sect1 id="index_1autotoc_md6">
+<title>Testing</title>
+<para>For details on the test nodes and good test procedures, see <ref refid="md_test_README" kindref="compound">test/README.md</ref> </para>
+</sect1>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

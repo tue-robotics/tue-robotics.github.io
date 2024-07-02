@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="indexpage" kind="page">
+    <compoundname>index</compoundname>
+    <title>ED sensor integration</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="index_1autotoc_md1">
+<title>Plugins</title>
+<sect2 id="index_1autotoc_md2">
+<title>ED Kinect plugin</title>
+<para>Compares recent sensor image with an image rendered from the world model. Based on this comparison:</para>
+<para><itemizedlist>
+<listitem><para>the pose of existing entities is updated</para>
+</listitem><listitem><para>new entities are added</para>
+</listitem><listitem><para>entities are removed from the world model</para>
+</listitem></itemizedlist>
+</para>
+<para>Interfaces:</para>
+<para><itemizedlist>
+<listitem><para>foo</para>
+</listitem><listitem><para>bar</para>
+</listitem></itemizedlist>
+</para>
+</sect2>
+<sect2 id="index_1autotoc_md3">
+<title>ED Laser plugin</title>
+<para><itemizedlist>
+<listitem><para><computeroutput>ed_laser_plugin</computeroutput></para>
+</listitem></itemizedlist>
+</para>
+<para>Interfaces:</para>
+<para><itemizedlist>
+<listitem><para>foo</para>
+</listitem><listitem><para>bar</para>
+</listitem></itemizedlist>
+</para>
+</sect2>
+<sect2 id="index_1autotoc_md4">
+<title>ED Clearer plugin</title>
+<para><itemizedlist>
+<listitem><para><computeroutput>ed_clearer_plugin</computeroutput></para>
+</listitem></itemizedlist>
+</para>
+<para>Interfaces:</para>
+<para><itemizedlist>
+<listitem><para>foo</para>
+</listitem><listitem><para>bar</para>
+</listitem></itemizedlist>
+</para>
+</sect2>
+</sect1>
+<sect1 id="index_1autotoc_md5">
+<title>Tools</title>
+<para>Several tools are available for testing the features of this repository. These can be found in the [tools](tools) along with their <ref refid="md_tools_README" kindref="compound">documentation</ref>.</para>
+</sect1>
+<sect1 id="index_1autotoc_md6">
+<title>Issues with current toolchain</title>
+<para><itemizedlist>
+<listitem><para>The json resulting from <computeroutput>ed_image_saver</computeroutput> only contains sensor pose, rgbd filename and timestamp, not the world model. This makes sense in a way (it saves images, not the world model). However, the <computeroutput>segmenter</computeroutput> tool cannot be used easily because the right data is not present.</para>
+</listitem><listitem><para><computeroutput><ref refid="classUpdater_1ad741d593c5dfb80122a4436fb50c80e4" kindref="member">Updater.update</ref></computeroutput> is an long messy function, making it difficult to test standalone parts.</para>
+</listitem><listitem><para>No unit tests</para>
+</listitem><listitem><para>World model cannot be serialized entirely. Therefore it&apos;s difficult to create realistic situations.</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="index_1autotoc_md7">
+<title>Approach</title>
+<para><itemizedlist>
+<listitem><para>Create a simple world model (check, e.g., <ulink url="https://github.com/tue-robotics/ed/blob/master/test/test_wm.cpp">this test</ulink> for inspiration) in a unit test containing a piece of furniture<itemizedlist>
+<listitem><para>Move the piece of furniture</para>
+</listitem><listitem><para>Render an image from this (for inspiration, check the <ulink url="https://github.com/tue-robotics/fast_simulator/blob/master/src/Kinect.cpp">fast simulator</ulink> for inspiration)</para>
+</listitem><listitem><para>Try to update the entity pose based on this image. When does/doesn&apos;t it move? </para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

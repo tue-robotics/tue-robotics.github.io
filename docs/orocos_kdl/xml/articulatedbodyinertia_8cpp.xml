@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="articulatedbodyinertia_8cpp" kind="file" language="C++">
+    <compoundname>articulatedbodyinertia.cpp</compoundname>
+    <includes refid="articulatedbodyinertia_8hpp" local="yes">articulatedbodyinertia.hpp</includes>
+    <includes local="no">Eigen/Core</includes>
+    <incdepgraph>
+      <node id="10">
+        <label>functional</label>
+        <link refid="cpp/header/functional" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="9">
+        <label>utilities/hash_combine.h</label>
+        <link refid="hash__combine_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>cstdlib</label>
+        <link refid="cpp/header/cstdlib" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="13">
+        <label>rigidbodyinertia.hpp</label>
+        <link refid="rigidbodyinertia_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>Eigen/Core</label>
+      </node>
+      <node id="3">
+        <label>frames.hpp</label>
+        <link refid="frames_8hpp"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>cassert</label>
+        <link refid="cpp/header/cassert" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="5">
+        <label>utilities/utility.h</label>
+        <link refid="utility_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>frames.inl</label>
+        <link refid="frames_8inl"/>
+      </node>
+      <node id="1">
+        <label>articulatedbodyinertia.cpp</label>
+        <link refid="articulatedbodyinertia_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>rotationalinertia.hpp</label>
+        <link refid="rotationalinertia_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>cmath</label>
+        <link refid="cpp/header/cmath" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="4">
+        <label>utilities/kdl-config.h</label>
+        <link refid="kdl-config_8h"/>
+      </node>
+      <node id="2">
+        <label>articulatedbodyinertia.hpp</label>
+        <link refid="articulatedbodyinertia_8hpp"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceKDL">KDL</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>Copyright<sp/><sp/>(C)<sp/><sp/>2007<sp/><sp/>Ruben<sp/>Smits<sp/>&lt;ruben<sp/>dot<sp/>smits<sp/>at<sp/>mech<sp/>dot<sp/>kuleuven<sp/>dot<sp/>be&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Version:<sp/>1.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Author:<sp/>Ruben<sp/>Smits<sp/>&lt;ruben<sp/>dot<sp/>smits<sp/>at<sp/>mech<sp/>dot<sp/>kuleuven<sp/>dot<sp/>be&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Maintainer:<sp/>Ruben<sp/>Smits<sp/>&lt;ruben<sp/>dot<sp/>smits<sp/>at<sp/>mech<sp/>dot<sp/>kuleuven<sp/>dot<sp/>be&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//<sp/>URL:<sp/>http://www.orocos.org/kdl</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>library<sp/>is<sp/>free<sp/>software;<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>modify<sp/>it<sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//<sp/>License<sp/>as<sp/>published<sp/>by<sp/>the<sp/>Free<sp/>Software<sp/>Foundation;<sp/>either</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/>version<sp/>2.1<sp/>of<sp/>the<sp/>License,<sp/>or<sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>library<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>but<sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//<sp/>License<sp/>along<sp/>with<sp/>this<sp/>library;<sp/>if<sp/>not,<sp/>write<sp/>to<sp/>the<sp/>Free<sp/>Software</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Foundation,<sp/>Inc.,<sp/>51<sp/>Franklin<sp/>St,<sp/>Fifth<sp/>Floor,<sp/>Boston,<sp/>MA<sp/><sp/>02110-1301<sp/><sp/>USA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="articulatedbodyinertia_8hpp" kindref="compound">articulatedbodyinertia.hpp</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;Eigen/Core&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceKDL" kindref="compound">KDL</ref>{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="28" refid="classKDL_1_1ArticulatedBodyInertia_1a9307edd093b5ab4f46d88e30ebede7f2" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia_1a1687a92d745541fcc41a977f38750eab" kindref="member">ArticulatedBodyInertia::ArticulatedBodyInertia</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1RigidBodyInertia" kindref="compound">RigidBodyInertia</ref>&amp;<sp/>rbi)</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>=Eigen::Matrix3d::Identity()*rbi.<ref refid="classKDL_1_1RigidBodyInertia_1a8feefa9f3bfbbfd4bf163c05081a8438" kindref="member">m</ref>;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>=Eigen::Map&lt;const<sp/>Eigen::Matrix3d&gt;(rbi.<ref refid="classKDL_1_1RigidBodyInertia_1ade2ddec821af54bff08b6061ab46472a" kindref="member">I</ref>.<ref refid="classKDL_1_1RotationalInertia_1a84d956cfe35692bc64cf90f8b0923ef3" kindref="member">data</ref>);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref><sp/>&lt;&lt;<sp/>0,-rbi.<ref refid="classKDL_1_1RigidBodyInertia_1a8fb1c9e2b6d45f87c533046f1e742716" kindref="member">h</ref>[2],rbi.<ref refid="classKDL_1_1RigidBodyInertia_1a8fb1c9e2b6d45f87c533046f1e742716" kindref="member">h</ref>[1],</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rbi.<ref refid="classKDL_1_1RigidBodyInertia_1a8fb1c9e2b6d45f87c533046f1e742716" kindref="member">h</ref>[2],0,-rbi.<ref refid="classKDL_1_1RigidBodyInertia_1a8fb1c9e2b6d45f87c533046f1e742716" kindref="member">h</ref>[0],</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-rbi.<ref refid="classKDL_1_1RigidBodyInertia_1a8fb1c9e2b6d45f87c533046f1e742716" kindref="member">h</ref>[1],rbi.<ref refid="classKDL_1_1RigidBodyInertia_1a8fb1c9e2b6d45f87c533046f1e742716" kindref="member">h</ref>[0],0;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="37" refid="classKDL_1_1ArticulatedBodyInertia_1a655a11f4f0f3dfc3bd8281cb7d959a35" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia_1a1687a92d745541fcc41a977f38750eab" kindref="member">ArticulatedBodyInertia::ArticulatedBodyInertia</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>m,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Vector" kindref="compound">Vector</ref>&amp;<sp/>c,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1RotationalInertia" kindref="compound">RotationalInertia</ref>&amp;<sp/>Ic)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal"><sp/>=<sp/><ref refid="classKDL_1_1RigidBodyInertia" kindref="compound">RigidBodyInertia</ref>(m,c,Ic);</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="classKDL_1_1ArticulatedBodyInertia_1a514d696939be523d8bfc60120f98a0cc" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia_1a1687a92d745541fcc41a977f38750eab" kindref="member">ArticulatedBodyInertia::ArticulatedBodyInertia</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Matrix3d&amp;<sp/>M,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Matrix3d&amp;<sp/>H,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Matrix3d&amp;<sp/>I)</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;M=<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;I=<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;H=<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="49" refid="namespaceKDL_1aa7100a66f621fadcd96168a97d27784d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref><sp/><ref refid="namespaceKDL_1aa7100a66f621fadcd96168a97d27784d" kindref="member">operator*</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>&amp;<sp/>I){</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>(a*I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>,a*I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>,a*I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="53" refid="namespaceKDL_1a3bc91024ee0a8b23fa94b74fa7c952f0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref><sp/><ref refid="namespaceKDL_1a3bc91024ee0a8b23fa94b74fa7c952f0" kindref="member">operator+</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>&amp;<sp/>Ia,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>&amp;<sp/>Ib){</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>(Ia.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>+Ib.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>,Ia.<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>+Ib.<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>,Ia.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>+Ib.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="namespaceKDL_1af14129ba902ec31f692ae97e29c033ef" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref><sp/><ref refid="namespaceKDL_1a3bc91024ee0a8b23fa94b74fa7c952f0" kindref="member">operator+</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1RigidBodyInertia" kindref="compound">RigidBodyInertia</ref>&amp;<sp/>Ia,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>&amp;<sp/>Ib){</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>(Ia)+Ib;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="60" refid="namespaceKDL_1a148a5015338fa55d58b91dc7b9bb9983" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref><sp/><ref refid="namespaceKDL_1a148a5015338fa55d58b91dc7b9bb9983" kindref="member">operator-</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>&amp;<sp/>Ia,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>&amp;<sp/>Ib){</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>(Ia.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>-Ib.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>,Ia.<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>-Ib.<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>,Ia.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>-Ib.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="namespaceKDL_1a2dfa94ee82b9d4f12d9c4ee2b79a43b6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref><sp/><ref refid="namespaceKDL_1a148a5015338fa55d58b91dc7b9bb9983" kindref="member">operator-</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1RigidBodyInertia" kindref="compound">RigidBodyInertia</ref>&amp;<sp/>Ia,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>&amp;<sp/>Ib){</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>(Ia)-Ib;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="68" refid="namespaceKDL_1a57e5b07873e812f8d7f94d5ca1acd229" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Wrench" kindref="compound">Wrench</ref><sp/><ref refid="namespaceKDL_1aa7100a66f621fadcd96168a97d27784d" kindref="member">operator*</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>&amp;<sp/>I,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Twist" kindref="compound">Twist</ref>&amp;<sp/>t){</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Wrench" kindref="compound">Wrench</ref><sp/>result;</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Vector3d::Map(result.<ref refid="classKDL_1_1Wrench_1a3f8bee8b5afd64870bf187fa6a4ea3fc" kindref="member">force</ref>.<ref refid="classKDL_1_1Vector_1a97106b4583f8e2ecf39ed7682b945bd1" kindref="member">data</ref>)=I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>*Eigen::Vector3d::Map(t.<ref refid="classKDL_1_1Twist_1adda560fbd643ba2448d519fce626b680" kindref="member">vel</ref>.<ref refid="classKDL_1_1Vector_1a97106b4583f8e2ecf39ed7682b945bd1" kindref="member">data</ref>)+I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>.transpose()*Eigen::Vector3d::Map(t.<ref refid="classKDL_1_1Twist_1a5ab2bb436b67c902e9c7735c4df16eba" kindref="member">rot</ref>.<ref refid="classKDL_1_1Vector_1a97106b4583f8e2ecf39ed7682b945bd1" kindref="member">data</ref>);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Vector3d::Map(result.<ref refid="classKDL_1_1Wrench_1ab725bbdf755cadd4a6718ea1f2ed1c1e" kindref="member">torque</ref>.<ref refid="classKDL_1_1Vector_1a97106b4583f8e2ecf39ed7682b945bd1" kindref="member">data</ref>)=I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>*Eigen::Vector3d::Map(t.<ref refid="classKDL_1_1Twist_1a5ab2bb436b67c902e9c7735c4df16eba" kindref="member">rot</ref>.<ref refid="classKDL_1_1Vector_1a97106b4583f8e2ecf39ed7682b945bd1" kindref="member">data</ref>)+I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>*Eigen::Vector3d::Map(t.<ref refid="classKDL_1_1Twist_1adda560fbd643ba2448d519fce626b680" kindref="member">vel</ref>.<ref refid="classKDL_1_1Vector_1a97106b4583f8e2ecf39ed7682b945bd1" kindref="member">data</ref>);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="namespaceKDL_1ab60953771d5ef2a0ef08cf7e8266473f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref><sp/><ref refid="namespaceKDL_1aa7100a66f621fadcd96168a97d27784d" kindref="member">operator*</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Frame" kindref="compound">Frame</ref>&amp;<sp/>T,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>&amp;<sp/>I){</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Frame" kindref="compound">Frame</ref><sp/>X=T.<ref refid="classKDL_1_1Frame_1ac508fa4e7c59527f8f377a3c6c225d12" kindref="member">Inverse</ref>();</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//mb=ma</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//hb=R*(h-m*r)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//Ib<sp/>=<sp/>R(Ia+r<sp/>x<sp/>h<sp/>x<sp/>+<sp/>(h-m*r)<sp/>x<sp/>r<sp/>x)R&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Map&lt;Eigen::Matrix3d&gt;<sp/>E(X.<ref refid="classKDL_1_1Frame_1a367668b3344ccfd50410ccc1ed30fa6f" kindref="member">M</ref>.<ref refid="classKDL_1_1Rotation_1aad4572c3cd7591216d5dc561abbcbdb6" kindref="member">data</ref>);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Matrix3d<sp/>rcross;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rcross<sp/>&lt;&lt;<sp/>0,-X.<ref refid="classKDL_1_1Frame_1abc00c3817f7baa985b67077479617866" kindref="member">p</ref>[2],X.<ref refid="classKDL_1_1Frame_1abc00c3817f7baa985b67077479617866" kindref="member">p</ref>[1],</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>X.<ref refid="classKDL_1_1Frame_1abc00c3817f7baa985b67077479617866" kindref="member">p</ref>[2],0,-X.<ref refid="classKDL_1_1Frame_1abc00c3817f7baa985b67077479617866" kindref="member">p</ref>[0],</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-X.<ref refid="classKDL_1_1Frame_1abc00c3817f7baa985b67077479617866" kindref="member">p</ref>[1],X.<ref refid="classKDL_1_1Frame_1abc00c3817f7baa985b67077479617866" kindref="member">p</ref>[0],0;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Matrix3d<sp/>HrM=I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>-rcross*I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>(E*I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>*E.transpose(),E*HrM*E.transpose(),E*(I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>-rcross*I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>.transpose()+HrM*rcross)*E.transpose());</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90" refid="namespaceKDL_1aef01dde4be0f6e8252a1703c16f30bdc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref><sp/><ref refid="namespaceKDL_1aa7100a66f621fadcd96168a97d27784d" kindref="member">operator*</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Rotation" kindref="compound">Rotation</ref>&amp;<sp/>M,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>&amp;<sp/>I){</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Map&lt;const<sp/>Eigen::Matrix3d&gt;<sp/>E(M.<ref refid="classKDL_1_1Rotation_1aad4572c3cd7591216d5dc561abbcbdb6" kindref="member">data</ref>);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref>(E.transpose()*I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>*E,E.transpose()*I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>*E,E.transpose()*I.<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>*E);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classKDL_1_1ArticulatedBodyInertia_1a079cf1b582f5b7abe3c6f0ee5903bff1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia" kindref="compound">ArticulatedBodyInertia</ref><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia_1a079cf1b582f5b7abe3c6f0ee5903bff1" kindref="member">ArticulatedBodyInertia::RefPoint</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Vector" kindref="compound">Vector</ref>&amp;<sp/>p){</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//mb=ma</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//hb=R*(h-m*r)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//Ib<sp/>=<sp/>R(Ia+r<sp/>x<sp/>h<sp/>x<sp/>+<sp/>(h-m*r)<sp/>x<sp/>r<sp/>x)R&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Matrix3d<sp/>rcross;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rcross<sp/>&lt;&lt;<sp/>0,-p[2],p[1],</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>p[2],0,-p[0],</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-p[1],p[0],0;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Matrix3d<sp/>HrM=this-&gt;<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>-rcross*this-&gt;<ref refid="classKDL_1_1ArticulatedBodyInertia_1a4554945bd26747db6b3e5a66c8d41a48" kindref="member">M</ref>;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ArticulatedBodyInertia_1a1687a92d745541fcc41a977f38750eab" kindref="member">ArticulatedBodyInertia</ref>(this-&gt;M,HrM,this-&gt;<ref refid="classKDL_1_1ArticulatedBodyInertia_1a10c72eceeae5dcc9ddabc503c1cac8d3" kindref="member">I</ref>-rcross*this-&gt;<ref refid="classKDL_1_1ArticulatedBodyInertia_1ad50ff6e5a4b88e4f4f783d66ae550738" kindref="member">H</ref>.transpose()+HrM*rcross);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="107"><highlight class="normal">}</highlight><highlight class="comment">//namespace</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/articulatedbodyinertia.cpp"/>
+  </compounddef>
+</doxygen>

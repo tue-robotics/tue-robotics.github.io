@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="robotics__testlabs_2challenge__spr_8py" kind="file" language="Python">
+    <compoundname>robotics_testlabs/challenge_spr.py</compoundname>
+    <innernamespace refid="namespacechallenge__spr">challenge_spr</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="keyword">from</highlight><highlight class="normal"><sp/>__future__<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>print_function</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>robocup_knowledge<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>knowledge_loader</highlight></codeline>
+<codeline lineno="4"><highlight class="normal">common<sp/>=<sp/>knowledge_loader.load_knowledge(</highlight><highlight class="stringliteral">&quot;common&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal">not_understood_sentences<sp/>=<sp/>[</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;I&apos;m<sp/>so<sp/>sorry!<sp/>Can<sp/>you<sp/>please<sp/>speak<sp/>louder<sp/>and<sp/>slower?<sp/>And<sp/>wait<sp/>for<sp/>the<sp/>ping!&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;I<sp/>am<sp/>deeply<sp/>sorry.<sp/>Please<sp/>try<sp/>again,<sp/>but<sp/>wait<sp/>for<sp/>the<sp/>ping!&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;You<sp/>and<sp/>I<sp/>have<sp/>communication<sp/>issues.<sp/>Speak<sp/>up!&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;All<sp/>this<sp/>noise<sp/>is<sp/>messing<sp/>with<sp/>my<sp/>audio.<sp/>Try<sp/>again&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>]</highlight></codeline>
+<codeline lineno="12"><highlight class="normal">grammar_target<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;T&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal">grammar<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="21"><highlight class="stringliteral">T[{actions<sp/>:<sp/>&lt;A1&gt;}]<sp/>-&gt;<sp/>C[A1]</highlight></codeline>
+<codeline lineno="22"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="23"><highlight class="stringliteral">C[{A}]<sp/>-&gt;<sp/>Q[A]</highlight></codeline>
+<codeline lineno="24"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Q<sp/>questions<sp/>are<sp/>implemented<sp/>already<sp/>in<sp/>the<sp/>challenge.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment">#<sp/>NQ<sp/>questions<sp/>are<sp/>still<sp/>not<sp/>implemented,<sp/>so<sp/>the<sp/>robot<sp/>should<sp/>not<sp/>understand<sp/>them.<sp/>Future<sp/>tasks!<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="36"><highlight class="stringliteral">V_GUIDE<sp/>-&gt;<sp/>guide<sp/>|<sp/>escort<sp/>|<sp/>take<sp/>|<sp/>lead<sp/>|<sp/>accompany</highlight></codeline>
+<codeline lineno="37"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="38"><highlight class="stringliteral">DET<sp/>-&gt;<sp/>the<sp/>|<sp/>a<sp/>|<sp/>an<sp/>|<sp/>some</highlight></codeline>
+<codeline lineno="39"><highlight class="stringliteral">MANIPULATION_AREA_DESCRIPTIONS<sp/>-&gt;<sp/>on<sp/>top<sp/>of<sp/>|<sp/>at<sp/>|<sp/>in<sp/>|<sp/>on</highlight></codeline>
+<codeline lineno="40"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>room<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>common.location_rooms:</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nROOMS[%s]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(room,<sp/>room)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>loc<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/><ref refid="namespacecommon_1aeb59616e67621c3aff3927cae5359591" kindref="member">common.get_locations</ref>():</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nLOCATIONS[%s]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(loc,<sp/>loc)</highlight></codeline>
+<codeline lineno="46"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\n<sp/>ROOMS_AND_LOCATIONS[X]<sp/>-&gt;<sp/>ROOMS[X]<sp/>|<sp/>LOCATIONS[X]&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>obj<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>common.object_names:</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nOBJECT_NAMES[%s]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(obj,<sp/>obj)</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>loc<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/><ref refid="namespacecommon_1aeb59616e67621c3aff3927cae5359591" kindref="member">common.get_locations</ref>(pick_location=</highlight><highlight class="keyword">True</highlight><highlight class="normal">,<sp/>place_location=</highlight><highlight class="keyword">True</highlight><highlight class="normal">):</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nMANIPULATION_AREA_LOCATIONS[%s]<sp/>-&gt;<sp/>MANIPULATION_AREA_DESCRIPTIONS<sp/>the<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(loc,<sp/>loc)</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>cat<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>common.object_categories:</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nOBJECT_CATEGORIES[%s]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(cat,<sp/>cat)</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>place<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>common.location_names:</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\n<sp/>PLACEMENTS_AND_BEACONS[%s]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(place,<sp/>place)</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;&apos;&apos;</highlight></codeline>
+<codeline lineno="63"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;Magdeburg&quot;]<sp/>-&gt;<sp/>what<sp/>city<sp/>are<sp/>we<sp/>in</highlight></codeline>
+<codeline lineno="64"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;Tech<sp/>United&quot;]<sp/>-&gt;<sp/>what<sp/>is<sp/>the<sp/>name<sp/>of<sp/>your<sp/>team</highlight></codeline>
+<codeline lineno="65"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;Chewbacca&quot;]<sp/>-&gt;<sp/>name<sp/>the<sp/>big<sp/>hairy<sp/>creature<sp/>in<sp/>star<sp/>wars</highlight></codeline>
+<codeline lineno="66"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;Isaac<sp/>Asimov&quot;]<sp/>-&gt;<sp/>who<sp/>wrote<sp/>the<sp/>three<sp/>laws<sp/>of<sp/>robotics</highlight></codeline>
+<codeline lineno="67"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;The<sp/>Jetsons&quot;]<sp/>-&gt;<sp/>from<sp/>what<sp/>series<sp/>do<sp/>you<sp/>know<sp/>rosie<sp/>the<sp/>robot</highlight></codeline>
+<codeline lineno="68"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;The<sp/>Flintstones&quot;]<sp/>-&gt;<sp/>from<sp/>what<sp/>series<sp/>do<sp/>you<sp/>know<sp/>the<sp/>baby<sp/>bam<sp/>bam</highlight></codeline>
+<codeline lineno="69"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;Neo&quot;]<sp/>-&gt;<sp/>who<sp/>is<sp/>the<sp/>main<sp/>character<sp/>of<sp/>the<sp/>matrix</highlight></codeline>
+<codeline lineno="70"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;Peper<sp/>and<sp/>HSR&quot;]<sp/>-&gt;<sp/>name<sp/>the<sp/>two<sp/>robocupathome<sp/>standard<sp/>platforms</highlight></codeline>
+<codeline lineno="71"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;In<sp/>my<sp/>SSD&quot;]<sp/>-&gt;<sp/>where<sp/>do<sp/>you<sp/>store<sp/>your<sp/>memories</highlight></codeline>
+<codeline lineno="72"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;In<sp/>Eindhoven<sp/>The<sp/>Netherlands&quot;]<sp/>-&gt;<sp/>where<sp/>is<sp/>your<sp/>team<sp/>located</highlight></codeline>
+<codeline lineno="73"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="74"><highlight class="stringliteral">WHATWHICH<sp/>-&gt;<sp/>what<sp/>|<sp/>which</highlight></codeline>
+<codeline lineno="75"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="76"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;basket&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>biggest<sp/>object</highlight></codeline>
+<codeline lineno="77"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;egg&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>smallest<sp/>object</highlight></codeline>
+<codeline lineno="78"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;pringles&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>biggest<sp/>food</highlight></codeline>
+<codeline lineno="79"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;egg&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>smallest<sp/>food</highlight></codeline>
+<codeline lineno="80"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;basket&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>biggest<sp/>container</highlight></codeline>
+<codeline lineno="81"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;coffecup&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>smallest<sp/>container</highlight></codeline>
+<codeline lineno="82"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;water&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>biggest<sp/>drink</highlight></codeline>
+<codeline lineno="83"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;orange<sp/>drink&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>smallest<sp/>drink</highlight></codeline>
+<codeline lineno="84"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;paper&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>biggest<sp/>cleaning<sp/>stuff</highlight></codeline>
+<codeline lineno="85"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;sponge&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>smallest<sp/>cleaning<sp/>stuff</highlight></codeline>
+<codeline lineno="86"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;knife&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>biggest<sp/>cutlery</highlight></codeline>
+<codeline lineno="87"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;fork&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>smallest<sp/>cutlery</highlight></codeline>
+<codeline lineno="88"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="89"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;the<sp/>bedroom<sp/>has<sp/>two<sp/>doors&quot;]<sp/>-&gt;<sp/>how<sp/>many<sp/>doors<sp/>has<sp/>the<sp/>bedroom</highlight></codeline>
+<codeline lineno="90"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;the<sp/>living<sp/>room<sp/>has<sp/>two<sp/>doors&quot;]<sp/>-&gt;<sp/>how<sp/>many<sp/>doors<sp/>has<sp/>the<sp/>livingroom</highlight></codeline>
+<codeline lineno="91"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;the<sp/>kitchen<sp/>has<sp/>one<sp/>door&quot;]<sp/>-&gt;<sp/>how<sp/>many<sp/>doors<sp/>has<sp/>the<sp/>kitchen</highlight></codeline>
+<codeline lineno="92"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;in<sp/>the<sp/>workshop<sp/>there<sp/>are<sp/>no<sp/>doors&quot;]<sp/>-&gt;<sp/>how<sp/>many<sp/>doors<sp/>has<sp/>the<sp/>workshop</highlight></codeline>
+<codeline lineno="93"><highlight class="stringliteral">&apos;&apos;&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;&apos;&apos;</highlight></codeline>
+<codeline lineno="102"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;count&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>P]<sp/>-&gt;<sp/>how<sp/>many<sp/>PEOPLE[P]<sp/>are<sp/>in<sp/>the<sp/>crowd<sp/>|<sp/>tell<sp/>me<sp/>the<sp/>number<sp/>of<sp/>PEOPLE[P]<sp/>in<sp/>the<sp/>crowd</highlight></codeline>
+<codeline lineno="103"><highlight class="stringliteral">&apos;&apos;&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;&apos;&apos;</highlight></codeline>
+<codeline lineno="112"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="113"><highlight class="stringliteral">NQ[&quot;action&quot;<sp/>:<sp/>&quot;count_pos&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>X]<sp/>-&gt;<sp/>how<sp/>many<sp/>people<sp/>in<sp/>the<sp/>crowd<sp/>are<sp/>POSITION[X]</highlight></codeline>
+<codeline lineno="114"><highlight class="stringliteral">NQ[&quot;action&quot;<sp/>:<sp/>&quot;count_ges&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>W]<sp/>-&gt;<sp/>how<sp/>many<sp/>people<sp/>in<sp/>the<sp/>crowd<sp/>are<sp/>GESTURE[W]</highlight></codeline>
+<codeline lineno="115"><highlight class="stringliteral">NQ[&quot;action&quot;<sp/>:<sp/>&quot;count_col&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>L]<sp/>-&gt;<sp/>tell<sp/>me<sp/>how<sp/>many<sp/>people<sp/>were<sp/>wearing<sp/>COLOR[L]</highlight></codeline>
+<codeline lineno="116"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="117"><highlight class="stringliteral">NQ[&quot;action&quot;<sp/>:<sp/>&quot;gender_pos&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>X]<sp/>-&gt;<sp/>the<sp/>POSITION[X]<sp/>person<sp/>was<sp/>GENDER<sp/>|<sp/>tell<sp/>me<sp/>if<sp/>the<sp/>POSITION[X]<sp/>person<sp/>was<sp/>a<sp/>GENDER<sp/>|<sp/>the<sp/>POSITION[X]<sp/>person<sp/>was<sp/>GENDER<sp/>or<sp/>GENDER<sp/>|<sp/>tell<sp/>me<sp/>if<sp/>the<sp/>POSITION[X]<sp/>person<sp/>was<sp/>a<sp/>GENDER<sp/>or<sp/>GENDER</highlight></codeline>
+<codeline lineno="118"><highlight class="stringliteral">NQ[&quot;action&quot;<sp/>:<sp/>&quot;gender_ges&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>W]<sp/>-&gt;<sp/>tell<sp/>me<sp/>if<sp/>the<sp/>GESTURE[W]<sp/>person<sp/>was<sp/>a<sp/>GENDER<sp/>|<sp/>tell<sp/>me<sp/>if<sp/>the<sp/>GESTURE[W]<sp/>person<sp/>was<sp/>a<sp/>GENDER<sp/>or<sp/>GENDER</highlight></codeline>
+<codeline lineno="119"><highlight class="stringliteral">&apos;&apos;&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;&apos;&apos;</highlight></codeline>
+<codeline lineno="128"><highlight class="stringliteral">SEARCH<sp/>-&gt;<sp/>where<sp/>is<sp/>|<sp/>in<sp/>WHATWHICH<sp/>room<sp/>is</highlight></codeline>
+<codeline lineno="129"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="130"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;find_placement&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>Y]<sp/>-&gt;<sp/>SEARCH<sp/>the<sp/>PLACEMENTS_AND_BEACONS[Y]</highlight></codeline>
+<codeline lineno="131"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;count_placement&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>Y,<sp/>&quot;location&quot;<sp/>:<sp/>R]<sp/>-&gt;<sp/>how<sp/>many<sp/>PLACEMENTS_AND_BEACONS[Y]<sp/>are<sp/>in<sp/>the<sp/>ROOMS[R]</highlight></codeline>
+<codeline lineno="132"><highlight class="stringliteral">&apos;&apos;&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;&apos;&apos;</highlight></codeline>
+<codeline lineno="141"><highlight class="stringliteral">SB<sp/>-&gt;<sp/>smaller<sp/>|<sp/>bigger</highlight></codeline>
+<codeline lineno="142"><highlight class="stringliteral">LH<sp/>-&gt;<sp/>lighter<sp/>|<sp/>heavier</highlight></codeline>
+<codeline lineno="143"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="144"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="145"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;find_object&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>O]<sp/>-&gt;<sp/>where<sp/>can<sp/>i<sp/>find<sp/>DET<sp/>OBJECT_NAMES[O]</highlight></codeline>
+<codeline lineno="146"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;find_category&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>C]<sp/>-&gt;<sp/>where<sp/>can<sp/>i<sp/>find<sp/>DET<sp/>OBJECT_CATEGORIES[C]</highlight></codeline>
+<codeline lineno="147"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="148"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;return_category&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>O]<sp/>-&gt;<sp/>to<sp/>WHATWHICH<sp/>category<sp/>belong<sp/>the<sp/>OBJECT_NAMES[O]</highlight></codeline>
+<codeline lineno="149"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;return_color&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>O]<sp/>-&gt;<sp/>whats<sp/>the<sp/>color<sp/>of<sp/>the<sp/>OBJECT_NAMES[O]</highlight></codeline>
+<codeline lineno="150"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="151"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;compare_category&quot;,<sp/>&quot;entity_a&quot;<sp/>:<sp/>O,<sp/>&quot;entity_b&quot;<sp/>:<sp/>A]<sp/>-&gt;<sp/>do<sp/>DET<sp/>OBJECT_NAMES[O]<sp/>and<sp/>DET<sp/>OBJECT_NAMES[A]<sp/>belong<sp/>to<sp/>the<sp/>same<sp/>category</highlight></codeline>
+<codeline lineno="152"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;compare_sizes&quot;,<sp/>&quot;entity_a&quot;<sp/>:<sp/>O,<sp/>&quot;entity_b&quot;<sp/>:<sp/>A]<sp/>-&gt;<sp/>between<sp/>DET<sp/>OBJECT_NAMES[O]<sp/>and<sp/>DET<sp/>OBJECT_NAMES[A]<sp/>which<sp/>one<sp/>is<sp/>SB</highlight></codeline>
+<codeline lineno="153"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;compare_weight&quot;,<sp/>&quot;entity_a&quot;<sp/>:<sp/>O,<sp/>&quot;entity_b&quot;<sp/>:<sp/>A]<sp/>-&gt;<sp/>between<sp/>DET<sp/>OBJECT_NAMES[O]<sp/>and<sp/>DET<sp/>OBJECT_NAMES[A]<sp/>which<sp/>one<sp/>is<sp/>LH</highlight></codeline>
+<codeline lineno="154"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="155"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;count_object_cat&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>C]<sp/>-&gt;<sp/>how<sp/>many<sp/>OBJECT_CATEGORIES[C]<sp/>there<sp/>are</highlight></codeline>
+<codeline lineno="156"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="157"><highlight class="stringliteral">NQ[&quot;action&quot;<sp/>:<sp/>&quot;count_object_loc&quot;,<sp/>&quot;location&quot;<sp/>:<sp/>Y]<sp/>-&gt;<sp/>how<sp/>many<sp/>objects<sp/>are<sp/>in<sp/>the<sp/>PLACEMENTS_AND_BEACONS[Y]<sp/>|<sp/>what<sp/>objects<sp/>are<sp/>stored<sp/>in<sp/>the<sp/>PLACEMENTS_AND_BEACONS[Y]</highlight></codeline>
+<codeline lineno="158"><highlight class="stringliteral">NQ[&quot;action&quot;<sp/>:<sp/>&quot;count_object_cat_loc&quot;,<sp/>&quot;entity&quot;<sp/>:<sp/>C,<sp/>&quot;location&quot;<sp/>:<sp/>Y]<sp/>-&gt;<sp/>how<sp/>many<sp/>OBJECT_CATEGORIES[C]<sp/>are<sp/>in<sp/>the<sp/>PLACEMENTS_AND_BEACONS[Y]</highlight></codeline>
+<codeline lineno="159"><highlight class="stringliteral">&apos;&apos;&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;&apos;&apos;</highlight></codeline>
+<codeline lineno="168"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="169"><highlight class="stringliteral">PEOPLE[&apos;people&apos;]<sp/>-&gt;<sp/>people</highlight></codeline>
+<codeline lineno="170"><highlight class="stringliteral">PEOPLE[&apos;children&apos;]<sp/>-&gt;<sp/>children</highlight></codeline>
+<codeline lineno="171"><highlight class="stringliteral">PEOPLE[&apos;adults&apos;]<sp/>-&gt;<sp/>adults</highlight></codeline>
+<codeline lineno="172"><highlight class="stringliteral">PEOPLE[&apos;elders&apos;]<sp/>-&gt;<sp/>elders</highlight></codeline>
+<codeline lineno="173"><highlight class="stringliteral">PEOPLE[&apos;males&apos;]<sp/>-&gt;<sp/>males</highlight></codeline>
+<codeline lineno="174"><highlight class="stringliteral">PEOPLE[&apos;females&apos;]<sp/>-&gt;<sp/>females</highlight></codeline>
+<codeline lineno="175"><highlight class="stringliteral">PEOPLE[&apos;men&apos;]<sp/>-&gt;<sp/>men</highlight></codeline>
+<codeline lineno="176"><highlight class="stringliteral">PEOPLE[&apos;women&apos;]<sp/>-&gt;<sp/>women</highlight></codeline>
+<codeline lineno="177"><highlight class="stringliteral">PEOPLE[&apos;boys&apos;]<sp/>-&gt;<sp/>boys</highlight></codeline>
+<codeline lineno="178"><highlight class="stringliteral">PEOPLE[&apos;girls&apos;]<sp/>-&gt;<sp/>girls</highlight></codeline>
+<codeline lineno="179"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="180"><highlight class="stringliteral">GENDER[&apos;male&apos;]<sp/>-&gt;<sp/>male</highlight></codeline>
+<codeline lineno="181"><highlight class="stringliteral">GENDER[&apos;female&apos;]<sp/>-&gt;<sp/>female</highlight></codeline>
+<codeline lineno="182"><highlight class="stringliteral">GENDER[&apos;man&apos;]<sp/>-&gt;<sp/>man</highlight></codeline>
+<codeline lineno="183"><highlight class="stringliteral">GENDER[&apos;woman&apos;]<sp/>-&gt;<sp/>woman</highlight></codeline>
+<codeline lineno="184"><highlight class="stringliteral">GENDER[&apos;boy&apos;]<sp/>-&gt;<sp/>boy</highlight></codeline>
+<codeline lineno="185"><highlight class="stringliteral">GENDER[&apos;girl&apos;]<sp/>-&gt;<sp/>girl</highlight></codeline>
+<codeline lineno="186"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="187"><highlight class="stringliteral">POSITION[&apos;standing&apos;]<sp/>-&gt;<sp/>standing</highlight></codeline>
+<codeline lineno="188"><highlight class="stringliteral">POSITION[&apos;sitting&apos;]<sp/>-&gt;<sp/>sitting</highlight></codeline>
+<codeline lineno="189"><highlight class="stringliteral">POSITION[&apos;lying&apos;]<sp/>-&gt;<sp/>laying</highlight></codeline>
+<codeline lineno="190"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="191"><highlight class="stringliteral">GESTURE[&apos;waving&apos;]<sp/>-&gt;<sp/>waving</highlight></codeline>
+<codeline lineno="192"><highlight class="stringliteral">GESTURE[&apos;rise_l_arm&apos;]<sp/>-&gt;<sp/>rising<sp/>left<sp/>arm</highlight></codeline>
+<codeline lineno="193"><highlight class="stringliteral">GESTURE[&apos;rise_r_arm&apos;]<sp/>-&gt;<sp/>rising<sp/>right<sp/>arm</highlight></codeline>
+<codeline lineno="194"><highlight class="stringliteral">GESTURE[&apos;left&apos;]<sp/>-&gt;<sp/>pointing<sp/>left</highlight></codeline>
+<codeline lineno="195"><highlight class="stringliteral">GESTURE[&apos;right&apos;]<sp/>-&gt;<sp/>pointing<sp/>right</highlight></codeline>
+<codeline lineno="196"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="197"><highlight class="stringliteral">COLOR[&apos;red&apos;]<sp/>-&gt;<sp/>red</highlight></codeline>
+<codeline lineno="198"><highlight class="stringliteral">COLOR[&apos;blue&apos;]<sp/>-&gt;<sp/>blue</highlight></codeline>
+<codeline lineno="199"><highlight class="stringliteral">COLOR[&apos;white&apos;]<sp/>-&gt;<sp/>white</highlight></codeline>
+<codeline lineno="200"><highlight class="stringliteral">COLOR[&apos;black&apos;]<sp/>-&gt;<sp/>black</highlight></codeline>
+<codeline lineno="201"><highlight class="stringliteral">COLOR[&apos;green&apos;]<sp/>-&gt;<sp/>green</highlight></codeline>
+<codeline lineno="202"><highlight class="stringliteral">COLOR[&apos;yellow&apos;]<sp/>-&gt;<sp/>yellow</highlight></codeline>
+<codeline lineno="203"><highlight class="stringliteral">&apos;&apos;&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;__main__&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;\n\n{}\n\n&quot;</highlight><highlight class="normal">.format(grammar))</highlight></codeline>
+    </programlisting>
+    <location file="src/robocup_knowledge/environments/robotics_testlabs/challenge_spr.py"/>
+  </compounddef>
+</doxygen>

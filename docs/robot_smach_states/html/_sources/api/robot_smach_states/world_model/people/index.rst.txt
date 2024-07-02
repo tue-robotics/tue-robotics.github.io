@@ -1,0 +1,87 @@
+robot_smach_states.world_model.people
+=====================================
+
+.. py:module:: robot_smach_states.world_model.people
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.world_model.people.PeopleInSeatDesignator
+   robot_smach_states.world_model.people._CheckPeople
+   robot_smach_states.world_model.people.CheckSeatEmpty
+
+
+Module Contents
+---------------
+
+.. py:class:: PeopleInSeatDesignator(robot, seat, room = None, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.Designator`
+
+
+   A Designator defines a goal, which can be defined at runtime or at write-
+   time. Its value cannot be set, it can only be get.  This allows to later
+   define Designators that take a goal specification, like a query to a world
+   model.
+
+   >>> d = Designator("Initial value", name="tester")
+   >>> d.resolve()
+   'Initial value'
+
+   >>> assert(issubclass(d.resolve_type, str))
+
+   Initialization method
+
+   :param initial_value: Initial value, should match the given resolve_type.
+                         None is allowed if a resolve_type is provided.
+   :param resolve_type: Type to which this designator should resolve.
+                        If None, use the type of the initial value. Value
+                        must be not None in that case.
+   :vartype resolve_type: Type or a list with a single type (the element type).
+                          The latter represents list of values where each
+                          value has the element type.
+
+   :param name: name used for debugging purposes
+   :vartype name: str
+
+
+   .. py:method:: _resolve()
+
+
+   .. py:method:: __repr__()
+
+      Return repr(self).
+
+
+
+.. py:class:: _CheckPeople(people_des, number_of_people_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Constructor
+
+   :param people_des: designator with the detected people
+   :param number_of_people_des: designator which will result in the number of people near the entity, or None in case of state fails.
+
+
+   .. py:method:: execute(ud=None)
+
+
+.. py:class:: CheckSeatEmpty(robot, entity_des, number_of_people_des=None)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   
+   Constructor
+
+   :param robot: robot object
+   :param entity_des: EdEntityDesignator indicating the (furniture) object to check
+   :param number_of_people_des: designator which will result in the number of people near the entity, or None in case of state fails.
+
+

@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">#<sp/>rgbd</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[![CI](https://github.com/tue-robotics/rgbd/actions/workflows/main.yml/badge.svg)](https://github.com/tue-robotics/rgbd/actions/workflows/main.yml)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>rgbd<sp/>server<sp/>reads<sp/>data<sp/>from<sp/>a<sp/>3D<sp/>sensor<sp/>and<sp/>publishes<sp/>it<sp/>in<sp/>a<sp/>compressed<sp/>form.</highlight></codeline>
+<codeline><highlight class="normal">It<sp/>provides<sp/>a<sp/>unified<sp/>format<sp/>for<sp/>depthmaps<sp/>combined<sp/>with<sp/>RGB<sp/>data,<sp/>which<sp/>is<sp/>more<sp/>compact<sp/>than<sp/>a<sp/>point<sp/>cloud.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Core<sp/>classes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">All<sp/>**bold<sp/>names**<sp/>are<sp/>classes.<sp/>The<sp/>main<sp/>interface<sp/>types<sp/>are<sp/>shown<sp/>to<sp/>understand<sp/>the<sp/>differences<sp/>between<sp/>all<sp/>classes.</highlight></codeline>
+<codeline><highlight class="normal">![core<sp/>classes](doc/rgbd_classes.svg)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Typical<sp/>usage</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">For<sp/>client<sp/>applications,<sp/>i.e.,<sp/>applications<sp/>consuming<sp/>RGBD<sp/>data,<sp/>it<sp/>is<sp/>advised<sp/>to<sp/>use<sp/>the<sp/>`Client`<sp/>class.<sp/>If<sp/>possible,<sp/>this<sp/>will<sp/>obtain<sp/>its<sp/>images<sp/>from<sp/>shared<sp/>memory<sp/>using<sp/>the<sp/>`ClientSHM`<sp/>class,<sp/>which<sp/>minimizes<sp/>network<sp/>and<sp/>CPU<sp/>usage.<sp/>Otherwise<sp/>it<sp/>relies<sp/>on<sp/>data<sp/>received<sp/>as<sp/>`rgbd_msgs::RGBD`<sp/>messages<sp/>through<sp/>the<sp/>`ClientRGBD`<sp/>class.<sp/>Data<sp/>is<sp/>typically<sp/>obtained<sp/>as<sp/>instance<sp/>of<sp/>the<sp/>`rgbd::Image`<sp/>class<sp/>using<sp/>the<sp/>`nextImage`<sp/>functions<sp/>(see<sp/>docstrings<sp/>for<sp/>more<sp/>info).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>`ClientROS`<sp/>class<sp/>is<sp/>present<sp/>in<sp/>case<sp/>no<sp/>data<sp/>is<sp/>provided<sp/>in<sp/>RGBD<sp/>format.<sp/>This<sp/>is<sp/>used,<sp/>e.g.,<sp/>in<sp/>the<sp/>`ros_to_rgbd`<sp/>node<sp/>(see<sp/>below).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>`Server`<sp/>class<sp/>does<sp/>exactly<sp/>the<sp/>opposite<sp/>from<sp/>the<sp/>`Client`<sp/>class.<sp/>It<sp/>receives<sp/>an<sp/>instance<sp/>of<sp/>an<sp/>`rbgd::Image`<sp/>and<sp/>both<sp/>(re-)sends<sp/>this<sp/>data<sp/>as<sp/>an<sp/>`rgbd_msgs::RGBD`<sp/>message<sp/>over<sp/>a<sp/>ROS<sp/>topic<sp/>and<sp/>writes<sp/>it<sp/>to<sp/>shared<sp/>memory.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Core<sp/>nodes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Shown<sp/>the<sp/>most<sp/>important<sp/>nodes<sp/>and<sp/>their<sp/>structure</highlight></codeline>
+<codeline><highlight class="normal">![core<sp/>nodes](doc/rgbd_nodes.svg)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Typical<sp/>usage</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">This<sp/>package<sp/>contains<sp/>a<sp/>number<sp/>of<sp/>nodes<sp/>and<sp/>tools.<sp/>The<sp/>most<sp/>important<sp/>ones<sp/>are:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">*<sp/>`rgbd_to_shm`:<sp/>contains<sp/>an<sp/>instance<sp/>of<sp/>`ClientRGBD`<sp/>that<sp/>listens<sp/>to<sp/>RGBD<sp/>data<sp/>received<sp/>over<sp/>a<sp/>`rgbd_msgs::RGBD`<sp/>topic<sp/>and<sp/>writes<sp/>this<sp/>to<sp/>shared<sp/>memory<sp/>using<sp/>an<sp/>instance<sp/>of<sp/>a<sp/>`ServerSHM`.<sp/>By<sp/>running<sp/>this<sp/>node,<sp/>only<sp/>one<sp/>incoming<sp/>connection<sp/>for<sp/>the<sp/>`rgbd`<sp/>messages<sp/>is<sp/>setup<sp/>since<sp/>all<sp/>clients<sp/>can<sp/>subsequently<sp/>use<sp/>the<sp/>shared<sp/>memory.<sp/>If<sp/>your<sp/>robot<sp/>contains<sp/>multiple<sp/>computers,<sp/>it<sp/>is<sp/>advised<sp/>to<sp/>run<sp/>this<sp/>node<sp/>on<sp/>each<sp/>computer<sp/>where<sp/>(more<sp/>than<sp/>1)<sp/>`Client`<sp/>instances<sp/>are<sp/>used.</highlight></codeline>
+<codeline><highlight class="normal">*<sp/>`ros_to_rgbd`:<sp/>converts<sp/>&apos;standard&apos;<sp/>ROS<sp/>messages<sp/>(`sensor_msgs::Image`<sp/>(color<sp/>image<sp/>and<sp/>depth<sp/>image)<sp/>and<sp/>`sensor_msgs::CameraInfo`)<sp/>to<sp/>the<sp/>`rgbd_msgs::RGBD`<sp/>format.<sp/>Hereto,<sp/>it<sp/>uses<sp/>instances<sp/>of<sp/>the<sp/>`ClientROS`<sp/>and<sp/>the<sp/>`Server`<sp/>classes.</highlight></codeline>
+<codeline><highlight class="normal">*<sp/>`rgbd_to_ros`:<sp/>converts<sp/>`rgbd_msgs::RGBD`<sp/>messages<sp/>to<sp/>the<sp/>&apos;standard&apos;<sp/>ROS<sp/>format<sp/>(`sensor_msgs::Image`<sp/>(color<sp/>image<sp/>and<sp/>depth<sp/>image)<sp/>and<sp/>`sensor_msgs::CameraInfo`).<sp/>Hereto,<sp/>it<sp/>uses<sp/>an<sp/>instance<sp/>of<sp/>the<sp/>`Client`<sp/>class<sp/>as<sp/>well<sp/>as<sp/>publishers<sp/>for<sp/>the<sp/>RGB<sp/>image,<sp/>RGB<sp/>camera<sp/>info,<sp/>depth<sp/>image,<sp/>depth<sp/>camera<sp/>info<sp/>and<sp/>pointcloud.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Notes</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">In<sp/>case<sp/>you<sp/>are<sp/>developing<sp/>camera<sp/>drivers,<sp/>it<sp/>is<sp/>advised<sp/>to<sp/>stick<sp/>to<sp/>the<sp/>&apos;standard&apos;<sp/>ROS<sp/>interfaces<sp/>to<sp/>minimize<sp/>dependencies<sp/>which<sp/>enhances<sp/>compatibility<sp/>with<sp/>other<sp/>ROS<sp/>users.<sp/>Use<sp/>the<sp/>`ros_to_rgbd`<sp/>node<sp/>and,<sp/>if<sp/>applicable,<sp/>the<sp/>`rgbd_to_shm`<sp/>server<sp/>to<sp/>interface<sp/>with<sp/>your<sp/>software<sp/>if<sp/>that&apos;s<sp/>using<sp/>the<sp/>`Client`<sp/>class.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Testing</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">For<sp/>details<sp/>on<sp/>the<sp/>test<sp/>nodes<sp/>and<sp/>good<sp/>test<sp/>procedures,<sp/>see<sp/>[test/README.md](test/README.md)</highlight></codeline>
+    </programlisting>
+    <location file="README.md"/>
+  </compounddef>
+</doxygen>

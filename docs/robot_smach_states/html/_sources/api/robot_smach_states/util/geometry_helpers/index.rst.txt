@@ -1,0 +1,71 @@
+robot_smach_states.util.geometry_helpers
+========================================
+
+.. py:module:: robot_smach_states.util.geometry_helpers
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.util.geometry_helpers.wrap_angle_pi
+   robot_smach_states.util.geometry_helpers.isLeftOfLine
+   robot_smach_states.util.geometry_helpers.isPointInsideHull
+   robot_smach_states.util.geometry_helpers.onTopOff
+   robot_smach_states.util.geometry_helpers.onTopOffForDesignator
+   robot_smach_states.util.geometry_helpers.offsetConvexHull
+
+
+Module Contents
+---------------
+
+.. py:function:: wrap_angle_pi(angle)
+
+   Wraps between -pi and +pi
+
+   :param angle: Input angle
+   :return: Wrapped angle
+
+
+.. py:function:: isLeftOfLine(p, l)
+
+   Checks whether point p is left of line l
+   p: geometry_msgs.Point
+   l: array of size two of geometry_msgs.Point.
+   Note that only x and y are evaluated
+
+
+.. py:function:: isPointInsideHull(p, chull)
+
+   Checks whether point p is inside the convex hull ch
+   p: geometry_msgs.Point
+   ch: array of geometry_msgs.Point. Note that the order is supposed to be anti-clockwise
+   Note that only p.x and p.y are evaluated
+
+
+.. py:function:: onTopOff(subject, container, ht=0.1)
+
+   Checks whether the entity 'subject' is on top of entity 'container'
+   @param subject the EntityInfo which may be on top of the container, e.g. a cup
+   @param container: the EntityInfo that may be supporting the other subject, e.g. a table.
+   ht: height threshold: the bottom of entity and the top of container need to be within ht m
+
+
+.. py:function:: onTopOffForDesignator(container_designator)
+
+   Returns a function that will tell if an entity is on top of the entity designated by container_designator.
+   This function can be used as a designator-criterium.
+   E.g. criteria_funcs = [onTopOffForDesignator(EdEntityDesignator(...))]
+
+
+.. py:function:: offsetConvexHull(input_ch, offset)
+
+   Offsets the the convex hull 'input_ch' with 'offset'. This can be used, e.g., when a convex hull is desired in map
+   frame while it is given in object frame. In that case, 'offset' represents the object pose in map frame.
+
+   :param input_ch: list with kdl Vectors
+   :param offset: KDL frame representing the offset with which to multiply the convex_hull
+   :return: list with KDL vectors representing the convex hull
+
+

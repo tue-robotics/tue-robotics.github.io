@@ -1,0 +1,251 @@
+robot_skills.mockbot
+====================
+
+.. py:module:: robot_skills.mockbot
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_skills.mockbot.mockbot
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.mockbot.AlteredMagicMock
+   robot_skills.mockbot.MockedRobotPart
+   robot_skills.mockbot.Arm
+   robot_skills.mockbot.Gripper
+   robot_skills.mockbot.HandoverDetector
+   robot_skills.mockbot.Base
+   robot_skills.mockbot.Hmi
+   robot_skills.mockbot.EButton
+   robot_skills.mockbot.Head
+   robot_skills.mockbot.Perception
+   robot_skills.mockbot.Lights
+   robot_skills.mockbot.Speech
+   robot_skills.mockbot.Torso
+   robot_skills.mockbot.ED
+   robot_skills.mockbot.MockedTfBuffer
+   robot_skills.mockbot.Mockbot
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_skills.mockbot.random_kdl_vector
+   robot_skills.mockbot.random_kdl_frame
+   robot_skills.mockbot.mock_query
+   robot_skills.mockbot.old_query
+
+
+Module Contents
+---------------
+
+.. py:function:: random_kdl_vector()
+
+.. py:function:: random_kdl_frame()
+
+.. py:function:: mock_query(description, grammar, target, timeout)
+
+.. py:function:: old_query(spec, choices, timeout=10)
+
+.. py:class:: AlteredMagicMock(*args, **kw)
+
+   Bases: :py:obj:`mock.MagicMock`
+
+
+   MagicMock is a subclass of Mock with default implementations
+   of most of the magic methods. You can use MagicMock without having to
+   configure the magic methods yourself.
+
+   If you use the `spec` or `spec_set` arguments then *only* magic
+   methods that exist in the spec will be created.
+
+   Attributes and the return value of a `MagicMock` will also be `MagicMocks`.
+
+
+   .. py:method:: assert_called_with(*args, **kwargs)
+
+      Assert that the mock was called with the specified arguments.
+
+      Raises an AssertionError if the args and keyword args passed in are
+      different to the last call to the mock.
+
+
+
+   .. py:method:: assert_any_call(*args, **kwargs)
+
+      Assert the mock has been called with the specified arguments.
+
+      The assert passes if the mock has *ever* been called, unlike
+      `assert_called_with` and `assert_called_once_with` that only pass if
+      the call is the most recent one.
+
+
+
+   .. py:method:: equal_or_more_arguments(expected, actual)
+      :staticmethod:
+
+
+      Check whether the actual call contains at least the arguments and keyword arguments of the expected call.
+      But still return true if the actual call contains more (keyword) arguments than expected
+
+
+
+.. py:class:: MockedRobotPart(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`object`
+
+
+.. py:class:: Arm(robot_name, tf_buffer, get_joint_states, name)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:method:: collect_gripper_types(gripper_type)
+
+
+   .. py:property:: base_offset
+
+
+.. py:class:: Gripper(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+.. py:class:: HandoverDetector(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+.. py:class:: Base(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+.. py:class:: Hmi(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+.. py:class:: EButton(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+.. py:class:: Head(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+.. py:class:: Perception(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+.. py:class:: Lights(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+.. py:class:: Speech(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+.. py:class:: Torso(robot_name, tf_buffer, get_joint_states, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+.. py:class:: ED(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:method:: generate_random_entity(uuid=None, etype=None)
+      :staticmethod:
+
+
+
+   .. py:method:: get_entities(etype='', center_point=VectorStamped(kdl.Vector(), rospy.Time(), 'map'), radius=0, uuid='', ignore_z=False)
+
+
+   .. py:property:: _entities
+
+
+   .. py:method:: segment_kinect(*args, **kwargs)
+
+
+   .. py:method:: update_kinect(*args, **kwargs)
+
+
+   .. py:method:: classify(uuids, types=None, unknown_threshold=0.0)
+
+
+   .. py:method:: detect_people(rgb, depth, cam_info)
+
+
+.. py:class:: MockedTfBuffer
+
+   Bases: :py:obj:`mock.MagicMock`
+
+
+   MagicMock is a subclass of Mock with default implementations
+   of most of the magic methods. You can use MagicMock without having to
+   configure the magic methods yourself.
+
+   If you use the `spec` or `spec_set` arguments then *only* magic
+   methods that exist in the spec will be created.
+
+   Attributes and the return value of a `MagicMock` will also be `MagicMocks`.
+
+
+   .. py:method:: can_transform(*args, **kwargs)
+      :staticmethod:
+
+
+
+   .. py:method:: transform(point_stamped, frame_id, timeout=rospy.Duration(0.0), new_type=None)
+      :staticmethod:
+
+
+
+.. py:class:: Mockbot(*args, **kwargs)
+
+   Bases: :py:obj:`robot_skills.robot.Robot`
+
+
+   Interface to all parts of Mockbot. When initializing Mockbot, you can choose a list of components
+   which wont be needed
+
+   # I want a blind and mute Mockbot!
+   >>> Mockbot(['perception', 'speech'])  # doctest: +SKIP
+
+   # I want a full fledged, awesome Mockbot
+   >>> Mockbot()  # doctest: +SKIP
+
+   Constructor
+
+   :param robot_name: Name of the robot
+   :param tf_buffer: tf2_ros.Buffer object
+   :param base_link_frame: Frame id of the base_link (default: {robot_name}/base_link
+   :param connection_timeout: timeout to wait for ROS connections
+
+
+   .. py:method:: __enter__()
+
+
+   .. py:method:: __exit__(exception_type, exception_val, trace)
+
+
+.. py:data:: mockbot
+

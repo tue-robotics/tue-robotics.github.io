@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="clustering_8py" kind="file" language="Python">
+    <compoundname>clustering.py</compoundname>
+    <innernamespace refid="namespacechallenge__final_1_1clustering">challenge_final::clustering</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacechallenge__final_1_1clustering" refkind="compound"><highlight class="keyword">import</highlight><highlight class="normal"><sp/>matplotlib.pyplot<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>plt</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>pickle</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>pprint</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>collections<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>defaultdict</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>sklearn.cluster<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>KMeans</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>numpy<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>np</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">#<sp/>ToDo:<sp/>replace<sp/>with<sp/>better<sp/>algorithm</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13" refid="namespacechallenge__final_1_1clustering_1a0197c2258479a217d438942e4dc98d77" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacechallenge__final_1_1clustering_1a0197c2258479a217d438942e4dc98d77" kindref="member">cluster_people</ref>(people_dicts,<sp/>room_center,<sp/>plot=False,<sp/>n_clusters=4):</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>xs<sp/>=<sp/>[person[</highlight><highlight class="stringliteral">&apos;map_ps&apos;</highlight><highlight class="normal">].point.x<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>people_dicts]</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>ys<sp/>=<sp/>[person[</highlight><highlight class="stringliteral">&apos;map_ps&apos;</highlight><highlight class="normal">].point.y<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>people_dicts]</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>plot:</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plt.scatter(xs,<sp/>ys,<sp/>c=</highlight><highlight class="stringliteral">&apos;r&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>people_pos<sp/>=<sp/>np.array([xs,<sp/>ys]).T<sp/><sp/></highlight><highlight class="comment">#<sp/>people_pos<sp/>is<sp/>a<sp/>np.array<sp/>of<sp/>[(x,<sp/>y)]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>kmeans<sp/>=<sp/>KMeans(n_clusters=n_clusters,<sp/>random_state=0)</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>kmeans.fit(people_pos)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>hashable_dict<sp/>=<sp/>tuple(people_dicts[0].items())</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>A<sp/>dict<sp/>isn&apos;t<sp/>hashable<sp/>so<sp/>can&apos;t<sp/>be<sp/>dict<sp/>key.<sp/>But<sp/>a<sp/>tuple<sp/>can<sp/>be,<sp/>so<sp/>we<sp/>create<sp/>((k,<sp/>v),<sp/>(k,<sp/>v),<sp/>...)<sp/>tuple</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/>hashable_dicts<sp/>=<sp/>[tuple(d.items())<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>d<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>people_dicts]</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>hashable_dicts2label<sp/>maps<sp/>elements<sp/>of<sp/>people_dicts<sp/>to<sp/>their<sp/>laels</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/>hashable_dicts2label<sp/>=<sp/>dict(zip(hashable_dicts,</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>kmeans.labels_))</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>label2hashable_dicts<sp/>=<sp/>defaultdict(list)</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>hashable,<sp/>label<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>sorted(hashable_dicts2label.items()):</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>label2hashable_dicts[label].append(dict(hashable))<sp/><sp/></highlight><highlight class="comment">#<sp/>And<sp/>here<sp/>we<sp/>create<sp/>a<sp/>normal<sp/>dict<sp/>again</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>label2hashable_dicts<sp/>maps<sp/>cluster<sp/>labels<sp/>to<sp/>a<sp/>list<sp/>of<sp/>{&apos;rgb&apos;:...,<sp/>&apos;person_detection&apos;:...,<sp/>&apos;map_ps&apos;:...}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Now<sp/>we<sp/>need<sp/>to<sp/>select<sp/>wich<sp/>element<sp/>of<sp/>the<sp/>cluster<sp/>is<sp/>closest<sp/>to<sp/>the<sp/>room_center</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>persons_closest_to_room_center<sp/>=<sp/>{}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>import<sp/>pdb;<sp/>pdb.set_trace()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>label,<sp/>persons<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>label2hashable_dicts.items():</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>For<sp/>each<sp/>cluster,<sp/>we<sp/>want<sp/>the<sp/>detection<sp/>that<sp/>is<sp/>closest<sp/>to<sp/>the<sp/>cluster<sp/>centroid/<sp/>kmeans.cluster_centers</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>closest<sp/>=<sp/>sorted(persons,<sp/>key=</highlight><highlight class="keyword">lambda</highlight><highlight class="normal"><sp/>_person:<sp/>np.hypot(</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*(np.array([_person[</highlight><highlight class="stringliteral">&apos;map_ps&apos;</highlight><highlight class="normal">].point.x,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_person[</highlight><highlight class="stringliteral">&apos;map_ps&apos;</highlight><highlight class="normal">].point.y])<sp/>-<sp/>kmeans.cluster_centers_[label])))</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>persons_closest_to_room_center[label]<sp/>=<sp/>closest[0]</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>persons_closest_to_room_center<sp/>is<sp/>a<sp/>map<sp/>of<sp/>label<sp/>to<sp/>a<sp/>{&apos;rgb&apos;:...,<sp/>&apos;person_detection&apos;:...,<sp/>&apos;map_ps&apos;:...}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>import<sp/>pdb;<sp/>pdb.set_trace()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>xs2<sp/>=<sp/>[person[</highlight><highlight class="stringliteral">&apos;map_ps&apos;</highlight><highlight class="normal">].point.x<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>persons_closest_to_room_center.values()]</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>ys2<sp/>=<sp/>[person[</highlight><highlight class="stringliteral">&apos;map_ps&apos;</highlight><highlight class="normal">].point.y<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>persons_closest_to_room_center.values()]</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>plot:</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plt.scatter(xs2,<sp/>ys2,<sp/>c=</highlight><highlight class="stringliteral">&apos;b&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plt.show()</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>locations<sp/>=<sp/>zip(xs2,<sp/>ys2)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>persons_closest_to_room_center.values()</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;__main__&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>sys</highlight></codeline>
+<codeline lineno="67" refid="namespacechallenge__final_1_1clustering_1a27735faa6eb8b9211743dba88c5fd070" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>ppl_dicts<sp/>=<sp/>pickle.load(open(sys.argv[1]))</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>ppl_dicts<sp/>is<sp/>a<sp/>list<sp/>of<sp/>dicts<sp/>{&apos;rgb&apos;:...,<sp/>&apos;person_detection&apos;:...,<sp/>&apos;map_ps&apos;:...}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="namespacechallenge__final_1_1clustering_1aaeed2dd31af8c50bb978d7a2d6b58ebb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>clustered_ppl<sp/>=<sp/><ref refid="namespacechallenge__final_1_1clustering_1a0197c2258479a217d438942e4dc98d77" kindref="member">cluster_people</ref>(ppl_dicts,<sp/>room_center=np.array([6,<sp/>0]),<sp/>plot=</highlight><highlight class="keyword">True</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="namespacechallenge__final_1_1clustering_1a8841c40a43939f705bdafaa277e2cc4e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>_xs2<sp/>=<sp/>[_person[</highlight><highlight class="stringliteral">&apos;map_ps&apos;</highlight><highlight class="normal">].point.x<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>_person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>clustered_ppl]</highlight></codeline>
+<codeline lineno="73" refid="namespacechallenge__final_1_1clustering_1a2b53d09dc641e4dc884d7cb10879b922" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>_ys2<sp/>=<sp/>[_person[</highlight><highlight class="stringliteral">&apos;map_ps&apos;</highlight><highlight class="normal">].point.y<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>_person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>clustered_ppl]</highlight></codeline>
+<codeline lineno="74" refid="namespacechallenge__final_1_1clustering_1af26fc306ed5d0dbd44bc57ca1588baa7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>locations<sp/>=<sp/>zip(_xs2,<sp/>_ys2)</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>pprint.pprint(locations)</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">with</highlight><highlight class="normal"><sp/>open(</highlight><highlight class="stringliteral">&apos;/home/loy/kmeans_output.pickle&apos;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&apos;w&apos;</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>dumpfile:</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pickle.dump(clustered_ppl,<sp/>dumpfile)</highlight></codeline>
+    </programlisting>
+    <location file="src/challenge_final/clustering.py"/>
+  </compounddef>
+</doxygen>
