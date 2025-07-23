@@ -17,6 +17,9 @@ do
         -i=* | --image=* )
             IMAGE_NAME="${i#*=}" ;;
 
+        --gh-token=* )
+            GH_TOKEN="${i#*=}" ;;
+
         --ssh )
             USE_SSH=true ;;
 
@@ -63,10 +66,17 @@ then
     BRANCH_TAG=${MASTER_TAG}
 fi
 
-if [ -f ~/.ssh/known_hosts ]
+DOCKER_ARGS=()
+
+if [[ -f ~/.ssh/known_hosts ]]
 then
     MERGE_KNOWN_HOSTS="true"
-    DOCKER_MOUNT_KNOWN_HOSTS_ARGS="--mount type=bind,source=${HOME}/.ssh/known_hosts,target=/tmp/known_hosts_extra"
+    DOCKER_ARGS+=("--mount" "type=bind,source=${HOME}/.ssh/known_hosts,target=/tmp/known_hosts_extra")
+fi
+
+if [[ -n "${GH_TOKEN}" ]]
+then
+    DOCKER_ARGS+=("-e" "GITHUB_TOKEN=${GH_TOKEN}")
 fi
 
 # Docker container can show a header on start-up. We don't want to capture it
@@ -83,7 +93,7 @@ mkdir -p "$HOME"/.cache/pip
 
 # Run the docker image along with setting new environment variables
 # shellcheck disable=SC2086
-docker run --detach --interactive --tty -e CI="true" -e BRANCH="${BRANCH}" --name tue-env --mount type=bind,source=${HOME}/.ccache,target=${DOCKER_HOME}/.ccache --mount type=bind,source=$HOME/.cache/pip,target=$DOCKER_HOME/.cache/pip ${DOCKER_MOUNT_KNOWN_HOSTS_ARGS} "${IMAGE_NAME}:${BRANCH_TAG}"
+docker run --detach --interactive --tty -e CI="true" -e BRANCH="${BRANCH}" --name tue-env --mount type=bind,source=${HOME}/.ccache,target=${DOCKER_HOME}/.ccache --mount type=bind,source=${HOME}/.cache/pip,target=${DOCKER_HOME}/.cache/pip "${DOCKER_ARGS[@]}" "${IMAGE_NAME}:${BRANCH_TAG}"
 
 # Own the ~/.ccache folder for permissions
 docker exec -t tue-env bash -c "sudo chown 1000:1000 -R ~/.ccache"
