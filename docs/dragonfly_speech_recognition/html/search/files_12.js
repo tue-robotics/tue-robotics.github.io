@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['scoped_5fallocator_6330',['scoped_allocator',['https://en.cppreference.com/w/cpp/header/scoped_allocator.html',1,'']]],
+  ['security_2epy_6331',['security.py',['../security_8py.html',1,'']]],
+  ['sendinput_2epy_6332',['sendinput.py',['../sendinput_8py.html',1,'']]],
+  ['server_2epy_6333',['server.py',['../server_8py.html',1,'']]],
+  ['set_6334',['set',['https://en.cppreference.com/w/cpp/header/set.html',1,'']]],
+  ['setup_2epy_6335',['setup.py',['../setup_8py.html',1,'(Global Namespace)'],['../src_2dragonfly__speech__recognition_2dragonfly_2setup_8py.html',1,'(Global Namespace)'],['../src_2dragonfly__speech__recognition_2grammar__parser_2setup_8py.html',1,'(Global Namespace)']]],
+  ['shared_5fmutex_6336',['shared_mutex',['https://en.cppreference.com/w/cpp/header/shared_mutex.html',1,'']]],
+  ['short_5fnumber_2epy_6337',['short_number.py',['../short__number_8py.html',1,'']]],
+  ['span_6338',['span',['https://en.cppreference.com/w/cpp/header/span.html',1,'']]],
+  ['speaker_5fstdin_2epy_6339',['speaker_stdin.py',['../speaker__stdin_8py.html',1,'']]],
+  ['sphinx_5fmodule_5floader_2epy_6340',['sphinx_module_loader.py',['../sphinx__module__loader_8py.html',1,'']]],
+  ['sphinx_5fwave_5ftranscriber_2epy_6341',['sphinx_wave_transcriber.py',['../sphinx__wave__transcriber_8py.html',1,'']]],
+  ['sstream_6342',['sstream',['https://en.cppreference.com/w/cpp/header/sstream.html',1,'']]],
+  ['stack_6343',['stack',['https://en.cppreference.com/w/cpp/header/stack.html',1,'']]],
+  ['state_2epy_6344',['state.py',['../state_8py.html',1,'']]],
+  ['stdexcept_6345',['stdexcept',['https://en.cppreference.com/w/cpp/header/stdexcept.html',1,'']]],
+  ['streambuf_6346',['streambuf',['https://en.cppreference.com/w/cpp/header/streambuf.html',1,'']]],
+  ['string_6347',['string',['https://en.cppreference.com/w/cpp/header/string.html',1,'']]],
+  ['string_5fview_6348',['string_view',['https://en.cppreference.com/w/cpp/header/string_view.html',1,'']]],
+  ['strstream_6349',['strstream',['https://en.cppreference.com/w/cpp/header/strstream.html',1,'']]],
+  ['suites_2epy_6350',['suites.py',['../suites_8py.html',1,'']]],
+  ['syncstream_6351',['syncstream',['https://en.cppreference.com/w/cpp/header/syncstream.html',1,'']]],
+  ['system_5ferror_6352',['system_error',['https://en.cppreference.com/w/cpp/header/system_error.html',1,'']]]
+];

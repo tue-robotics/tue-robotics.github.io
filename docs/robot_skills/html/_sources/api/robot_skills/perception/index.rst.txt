@@ -1,0 +1,191 @@
+robot_skills.perception
+=======================
+
+.. py:module:: robot_skills.perception
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.perception.Perception
+
+
+Module Contents
+---------------
+
+.. py:class:: Perception(robot_name, tf_buffer, image_topic=None, projection_srv=None, camera_base_ns='', robot_base_frame_id=None)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   Base class for robot parts
+
+   Constructor
+
+   :param robot_name: string with robot name
+   :param tf_buffer: tf buffer object
+
+
+   .. py:attribute:: _camera_base_ns
+      :value: ''
+
+
+
+   .. py:attribute:: _camera_lazy_sub
+      :value: None
+
+
+
+   .. py:attribute:: _camera_cv
+
+
+   .. py:attribute:: _camera_last_image
+      :value: None
+
+
+
+   .. py:attribute:: _annotate_srv
+
+
+   .. py:attribute:: _recognize_srv
+
+
+   .. py:attribute:: _clear_srv
+
+
+   .. py:attribute:: _image_data
+      :value: (None, None, None)
+
+
+
+   .. py:attribute:: _face_properties_srv
+
+
+   .. py:attribute:: _projection_srv
+
+
+   .. py:attribute:: _person_recognition_3d_srv
+
+
+   .. py:attribute:: _robot_base_frame_id
+
+
+   .. py:method:: _image_cb(image)
+
+
+   .. py:method:: get_image(timeout=5)
+
+
+   .. py:method:: project_roi(roi, frame_id=None)
+
+      Projects a region of interest of a depth image to a 3D Point. Hereto, a service is used
+
+      :param roi: sensor_msgs/RegionOfInterest
+      :param frame_id: if specified, the result is transformed into this frame id
+      :return: VectorStamped object
+
+
+
+   .. py:method:: project_rois(rois)
+
+
+   .. py:method:: _get_faces(image=None)
+
+
+   .. py:method:: learn_person(name='operator')
+
+
+   .. py:method:: detect_faces(image=None)
+
+      Snap an image with the camera and return the recognized faces.
+
+      :param image: image to use for recognition
+      :type image: sensor_msgs/Image
+      :return: recognitions of the faces
+      :rtype: tuple(list[image_recognition_msgs/Recognition], stamp)
+
+
+
+   .. py:method:: detect_operator_face(image = None, expected_operator_position = None, operator_distance_threshold = 0.5)
+
+      Snap an image with the camera and return the detected face closest to the expected position.
+
+      N.B.: this seems more reliable than using the size of the ROI, which might be affected by, e.g., a big hairdo.
+
+      :param image: image to use for recognition
+      :param expected_operator_position: expected operator position w.r.t. robot base
+      :param operator_distance_threshold: people outside this radius from the expected position are discarded
+      :return: image_recognition_msgs/Recognition
+      :raises: RuntimeError
+
+
+
+   .. py:method:: _filter_operator_recognition(recognitions, expected_operator_pos = None, threshold = 0.5)
+
+      For all provided recognitions, project the ROI and determine the one closest to the expected operator position,
+      computed on the floor plane.
+
+      :param recognitions: recognitions
+      :param expected_operator_pos: expected position of the operator w.r.t. the robot
+      :param threshold: if the distance between the recognition and the expected pos exceed the threshold, a Runtime error
+      is raised
+      :return: Recognition closed to the expected position
+      :raises: RuntimeError
+
+
+
+   .. py:method:: get_best_face_recognition(recognitions, desired_label, probability_threshold=4.0)
+      :staticmethod:
+
+
+      Returns the Recognition with the highest probability of having the desired_label.
+      Assumes that the probability distributions in Recognition are already sorted by probability (descending, highest first)
+
+      :param recognitions: The recognitions to select the best one with desired_label from
+      :type recognitions: list[image_recognition_msgs/Recognition]
+      :param desired_label: what label to look for in the recognitions
+      :type desired_label: str
+      :param probability_threshold: only accept recognitions with probability higher than threshold
+      :type probability_threshold: double
+      :return: the best recognition matching the given desired_label
+      :rtype image_recognition_msgs/Recognition
+
+
+
+   .. py:method:: clear_face()
+
+      clearing all faces from the OpenFace node.
+
+      :return: no return
+
+
+
+   .. py:method:: get_face_properties(faces=None, image=None)
+
+      Get the face properties of all faces or in an image. If faces is provided, image is ignored. If both aren't
+      provided, an image is collected.
+
+      :param faces: images of all faces
+      :type faces: list[sensor_msgs/Image]
+      :param image: image containing the faces
+      :type image: sensor_msgs/Image
+      :return: list of face properties
+      :rtype: list[image_recognition_msgs/FaceProperties]
+
+
+
+   .. py:method:: get_rgb_depth_caminfo(timeout=5)
+
+      Get an rgb image and depth image, along with camera info for the depth camera.
+      The returned tuple can serve as input for world_model_ed.ED.detect_people.
+
+      :param timeout: How long to wait until the images are all collected.
+      :return: tuple(rgb, depth, depth_info) or a None if no images could be gathered.
+
+
+
+   .. py:method:: detect_person_3d(rgb, depth, depth_info)
+
+

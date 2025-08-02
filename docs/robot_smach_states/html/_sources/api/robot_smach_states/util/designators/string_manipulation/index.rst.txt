@@ -1,0 +1,55 @@
+robot_smach_states.util.designators.string_manipulation
+=======================================================
+
+.. py:module:: robot_smach_states.util.designators.string_manipulation
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.util.designators.string_manipulation.FieldOfHMIResult
+
+
+Module Contents
+---------------
+
+.. py:class:: FieldOfHMIResult(query_result_des, semantics_path=None, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.core.Designator`
+
+
+   Extract a field of a QueryResult
+
+   >>> query_result = HMIResult(sentence='ignored', semantics={u'widget': {u'gadget': {u'bla': u'foo', u'bar': u'buzz'}}})
+   >>> query_des = Designator(query_result, name="d1")
+   >>> field_des = FieldOfHMIResult(query_des, semantics_path=['widget', 'gadget', 'bar'])
+   >>> field_des.resolve()
+   'buzz'
+
+   >>> query_result2 = HMIResult(sentence='ignored', semantics=u'dinges')
+   >>> query_des2 = Designator(query_result2, name="d2")
+   >>> field_des2 = FieldOfHMIResult(query_des2, semantics_path=[])
+   >>> field_des2.resolve()
+   'dinges'
+
+   Construct a designator that picks a field out of the semantics dict of a QueryResult
+   (such as resulting from a HearOptionsExtra-state)
+
+   :param query_result_des: A QueryResult or a designator resolving to a QueryResult
+   :param semantics_path: str or [str] (or designator) used in query_result.semantics[semantics_path]
+   :param name: str naming for this designator for debugging purposes
+
+
+   .. py:attribute:: query_result_des
+
+
+   .. py:attribute:: semantics_path
+      :value: None
+
+
+
+   .. py:method:: _resolve()
+
+

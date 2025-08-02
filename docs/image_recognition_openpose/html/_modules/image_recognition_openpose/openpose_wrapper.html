@@ -1,0 +1,194 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>image_recognition_openpose.openpose_wrapper &mdash; image_recognition_openpose 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=0a554088"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            image_recognition_openpose
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">image_recognition_openpose</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">image_recognition_openpose.openpose_wrapper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for image_recognition_openpose.openpose_wrapper</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">image_recognition_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Recognition</span><span class="p">,</span> <span class="n">CategoricalDistribution</span><span class="p">,</span> <span class="n">CategoryProbability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegionOfInterest</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.openpose_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+
+
+<div class="viewcode-block" id="OpenposeWrapper"><a class="viewcode-back" href="../../api/image_recognition_openpose/openpose_wrapper/index.html#image_recognition_openpose.openpose_wrapper.OpenposeWrapper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OpenposeWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_folder</span><span class="p">,</span> <span class="n">pose_model</span><span class="p">,</span> <span class="n">net_input_size</span><span class="p">,</span> <span class="n">net_output_size</span><span class="p">,</span> <span class="n">num_scales</span><span class="p">,</span> <span class="n">scale_gap</span><span class="p">,</span> <span class="n">num_gpu_start</span><span class="p">,</span>
+                 <span class="n">overlay_alpha</span><span class="p">,</span> <span class="n">python_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">python_path</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_validate_dir</span><span class="p">(</span><span class="n">python_path</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">openpose</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyopenpose</span> <span class="k">as</span> <span class="n">op</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+            <span class="nb">globals</span><span class="p">()[</span><span class="s1">&#39;op&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">op</span>  <span class="c1"># Make `op` available globally</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">, please add openpose to your python path using the constructor argument or extend the&quot;</span>
+                              <span class="s2">&quot; PYTHONPATH environment variable&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">pose_model</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pose model not in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">models</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">pose_model</span><span class="p">]</span>
+
+        <span class="n">model_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_dir</span><span class="p">(</span><span class="n">model_folder</span><span class="p">)</span>
+        <span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model does not exist on path </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_path</span><span class="p">))</span>
+
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;logging_level&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;render_threshold&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+            <span class="s2">&quot;disable_blending&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;model_folder&quot;</span><span class="p">:</span> <span class="n">model_folder</span><span class="p">,</span>
+            <span class="s2">&quot;model_pose&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">pose_model</span><span class="p">),</span>
+            <span class="s2">&quot;net_resolution&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">net_input_size</span><span class="p">),</span>
+            <span class="s2">&quot;output_resolution&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">net_output_size</span><span class="p">),</span>
+            <span class="s2">&quot;scale_number&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_scales</span><span class="p">),</span>
+            <span class="s2">&quot;scale_gap&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">scale_gap</span><span class="p">),</span>
+            <span class="s2">&quot;num_gpu_start&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_gpu_start</span><span class="p">),</span>
+            <span class="s2">&quot;alpha_pose&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">overlay_alpha</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading openpose with parameters: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_openpose_wrapper</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">WrapperPython</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_openpose_wrapper</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_openpose_wrapper</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<div class="viewcode-block" id="OpenposeWrapper._validate_dir"><a class="viewcode-back" href="../../api/image_recognition_openpose/openpose_wrapper/index.html#image_recognition_openpose.openpose_wrapper.OpenposeWrapper._validate_dir">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_dir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">):</span>
+        <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is not a directory!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dir_path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">dir_path</span> <span class="k">if</span> <span class="n">dir_path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span> <span class="k">else</span> <span class="n">dir_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span></div>
+
+<div class="viewcode-block" id="OpenposeWrapper.detect_poses"><a class="viewcode-back" href="../../api/image_recognition_openpose/openpose_wrapper/index.html#image_recognition_openpose.openpose_wrapper.OpenposeWrapper.detect_poses">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">detect_poses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="c1"># `op` added to globals in the constructor</span>
+        <span class="n">datum</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Datum</span><span class="p">()</span>  <span class="c1"># pylint: disable=undefined-variable # noqa: F821</span>
+        <span class="n">datum</span><span class="o">.</span><span class="n">cvInputData</span> <span class="o">=</span> <span class="n">image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_openpose_wrapper</span><span class="o">.</span><span class="n">emplaceAndPop</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">VectorDatum</span><span class="p">([</span><span class="n">datum</span><span class="p">]))</span>
+
+        <span class="n">keypoints</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">poseKeypoints</span>
+        <span class="n">overlayed_image</span> <span class="o">=</span> <span class="n">datum</span><span class="o">.</span><span class="n">cvOutputData</span>
+
+        <span class="n">recognitions</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">keypoints</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">keypoints</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># If no detections, keypoints will be None</span>
+            <span class="n">num_persons</span><span class="p">,</span> <span class="n">num_bodyparts</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">keypoints</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">for</span> <span class="n">person_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_persons</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">body_part_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_bodyparts</span><span class="p">):</span>
+                    <span class="n">body_part</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">[</span><span class="s2">&quot;body_parts&quot;</span><span class="p">][</span><span class="n">body_part_id</span><span class="p">]</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">probability</span> <span class="o">=</span> <span class="n">keypoints</span><span class="p">[</span><span class="n">person_id</span><span class="p">][</span><span class="n">body_part_id</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">probability</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">recognitions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Recognition</span><span class="p">(</span>
+                            <span class="n">group_id</span><span class="o">=</span><span class="n">person_id</span><span class="p">,</span>
+                            <span class="n">roi</span><span class="o">=</span><span class="n">RegionOfInterest</span><span class="p">(</span>
+                                <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                <span class="n">height</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                <span class="n">x_offset</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                                <span class="n">y_offset</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+                            <span class="p">),</span>
+                            <span class="n">categorical_distribution</span><span class="o">=</span><span class="n">CategoricalDistribution</span><span class="p">(</span>
+                                <span class="n">probabilities</span><span class="o">=</span><span class="p">[</span><span class="n">CategoryProbability</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">body_part</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">probability</span><span class="p">))]</span>
+                            <span class="p">)</span>
+                        <span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">recognitions</span><span class="p">,</span> <span class="n">overlayed_image</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

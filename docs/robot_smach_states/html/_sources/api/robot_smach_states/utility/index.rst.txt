@@ -1,0 +1,428 @@
+robot_smach_states.utility
+==========================
+
+.. py:module:: robot_smach_states.utility
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.utility.Initialize
+   robot_smach_states.utility.SetInitialPose
+   robot_smach_states.utility.Trigger
+   robot_smach_states.utility.WaitForTriggerTimeout
+   robot_smach_states.utility.WaitForTrigger
+   robot_smach_states.utility.WaitTime
+   robot_smach_states.utility.WaitCondition
+   robot_smach_states.utility.SetTimeMarker
+   robot_smach_states.utility.CheckTimeOut
+   robot_smach_states.utility.CheckTries
+   robot_smach_states.utility.WaitForDesignator
+   robot_smach_states.utility.LockDesignator
+   robot_smach_states.utility.UnlockDesignator
+   robot_smach_states.utility.WriteDesignator
+   robot_smach_states.utility.CheckBool
+   robot_smach_states.utility.ToggleBool
+   robot_smach_states.utility.ResolveArm
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.utility.check_arm_requirements
+   robot_smach_states.utility.collect_arm_requirements
+
+
+Module Contents
+---------------
+
+.. py:class:: Initialize(robot)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Resets the robot (arms, torso, head, etc.) and checks if the tf listener works correctly
+
+   Initialization
+
+   :param robot: (Robot)
+
+
+   .. py:attribute:: robot
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: SetInitialPose(robot, init_position)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Sets the initial pose for correct localization
+
+   Initialization
+
+   :param robot: (Robot)
+   :param init_position: (str) identifies the (waypoint) entity to be used as initial pose. For testing purposes,
+       a tuple(float, float, float) representing x, y and yaw in map frame can be used.
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: initial_position
+
+
+   .. py:method:: location_2d(location)
+
+      Gets the 2D location from a string identifying an wm entity
+
+      :param location: (str) identifies the entity
+      :return: tuple(float, float, float) x, y, yaw in map frame
+      :raises: Exception
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: Trigger(robot, trigger, topic)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: trigger
+
+
+   .. py:attribute:: pub
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: WaitForTriggerTimeout(robot, timeout, triggers, topic)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Same as WaitForTrigger with timeout
+
+
+   .. py:attribute:: timeout
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: triggers
+
+
+   .. py:attribute:: trigger_received
+      :value: None
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+   .. py:method:: callback(data)
+
+
+.. py:class:: WaitForTrigger(robot, triggers, topic, rate=1.0)
+
+   Bases: :py:obj:`smach.State`
+
+
+   This state will block execution until a suitable trigger command is received on the channel /trigger
+   It will receive std_msgs.String and will compare it to the strings in the array that is given.
+
+   Example to wait for one of the strings 'allow' or 'deny' (could be sent from a gui):
+
+       WaitForTrigger(robot, ['allow', 'deny'], "/trigger"),
+                      transitions={    'allow':     'DO_SOMETHING',
+                                       'deny':      'DO_SOMETHING',
+                                       'preempted': 'failed'})
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: triggers
+
+
+   .. py:attribute:: trigger_received
+      :value: False
+
+
+
+   .. py:attribute:: rate
+      :value: 1.0
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+   .. py:method:: callback(data)
+
+
+.. py:class:: WaitTime(robot=None, waittime=10)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: robot
+      :value: None
+
+
+
+   .. py:attribute:: waittime
+      :value: 10
+
+
+
+   .. py:method:: execute(*args, **kwargs)
+
+
+.. py:class:: WaitCondition(robot, condition_callback, timeout)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Wait until a condition is satisfied, possible on a robot.
+   When the condition is satisfied, the value that matched the condition is stored in the userdata.
+   The callback must return that value or something that evaluates to False otherwise.
+   The arguments to the callback are userdata, robot
+
+
+   .. py:attribute:: condition_callback
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: timeout
+
+
+   .. py:method:: execute(userdata)
+
+
+.. py:class:: SetTimeMarker(robot, designator)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: designator
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: CheckTimeOut(time_out_seconds, reset_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: time_out_seconds
+
+
+   .. py:attribute:: reset_des
+
+
+   .. py:attribute:: start
+      :value: None
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: CheckTries(max_tries, reset_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   This state will check if the number of tries is below a certain number.
+
+   >>> reset_des = VariableDesignator(False, resolve_type=bool, name="reset").writeable
+   >>> check_tries = CheckTries(max_tries=3, reset_des=reset_des)
+   >>> check_tries.execute()
+   'not_yet'
+   >>> check_tries.execute()
+   'not_yet'
+   >>> check_tries.execute()
+   'max_tries'
+   >>> check_tries.execute()
+   'max_tries'
+   >>> reset_des.write(True)
+   >>> check_tries.execute()
+   'not_yet'
+
+
+   .. py:attribute:: max_tries
+
+
+   .. py:attribute:: reset_des
+
+
+   .. py:attribute:: _counter
+      :value: 0
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: WaitForDesignator(robot, designator, attempts=1, sleep_interval=1, outcomes=['success', 'failed'])
+
+   Bases: :py:obj:`smach.State`
+
+
+   Waits for a given designator to answer. It will retry to resolve the designator a given number of times, with
+   given sleep intervals (in seconds)
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: designator
+
+
+   .. py:attribute:: attempts
+      :value: 1
+
+
+
+   .. py:attribute:: sleep_interval
+      :value: 1
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: LockDesignator(locking_designator)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: locking_designator
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: UnlockDesignator(locking_designator)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: locking_designator
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: WriteDesignator(write_designator, value)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Writes a value to a designator each time this state is executed. The value to be written can both
+   be the value or a designator. In the latter, the resolved value is written to the designator.
+
+   :param write_designator: Writeable designator
+   :param value: Value or designator, which resolves to the value, to be written to the designator
+
+
+   .. py:attribute:: write_designator
+
+
+   .. py:attribute:: value
+
+
+   .. py:method:: execute(ud=None)
+
+
+.. py:class:: CheckBool(check_designator)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Provide a different transition based on a boolean designator.
+
+   :param check_designator: designator resolving to True or False
+
+
+   .. py:attribute:: _check_designator
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: ToggleBool(check_designator)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Toggle a boolean designator from True to False and from False to True
+
+   :param check_designator: boolean designator to be toggled
+
+
+   .. py:attribute:: _check_designator
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: ResolveArm(arm, state_machine)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Resolves, if possible, an arm for a state machine taking into account all the arm requirements
+
+   :param arm: lockable arm designator
+   :param state_machine: used state machine
+
+
+   .. py:attribute:: arm
+
+
+   .. py:attribute:: state_machine
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:function:: check_arm_requirements(state_machine, robot)
+
+   Checks if the robot has an arm that meets the requirements of all children states of this state machine
+
+   :param state_machine: The state machine for which the requirements have to be checked
+   :param robot: Robot to use
+   :return: Check whether an arm is available that satisfies the requirements of the state machine
+
+
+.. py:function:: collect_arm_requirements(state_machine)
+
+   Collects all requirements on the arm of this specific state machine
+
+   :param state_machine: State (machine) for which the requirements need to be collected
+   :return: All arm requirements of the state machine
+
+

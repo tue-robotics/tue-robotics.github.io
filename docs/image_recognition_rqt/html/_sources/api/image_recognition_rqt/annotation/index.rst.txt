@@ -1,0 +1,221 @@
+image_recognition_rqt.annotation
+================================
+
+.. py:module:: image_recognition_rqt.annotation
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   image_recognition_rqt.annotation._SUPPORTED_SERVICES
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   image_recognition_rqt.annotation.AnnotationPlugin
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   image_recognition_rqt.annotation._sanitize
+
+
+Module Contents
+---------------
+
+.. py:data:: _SUPPORTED_SERVICES
+   :value: ['image_recognition_msgs/Annotate']
+
+
+.. py:function:: _sanitize(label)
+
+   Sanitize string, only allow \w regex chars
+
+   :param label: Input that needs to be sanitized
+   :return: The sanatized string
+
+
+.. py:class:: AnnotationPlugin(context)
+
+   Bases: :py:obj:`qt_gui.plugin.Plugin`
+
+
+   
+   Annotation plugin to create data sets or test the Annotate.srv service
+
+   :param context: Parent QT widget
+
+
+   .. py:attribute:: _widget
+
+
+   .. py:attribute:: _image_widget
+
+
+   .. py:attribute:: _edit_path_button
+
+
+   .. py:attribute:: _output_path_edit
+
+
+   .. py:attribute:: _labels_edit
+
+
+   .. py:attribute:: _edit_labels_button
+
+
+   .. py:attribute:: _save_button
+
+
+   .. py:attribute:: bridge
+
+
+   .. py:attribute:: _sub
+      :value: None
+
+
+
+   .. py:attribute:: _srv
+      :value: None
+
+
+
+   .. py:attribute:: labels
+      :value: []
+
+
+
+   .. py:attribute:: label
+      :value: ''
+
+
+
+   .. py:attribute:: output_directory
+      :value: ''
+
+
+
+   .. py:method:: image_roi_callback(roi_image)
+
+      Callback from the image widget when the user has selected a ROI
+
+      :param roi_image: The opencv image of the ROI
+
+
+
+   .. py:method:: annotate_again_clicked()
+
+      Triggered when button clicked
+
+
+
+   .. py:method:: annotate(roi_image)
+
+      Create an annotation
+
+      :param roi_image: The image we want to annotate
+
+
+
+   .. py:method:: annotate_srv(roi_image)
+
+      Call the selected Annotate.srv
+      :param roi_image: The full opencv image we want to annotate
+
+
+
+   .. py:method:: _create_service_client(srv_name)
+
+      Create a service client proxy
+
+      :param srv_name: Name of the service
+
+
+
+   .. py:method:: store_image(roi_image)
+
+      Store the image
+
+      :param roi_image: Image we would like to store
+
+
+
+   .. py:method:: _get_output_directory()
+
+      Gets and sets the output directory via a QFileDialog
+
+
+
+   .. py:method:: _set_output_directory(path)
+
+      Sets the output directory
+
+      :param path: The path of the directory
+
+
+
+   .. py:method:: _get_labels()
+
+      Gets and sets the labels
+
+
+
+   .. py:method:: _set_labels(labels)
+
+      Sets the labels
+      :param labels: label string array
+
+
+
+   .. py:method:: _image_callback(msg)
+
+      Called when a new sensor_msgs/Image is coming in
+      :param msg: The image messaeg
+
+
+
+   .. py:method:: trigger_configuration()
+
+      Callback when the configuration button is clicked
+
+
+
+   .. py:method:: _create_subscriber(topic_name)
+
+      Method that creates a subscriber to a sensor_msgs/Image topic
+      :param topic_name: The topic_name
+
+
+
+   .. py:method:: shutdown_plugin()
+
+      Callback function when shutdown is requested
+
+
+
+   .. py:method:: save_settings(plugin_settings, instance_settings)
+
+      Callback function on shutdown to store the local plugin variables
+
+      :param plugin_settings: Plugin settings
+      :param instance_settings: Settings of this instance
+
+
+
+   .. py:method:: restore_settings(plugin_settings, instance_settings)
+
+      Callback function fired on load of the plugin that allows to restore saved variables
+
+      :param plugin_settings: Plugin settings
+      :param instance_settings: Settings of this instance
+
+
+

@@ -1,0 +1,225 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classbase__local__planner_1_1SimpleScoredSamplingPlanner" kind="class" language="C++" prot="public">
+    <compoundname>base_local_planner::SimpleScoredSamplingPlanner</compoundname>
+    <basecompoundref refid="classbase__local__planner_1_1TrajectorySearch" prot="public" virt="non-virtual">base_local_planner::TrajectorySearch</basecompoundref>
+    <includes refid="simple__scored__sampling__planner_8h" local="no">simple_scored_sampling_planner.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1a4fb36e288fad8bb6a817faa12df4d35c" prot="private" static="no" mutable="no">
+        <type><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; <ref refid="classbase__local__planner_1_1TrajectoryCostFunction" kindref="compound">TrajectoryCostFunction</ref> * &gt;</type>
+        <definition>std::vector&lt;TrajectoryCostFunction*&gt; base_local_planner::SimpleScoredSamplingPlanner::critics_</definition>
+        <argsstring></argsstring>
+        <name>critics_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/simple_scored_sampling_planner.h" line="134" column="15" bodyfile="include/base_local_planner/simple_scored_sampling_planner.h" bodystart="134" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1a0e8aa59b1ee780643bf69a1a5c244f73" prot="private" static="no" mutable="no">
+        <type><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; <ref refid="classbase__local__planner_1_1TrajectorySampleGenerator" kindref="compound">TrajectorySampleGenerator</ref> * &gt;</type>
+        <definition>std::vector&lt;TrajectorySampleGenerator*&gt; base_local_planner::SimpleScoredSamplingPlanner::gen_list_</definition>
+        <argsstring></argsstring>
+        <name>gen_list_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/simple_scored_sampling_planner.h" line="133" column="15" bodyfile="include/base_local_planner/simple_scored_sampling_planner.h" bodystart="133" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1a0ab97bd66287f1d2258ce5f7a70e83ea" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int base_local_planner::SimpleScoredSamplingPlanner::max_samples_</definition>
+        <argsstring></argsstring>
+        <name>max_samples_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/simple_scored_sampling_planner.h" line="136" column="7" bodyfile="include/base_local_planner/simple_scored_sampling_planner.h" bodystart="136" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1ad1a365b0504879a2e57f1a9d713acdc4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool base_local_planner::SimpleScoredSamplingPlanner::findBestTrajectory</definition>
+        <argsstring>(Trajectory &amp;traj, std::vector&lt; Trajectory &gt; *all_explored=0)</argsstring>
+        <name>findBestTrajectory</name>
+        <reimplements refid="classbase__local__planner_1_1TrajectorySearch_1a75fd0f1e0c72b6ba6f6edabe569e8271">findBestTrajectory</reimplements>
+        <param>
+          <type><ref refid="classbase__local__planner_1_1Trajectory" kindref="compound">Trajectory</ref> &amp;</type>
+          <declname>traj</declname>
+        </param>
+        <param>
+          <type><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; <ref refid="classbase__local__planner_1_1Trajectory" kindref="compound">Trajectory</ref> &gt; *</type>
+          <declname>all_explored</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Calls generator until generator has no more samples or max_samples is reached. For each generated traj, calls critics in turn. If any critic returns negative value, that value is assumed as costs, else the costs are the sum of all critics result. Returns true and sets the traj parameter to the first trajectory with minimal non-negative costs if sampling yields trajectories with non-negative costs, else returns false.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>traj</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The container to write the result to </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>all_explored</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pass NULL or a container to collect all trajectories for debugging (has a penalty) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/simple_scored_sampling_planner.h" line="129" column="8" bodyfile="src/simple_scored_sampling_planner.cpp" bodystart="116" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="function" id="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1ac11a2d2fbf69d6ed55f720c5ebe1b541" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double base_local_planner::SimpleScoredSamplingPlanner::scoreTrajectory</definition>
+        <argsstring>(Trajectory &amp;traj, double best_traj_cost)</argsstring>
+        <name>scoreTrajectory</name>
+        <param>
+          <type><ref refid="classbase__local__planner_1_1Trajectory" kindref="compound">Trajectory</ref> &amp;</type>
+          <declname>traj</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>best_traj_cost</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>runs all scoring functions over the trajectory creating a weigthed sum of positive costs, aborting as soon as a negative cost are found or costs greater than positive best_traj_cost accumulated </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/simple_scored_sampling_planner.h" line="116" column="10" bodyfile="src/simple_scored_sampling_planner.cpp" bodystart="85" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1ac8bab73a6a79cdd949422a8bed79f78d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>base_local_planner::SimpleScoredSamplingPlanner::SimpleScoredSamplingPlanner</definition>
+        <argsstring>()</argsstring>
+        <name>SimpleScoredSamplingPlanner</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/simple_scored_sampling_planner.h" line="98" column="3" bodyfile="include/base_local_planner/simple_scored_sampling_planner.h" bodystart="98" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1a4e587086b74e151e38c6a81905924772" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>base_local_planner::SimpleScoredSamplingPlanner::SimpleScoredSamplingPlanner</definition>
+        <argsstring>(std::vector&lt; TrajectorySampleGenerator * &gt; gen_list, std::vector&lt; TrajectoryCostFunction * &gt; &amp;critics, int max_samples=-1)</argsstring>
+        <name>SimpleScoredSamplingPlanner</name>
+        <param>
+          <type><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; <ref refid="classbase__local__planner_1_1TrajectorySampleGenerator" kindref="compound">TrajectorySampleGenerator</ref> * &gt;</type>
+          <declname>gen_list</declname>
+        </param>
+        <param>
+          <type><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; <ref refid="classbase__local__planner_1_1TrajectoryCostFunction" kindref="compound">TrajectoryCostFunction</ref> * &gt; &amp;</type>
+          <declname>critics</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>max_samples</declname>
+          <defval>-1</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Takes a list of generators and critics. Critics return costs &gt; 0, or negative costs for invalid trajectories. Generators other than the first are fallback generators, meaning they only get to generate if the previous generator did not find a valid trajectory. Will use every generator until it stops returning trajectories or count reaches max_samples. Then resets count and tries for the next in the list. passing max_samples = -1 (default): Each Sampling planner will continue to call generator until generator runs out of samples (or forever if that never happens) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/simple_scored_sampling_planner.h" line="109" column="3" bodyfile="src/simple_scored_sampling_planner.cpp" bodystart="79" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1a4dffffbf7e5d4c1e4d5865918c1c1657" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>base_local_planner::SimpleScoredSamplingPlanner::~SimpleScoredSamplingPlanner</definition>
+        <argsstring>()</argsstring>
+        <name>~SimpleScoredSamplingPlanner</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/base_local_planner/simple_scored_sampling_planner.h" line="96" column="3" bodyfile="include/base_local_planner/simple_scored_sampling_planner.h" bodystart="96" bodyend="96"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Generates a local plan using the given generator and cost functions. Assumes less cost are best, and negative costs indicate infinite costs. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This is supposed to be a simple and robust implementation of the <ref refid="classbase__local__planner_1_1TrajectorySearch" kindref="compound">TrajectorySearch</ref> interface. More efficient search may well be possible using search heuristics, parallel search, etc. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>base_local_planner::SimpleScoredSamplingPlanner</label>
+        <link refid="classbase__local__planner_1_1SimpleScoredSamplingPlanner"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>base_local_planner::TrajectorySearch</label>
+        <link refid="classbase__local__planner_1_1TrajectorySearch"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>std::vector&lt; base_local_planner::TrajectoryCostFunction * &gt;</label>
+        <link refid="cpp/container/vector" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="1">
+        <label>base_local_planner::SimpleScoredSamplingPlanner</label>
+        <link refid="classbase__local__planner_1_1SimpleScoredSamplingPlanner"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>gen_list_</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>critics_</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; base_local_planner::TrajectorySampleGenerator * &gt;</label>
+        <link refid="cpp/container/vector" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="2">
+        <label>base_local_planner::TrajectorySearch</label>
+        <link refid="classbase__local__planner_1_1TrajectorySearch"/>
+      </node>
+    </collaborationgraph>
+    <location file="include/base_local_planner/simple_scored_sampling_planner.h" line="93" column="78" bodyfile="include/base_local_planner/simple_scored_sampling_planner.h" bodystart="93" bodyend="137"/>
+    <listofallmembers>
+      <member refid="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1a4fb36e288fad8bb6a817faa12df4d35c" prot="private" virt="non-virtual"><scope>base_local_planner::SimpleScoredSamplingPlanner</scope><name>critics_</name></member>
+      <member refid="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1ad1a365b0504879a2e57f1a9d713acdc4" prot="public" virt="virtual"><scope>base_local_planner::SimpleScoredSamplingPlanner</scope><name>findBestTrajectory</name></member>
+      <member refid="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1a0e8aa59b1ee780643bf69a1a5c244f73" prot="private" virt="non-virtual"><scope>base_local_planner::SimpleScoredSamplingPlanner</scope><name>gen_list_</name></member>
+      <member refid="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1a0ab97bd66287f1d2258ce5f7a70e83ea" prot="private" virt="non-virtual"><scope>base_local_planner::SimpleScoredSamplingPlanner</scope><name>max_samples_</name></member>
+      <member refid="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1ac11a2d2fbf69d6ed55f720c5ebe1b541" prot="public" virt="non-virtual"><scope>base_local_planner::SimpleScoredSamplingPlanner</scope><name>scoreTrajectory</name></member>
+      <member refid="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1ac8bab73a6a79cdd949422a8bed79f78d" prot="public" virt="non-virtual"><scope>base_local_planner::SimpleScoredSamplingPlanner</scope><name>SimpleScoredSamplingPlanner</name></member>
+      <member refid="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1a4e587086b74e151e38c6a81905924772" prot="public" virt="non-virtual"><scope>base_local_planner::SimpleScoredSamplingPlanner</scope><name>SimpleScoredSamplingPlanner</name></member>
+      <member refid="classbase__local__planner_1_1TrajectorySearch_1a841ca025afcb9e199074c60167f0f0dd" prot="protected" virt="non-virtual"><scope>base_local_planner::SimpleScoredSamplingPlanner</scope><name>TrajectorySearch</name></member>
+      <member refid="classbase__local__planner_1_1SimpleScoredSamplingPlanner_1a4dffffbf7e5d4c1e4d5865918c1c1657" prot="public" virt="non-virtual"><scope>base_local_planner::SimpleScoredSamplingPlanner</scope><name>~SimpleScoredSamplingPlanner</name></member>
+      <member refid="classbase__local__planner_1_1TrajectorySearch_1aff40ef5d337f537fd4997e60e010f15b" prot="public" virt="virtual"><scope>base_local_planner::SimpleScoredSamplingPlanner</scope><name>~TrajectorySearch</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

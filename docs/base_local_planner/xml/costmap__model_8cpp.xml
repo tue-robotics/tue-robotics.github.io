@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="costmap__model_8cpp" kind="file" language="C++">
+    <compoundname>costmap_model.cpp</compoundname>
+    <includes refid="line__iterator_8h" local="no">base_local_planner/line_iterator.h</includes>
+    <includes refid="costmap__model_8h" local="no">base_local_planner/costmap_model.h</includes>
+    <includes local="no">costmap_2d/cost_values.h</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>base_local_planner/line_iterator.h</label>
+        <link refid="line__iterator_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>costmap_2d/observation.h</label>
+        <link refid="observation_8h.html" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags"/>
+      </node>
+      <node id="6">
+        <label>vector</label>
+        <link refid="cpp/header/vector" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="3">
+        <label>stdlib.h</label>
+      </node>
+      <node id="4">
+        <label>base_local_planner/costmap_model.h</label>
+        <link refid="costmap__model_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>base_local_planner/planar_laser_scan.h</label>
+        <link refid="planar__laser__scan_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>sensor_msgs/PointCloud.h</label>
+      </node>
+      <node id="9">
+        <label>geometry_msgs/Point.h</label>
+      </node>
+      <node id="14">
+        <label>costmap_2d/cost_values.h</label>
+        <link refid="cost__values_8h.html" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags"/>
+      </node>
+      <node id="11">
+        <label>geometry_msgs/Point32.h</label>
+      </node>
+      <node id="5">
+        <label>base_local_planner/world_model.h</label>
+        <link refid="world__model_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>costmap_model.cpp</label>
+        <link refid="costmap__model_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>costmap_2d/footprint.h</label>
+        <link refid="footprint_8h.html" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags"/>
+      </node>
+      <node id="13">
+        <label>costmap_2d/costmap_2d.h</label>
+        <link refid="costmap__2d_8h.html" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags"/>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacebase__local__planner">base_local_planner</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*********************************************************************</highlight></codeline>
+<codeline lineno="2"><highlight class="comment">*</highlight></codeline>
+<codeline lineno="3"><highlight class="comment">*<sp/>Software<sp/>License<sp/>Agreement<sp/>(BSD<sp/>License)</highlight></codeline>
+<codeline lineno="4"><highlight class="comment">*</highlight></codeline>
+<codeline lineno="5"><highlight class="comment">*<sp/><sp/>Copyright<sp/>(c)<sp/>2008,<sp/>Willow<sp/>Garage,<sp/>Inc.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment">*<sp/><sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="7"><highlight class="comment">*</highlight></codeline>
+<codeline lineno="8"><highlight class="comment">*<sp/><sp/>Redistribution<sp/>and<sp/>use<sp/>in<sp/>source<sp/>and<sp/>binary<sp/>forms,<sp/>with<sp/>or<sp/>without</highlight></codeline>
+<codeline lineno="9"><highlight class="comment">*<sp/><sp/>modification,<sp/>are<sp/>permitted<sp/>provided<sp/>that<sp/>the<sp/>following<sp/>conditions</highlight></codeline>
+<codeline lineno="10"><highlight class="comment">*<sp/><sp/>are<sp/>met:</highlight></codeline>
+<codeline lineno="11"><highlight class="comment">*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment">*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>of<sp/>source<sp/>code<sp/>must<sp/>retain<sp/>the<sp/>above<sp/>copyright</highlight></codeline>
+<codeline lineno="13"><highlight class="comment">*<sp/><sp/><sp/><sp/><sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following<sp/>disclaimer.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment">*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>in<sp/>binary<sp/>form<sp/>must<sp/>reproduce<sp/>the<sp/>above</highlight></codeline>
+<codeline lineno="15"><highlight class="comment">*<sp/><sp/><sp/><sp/><sp/>copyright<sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following</highlight></codeline>
+<codeline lineno="16"><highlight class="comment">*<sp/><sp/><sp/><sp/><sp/>disclaimer<sp/>in<sp/>the<sp/>documentation<sp/>and/or<sp/>other<sp/>materials<sp/>provided</highlight></codeline>
+<codeline lineno="17"><highlight class="comment">*<sp/><sp/><sp/><sp/><sp/>with<sp/>the<sp/>distribution.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment">*<sp/><sp/><sp/>*<sp/>Neither<sp/>the<sp/>name<sp/>of<sp/>the<sp/>Willow<sp/>Garage<sp/>nor<sp/>the<sp/>names<sp/>of<sp/>its</highlight></codeline>
+<codeline lineno="19"><highlight class="comment">*<sp/><sp/><sp/><sp/><sp/>contributors<sp/>may<sp/>be<sp/>used<sp/>to<sp/>endorse<sp/>or<sp/>promote<sp/>products<sp/>derived</highlight></codeline>
+<codeline lineno="20"><highlight class="comment">*<sp/><sp/><sp/><sp/><sp/>from<sp/>this<sp/>software<sp/>without<sp/>specific<sp/>prior<sp/>written<sp/>permission.</highlight></codeline>
+<codeline lineno="21"><highlight class="comment">*</highlight></codeline>
+<codeline lineno="22"><highlight class="comment">*<sp/><sp/>THIS<sp/>SOFTWARE<sp/>IS<sp/>PROVIDED<sp/>BY<sp/>THE<sp/>COPYRIGHT<sp/>HOLDERS<sp/>AND<sp/>CONTRIBUTORS</highlight></codeline>
+<codeline lineno="23"><highlight class="comment">*<sp/><sp/>&quot;AS<sp/>IS&quot;<sp/>AND<sp/>ANY<sp/>EXPRESS<sp/>OR<sp/>IMPLIED<sp/>WARRANTIES,<sp/>INCLUDING,<sp/>BUT<sp/>NOT</highlight></codeline>
+<codeline lineno="24"><highlight class="comment">*<sp/><sp/>LIMITED<sp/>TO,<sp/>THE<sp/>IMPLIED<sp/>WARRANTIES<sp/>OF<sp/>MERCHANTABILITY<sp/>AND<sp/>FITNESS</highlight></codeline>
+<codeline lineno="25"><highlight class="comment">*<sp/><sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE<sp/>ARE<sp/>DISCLAIMED.<sp/>IN<sp/>NO<sp/>EVENT<sp/>SHALL<sp/>THE</highlight></codeline>
+<codeline lineno="26"><highlight class="comment">*<sp/><sp/>COPYRIGHT<sp/>OWNER<sp/>OR<sp/>CONTRIBUTORS<sp/>BE<sp/>LIABLE<sp/>FOR<sp/>ANY<sp/>DIRECT,<sp/>INDIRECT,</highlight></codeline>
+<codeline lineno="27"><highlight class="comment">*<sp/><sp/>INCIDENTAL,<sp/>SPECIAL,<sp/>EXEMPLARY,<sp/>OR<sp/>CONSEQUENTIAL<sp/>DAMAGES<sp/>(INCLUDING,</highlight></codeline>
+<codeline lineno="28"><highlight class="comment">*<sp/><sp/>BUT<sp/>NOT<sp/>LIMITED<sp/>TO,<sp/>PROCUREMENT<sp/>OF<sp/>SUBSTITUTE<sp/>GOODS<sp/>OR<sp/>SERVICES;</highlight></codeline>
+<codeline lineno="29"><highlight class="comment">*<sp/><sp/>LOSS<sp/>OF<sp/>USE,<sp/>DATA,<sp/>OR<sp/>PROFITS;<sp/>OR<sp/>BUSINESS<sp/>INTERRUPTION)<sp/>HOWEVER</highlight></codeline>
+<codeline lineno="30"><highlight class="comment">*<sp/><sp/>CAUSED<sp/>AND<sp/>ON<sp/>ANY<sp/>THEORY<sp/>OF<sp/>LIABILITY,<sp/>WHETHER<sp/>IN<sp/>CONTRACT,<sp/>STRICT</highlight></codeline>
+<codeline lineno="31"><highlight class="comment">*<sp/><sp/>LIABILITY,<sp/>OR<sp/>TORT<sp/>(INCLUDING<sp/>NEGLIGENCE<sp/>OR<sp/>OTHERWISE)<sp/>ARISING<sp/>IN</highlight></codeline>
+<codeline lineno="32"><highlight class="comment">*<sp/><sp/>ANY<sp/>WAY<sp/>OUT<sp/>OF<sp/>THE<sp/>USE<sp/>OF<sp/>THIS<sp/>SOFTWARE,<sp/>EVEN<sp/>IF<sp/>ADVISED<sp/>OF<sp/>THE</highlight></codeline>
+<codeline lineno="33"><highlight class="comment">*<sp/><sp/>POSSIBILITY<sp/>OF<sp/>SUCH<sp/>DAMAGE.</highlight></codeline>
+<codeline lineno="34"><highlight class="comment">*</highlight></codeline>
+<codeline lineno="35"><highlight class="comment">*<sp/>Author:<sp/>Eitan<sp/>Marder-Eppstein</highlight></codeline>
+<codeline lineno="36"><highlight class="comment">*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="line__iterator_8h" kindref="compound">base_local_planner/line_iterator.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="costmap__model_8h" kindref="compound">base_local_planner/costmap_model.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="cost__values_8h.html" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">costmap_2d/cost_values.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std</ref>;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacecostmap__2d" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">costmap_2d</ref>;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacebase__local__planner" kindref="compound">base_local_planner</ref><sp/>{</highlight></codeline>
+<codeline lineno="45" refid="classbase__local__planner_1_1CostmapModel_1a7f785fd68a7d341c41a5c2397e7b8a06" refkind="member"><highlight class="normal"><sp/><sp/>CostmapModel::CostmapModel(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1Costmap2D" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">Costmap2D</ref>&amp;<sp/>ma)<sp/>:<sp/>costmap_(ma)<sp/>{}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="classbase__local__planner_1_1CostmapModel_1a80d896d06af4f1c0bd5b61cd758743af" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1CostmapModel_1a80d896d06af4f1c0bd5b61cd758743af" kindref="member">CostmapModel::footprintCost</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>geometry_msgs::Point&amp;<sp/>position,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;geometry_msgs::Point&gt;</ref>&amp;<sp/>footprint,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>inscribed_radius,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>circumscribed_radius){</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>returns:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/>-1<sp/>if<sp/>footprint<sp/>covers<sp/>at<sp/>least<sp/>a<sp/>lethal<sp/>obstacle<sp/>cell,<sp/>or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/>-2<sp/>if<sp/>footprint<sp/>covers<sp/>at<sp/>least<sp/>a<sp/>no-information<sp/>cell,<sp/>or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/>-3<sp/>if<sp/>footprint<sp/>is<sp/>[partially]<sp/>outside<sp/>of<sp/>the<sp/>map,<sp/>or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/><sp/>a<sp/>positive<sp/>value<sp/>for<sp/>traversable<sp/>space</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//used<sp/>to<sp/>put<sp/>things<sp/>into<sp/>grid<sp/>coordinates</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>cell_x,<sp/>cell_y;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//get<sp/>the<sp/>cell<sp/>coord<sp/>of<sp/>the<sp/>center<sp/>point<sp/>of<sp/>the<sp/>robot</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!<ref refid="classbase__local__planner_1_1CostmapModel_1aed9c90777aa55143075132648dee3b03" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a9a2c824d4cd3bcad3ac3435d81982986" kindref="member" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">worldToMap</ref>(position.x,<sp/>position.y,<sp/>cell_x,<sp/>cell_y))</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-3.0;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//if<sp/>number<sp/>of<sp/>points<sp/>in<sp/>the<sp/>footprint<sp/>is<sp/>less<sp/>than<sp/>3,<sp/>we&apos;ll<sp/>just<sp/>assume<sp/>a<sp/>circular<sp/>robot</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(footprint.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>()<sp/>&lt;<sp/>3){</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>cost<sp/>=<sp/><ref refid="classbase__local__planner_1_1CostmapModel_1aed9c90777aa55143075132648dee3b03" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a2a8ad2c3fc3aa47be8d2d0f9ae113c27" kindref="member" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">getCost</ref>(cell_x,<sp/>cell_y);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(cost<sp/>==<sp/>NO_INFORMATION)</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-2.0;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(cost<sp/>==<sp/>LETHAL_OBSTACLE<sp/>||<sp/>cost<sp/>==<sp/>INSCRIBED_INFLATED_OBSTACLE)</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-1.0;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cost;</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//now<sp/>we<sp/>really<sp/>have<sp/>to<sp/>lay<sp/>down<sp/>the<sp/>footprint<sp/>in<sp/>the<sp/>costmap<sp/>grid</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>x0,<sp/>x1,<sp/>y0,<sp/>y1;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>line_cost<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>footprint_cost<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//we<sp/>need<sp/>to<sp/>rasterize<sp/>each<sp/>line<sp/>in<sp/>the<sp/>footprint</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>footprint.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>()<sp/>-<sp/>1;<sp/>++i){</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//get<sp/>the<sp/>cell<sp/>coord<sp/>of<sp/>the<sp/>first<sp/>point</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!<ref refid="classbase__local__planner_1_1CostmapModel_1aed9c90777aa55143075132648dee3b03" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a9a2c824d4cd3bcad3ac3435d81982986" kindref="member" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">worldToMap</ref>(footprint[i].x,<sp/>footprint[i].y,<sp/>x0,<sp/>y0))</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-3.0;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//get<sp/>the<sp/>cell<sp/>coord<sp/>of<sp/>the<sp/>second<sp/>point</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!<ref refid="classbase__local__planner_1_1CostmapModel_1aed9c90777aa55143075132648dee3b03" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a9a2c824d4cd3bcad3ac3435d81982986" kindref="member" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">worldToMap</ref>(footprint[i<sp/>+<sp/>1].x,<sp/>footprint[i<sp/>+<sp/>1].y,<sp/>x1,<sp/>y1))</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-3.0;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>line_cost<sp/>=<sp/><ref refid="classbase__local__planner_1_1CostmapModel_1a8c65ee26aa8032afb635c3cb544e57cf" kindref="member">lineCost</ref>(x0,<sp/>x1,<sp/>y0,<sp/>y1);</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>footprint_cost<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(line_cost,<sp/>footprint_cost);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//if<sp/>there<sp/>is<sp/>an<sp/>obstacle<sp/>that<sp/>hits<sp/>the<sp/>line...<sp/>we<sp/>know<sp/>that<sp/>we<sp/>can<sp/>return<sp/>false<sp/>right<sp/>away</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(line_cost<sp/>&lt;<sp/>0)</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>line_cost;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//we<sp/>also<sp/>need<sp/>to<sp/>connect<sp/>the<sp/>first<sp/>point<sp/>in<sp/>the<sp/>footprint<sp/>to<sp/>the<sp/>last<sp/>point</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//get<sp/>the<sp/>cell<sp/>coord<sp/>of<sp/>the<sp/>last<sp/>point</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!<ref refid="classbase__local__planner_1_1CostmapModel_1aed9c90777aa55143075132648dee3b03" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a9a2c824d4cd3bcad3ac3435d81982986" kindref="member" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">worldToMap</ref>(footprint.<ref refid="cpp/container/vector/back" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">back</ref>().x,<sp/>footprint.<ref refid="cpp/container/vector/back" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">back</ref>().y,<sp/>x0,<sp/>y0))</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-3.0;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//get<sp/>the<sp/>cell<sp/>coord<sp/>of<sp/>the<sp/>first<sp/>point</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!<ref refid="classbase__local__planner_1_1CostmapModel_1aed9c90777aa55143075132648dee3b03" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a9a2c824d4cd3bcad3ac3435d81982986" kindref="member" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">worldToMap</ref>(footprint.<ref refid="cpp/container/vector/front" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">front</ref>().x,<sp/>footprint.<ref refid="cpp/container/vector/front" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">front</ref>().y,<sp/>x1,<sp/>y1))</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-3.0;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>line_cost<sp/>=<sp/><ref refid="classbase__local__planner_1_1CostmapModel_1a8c65ee26aa8032afb635c3cb544e57cf" kindref="member">lineCost</ref>(x0,<sp/>x1,<sp/>y0,<sp/>y1);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/>footprint_cost<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(line_cost,<sp/>footprint_cost);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(line_cost<sp/>&lt;<sp/>0)</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>line_cost;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//if<sp/>all<sp/>line<sp/>costs<sp/>are<sp/>legal...<sp/>then<sp/>we<sp/>can<sp/>return<sp/>that<sp/>the<sp/>footprint<sp/>is<sp/>legal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>footprint_cost;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//calculate<sp/>the<sp/>cost<sp/>of<sp/>a<sp/>ray-traced<sp/>line</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116" refid="classbase__local__planner_1_1CostmapModel_1a8c65ee26aa8032afb635c3cb544e57cf" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1CostmapModel_1a8c65ee26aa8032afb635c3cb544e57cf" kindref="member">CostmapModel::lineCost</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>x0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>x1,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>y0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>y1)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>line_cost<sp/>=<sp/>0.0;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>point_cost<sp/>=<sp/>-1.0;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(<sp/><ref refid="classbase__local__planner_1_1LineIterator" kindref="compound">LineIterator</ref><sp/>line(<sp/>x0,<sp/>y0,<sp/>x1,<sp/>y1<sp/>);<sp/>line.<ref refid="classbase__local__planner_1_1LineIterator_1a603d638882063ab678c2a75911591080" kindref="member">isValid</ref>();<sp/>line.advance()<sp/>)</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>point_cost<sp/>=<sp/><ref refid="classbase__local__planner_1_1CostmapModel_1abfd021e995f9493ddeb64184a0bd3cf8" kindref="member">pointCost</ref>(<sp/>line.getX(),<sp/>line.getY()<sp/>);<sp/></highlight><highlight class="comment">//Score<sp/>the<sp/>current<sp/>point</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(point_cost<sp/>&lt;<sp/>0)</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>point_cost;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(line_cost<sp/>&lt;<sp/>point_cost)</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>line_cost<sp/>=<sp/>point_cost;</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>line_cost;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134" refid="classbase__local__planner_1_1CostmapModel_1abfd021e995f9493ddeb64184a0bd3cf8" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1CostmapModel_1abfd021e995f9493ddeb64184a0bd3cf8" kindref="member">CostmapModel::pointCost</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>y)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>cost<sp/>=<sp/><ref refid="classbase__local__planner_1_1CostmapModel_1aed9c90777aa55143075132648dee3b03" kindref="member">costmap_</ref>.<ref refid="classcostmap__2d_1_1Costmap2D_1a2a8ad2c3fc3aa47be8d2d0f9ae113c27" kindref="member" external="/home/docker/ros/noetic/system/build/docs/costmap_2d/tags">getCost</ref>(x,<sp/>y);</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//if<sp/>the<sp/>cell<sp/>is<sp/>in<sp/>an<sp/>obstacle<sp/>the<sp/>path<sp/>is<sp/>invalid</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(cost<sp/>==<sp/>NO_INFORMATION)</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-2;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(cost<sp/>==<sp/>LETHAL_OBSTACLE)</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-1;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>cost;</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal">};</highlight></codeline>
+    </programlisting>
+    <location file="src/costmap_model.cpp"/>
+  </compounddef>
+</doxygen>

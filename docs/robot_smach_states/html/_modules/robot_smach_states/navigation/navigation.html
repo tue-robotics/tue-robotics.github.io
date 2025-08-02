@@ -1,0 +1,440 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robot_smach_states.navigation.navigation &mdash; robot_smach_states 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            robot_smach_states
+              <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_smach_states</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robot_smach_states.navigation.navigation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robot_smach_states.navigation.navigation</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># System</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">smach</span>
+
+
+<div class="viewcode-block" id="StartAnalyzer"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.StartAnalyzer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">StartAnalyzer</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+<div class="viewcode-block" id="StartAnalyzer.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.StartAnalyzer.execute">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">start_measurement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;done&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="StopAnalyzer"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.StopAnalyzer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">StopAnalyzer</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="StopAnalyzer.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.StopAnalyzer.execute">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">stop_measurement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_location</span><span class="p">()</span><span class="o">.</span><span class="n">frame</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;done&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="AbortAnalyzer"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.AbortAnalyzer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AbortAnalyzer</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span>  <span class="o">=</span> <span class="n">robot</span>
+
+<div class="viewcode-block" id="AbortAnalyzer.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.AbortAnalyzer.execute">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">abort_measurement</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s1">&#39;done&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="getPlan"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.getPlan">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">getPlan</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">constraint_function</span><span class="p">,</span> <span class="n">speak</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;unreachable&#39;</span><span class="p">,</span> <span class="s1">&#39;goal_not_defined&#39;</span><span class="p">,</span> <span class="s1">&#39;goal_ok&#39;</span><span class="p">,</span> <span class="s1">&#39;preempted&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraint_function</span> <span class="o">=</span> <span class="n">constraint_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speak</span> <span class="o">=</span> <span class="n">speak</span>
+
+<div class="viewcode-block" id="getPlan.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.getPlan.execute">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># Sleep for 0.1 s (breakOut sleep) to prevent synchronization errors between monitor state and nav state</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">0.1</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Get plan: preempt_requested&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;preempted&#39;</span>
+
+        <span class="n">constraint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint_function</span><span class="p">()</span>
+
+        <span class="c1"># Perform some typechecks</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">constraint</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Invalid constraints given to getPlan(). constraint: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">constraint</span><span class="p">))</span>
+            <span class="k">return</span> <span class="s2">&quot;goal_not_defined&quot;</span>
+
+        <span class="n">pc</span><span class="p">,</span> <span class="n">oc</span> <span class="o">=</span> <span class="n">constraint</span>
+
+        <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">plan</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+            <span class="k">return</span> <span class="s2">&quot;unreachable&quot;</span>
+
+        <span class="c1"># Constraints and plan seem to be valid, so set the plan</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">setPlan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">oc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">speak</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">speech</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="n">choice</span><span class="p">([</span><span class="s2">&quot;Affirmative!&quot;</span><span class="p">,</span><span class="s2">&quot;I&#39;m on my way!&quot;</span><span class="p">,</span><span class="s2">&quot;Getting there!&quot;</span><span class="p">,</span><span class="s2">&quot;I will be there in a sec!&quot;</span><span class="p">,</span> <span class="s2">&quot;I&#39;m coming!&quot;</span><span class="p">]),</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;goal_ok&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="executePlan"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.executePlan">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">executePlan</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">breakout_function</span><span class="p">,</span> <span class="n">blocked_timeout</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">reset_head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset_pose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;succeeded&#39;</span><span class="p">,</span> <span class="s1">&#39;arrived&#39;</span><span class="p">,</span> <span class="s1">&#39;blocked&#39;</span><span class="p">,</span> <span class="s1">&#39;preempted&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_last_free</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blocked_timeout</span> <span class="o">=</span> <span class="n">blocked_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breakout_function</span> <span class="o">=</span> <span class="n">breakout_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_head</span> <span class="o">=</span> <span class="n">reset_head</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_pose</span> <span class="o">=</span> <span class="n">reset_pose</span>
+
+<div class="viewcode-block" id="executePlan.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.executePlan.execute">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Possible outcomes (when overloading)</span>
+<span class="sd">        - &#39;breakout&#39;: when a condition has been met and navigation should stop because the goal has succeeded</span>
+<span class="sd">        - &#39;checking&#39;: the condition has not been met. Upon arrival at a goal, the statemachine will return to &#39;GetPlan&#39; to get the next goal_not_defined</span>
+<span class="sd">        - &#39;passed&#39;  : checking a condition is not necessary. Upon arrival at the current goal, the state machine will return &#39;succeeded&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_last_free</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="c1"># Cancel head goal, we need it for navigation :)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_head</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># Move the robot to a suitable driving pose</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_pose</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">path_length</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">go_to_driving_pose</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span> <span class="c1"># 10hz</span>
+
+<span class="w">            </span><span class="sd">&#39;&#39;&#39; If the breakoutfunction returns preempt,</span>
+<span class="sd">                navigation has succeeded and the robot can stop&#39;&#39;&#39;</span>
+            <span class="n">breakout_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakout_function</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">breakout_status</span> <span class="o">==</span> <span class="s2">&quot;breakout&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;succeeded&quot;</span>
+
+            <span class="c1"># Check for the presence of a better plan</span>
+            <span class="c1">#self.checkBetterPlan()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preempt_requested</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">cancelCurrentPlan</span><span class="p">()</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;execute: preempt_requested&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s1">&#39;preempted&#39;</span>
+
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getStatus</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;arrived&quot;</span> <span class="ow">and</span> <span class="n">breakout_status</span> <span class="o">==</span> <span class="s2">&quot;checking&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;arrived&quot;</span>
+            <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;arrived&quot;</span> <span class="ow">and</span> <span class="n">breakout_status</span> <span class="o">==</span> <span class="s2">&quot;passed&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;succeeded&quot;</span>
+            <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;blocked&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;blocked&quot;</span></div>
+
+<div class="viewcode-block" id="executePlan.checkBetterPlan"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.executePlan.checkBetterPlan">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">checkBetterPlan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Get alternative plan</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getCurrentPositionConstraint</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pc</span><span class="p">:</span>
+            <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+
+        <span class="c1"># Compare plan</span>
+        <span class="k">if</span> <span class="n">plan</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dtgcp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getDistanceToGoal</span><span class="p">()</span>  <span class="c1"># Distance To Goal Current Plan</span>
+            <span class="k">if</span> <span class="n">dtgcp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">dtgap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">computePathLength</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>  <span class="c1"># Distance To Goal Alternative Plan</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s1">&#39;Distance original = </span><span class="si">{0}</span><span class="s1">, distance alternative = </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dtgcp</span><span class="p">,</span> <span class="n">dtgap</span><span class="p">))</span>
+
+            <span class="c1"># Path should be at least 20% and 1 m shorter</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">dtgap</span><span class="o">/</span><span class="n">dtgcp</span> <span class="o">&lt;</span> <span class="mf">0.8</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dtgcp</span> <span class="o">-</span> <span class="n">dtgap</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">):</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Executing alternative path!&quot;</span><span class="p">)</span>
+                <span class="n">oc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getCurrentOrientationConstraint</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">oc</span><span class="p">:</span>
+                    <span class="c1"># Constraints and plan seem to be valid, so set the plan</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">setPlan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">oc</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Cannot execute alternative plan due to absence of orientation constraint&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="planBlocked"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.planBlocked">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">planBlocked</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;blocked&#39;</span><span class="p">,</span> <span class="s1">&#39;free&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+
+<div class="viewcode-block" id="planBlocked.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.planBlocked.execute">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Plan blocked&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Wait for 5 seconds but continue if the path is free</span>
+        <span class="n">wait_start</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">wait_start</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+            <span class="c1"># Look at the entity</span>
+            <span class="c1"># ps = msgs.PointStamped(point=self.robot.base.local_planner.getObstaclePoint(), frame_id=&quot;map&quot;)</span>
+            <span class="c1"># self.robot.head.look_at_point(kdl_vector_stamped_from_point_stamped_msg(ps))</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getStatus</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;blocked&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">cancel_goal</span><span class="p">()</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Plan free again&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;free&quot;</span>
+
+        <span class="c1"># Else: replan with same constraints</span>
+        <span class="c1"># Get alternative plan</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getCurrentPositionConstraint</span><span class="p">()</span>
+        <span class="n">oc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">getCurrentOrientationConstraint</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">pc</span> <span class="ow">and</span> <span class="n">oc</span><span class="p">:</span>
+            <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">global_planner</span><span class="o">.</span><span class="n">getPlan</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">plan</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">local_planner</span><span class="o">.</span><span class="n">setPlan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">oc</span><span class="p">)</span>
+
+                <span class="c1"># Give local planner time to get started; this shouldn&#39;t be neccesary</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="s1">&#39;free&#39;</span>
+
+        <span class="k">return</span> <span class="s1">&#39;blocked&#39;</span></div></div>
+
+
+<div class="viewcode-block" id="NavigateTo"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.NavigateTo">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">NavigateTo</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Move the robot to a specified location.</span>
+
+<span class="sd">    :param robot: Robot object</span>
+<span class="sd">    :param constraint_function: function resolving to a tuple(PositionConstraint, OrientationConstraint)</span>
+<span class="sd">        telling the robot where to drive to.</span>
+<span class="sd">    :param reset_head: Whether or not the head should be used for obstacle avoidance during navigation.</span>
+<span class="sd">    :param speak: Whether or not the robot should speak during navigation</span>
+<span class="sd">    :param reset_pose: Whether or not the robot is allowed to change its pose for navigation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">constraint_function</span><span class="p">,</span> <span class="n">reset_head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">speak</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset_pose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;arrived&#39;</span><span class="p">,</span> <span class="s1">&#39;unreachable&#39;</span><span class="p">,</span> <span class="s1">&#39;goal_not_defined&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speak</span> <span class="o">=</span> <span class="n">speak</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+
+            <span class="c1"># Create the sub SMACH state machine</span>
+            <span class="n">sm_nav</span> <span class="o">=</span> <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">(</span><span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;arrived&#39;</span><span class="p">,</span> <span class="s1">&#39;unreachable&#39;</span><span class="p">,</span> <span class="s1">&#39;goal_not_defined&#39;</span><span class="p">,</span> <span class="s1">&#39;preempted&#39;</span><span class="p">])</span>
+
+            <span class="k">with</span> <span class="n">sm_nav</span><span class="p">:</span>
+
+                <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;GET_PLAN&#39;</span><span class="p">,</span> <span class="n">getPlan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span> <span class="n">constraint_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">speak</span><span class="p">),</span>
+                                       <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;unreachable&#39;</span><span class="p">:</span> <span class="s1">&#39;unreachable&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;goal_not_defined&#39;</span><span class="p">:</span> <span class="s1">&#39;goal_not_defined&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;goal_ok&#39;</span><span class="p">:</span> <span class="s1">&#39;EXECUTE_PLAN&#39;</span><span class="p">})</span>
+
+                <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;EXECUTE_PLAN&#39;</span><span class="p">,</span> <span class="n">executePlan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakOut</span><span class="p">,</span>
+                                                                   <span class="n">reset_head</span><span class="o">=</span><span class="n">reset_head</span><span class="p">,</span> <span class="n">reset_pose</span><span class="o">=</span><span class="n">reset_pose</span><span class="p">),</span>
+                                       <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;succeeded&#39;</span><span class="p">:</span> <span class="s1">&#39;arrived&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;arrived&#39;</span><span class="p">:</span> <span class="s1">&#39;GET_PLAN&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;blocked&#39;</span><span class="p">:</span> <span class="s1">&#39;PLAN_BLOCKED&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;preempted&#39;</span><span class="p">:</span> <span class="s1">&#39;preempted&#39;</span><span class="p">})</span>
+
+                <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;PLAN_BLOCKED&#39;</span><span class="p">,</span> <span class="n">planBlocked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">),</span>
+                                       <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;blocked&#39;</span><span class="p">:</span> <span class="s1">&#39;GET_PLAN&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;free&#39;</span><span class="p">:</span> <span class="s1">&#39;EXECUTE_PLAN&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;START_ANALYSIS&#39;</span><span class="p">,</span> <span class="n">StartAnalyzer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;NAVIGATE&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;NAVIGATE&#39;</span><span class="p">,</span> <span class="n">sm_nav</span><span class="p">,</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;arrived&#39;</span><span class="p">:</span> <span class="s1">&#39;STOP_ANALYSIS_SUCCEED&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;unreachable&#39;</span><span class="p">:</span> <span class="s1">&#39;STOP_ANALYSIS_UNREACHABLE&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;goal_not_defined&#39;</span><span class="p">:</span> <span class="s1">&#39;ABORT_ANALYSIS_NOT_DEFINED&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;preempted&#39;</span><span class="p">:</span> <span class="s1">&#39;STOP_ANALYSIS_SUCCEED&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;STOP_ANALYSIS_SUCCEED&#39;</span><span class="p">,</span> <span class="n">StopAnalyzer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span> <span class="s1">&#39;succeeded&#39;</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;arrived&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;STOP_ANALYSIS_UNREACHABLE&#39;</span><span class="p">,</span> <span class="n">StopAnalyzer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">,</span> <span class="s1">&#39;unreachable&#39;</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;unreachable&#39;</span><span class="p">})</span>
+
+            <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;ABORT_ANALYSIS_NOT_DEFINED&#39;</span><span class="p">,</span> <span class="n">AbortAnalyzer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot</span><span class="p">),</span>
+                                   <span class="n">transitions</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;done&#39;</span><span class="p">:</span> <span class="s1">&#39;goal_not_defined&#39;</span><span class="p">})</span>
+
+<div class="viewcode-block" id="NavigateTo.generateConstraint"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.NavigateTo.generateConstraint">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generateConstraint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;generateConstraint must be implemented by subclasses of NavigateTo&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NavigateTo.breakOut"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.NavigateTo.breakOut">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">breakOut</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Default breakout function: makes sure things go to &#39;succeeded&#39; if robot arrives at goal</span>
+<span class="sd">        DO NOT OVERLOAD THIS IF NOT NECESSARY</span>
+
+<span class="sd">        Possible outcomes (when overloading)</span>
+<span class="sd">        - &#39;breakout&#39;: when a condition has been met and navigation should stop because the goal has succeeded</span>
+<span class="sd">        - &#39;checking&#39;: the condition has not been met. Upon arrival at a goal, the statemachine will return to &#39;GetPlan&#39; to get the next goal_not_defined</span>
+<span class="sd">        - &#39;passed&#39;  : checking a condition is not necessary. Upon arrival at the current goal, the state machine will return &#39;succeeded&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="s1">&#39;passed&#39;</span></div></div>
+
+        <span class="c1"># status = self.robot.base.local_planner.getStatus()</span>
+        <span class="c1"># goal_handle = self.robot.base.local_planner.getGoalHandle()</span>
+
+        <span class="c1"># # if hasattr(self, &#39;breakout_goal_handle&#39;):</span>
+        <span class="c1"># #     rospy.logwarn(&quot;Status = {0}, goal_handle = {1}, stored = {2}&quot;.format(status, goal_handle, self.breakout_goal_handle))</span>
+        <span class="c1"># # else:</span>
+        <span class="c1"># #     rospy.logwarn(&quot;Status = {0}, goal_handle = {1}&quot;.format(status, goal_handle))</span>
+
+        <span class="c1"># if status == &quot;arrived&quot;:</span>
+
+        <span class="c1">#     if not hasattr(self, &#39;breakout_goal_handle&#39;):</span>
+
+        <span class="c1">#         # If no breakout goal handle exists (hasn&#39;t arrived yet), make one and return breakout</span>
+        <span class="c1">#         rospy.logwarn(&quot;Breaking out for the first time&quot;)</span>
+        <span class="c1">#         self.breakout_goal_handle = goal_handle</span>
+        <span class="c1">#         return True</span>
+
+
+        <span class="c1">#     elif self.breakout_goal_handle != goal_handle:</span>
+
+        <span class="c1">#         # If the existing goal handle is unequal to the current one, the local planner has arrived at a new goal</span>
+        <span class="c1">#         # Hence, store this one and return true</span>
+        <span class="c1">#         rospy.logwarn(&quot;Breaking out!!&quot;)</span>
+        <span class="c1">#         self.breakout_goal_handle = goal_handle</span>
+        <span class="c1">#         return True</span>
+
+        <span class="c1">#     else:</span>
+
+        <span class="c1">#         # Breakout function has already returned true on this goalhandle</span>
+        <span class="c1">#         rospy.logerr(&quot;Executing should never be here. If this is the case, this function can be made a lot simpler!&quot;)</span>
+        <span class="c1">#         return False</span>
+
+        <span class="c1"># return False</span>
+
+
+<div class="viewcode-block" id="ForceDrive"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.ForceDrive">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ForceDrive</span><span class="p">(</span><span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Force drives... &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vth</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param robot: robot object</span>
+<span class="sd">        :param vx: velocity in x-direction (m/s)</span>
+<span class="sd">        :param vy: velocity in y-direction (m/s)</span>
+<span class="sd">        :param vth: yaw-velocity (rad/s)</span>
+<span class="sd">        :param duration: float indicating how long to drive (seconds)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outcomes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span> <span class="o">=</span> <span class="n">robot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vx</span> <span class="o">=</span> <span class="n">vx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vy</span> <span class="o">=</span> <span class="n">vy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vth</span> <span class="o">=</span> <span class="n">vth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span> <span class="o">=</span> <span class="n">duration</span>
+
+<div class="viewcode-block" id="ForceDrive.execute"><a class="viewcode-back" href="../../../api/robot_smach_states/navigation/navigation/index.html#robot_smach_states.navigation.navigation.ForceDrive.execute">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userdata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Executes the state &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_robot</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">force_drive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;done&#39;</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,146 @@
+robot_smach_states.human_interaction.find_person_in_room
+========================================================
+
+.. py:module:: robot_smach_states.human_interaction.find_person_in_room
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_smach_states.human_interaction.find_person_in_room.robot_name
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.human_interaction.find_person_in_room.FindPerson
+   robot_smach_states.human_interaction.find_person_in_room._DecideNavigateState
+   robot_smach_states.human_interaction.find_person_in_room.FindPersonInRoom
+
+
+Module Contents
+---------------
+
+.. py:class:: FindPerson(robot, person_label='operator', search_timeout=60, look_distance=3.0, probability_threshold=1.5, discard_other_labels=True, found_entity_designator=None, room=None, speak_when_found=True, look_range=(np.pi / 2, -np.pi / 2), look_steps=8)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Smach state to find a person. The robot looks around and tries to recognize all faces in view.
+
+   Initialization method
+
+   :param robot: robot api object
+   :param person_label: (str) person label or a designator resolving to a str
+   :param search_timeout: (float) maximum time the robot is allowed to search
+   :param look_distance: (float) robot only considers laser entities within this radius
+   :param discard_other_labels: (bool) whether or not to discard recognitions based on the label
+   :param room: has to be the id of a room type in the knowledge (f.e. bedroom)
+   :param speak_when_found: bool indicating whether or not the robot should speak upon finding a person
+   :param look_range: from what to what head angle should the robot search (defaults to -90 to +90 deg)
+   :param look_steps: How many steps does it take in that range (default = 8)
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _person_label
+      :value: 'operator'
+
+
+
+   .. py:attribute:: _search_timeout
+      :value: 60
+
+
+
+   .. py:attribute:: _look_distance
+      :value: 3.0
+
+
+
+   .. py:attribute:: _face_pos_pub
+
+
+   .. py:attribute:: _probability_threshold
+      :value: 1.5
+
+
+
+   .. py:attribute:: _discard_other_labels
+      :value: True
+
+
+
+   .. py:attribute:: _found_entity_designator
+      :value: None
+
+
+
+   .. py:attribute:: _room
+      :value: None
+
+
+
+   .. py:attribute:: _look_angles
+
+
+   .. py:attribute:: speak_when_found
+      :value: True
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: _DecideNavigateState(robot, waypoint_designator, room_designator)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Helper state to decide whether to use a NavigateToWaypoint or a NavigateToRoom state
+
+
+   Initialize method
+
+   :param robot: Robot API object
+   :param waypoint_designator: EdEntityDesignator that should resolve to a waypoint
+   :param room_designator: EdEntityDesignator that should resolve to the room in which the waypoint is located
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _waypoint_designator
+
+
+   .. py:attribute:: _room_designator
+
+
+   .. py:method:: execute(ud)
+
+
+.. py:class:: FindPersonInRoom(robot, area, name, discard_other_labels=True, found_entity_designator=None, look_range=(-np.pi / 2, np.pi / 2), look_steps=8)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   Uses NavigateToWaypoint or NavigateToRoom and subsequently tries to find a person
+   in that room.
+
+   Constructor
+
+   :param robot: robot object
+   :param area: (str) if a waypoint "<area>_waypoint" is present in the world model, the robot will navigate
+       to this waypoint. Else, it will navigate to the room called "<area>"
+   :param name: (str) Name of the person to look for
+   :param discard_other_labels: (bool) Whether or not to discard faces based on label
+   :param found_entity_designator: (Designator) A designator that will resolve to the found object
+
+
+.. py:data:: robot_name
+

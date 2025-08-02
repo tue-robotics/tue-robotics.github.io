@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robot_smach_states.util.designators.checks &mdash; robot_smach_states 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            robot_smach_states
+              <img src="../../../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">robot_smach_states</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robot_smach_states.util.designators.checks</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robot_smach_states.util.designators.checks</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;loy&#39;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span>
+
+
+<div class="viewcode-block" id="check_resolve_type"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/checks/index.html#robot_smach_states.util.designators.checks.check_resolve_type">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">check_resolve_type</span><span class="p">(</span><span class="n">designator</span><span class="p">,</span> <span class="o">*</span><span class="n">allowed_types</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the resolve type of a designator is one of the allowed types. If the resolve type is a list, the internal</span>
+<span class="sd">    type is also checked.</span>
+
+<span class="sd">        Incorrect: []; [str, int]</span>
+<span class="sd">        Correct: [str]; [str], [int]</span>
+
+<span class="sd">    This check allows for type checking on construction of a statemachine, so runtime error can be prevented.</span>
+
+<span class="sd">    :param designator: Designator to check the resolve type of. In case of a list resolve type, one type in the list</span>
+<span class="sd">        needs to be defined.</span>
+<span class="sd">    :param allowed_types: Allowed resolve type of the designator. Allowed list types, also need to have an internal type</span>
+<span class="sd">        defined.</span>
+
+<span class="sd">    &gt;&gt;&gt; from robot_smach_states.util.designators.core import Designator</span>
+<span class="sd">    &gt;&gt;&gt; d1 = Designator(&quot;a&quot;, resolve_type=str, name=&#39;d1&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; check_resolve_type(d1, str)</span>
+<span class="sd">    &gt;&gt;&gt; d2 = Designator(&quot;a&quot;, resolve_type=str, name=&#39;d2&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; check_resolve_type(d2, int, str)</span>
+
+<span class="sd">    &gt;&gt;&gt; d3 = Designator(&quot;a&quot;, resolve_type=str, name=&#39;d3&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; #The resolve_type is actually str but we check for int, thus get an exception</span>
+<span class="sd">    &gt;&gt;&gt; check_resolve_type(d3, int)  # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    TypeError: ...</span>
+
+<span class="sd">    &gt;&gt;&gt; d4 = Designator(&quot;a&quot;, resolve_type=str, name=&#39;d4&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; #The resolve_type is actually str but we check for int, thus get an exception</span>
+<span class="sd">    &gt;&gt;&gt; check_resolve_type(d4, float, int)  # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    TypeError: ...</span>
+
+<span class="sd">    &gt;&gt;&gt; d5 = Designator([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;], resolve_type=[str], name=&#39;d5&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; d6 = Designator([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;], resolve_type=[str], name=&#39;d6&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; #The resolve_type is actually [str] but we check for [int], thus get an exception</span>
+<span class="sd">    &gt;&gt;&gt; check_resolve_type(d6, [int])  # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    TypeError: ...</span>
+
+<span class="sd">    &gt;&gt;&gt; d7 = Designator(&quot;a&quot;, resolve_type=str, name=&#39;d7&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; d8 = Designator([&quot;a&quot;], resolve_type=[str], name=&#39;d8&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; check_resolve_type(d7, str, [str])</span>
+<span class="sd">    &gt;&gt;&gt; check_resolve_type(d8, str, [str])</span>
+<span class="sd">    &gt;&gt;&gt; check_resolve_type(d7, [str], str)</span>
+<span class="sd">    &gt;&gt;&gt; check_resolve_type(d8, [str], str)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">real_resolve_type</span> <span class="o">=</span> <span class="n">designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># allowed_types is a list (because of the *).</span>
+        <span class="n">real_allowed_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">allowed_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">allowed_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">allowed_type</span> <span class="k">for</span> <span class="n">allowed_type</span> <span class="ow">in</span> <span class="n">allowed_types</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">real_resolve_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">real_allowed_types</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> resolves to </span><span class="si">{1}</span><span class="s2"> but should resolve to one of </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">designator</span><span class="p">,</span> <span class="n">designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">,</span> <span class="n">allowed_types</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">designator</span><span class="o">.</span><span class="n">resolve_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_types</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> resolves to </span><span class="si">{1}</span><span class="s2"> but should resolve to one of </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">designator</span><span class="p">,</span> <span class="n">designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">,</span> <span class="n">allowed_types</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="check_type"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/checks/index.html#robot_smach_states.util.designators.checks.check_type">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">check_type</span><span class="p">(</span><span class="n">designator_or_value</span><span class="p">,</span> <span class="o">*</span><span class="n">allowed_types</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the resolve type of a designator or a variable is one of the allowed types. If the type is a list, the internal</span>
+<span class="sd">    type is also checked.</span>
+<span class="sd">    Incorrect: []; [str, int]</span>
+<span class="sd">    Correct: [str]; [str], [int]</span>
+<span class="sd">    This check allows for type checking on construction of a statemachine, so runtime error can be prevented.</span>
+
+<span class="sd">    :param designator_or_value: Designator or variable to check the type of.</span>
+<span class="sd">    :param allowed_types: Allowed type of the designator or variable.</span>
+
+<span class="sd">    &gt;&gt;&gt; from robot_smach_states.util.designators.core import Designator</span>
+<span class="sd">    &gt;&gt;&gt; d = Designator(&quot;a&quot;, resolve_type=str)</span>
+<span class="sd">    &gt;&gt;&gt; check_type(d, str)</span>
+<span class="sd">    &gt;&gt;&gt; c = &quot;a&quot;</span>
+<span class="sd">    &gt;&gt;&gt; check_type(c, int, str)</span>
+
+<span class="sd">    &gt;&gt;&gt; c2 = &quot;string&quot;</span>
+<span class="sd">    &gt;&gt;&gt; #The type is str but we check for int, thus get an exception</span>
+<span class="sd">    &gt;&gt;&gt; check_type(c2, int)  # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    TypeError: ...</span>
+
+<span class="sd">    &gt;&gt;&gt; c3 = Designator([&quot;a&quot;], resolve_type=[str], name=&#39;c3&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; check_type(c3, [str])</span>
+<span class="sd">    &gt;&gt;&gt; check_type(c3, str, [str])</span>
+<span class="sd">    &gt;&gt;&gt; check_type(c3, [str], str)</span>
+<span class="sd">    &gt;&gt;&gt; c4 = [&quot;a&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; check_type(c4, [str])</span>
+<span class="sd">    &gt;&gt;&gt; check_type(c4, str, [str])</span>
+<span class="sd">    &gt;&gt;&gt; check_type(c4, [str], str)</span>
+<span class="sd">    &gt;&gt;&gt; check_type(c4, [int])  # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    TypeError: ...</span>
+<span class="sd">    &gt;&gt;&gt; check_type(c4, [str, int])  # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    AssertionError: ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">allowed_type</span> <span class="ow">in</span> <span class="n">allowed_types</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">allowed_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">allowed_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Allowed list type should contain one internal type, incorrect type: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">allowed_type</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">designator_or_value</span><span class="p">,</span> <span class="s2">&quot;resolve_type&quot;</span><span class="p">):</span>  <span class="c1"># If its a designator: ...</span>
+        <span class="n">check_resolve_type</span><span class="p">(</span><span class="n">designator_or_value</span><span class="p">,</span> <span class="o">*</span><span class="n">allowed_types</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">designator_or_value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">allowed_list_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">allowed_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">allowed_type</span> <span class="ow">in</span> <span class="n">allowed_types</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">allowed_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">)]</span>
+
+            <span class="k">if</span> <span class="n">designator_or_value</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">designator_or_value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_list_types</span><span class="p">:</span>
+                <span class="n">allowed_list_types_string</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">allowed_list_types</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> is of type [</span><span class="si">{1}</span><span class="s2">] but should be </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">designator_or_value</span><span class="p">,</span>
+                                                                                <span class="nb">type</span><span class="p">(</span><span class="n">designator_or_value</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                                                                <span class="n">allowed_list_types_string</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">designator_or_value</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_types</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> is of type </span><span class="si">{1}</span><span class="s2"> but should be </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">designator_or_value</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">designator_or_value</span><span class="p">),</span> <span class="n">allowed_types</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="is_writeable"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/checks/index.html#robot_smach_states.util.designators.checks.is_writeable">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">is_writeable</span><span class="p">(</span><span class="n">variable_writer</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">variable_writer</span><span class="p">,</span> <span class="n">core</span><span class="o">.</span><span class="n">VariableWriter</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> is not writable&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">variable_writer</span><span class="p">))</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

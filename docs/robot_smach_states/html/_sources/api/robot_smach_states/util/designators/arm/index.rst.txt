@@ -1,0 +1,200 @@
+robot_smach_states.util.designators.arm
+=======================================
+
+.. py:module:: robot_smach_states.util.designators.arm
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_smach_states.util.designators.arm.__author__
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.util.designators.arm.ArmDesignator
+   robot_smach_states.util.designators.arm.UnoccupiedArmDesignator
+   robot_smach_states.util.designators.arm.OccupiedArmDesignator
+   robot_smach_states.util.designators.arm.ArmHoldingEntityDesignator
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.util.designators.arm.const_resolve
+
+
+Module Contents
+---------------
+
+.. py:data:: __author__
+   :value: 'loy'
+
+
+.. py:function:: const_resolve(arm_designator, additional_properties)
+
+   Resolves the designator after adding properties. Note that the state is not altered.
+
+   :param arm_designator: ArmDesignator to which properties should be added.
+   :param additional_properties: Dict with the additional properties that are to be added.
+   :return: an arm with the desired properties and state
+
+
+
+.. py:class:: ArmDesignator(robot, arm_properties=None, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.core.Designator`
+
+
+   Resolves to an instance of the Arm-class in robot_skills.
+   >>> from robot_skills.mockbot import Mockbot
+   >>> with redirect_stdout(None): robot = Mockbot()
+   >>> a = ArmDesignator(robot, {'required_arm_name': 'leftArm'})
+   >>> assert a.resolve()._arm == robot.arms['leftArm']
+
+   Initialize a new ArmDesignator for a robot, with the desired properties of the arm.
+
+   :param robot: Robot object.
+   :type  robot: robot_skills.robot.Robot object.
+
+   :param arm_properties: Required and desired properties of the arm.
+   :type  arm_properties: Map with arm properties, parameters of Robot.get_arm().
+
+   :param name: Optional name of the arm designator.
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: arm_properties
+      :value: None
+
+
+
+   .. py:attribute:: _locker
+      :value: None
+
+
+
+   .. py:method:: _resolve()
+
+
+   .. py:method:: lockable()
+
+
+.. py:class:: UnoccupiedArmDesignator(robot, arm_properties=None, name=None)
+
+   Bases: :py:obj:`ArmDesignator`
+
+
+   An UnoccupiedArmDesignator resolves to an arm that is not occupied by an entity.
+   .resolve() returns None when no such arm can be found
+   >>> from robot_skills.mockbot import Mockbot
+   >>> with redirect_stdout(None): robot = Mockbot()
+   >>>
+   >>> robot.arms['leftArm'].occupied_by = None
+   >>> robot.arms['rightArm'].occupied_by = None
+   >>> empty_arm_designator = UnoccupiedArmDesignator(robot, {})
+   >>> arm_to_use_for_first_grab = empty_arm_designator.resolve()
+   >>> assert arm_to_use_for_first_grab._arm in robot.arms.values()
+   >>>
+   >>> # Grab the 1st item.
+   >>> arm_to_use_for_first_grab.occupied_by = "entity1"
+   >>>
+   >>> # Find arm to grab the second item.
+   >>> arm_to_use_for_second_grab = empty_arm_designator.resolve()
+   >>> assert arm_to_use_for_second_grab is not None
+   >>> assert arm_to_use_for_second_grab._arm != arm_to_use_for_first_grab._arm
+   >>>
+   >>> # Grab the 2nd item.
+   >>> arm_to_use_for_second_grab.occupied_by = "entity2"
+   >>>
+   >>> # You can't do 3 grabs with a 2 arms robot without placing an entity first, so this will fail to resolve for a 3rd time
+   >>> arm_to_use_for_third_grab = empty_arm_designator.resolve()
+   >>> assert arm_to_use_for_third_grab is None
+
+   Initialize a new ArmDesignator for a robot, with the desired properties of the arm.
+
+   :param robot: Robot object.
+   :type  robot: robot_skills.robot.Robot object.
+
+   :param arm_properties: Required and desired properties of the arm.
+   :type  arm_properties: Map with arm properties, parameters of Robot.get_arm().
+
+   :param name: Optional name of the arm designator.
+
+
+.. py:class:: OccupiedArmDesignator(robot, arm_properties=None, name=None)
+
+   Bases: :py:obj:`ArmDesignator`
+
+
+   An OccupiedArmDesignator resolves to an arm that is occupied by an entity.
+   .resolve() returns None when no such arm can be found
+
+   Initialize a new ArmDesignator for a robot, with the desired properties of the arm.
+
+   :param robot: Robot object.
+   :type  robot: robot_skills.robot.Robot object.
+
+   :param arm_properties: Required and desired properties of the arm.
+   :type  arm_properties: Map with arm properties, parameters of Robot.get_arm().
+
+   :param name: Optional name of the arm designator.
+
+
+.. py:class:: ArmHoldingEntityDesignator(robot, entity_designator, arm_properties=None, name=None)
+
+   Bases: :py:obj:`ArmDesignator`
+
+
+   An ArmDesignator resolving to an arm that is holding a specific entity.
+   .resolve() returns None when no such arm can be found
+
+   >>> from robot_skills.mockbot import Mockbot
+   >>> with redirect_stdout(None): robot = Mockbot()
+   >>> a = ArmDesignator(robot, {'required_arm_name': 'leftArm'})
+   >>> assert a.resolve()._arm == robot.arms['leftArm']
+
+   >>> leftArm = robot.arms['leftArm']
+   >>> leftArm.gripper.occupied_by = None
+
+   >>> rightArm = robot.arms['rightArm']
+   >>> rightArm.gripper.occupied_by = "entity3"
+
+   >>> entity_designator = Designator("entity3")
+   >>> holding_arm_designator = ArmHoldingEntityDesignator(robot, entity_designator, {})
+   >>> arm_to_use_for_placing_entity3 = holding_arm_designator.resolve()
+   >>> assert(arm_to_use_for_placing_entity3._arm == rightArm)
+   >>>
+   >>> # Place the object
+   >>> rightArm.gripper.occupied_by = None
+   >>>
+   >>> # After placing the item, there is no arm holding the item anymore
+   >>> arm_to_use_for_second_place = holding_arm_designator.resolve()
+   >>> assert arm_to_use_for_second_place is None
+
+   Initialize a new ArmDesignator for a robot, with the desired properties of the arm.
+
+   :param robot: Robot object.
+   :type  robot: robot_skills.robot.Robot object.
+
+   :param arm_properties: Required and desired properties of the arm.
+   :type  arm_properties: Map with arm properties, parameters of Robot.get_arm().
+
+   :param name: Optional name of the arm designator.
+
+
+   .. py:attribute:: entity_designator
+
+
+   .. py:method:: _resolve()
+
+

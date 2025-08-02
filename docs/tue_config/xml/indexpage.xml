@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="indexpage" kind="page">
+    <compoundname>index</compoundname>
+    <title>tue_config</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="index_1autotoc_md1">
+<title>Special keys</title>
+<para><itemizedlist>
+<listitem><para><bold>include</bold>: relative or absolute file path which is inserted at that level. Always place the include tag at the top of a node. This allows content from the included yaml file to be overruled by adding the same key at the correct child level. This only works for mappings, not for sequences. As a new item will be created.</para>
+</listitem></itemizedlist>
+</para>
+<sect2 id="index_1autotoc_md2">
+<title>Examples</title>
+<sect3 id="index_1autotoc_md3">
+<title>Example 1 (include)</title>
+<para><bold>box.yaml</bold></para>
+<para><programlisting filename=".yaml"><codeline><highlight class="normal">box:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>size:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>x:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>y:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>z:<sp/>1</highlight></codeline>
+</programlisting></para>
+<para><bold>composite.yaml</bold></para>
+<para><programlisting filename=".yaml"><codeline><highlight class="normal">composite:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>include:<sp/>box.yaml</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>pose:<sp/>{x:<sp/>0,<sp/>y:<sp/>0,<sp/>z:<sp/>0}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>include:<sp/>box.yaml</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>pose:<sp/>{x:<sp/>0,<sp/>y:<sp/>0,<sp/>z:<sp/>1}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>box:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>size:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>z:<sp/>2</highlight></codeline>
+</programlisting></para>
+<para><bold>parsed composite.yaml</bold> (Overruling of box size works correct)</para>
+<para><programlisting filename=".yaml"><codeline><highlight class="normal">composite:</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>box:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>size:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>x:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>y:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>z:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>pose:<sp/>{x:<sp/>0,<sp/>y:<sp/>0,<sp/>z:<sp/>0}</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>box:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>size:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>x:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>y:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>z:<sp/>2</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>pose:<sp/>{x:<sp/>0,<sp/>y:<sp/>0,<sp/>z:<sp/>1}</highlight></codeline>
+</programlisting></para>
+<para><bold>composite2.yaml</bold></para>
+<para><programlisting filename=".yaml"><codeline><highlight class="normal">composite:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>include:<sp/>box.yaml</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>pose:<sp/>{x:<sp/>0,<sp/>y:<sp/>0,<sp/>z:<sp/>0}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>box:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>size:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>z:<sp/>2</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>include:<sp/>box.yaml</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>pose:<sp/>{x:<sp/>0,<sp/>y:<sp/>0,<sp/>z:<sp/>1}</highlight></codeline>
+</programlisting></para>
+<para><bold>parsed composite2.yaml</bold> (Overruling doesn&apos;t work, if defined before <bold>include</bold>)</para>
+<para><programlisting filename=".yaml"><codeline><highlight class="normal">composite:</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>box:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>size:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>x:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>y:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>z:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>pose:<sp/>{x:<sp/>0,<sp/>y:<sp/>0,<sp/>z:<sp/>0}</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>box:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>size:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>x:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>y:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>z:<sp/>1</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>pose:<sp/>{x:<sp/>0,<sp/>y:<sp/>0,<sp/>z:<sp/>1}</highlight></codeline>
+</programlisting></para>
+</sect3>
+<sect3 id="index_1autotoc_md4">
+<title>Example 2 (include)</title>
+<para><bold>subgroup.yaml</bold></para>
+<para><programlisting filename=".yaml"><codeline><highlight class="normal">persons:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>name:<sp/>David</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>age:<sp/>37</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>name:<sp/>Jacob</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>age:<sp/>29</highlight></codeline>
+</programlisting></para>
+<para><bold>group.yaml</bold></para>
+<para><programlisting filename=".yaml"><codeline><highlight class="normal">include:<sp/>subgroup.yaml</highlight></codeline>
+<codeline><highlight class="normal">persons:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>name:<sp/>David</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>age:<sp/>43</highlight></codeline>
+</programlisting></para>
+<para><bold>parsed group.yaml</bold> (Overruling of sequence item isn&apos;t possible. New item is created)</para>
+<para><programlisting filename=".yaml"><codeline><highlight class="normal">persons:</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>age:<sp/>37</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>name:<sp/>David</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>age:<sp/>29</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>name:<sp/>Jacob</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>age:<sp/>43</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>name:<sp/>David</highlight></codeline>
+</programlisting></para>
+</sect3>
+</sect2>
+</sect1>
+<sect1 id="index_1autotoc_md5">
+<title>Special values</title>
+<para>Special values are resolved on parsing. The resolve function all have the same structure: <computeroutput>$(CMD args)</computeroutput>. The following commands are available:</para>
+<para><itemizedlist>
+<listitem><para><bold>rospkg</bold> (PKG_NAME): <bold>rospkg</bold> resolves to the root folder of the ros package. The only argument is required and is the name of the ros package you want to find. If the package isn&apos;t found, parsing fails.</para>
+</listitem><listitem><para><bold>env</bold> (ENV_VARIABLE [DEFAULT]): <bold>env</bold> resolves to an environment variable. If the environment variable isn&apos;t available and a default value is provided, this value will be returned. If no default value is provided, parsing fails.</para>
+</listitem><listitem><para><bold>file</bold> (FILE_NAME): <bold>file</bold> resolves to an absolute/relative file path. This depends on if the root file was an absolute or relative path. This function never returns a false. No file existence check is done.</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="index_1autotoc_md6">
+<title>Old</title>
+<sect2 id="index_1autotoc_md7">
+<title>TO DO</title>
+<para><itemizedlist>
+<listitem><para>Support newest YAML lib API</para>
+</listitem></itemizedlist>
+</para>
+</sect2>
+<sect2 id="index_1autotoc_md8">
+<title>Ideas</title>
+<sect3 id="index_1autotoc_md9">
+<title>Add readMap</title>
+<para>Same behavior / interface as reading Arrays, but then for iterating through map </para>
+</sect3>
+</sect2>
+</sect1>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

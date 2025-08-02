@@ -1,0 +1,762 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>image_recognition_tensorflow.tf_retrain &mdash; image_recognition_tensorflow 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=0a554088"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="image_recognition_tensorflow.utils" href="../utils/index.html" />
+    <link rel="prev" title="image_recognition_tensorflow.retrain" href="../retrain/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            image_recognition_tensorflow
+              <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">image_recognition_tensorflow</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../MovingAvgQuantize/index.html">image_recognition_tensorflow.MovingAvgQuantize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../evaluate_classifier/index.html">image_recognition_tensorflow.evaluate_classifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../object_recognizer/index.html">image_recognition_tensorflow.object_recognizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../retrain/index.html">image_recognition_tensorflow.retrain</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">image_recognition_tensorflow.tf_retrain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../utils/index.html">image_recognition_tensorflow.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">image_recognition_tensorflow</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">image_recognition_tensorflow</a></li>
+      <li class="breadcrumb-item active">image_recognition_tensorflow.tf_retrain</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/api/image_recognition_tensorflow/tf_retrain/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-image_recognition_tensorflow.tf_retrain">
+<span id="image-recognition-tensorflow-tf-retrain"></span><h1>image_recognition_tensorflow.tf_retrain<a class="headerlink" href="#module-image_recognition_tensorflow.tf_retrain" title="Permalink to this heading"></a></h1>
+<p>Simple transfer learning with Inception v3 or Mobilenet models.</p>
+<p>With support for TensorBoard.</p>
+<p>This example shows how to take a Inception v3 or Mobilenet model trained on
+ImageNet images, and train a new top layer that can recognize other classes of
+images.</p>
+<p>The top layer receives as input a 2048-dimensional vector (1001-dimensional for
+Mobilenet) for each image. We train a softmax layer on top of this
+representation. Assuming the softmax layer contains N labels, this corresponds
+to learning N + 2048*N (or 1001*N)  model parameters corresponding to the
+learned biases and weights.</p>
+<p>Here’s an example, which assumes you have a folder containing class-named
+subfolders, each full of images for each label. The example folder flower_photos
+should have a structure like this:</p>
+<p>~/flower_photos/daisy/photo1.jpg
+~/flower_photos/daisy/photo2.jpg
+…
+~/flower_photos/rose/anotherphoto77.jpg
+…
+~/flower_photos/sunflower/somepicture.jpg</p>
+<p>The subfolder names are important, since they define what label is applied to
+each image, but the filenames themselves don’t matter. Once your images are
+prepared, you can run the training with a command like this:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">bazel</span> <span class="pre">build</span> <span class="pre">tensorflow/examples/image_retraining:retrain</span> <span class="pre">&amp;&amp;</span> <span class="pre">bazel-bin/tensorflow/examples/image_retraining/retrain</span>&#160;&#160;&#160;&#160; <span class="pre">--image_dir</span> <span class="pre">~/flower_photos</span>
+<span class="pre">`</span></code></p>
+<p>Or, if you have a pip installation of tensorflow, <cite>retrain.py</cite> can be run
+without bazel:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">tensorflow/examples/image_retraining/retrain.py</span>&#160;&#160;&#160;&#160; <span class="pre">--image_dir</span> <span class="pre">~/flower_photos</span>
+<span class="pre">`</span></code></p>
+<p>You can replace the image_dir argument with any folder containing subfolders of
+images. The label for each image is taken from the name of the subfolder it’s
+in.</p>
+<p>This produces a new model file that can be loaded and run by any TensorFlow
+program, for example the label_image sample code.</p>
+<p>By default this script will use the high accuracy, but comparatively large and
+slow Inception v3 model architecture. It’s recommended that you start with this
+to validate that you have gathered good training data, but if you want to deploy
+on resource-limited platforms, you can try the <cite>–architecture</cite> flag with a
+Mobilenet model. For example:</p>
+<p>Run floating-point version of mobilenet:
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">tensorflow/examples/image_retraining/retrain.py</span>&#160;&#160;&#160;&#160; <span class="pre">--image_dir</span> <span class="pre">~/flower_photos</span> <span class="pre">--architecture</span> <span class="pre">mobilenet_1.0_224</span>
+<span class="pre">`</span></code></p>
+<p>Run quantized version of mobilenet:
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">python</span> <span class="pre">tensorflow/examples/image_retraining/retrain.py</span>&#160;&#160;&#160;&#160; <span class="pre">--image_dir</span> <span class="pre">~/flower_photos/</span>&#160;&#160; <span class="pre">--architecture</span> <span class="pre">mobilenet_1.0_224_quantized</span>
+<span class="pre">`</span></code></p>
+<p>There are 32 different Mobilenet models to choose from, with a variety of file
+size and latency options. The first number can be ‘1.0’, ‘0.75’, ‘0.50’, or
+‘0.25’ to control the size, and the second controls the input image size, either
+‘224’, ‘192’, ‘160’, or ‘128’, with smaller sizes running faster. See
+<a class="reference external" href="https://research.googleblog.com/2017/06/mobilenets-open-source-models-for.html">https://research.googleblog.com/2017/06/mobilenets-open-source-models-for.html</a>
+for more information on Mobilenet.</p>
+<p>To use with TensorBoard:</p>
+<p>By default, this script will log summaries to /tmp/retrain_logs directory</p>
+<p>Visualize the summaries with this command:</p>
+<p>tensorboard –logdir /tmp/retrain_logs</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.FLAGS" title="image_recognition_tensorflow.tf_retrain.FLAGS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FLAGS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.MAX_NUM_IMAGES_PER_CLASS" title="image_recognition_tensorflow.tf_retrain.MAX_NUM_IMAGES_PER_CLASS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAX_NUM_IMAGES_PER_CLASS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.bottleneck_path_2_bottleneck_values" title="image_recognition_tensorflow.tf_retrain.bottleneck_path_2_bottleneck_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bottleneck_path_2_bottleneck_values</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.create_image_lists" title="image_recognition_tensorflow.tf_retrain.create_image_lists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_image_lists</span></code></a>(image_dir, testing_percentage, ...)</p></td>
+<td><p>Builds a list of training images from the file system.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.get_image_path" title="image_recognition_tensorflow.tf_retrain.get_image_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_image_path</span></code></a>(image_lists, label_name, index, ...)</p></td>
+<td><p>&quot;Returns a path to an image for a label at the given index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.get_bottleneck_path" title="image_recognition_tensorflow.tf_retrain.get_bottleneck_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bottleneck_path</span></code></a>(image_lists, label_name, index, ...)</p></td>
+<td><p>&quot;Returns a path to a bottleneck file for a label at the given index.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.create_model_graph" title="image_recognition_tensorflow.tf_retrain.create_model_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_model_graph</span></code></a>(model_info)</p></td>
+<td><p>&quot;Creates a graph from saved GraphDef file and returns a Graph object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.run_bottleneck_on_image" title="image_recognition_tensorflow.tf_retrain.run_bottleneck_on_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_bottleneck_on_image</span></code></a>(sess, image_data, ...)</p></td>
+<td><p>Runs inference on an image to extract the 'bottleneck' summary layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.maybe_download_and_extract" title="image_recognition_tensorflow.tf_retrain.maybe_download_and_extract"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maybe_download_and_extract</span></code></a>(data_url)</p></td>
+<td><p>Download and extract model tar file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.ensure_dir_exists" title="image_recognition_tensorflow.tf_retrain.ensure_dir_exists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_dir_exists</span></code></a>(dir_name)</p></td>
+<td><p>Makes sure the folder exists on disk.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.create_bottleneck_file" title="image_recognition_tensorflow.tf_retrain.create_bottleneck_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_bottleneck_file</span></code></a>(bottleneck_path, image_lists, ...)</p></td>
+<td><p>Create a single bottleneck file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.get_or_create_bottleneck" title="image_recognition_tensorflow.tf_retrain.get_or_create_bottleneck"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_or_create_bottleneck</span></code></a>(sess, image_lists, ...)</p></td>
+<td><p>Retrieves or calculates bottleneck values for an image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.cache_bottlenecks" title="image_recognition_tensorflow.tf_retrain.cache_bottlenecks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cache_bottlenecks</span></code></a>(sess, image_lists, image_dir, ...)</p></td>
+<td><p>Ensures all the training, testing, and validation bottlenecks are cached.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.get_random_cached_bottlenecks" title="image_recognition_tensorflow.tf_retrain.get_random_cached_bottlenecks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_cached_bottlenecks</span></code></a>(sess, image_lists, ...)</p></td>
+<td><p>Retrieves bottleneck values for cached images.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.get_random_distorted_bottlenecks" title="image_recognition_tensorflow.tf_retrain.get_random_distorted_bottlenecks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_random_distorted_bottlenecks</span></code></a>(sess, image_lists, ...)</p></td>
+<td><p>Retrieves bottleneck values for training images, after distortions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.should_distort_images" title="image_recognition_tensorflow.tf_retrain.should_distort_images"><code class="xref py py-obj docutils literal notranslate"><span class="pre">should_distort_images</span></code></a>(flip_left_right, random_crop, ...)</p></td>
+<td><p>Whether any distortions are enabled, from the input flags.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.add_input_distortions" title="image_recognition_tensorflow.tf_retrain.add_input_distortions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_input_distortions</span></code></a>(flip_left_right, random_crop, ...)</p></td>
+<td><p>Creates the operations to apply the specified distortions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.variable_summaries" title="image_recognition_tensorflow.tf_retrain.variable_summaries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variable_summaries</span></code></a>(var)</p></td>
+<td><p>Attach a lot of summaries to a Tensor (for TensorBoard visualization).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.add_final_training_ops" title="image_recognition_tensorflow.tf_retrain.add_final_training_ops"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_final_training_ops</span></code></a>(class_count, final_tensor_name, ...)</p></td>
+<td><p>Adds a new softmax and fully-connected layer for training.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.add_evaluation_step" title="image_recognition_tensorflow.tf_retrain.add_evaluation_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_evaluation_step</span></code></a>(result_tensor, ground_truth_tensor)</p></td>
+<td><p>Inserts the operations we need to evaluate the accuracy of our results.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.save_graph_to_file" title="image_recognition_tensorflow.tf_retrain.save_graph_to_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_graph_to_file</span></code></a>(sess, graph, graph_file_name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.prepare_file_system" title="image_recognition_tensorflow.tf_retrain.prepare_file_system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_file_system</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.create_model_info" title="image_recognition_tensorflow.tf_retrain.create_model_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_model_info</span></code></a>(architecture)</p></td>
+<td><p>Given the name of a model architecture, returns information about it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.add_jpeg_decoding" title="image_recognition_tensorflow.tf_retrain.add_jpeg_decoding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_jpeg_decoding</span></code></a>(input_width, input_height, ...)</p></td>
+<td><p>Adds operations that perform JPEG decoding and resizing to the graph..</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#image_recognition_tensorflow.tf_retrain.main" title="image_recognition_tensorflow.tf_retrain.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>(_)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.FLAGS">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">FLAGS</span></span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.FLAGS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.MAX_NUM_IMAGES_PER_CLASS">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">MAX_NUM_IMAGES_PER_CLASS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">134217727</span></em><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.MAX_NUM_IMAGES_PER_CLASS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.create_image_lists">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">create_image_lists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testing_percentage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_percentage</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.create_image_lists" title="Permalink to this definition"></a></dt>
+<dd><p>Builds a list of training images from the file system.</p>
+<p>Analyzes the sub folders in the image directory, splits them into stable
+training, testing, and validation sets, and returns a data structure
+describing the lists of images for each label and their paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image_dir</strong> – String path to a folder containing subfolders of images.</p></li>
+<li><p><strong>testing_percentage</strong> – Integer percentage of the images to reserve for tests.</p></li>
+<li><p><strong>validation_percentage</strong> – Integer percentage of images reserved for validation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing an entry for each label subfolder, with images split
+into training, testing, and validation sets within each label.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.get_image_path">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">get_image_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.get_image_path" title="Permalink to this definition"></a></dt>
+<dd><p>“Returns a path to an image for a label at the given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image_lists</strong> – Dictionary of training images for each label.</p></li>
+<li><p><strong>label_name</strong> – Label string we want to get an image for.</p></li>
+<li><p><strong>index</strong> – Int offset of the image we want. This will be moduloed by the</p></li>
+<li><p><strong>label</strong> (<em>available number</em><em> of </em><em>images for the</em>) – </p></li>
+<li><p><strong>large.</strong> (<em>so it can be arbitrarily</em>) – </p></li>
+<li><p><strong>image_dir</strong> – Root folder string of the subfolders containing the training</p></li>
+<li><p><strong>images.</strong> – </p></li>
+<li><p><strong>category</strong> – Name string of set to pull images from - training, testing, or</p></li>
+<li><p><strong>validation.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>File system path string to an image that meets the requested parameters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.get_bottleneck_path">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">get_bottleneck_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">architecture</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.get_bottleneck_path" title="Permalink to this definition"></a></dt>
+<dd><p>“Returns a path to a bottleneck file for a label at the given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image_lists</strong> – Dictionary of training images for each label.</p></li>
+<li><p><strong>label_name</strong> – Label string we want to get an image for.</p></li>
+<li><p><strong>index</strong> – Integer offset of the image we want. This will be moduloed by the</p></li>
+<li><p><strong>label</strong> (<em>available number</em><em> of </em><em>images for the</em>) – </p></li>
+<li><p><strong>large.</strong> (<em>so it can be arbitrarily</em>) – </p></li>
+<li><p><strong>bottleneck_dir</strong> – Folder string holding cached files of bottleneck values.</p></li>
+<li><p><strong>category</strong> – Name string of set to pull images from - training, testing, or</p></li>
+<li><p><strong>validation.</strong> – </p></li>
+<li><p><strong>architecture</strong> – The name of the model architecture.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>File system path string to an image that meets the requested parameters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.create_model_graph">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">create_model_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.create_model_graph" title="Permalink to this definition"></a></dt>
+<dd><p>“Creates a graph from saved GraphDef file and returns a Graph object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_info</strong> – Dictionary containing information about the model architecture.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Graph holding the trained Inception network, and various tensors we’ll be
+manipulating.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.run_bottleneck_on_image">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">run_bottleneck_on_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_data_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoded_image_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resized_input_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.run_bottleneck_on_image" title="Permalink to this definition"></a></dt>
+<dd><p>Runs inference on an image to extract the ‘bottleneck’ summary layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sess</strong> – Current active TensorFlow Session.</p></li>
+<li><p><strong>image_data</strong> – String of raw JPEG data.</p></li>
+<li><p><strong>image_data_tensor</strong> – Input data layer in the graph.</p></li>
+<li><p><strong>decoded_image_tensor</strong> – Output of initial image resizing and preprocessing.</p></li>
+<li><p><strong>resized_input_tensor</strong> – The input node of the recognition graph.</p></li>
+<li><p><strong>bottleneck_tensor</strong> – Layer before the final softmax.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Numpy array of bottleneck values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.maybe_download_and_extract">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">maybe_download_and_extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.maybe_download_and_extract" title="Permalink to this definition"></a></dt>
+<dd><p>Download and extract model tar file.</p>
+<p>If the pretrained model we’re using doesn’t already exist, this function
+downloads it from the TensorFlow.org website and unpacks it into a directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data_url</strong> – Web location of the tar file containing the pretrained model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.ensure_dir_exists">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">ensure_dir_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.ensure_dir_exists" title="Permalink to this definition"></a></dt>
+<dd><p>Makes sure the folder exists on disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dir_name</strong> – Path string to the folder we want to create.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.bottleneck_path_2_bottleneck_values">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">bottleneck_path_2_bottleneck_values</span></span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.bottleneck_path_2_bottleneck_values" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.create_bottleneck_file">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">create_bottleneck_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bottleneck_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jpeg_data_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoded_image_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resized_input_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.create_bottleneck_file" title="Permalink to this definition"></a></dt>
+<dd><p>Create a single bottleneck file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.get_or_create_bottleneck">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">get_or_create_bottleneck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jpeg_data_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoded_image_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resized_input_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">architecture</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.get_or_create_bottleneck" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieves or calculates bottleneck values for an image.</p>
+<p>If a cached version of the bottleneck data exists on-disk, return that,
+otherwise calculate the data and save it to disk for future use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sess</strong> – The current active TensorFlow Session.</p></li>
+<li><p><strong>image_lists</strong> – Dictionary of training images for each label.</p></li>
+<li><p><strong>label_name</strong> – Label string we want to get an image for.</p></li>
+<li><p><strong>index</strong> – Integer offset of the image we want. This will be modulo-ed by the</p></li>
+<li><p><strong>label</strong> (<em>available number</em><em> of </em><em>images for the</em>) – </p></li>
+<li><p><strong>large.</strong> (<em>so it can be arbitrarily</em>) – </p></li>
+<li><p><strong>image_dir</strong> – Root folder string of the subfolders containing the training</p></li>
+<li><p><strong>images.</strong> – </p></li>
+<li><p><strong>category</strong> – Name string of which set to pull images from - training, testing,</p></li>
+<li><p><strong>validation.</strong> (<em>or</em>) – </p></li>
+<li><p><strong>bottleneck_dir</strong> – Folder string holding cached files of bottleneck values.</p></li>
+<li><p><strong>jpeg_data_tensor</strong> – The tensor to feed loaded jpeg data into.</p></li>
+<li><p><strong>decoded_image_tensor</strong> – The output of decoding and resizing the image.</p></li>
+<li><p><strong>resized_input_tensor</strong> – The input node of the recognition graph.</p></li>
+<li><p><strong>bottleneck_tensor</strong> – The output tensor for the bottleneck values.</p></li>
+<li><p><strong>architecture</strong> – The name of the model architecture.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Numpy array of values produced by the bottleneck layer for the image.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.cache_bottlenecks">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">cache_bottlenecks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jpeg_data_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoded_image_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resized_input_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">architecture</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.cache_bottlenecks" title="Permalink to this definition"></a></dt>
+<dd><p>Ensures all the training, testing, and validation bottlenecks are cached.</p>
+<p>Because we’re likely to read the same image multiple times (if there are no
+distortions applied during training) it can speed things up a lot if we
+calculate the bottleneck layer values once for each image during
+preprocessing, and then just read those cached values repeatedly during
+training. Here we go through all the images we’ve found, calculate those
+values, and save them off.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sess</strong> – The current active TensorFlow Session.</p></li>
+<li><p><strong>image_lists</strong> – Dictionary of training images for each label.</p></li>
+<li><p><strong>image_dir</strong> – Root folder string of the subfolders containing the training</p></li>
+<li><p><strong>images.</strong> – </p></li>
+<li><p><strong>bottleneck_dir</strong> – Folder string holding cached files of bottleneck values.</p></li>
+<li><p><strong>jpeg_data_tensor</strong> – Input tensor for jpeg data from file.</p></li>
+<li><p><strong>decoded_image_tensor</strong> – The output of decoding and resizing the image.</p></li>
+<li><p><strong>resized_input_tensor</strong> – The input node of the recognition graph.</p></li>
+<li><p><strong>bottleneck_tensor</strong> – The penultimate output layer of the graph.</p></li>
+<li><p><strong>architecture</strong> – The name of the model architecture.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Nothing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.get_random_cached_bottlenecks">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">get_random_cached_bottlenecks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">how_many</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jpeg_data_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoded_image_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resized_input_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">architecture</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.get_random_cached_bottlenecks" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieves bottleneck values for cached images.</p>
+<p>If no distortions are being applied, this function can retrieve the cached
+bottleneck values directly from disk for images. It picks a random set of
+images from the specified category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sess</strong> – Current TensorFlow Session.</p></li>
+<li><p><strong>image_lists</strong> – Dictionary of training images for each label.</p></li>
+<li><p><strong>how_many</strong> – If positive, a random sample of this size will be chosen.</p></li>
+<li><p><strong>negative</strong> (<em>If</em>) – </p></li>
+<li><p><strong>retrieved.</strong> (<em>all bottlenecks will be</em>) – </p></li>
+<li><p><strong>category</strong> – Name string of which set to pull from - training, testing, or</p></li>
+<li><p><strong>validation.</strong> – </p></li>
+<li><p><strong>bottleneck_dir</strong> – Folder string holding cached files of bottleneck values.</p></li>
+<li><p><strong>image_dir</strong> – Root folder string of the subfolders containing the training</p></li>
+<li><p><strong>images.</strong> – </p></li>
+<li><p><strong>jpeg_data_tensor</strong> – The layer to feed jpeg image data into.</p></li>
+<li><p><strong>decoded_image_tensor</strong> – The output of decoding and resizing the image.</p></li>
+<li><p><strong>resized_input_tensor</strong> – The input node of the recognition graph.</p></li>
+<li><p><strong>bottleneck_tensor</strong> – The bottleneck output layer of the CNN graph.</p></li>
+<li><p><strong>architecture</strong> – The name of the model architecture.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of bottleneck arrays, their corresponding ground truths, and the
+relevant filenames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.get_random_distorted_bottlenecks">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">get_random_distorted_bottlenecks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_lists</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">how_many</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_jpeg_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distorted_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resized_input_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.get_random_distorted_bottlenecks" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieves bottleneck values for training images, after distortions.</p>
+<p>If we’re training with distortions like crops, scales, or flips, we have to
+recalculate the full model for every image, and so we can’t use cached
+bottleneck values. Instead we find random images for the requested category,
+run them through the distortion graph, and then the full graph to get the
+bottleneck results for each.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sess</strong> – Current TensorFlow Session.</p></li>
+<li><p><strong>image_lists</strong> – Dictionary of training images for each label.</p></li>
+<li><p><strong>how_many</strong> – The integer number of bottleneck values to return.</p></li>
+<li><p><strong>category</strong> – Name string of which set of images to fetch - training, testing,</p></li>
+<li><p><strong>validation.</strong> (<em>or</em>) – </p></li>
+<li><p><strong>image_dir</strong> – Root folder string of the subfolders containing the training</p></li>
+<li><p><strong>images.</strong> – </p></li>
+<li><p><strong>input_jpeg_tensor</strong> – The input layer we feed the image data to.</p></li>
+<li><p><strong>distorted_image</strong> – The output node of the distortion graph.</p></li>
+<li><p><strong>resized_input_tensor</strong> – The input node of the recognition graph.</p></li>
+<li><p><strong>bottleneck_tensor</strong> – The bottleneck output layer of the CNN graph.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of bottleneck arrays and their corresponding ground truths.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.should_distort_images">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">should_distort_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flip_left_right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_crop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_brightness</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.should_distort_images" title="Permalink to this definition"></a></dt>
+<dd><p>Whether any distortions are enabled, from the input flags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flip_left_right</strong> – Boolean whether to randomly mirror images horizontally.</p></li>
+<li><p><strong>random_crop</strong> – Integer percentage setting the total margin used around the</p></li>
+<li><p><strong>box.</strong> (<em>crop</em>) – </p></li>
+<li><p><strong>random_scale</strong> – Integer percentage of how much to vary the scale by.</p></li>
+<li><p><strong>random_brightness</strong> – Integer range to randomly multiply the pixel values by.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boolean value indicating whether any distortions should be applied.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.add_input_distortions">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">add_input_distortions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flip_left_right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_crop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_brightness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_std</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.add_input_distortions" title="Permalink to this definition"></a></dt>
+<dd><p>Creates the operations to apply the specified distortions.</p>
+<p>During training it can help to improve the results if we run the images
+through simple distortions like crops, scales, and flips. These reflect the
+kind of variations we expect in the real world, and so can help train the
+model to cope with natural data more effectively. Here we take the supplied
+parameters and construct a network of operations to apply them to an image.</p>
+<section id="cropping">
+<h3>Cropping<a class="headerlink" href="#cropping" title="Permalink to this heading"></a></h3>
+<p>Cropping is done by placing a bounding box at a random position in the full
+image. The cropping parameter controls the size of that box relative to the
+input image. If it’s zero, then the box is the same size as the input and no
+cropping is performed. If the value is 50%, then the crop box will be half the
+width and height of the input. In a diagram it looks like this:</p>
+<p>&lt;       width         &gt;
++———————+
+|                     |
+|   width - crop%     |
+|    &lt;      &gt;         |
+|    +——+         |
+|    |      |         |
+|    |      |         |
+|    |      |         |
+|    +——+         |
+|                     |
+|                     |
++———————+</p>
+</section>
+<section id="scaling">
+<h3>Scaling<a class="headerlink" href="#scaling" title="Permalink to this heading"></a></h3>
+<p>Scaling is a lot like cropping, except that the bounding box is always
+centered and its size varies randomly within the given range. For example if
+the scale percentage is zero, then the bounding box is the same size as the
+input and no scaling is applied. If it’s 50%, then the bounding box will be in
+a random range between half the width and height and full size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param flip_left_right<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Boolean whether to randomly mirror images horizontally.</p>
+</dd>
+<dt class="field-even">param random_crop<span class="colon">:</span></dt>
+<dd class="field-even"><p>Integer percentage setting the total margin used around the</p>
+</dd>
+<dt class="field-odd">param crop box.<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">param random_scale<span class="colon">:</span></dt>
+<dd class="field-even"><p>Integer percentage of how much to vary the scale by.</p>
+</dd>
+<dt class="field-odd">param random_brightness<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Integer range to randomly multiply the pixel values by.</p>
+</dd>
+<dt class="field-even">param graph.<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+<dt class="field-odd">param input_width<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Horizontal size of expected input image to model.</p>
+</dd>
+<dt class="field-even">param input_height<span class="colon">:</span></dt>
+<dd class="field-even"><p>Vertical size of expected input image to model.</p>
+</dd>
+<dt class="field-odd">param input_depth<span class="colon">:</span></dt>
+<dd class="field-odd"><p>How many channels the expected input image should have.</p>
+</dd>
+<dt class="field-even">param input_mean<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pixel value that should be zero in the image for the graph.</p>
+</dd>
+<dt class="field-odd">param input_std<span class="colon">:</span></dt>
+<dd class="field-odd"><p>How much to divide the pixel values by before recognition.</p>
+</dd>
+<dt class="field-even">returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The jpeg input layer and the distorted result tensor.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.variable_summaries">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">variable_summaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.variable_summaries" title="Permalink to this definition"></a></dt>
+<dd><p>Attach a lot of summaries to a Tensor (for TensorBoard visualization).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.add_final_training_ops">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">add_final_training_ops</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_tensor_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottleneck_tensor_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantize_layer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.add_final_training_ops" title="Permalink to this definition"></a></dt>
+<dd><p>Adds a new softmax and fully-connected layer for training.</p>
+<p>We need to retrain the top layer to identify our new classes, so this function
+adds the right operations to the graph, along with some variables to hold the
+weights, and then sets up all the gradients for the backward pass.</p>
+<p>The set up for the softmax and fully-connected layers is based on:
+<a class="reference external" href="https://www.tensorflow.org/versions/master/tutorials/mnist/beginners/index.html">https://www.tensorflow.org/versions/master/tutorials/mnist/beginners/index.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class_count</strong> – Integer of how many categories of things we’re trying to
+recognize.</p></li>
+<li><p><strong>final_tensor_name</strong> – Name string for the new final node that produces results.</p></li>
+<li><p><strong>bottleneck_tensor</strong> – The output of the main CNN graph.</p></li>
+<li><p><strong>bottleneck_tensor_size</strong> – How many entries in the bottleneck vector.</p></li>
+<li><p><strong>quantize_layer</strong> – Boolean, specifying whether the newly added layer should be
+quantized.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The tensors for the training and cross entropy results, and tensors for the
+bottleneck input and ground truth input.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.add_evaluation_step">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">add_evaluation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth_tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.add_evaluation_step" title="Permalink to this definition"></a></dt>
+<dd><p>Inserts the operations we need to evaluate the accuracy of our results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>result_tensor</strong> – The new final node that produces results.</p></li>
+<li><p><strong>ground_truth_tensor</strong> – The node we feed ground truth data</p></li>
+<li><p><strong>into.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of (evaluation step, prediction).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.save_graph_to_file">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">save_graph_to_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.save_graph_to_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.prepare_file_system">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">prepare_file_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.prepare_file_system" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.create_model_info">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">create_model_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">architecture</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.create_model_info" title="Permalink to this definition"></a></dt>
+<dd><p>Given the name of a model architecture, returns information about it.</p>
+<p>There are different base image recognition pretrained models that can be
+retrained using transfer learning, and this function translates from the name
+of a model to the attributes that are needed to download and train with it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>architecture</strong> – Name of a model architecture.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of information about the model, or None if the name isn’t
+recognized</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If architecture name is unknown.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.add_jpeg_decoding">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">add_jpeg_decoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_std</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.add_jpeg_decoding" title="Permalink to this definition"></a></dt>
+<dd><p>Adds operations that perform JPEG decoding and resizing to the graph..</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_width</strong> – Desired width of the image fed into the recognizer graph.</p></li>
+<li><p><strong>input_height</strong> – Desired width of the image fed into the recognizer graph.</p></li>
+<li><p><strong>input_depth</strong> – Desired channels of the image fed into the recognizer graph.</p></li>
+<li><p><strong>input_mean</strong> – Pixel value that should be zero in the image for the graph.</p></li>
+<li><p><strong>input_std</strong> – How much to divide the pixel values by before recognition.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Tensors for the node to feed JPEG data into, and the output of the</dt><dd><p>preprocessing steps.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="image_recognition_tensorflow.tf_retrain.main">
+<span class="sig-prename descclassname"><span class="pre">image_recognition_tensorflow.tf_retrain.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#image_recognition_tensorflow.tf_retrain.main" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../retrain/index.html" class="btn btn-neutral float-left" title="image_recognition_tensorflow.retrain" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../utils/index.html" class="btn btn-neutral float-right" title="image_recognition_tensorflow.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

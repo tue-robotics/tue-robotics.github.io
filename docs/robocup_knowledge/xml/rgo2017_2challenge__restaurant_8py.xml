@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="rgo2017_2challenge__restaurant_8py" kind="file" language="Python">
+    <compoundname>rgo2017/challenge_restaurant.py</compoundname>
+    <innernamespace refid="namespacechallenge__restaurant">challenge_restaurant</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">#<sp/>TU/e<sp/>Robotics</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>robocup_knowledge<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>knowledge_loader</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Common<sp/>knowledge</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal">common<sp/>=<sp/>knowledge_loader.load_knowledge(</highlight><highlight class="stringliteral">&quot;common&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal">order_grammar<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="8"><highlight class="stringliteral">O[P]<sp/>-&gt;<sp/>ORDER[P]<sp/>|<sp/>can<sp/>i<sp/>have<sp/>a<sp/>ORDER[P]<sp/>|<sp/>i<sp/>would<sp/>like<sp/>ORDER[P]<sp/>|<sp/>can<sp/>i<sp/>get<sp/>ORDER[P]<sp/>|<sp/>could<sp/>i<sp/>have<sp/>ORDER[P]<sp/>|<sp/>may<sp/>i<sp/>get<sp/>ORDER[P]<sp/>|<sp/>bring<sp/>me<sp/>ORDER[P]</highlight></codeline>
+<codeline lineno="9"><highlight class="stringliteral">ORDER[OO]<sp/>-&gt;<sp/>COMBO[OO]<sp/>|<sp/>BEVERAGE[OO]</highlight></codeline>
+<codeline lineno="10"><highlight class="stringliteral">BEVERAGE[{&quot;beverage&quot;:<sp/>B}]<sp/>-&gt;<sp/>BEV[B]</highlight></codeline>
+<codeline lineno="11"><highlight class="stringliteral">BEVERAGE[{&quot;beverage&quot;:<sp/>B}]<sp/>-&gt;<sp/>DET<sp/>BEV[B]</highlight></codeline>
+<codeline lineno="12"><highlight class="stringliteral">COMBO[{&quot;food1&quot;:<sp/>F1,<sp/>&quot;food2&quot;:<sp/>F2}]<sp/>-&gt;<sp/>FOOD[F1]<sp/>and<sp/>FOOD[F2]<sp/>|<sp/>FOOD[F1]<sp/>with<sp/>FOOD[F2]</highlight></codeline>
+<codeline lineno="13"><highlight class="stringliteral">COMBO[{&quot;food1&quot;:<sp/>F1,<sp/>&quot;food2&quot;:<sp/>F2}]<sp/>-&gt;<sp/>DET<sp/>FOOD[F1]<sp/>and<sp/>FOOD[F2]<sp/>|<sp/>DET<sp/>FOOD[F1]<sp/>with<sp/>FOOD[F2]</highlight></codeline>
+<codeline lineno="14"><highlight class="stringliteral">COMBO[{&quot;food1&quot;:<sp/>F1,<sp/>&quot;food2&quot;:<sp/>F2}]<sp/>-&gt;<sp/>FOOD[F1]<sp/>and<sp/>DET<sp/>FOOD[F2]<sp/>|<sp/>FOOD[F1]<sp/>with<sp/>DET<sp/>FOOD[F2]</highlight></codeline>
+<codeline lineno="15"><highlight class="stringliteral">COMBO[{&quot;food1&quot;:<sp/>F1,<sp/>&quot;food2&quot;:<sp/>F2}]<sp/>-&gt;<sp/>DET<sp/>FOOD[F1]<sp/>and<sp/>DET<sp/>FOOD[F2]<sp/>|<sp/>DET<sp/>FOOD[F1]<sp/>with<sp/>DET<sp/>FOOD[F2]</highlight></codeline>
+<codeline lineno="16"><highlight class="stringliteral">DET<sp/>-&gt;<sp/>a<sp/>|<sp/>an</highlight></codeline>
+<codeline lineno="17"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">#<sp/>COMBO[{&quot;food1&quot;:<sp/>F1,<sp/>&quot;food2&quot;:<sp/>F2}]<sp/>-&gt;<sp/>DET<sp/>FOOD[F1]<sp/>and<sp/>DET<sp/>FOOD[F2]<sp/>|<sp/>DET<sp/>FOOD[F1]<sp/>with<sp/>DET<sp/>FOOD[F2]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">#<sp/>BEVERAGE[{&quot;beverage&quot;:<sp/>B}]<sp/>-&gt;<sp/>DET<sp/>BEV[B]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Add<sp/>drinks</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>d<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>common.objects:</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>d[</highlight><highlight class="stringliteral">&quot;category&quot;</highlight><highlight class="normal">]<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;drink&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>order_grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;\nBEV[&apos;{}&apos;]<sp/>-&gt;<sp/>{}[B]&quot;</highlight><highlight class="normal">.format(d[</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">],<sp/>d[</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">].replace(</highlight><highlight class="stringliteral">&apos;_&apos;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&apos;<sp/>&apos;</highlight><highlight class="normal">))</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">elif</highlight><highlight class="normal"><sp/>d[</highlight><highlight class="stringliteral">&quot;category&quot;</highlight><highlight class="normal">]<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;food&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>order_grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;\nFOOD[&apos;{}&apos;]<sp/>-&gt;<sp/>{}&quot;</highlight><highlight class="normal">.format(d[</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">],<sp/>d[</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">].replace(</highlight><highlight class="stringliteral">&apos;_&apos;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&apos;<sp/>&apos;</highlight><highlight class="normal">))</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;__main__&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>rospy</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>robot_skills.api<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Api</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.init_node(</highlight><highlight class="stringliteral">&apos;blaat&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>a<sp/>=<sp/>Api(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">None</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.sleep(rospy.Duration(0.5))</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">True</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/>a.query(</highlight><highlight class="stringliteral">&quot;blaat&quot;</highlight><highlight class="normal">,<sp/>order_grammar,<sp/></highlight><highlight class="stringliteral">&quot;O&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>ipdb;ipdb.set_trace()</highlight></codeline>
+    </programlisting>
+    <location file="src/robocup_knowledge/environments/rgo2017/challenge_restaurant.py"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,75 @@
+upower_ros.battery_node
+=======================
+
+.. py:module:: upower_ros.battery_node
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   upower_ros.battery_node.BatteryNode
+
+
+Module Contents
+---------------
+
+.. py:class:: BatteryNode(battery_topic = None, topic_rate = None, upower_path = None, location = None)
+
+   Bases: :py:obj:`object`
+
+
+   
+   If parameter isn't provided. The ROS parameter server is checked (private params). Otherwise the default value
+   is used.
+   :param battery_topic: Topic to publish on (Default: "battery_state")
+   :type battery_topic: str
+   :param topic_rate: Rate of publishing (Default: 1.0)
+   :type topic_rate: float
+   :param upower_path: UPower path of the battery (Default: "/org/freedesktop/UPower/devices/battery_BAT0")
+   :type upower_path: str
+   :param upower_path: Location of the battery (Default: "")
+   :type upower_path: str
+
+
+   .. py:attribute:: battery
+
+
+   .. py:attribute:: location
+      :value: None
+
+
+
+   .. py:attribute:: pub
+
+
+   .. py:attribute:: rate
+
+
+   .. py:attribute:: last_master_check
+
+
+   .. py:method:: generate_msg()
+
+      Generate a BatteryState msg with the current state of the battery
+      :return: filled BatteryState msg
+      :rtype: BatteryState
+
+
+
+   .. py:method:: loop(check_master=False)
+
+      Loop function to publish with a constant rate
+
+      :param check_master: Check connection to master at 1Hz
+      :return: return code to indicate connection to master was lost
+
+
+
+   .. py:method:: publish()
+
+      Publish function to be called. Can be used if multiple batteries are monitored in one node.
+
+
+

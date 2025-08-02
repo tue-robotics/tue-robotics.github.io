@@ -1,0 +1,300 @@
+robot_skills.world_model_ed
+===========================
+
+.. py:module:: robot_skills.world_model_ed
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.world_model_ed.FloorPlan
+   robot_skills.world_model_ed.Navigation
+   robot_skills.world_model_ed.ED
+
+
+Module Contents
+---------------
+
+.. py:class:: FloorPlan
+
+   .. py:attribute:: map
+      :type:  numpy.ndarray
+
+
+   .. py:attribute:: map_pose
+      :type:  pykdl_ros.FrameStamped
+
+
+   .. py:attribute:: pixels_per_meter_width
+      :type:  float
+
+
+   .. py:attribute:: pixels_per_meter_height
+      :type:  float
+
+
+.. py:class:: Navigation(robot_name, tf_buffer)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   Base class for robot parts
+
+   Constructor
+
+   :param robot_name: string with robot name
+   :param tf_buffer: tf buffer object
+
+
+   .. py:attribute:: _get_constraint_srv
+
+
+   .. py:method:: get_position_constraint(entity_id_area_name_map)
+
+
+.. py:class:: ED(robot_name, tf_buffer)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   Base class for robot parts
+
+   Constructor
+
+   :param robot_name: string with robot name
+   :param tf_buffer: tf buffer object
+
+
+   .. py:attribute:: _ed_simple_query_srv
+
+
+   .. py:attribute:: _ed_entity_info_query_srv
+
+
+   .. py:attribute:: _ed_update_srv
+
+
+   .. py:attribute:: _ed_kinect_update_srv
+
+
+   .. py:attribute:: _ed_classify_srv
+
+
+   .. py:attribute:: _ed_configure_srv
+
+
+   .. py:attribute:: _ed_reset_srv
+
+
+   .. py:attribute:: _ed_get_image_srv
+
+
+   .. py:attribute:: _ed_ray_trace_srv
+
+
+   .. py:attribute:: _ed_detect_people_srv
+
+
+   .. py:attribute:: _ed_map_srv
+
+
+   .. py:attribute:: navigation
+
+
+   .. py:attribute:: _marker_publisher
+
+
+   .. py:attribute:: __cv_bridge
+      :value: None
+
+
+
+   .. py:method:: wait_for_connections(timeout, log_failing_connections=True)
+
+      Waits for the connections until they are connected
+
+      :param timeout: timeout in seconds
+      :param log_failing_connections: (bool) whether to log errors if not connected. This is useful when checking
+          multiple robot parts in a loop
+      :return: bool indicating whether all connections are connected
+
+
+
+   .. py:property:: _cv_bridge
+
+
+   .. py:method:: get_entities(etype='', center_point=None, radius=float('inf'), uuid='', ignore_z=False)
+
+      Get entities via Simple Query interface
+
+      :param etype: Type of entity
+      :param center_point: Point from which radius is measured
+      :param radius: Distance between center_point and entity
+      :param uuid: ID of entity
+      :param ignore_z: Consider only the distance in the X,Y plane for the radius from center_point
+
+
+
+   .. py:method:: get_closest_entity(etype='', center_point=None, radius=float('inf'))
+
+
+   .. py:method:: get_closest_room(center_point=None, radius=float('inf'))
+
+
+   .. py:method:: get_closest_laser_entity(etype='', center_point=None, radius=float('inf'), ignore_z=False)
+
+      Get the closest entity detected by the laser. The ID's of such entities are postfixed with '-laser'
+      For the rest, this works exactly like get_closest_entity
+
+      :param type: What type of entities to filter on
+      :param center_point: combined with radius. Around which point to search for entities
+      :param radius: how far from the center_point to look (in meters)
+      :param ignore_z: Consider only the distance in the X,Y plane for the radius from center_point criterium.
+      :return: list of Entity
+
+
+
+   .. py:method:: get_entity(uuid)
+
+
+   .. py:method:: get_entity_info(uuid)
+
+
+   .. py:method:: get_map(uuids, background = 'white', print_labels = True, width = 0, height = 0)
+
+      :param uuids: Entities that should be in view in the generated map
+      :param background: Background color of the map
+      :param print_labels: Should entity labels be printed
+      :param width: image width (default: 0, defaults to 1024)
+      :param height: image height (default: 0, defaults to 600)
+      :returns: The generated map, the position of the top-left corner of the image and the pixels/meter in both axis
+
+
+
+   .. py:method:: selfreset(keep_all_shapes=True)
+
+      Reset of the body part itself. This function may be overwritten.
+      Returns: bool
+
+
+
+   .. py:method:: update_entity(uuid, etype=None, frame_stamped=None, remove_pose=None, flags=None, add_flags=None, remove_flags=None, action=None)
+
+      Updates entity
+
+      :param uuid: entity id
+      :param etype: entity type
+      :param frame_stamped: If specified, the entity is updated to be at this FrameStamped
+      :param remove_pose: If True, the pose of the entity is removed
+      :param flags: (OBSOLETE, use add_flags and remove_flags): (list of) dict(s) containing key 'add' or 'remove' and value of the flag to set,  e.g., 'perception'
+      :param add_flags: list of flags which will be added to the specified entity
+      :param remove_flags: list of flags which will removed from the specified entity
+      :param action: update_action, e.g. remove
+
+
+
+   .. py:method:: remove_entity(uuid)
+
+      Removes entity with the provided id to the world model
+
+      :param uuid: string with the ID of the entity to remove
+
+
+
+   .. py:method:: lock_entities(lock_ids, unlock_ids)
+
+
+   .. py:method:: get_closest_possible_person_entity(center_point=None, radius=float('inf'))
+
+      Returns the 'possible_human' entity closest to a certain center point.
+
+      :param center_point: (VectorStamped) indicating where the human should be close to
+      :param radius: (float) radius to look for possible humans
+      :return: (Entity) entity (if found), None otherwise
+
+
+
+   .. py:method:: update_kinect(area_description='', background_padding=0, fit_supporting_entity=True)
+
+      Update ED based on kinect (depth) images
+
+      :param area_description: An entity id or area description, e.g. "a08d537e-e051-11e5-a34e-6cc217ec9f41" or "on_top_of cabinet-11"
+      :param background_padding: The maximum distance to which kinect data points are associated to existing objects (in meters).
+             Or, in other words: the padding that is added to existing objects before they are removed from the point cloud
+      :param fit_supporting_entity: Fit or not fit the supporting entity
+      :return: Update result
+
+
+
+   .. py:method:: classify(uuids, types = None, unknown_threshold = 0.0)
+
+      Classifies the entities with the given IDs
+
+      :param ids: list with IDs
+      :type ids: List[str]
+      :param types: list with types to identify
+      :type: types: List[str]
+      :param unknown_threshold: objects with a probability lower than this unknown_threshold are not set as a type
+      :type unknown_threshold: float
+      :return: List of classification results
+      :rtype: List[ClassificationResult]
+
+
+
+   .. py:method:: save_image(path='', path_suffix='', filename='')
+
+
+   .. py:method:: mesh_entity_in_view(uuid, etype='')
+
+
+   .. py:method:: get_full_id(short_id)
+
+      Get an entity's full ID based on the first characters of its ID like you can do with git hashes
+
+
+
+   .. py:method:: ray_trace(pose)
+
+      Performs a ray trace
+
+      :param pose: geometry_msg PoseStamped. Position is the origin of ray. x-axis is pointing in the ray direction
+      :return: RayTraceResult. This struct contains intersection_point (geometry_msgs/PoseStamped) and entity_id
+          (string)
+
+
+
+   .. py:method:: _transform_center_point_to_map(pointstamped)
+
+
+   .. py:method:: _publish_marker(center_point, radius)
+
+
+   .. py:method:: sync_furniture_poses()
+
+      Syncs the furniture poses of the world model to disc. Hereto, it
+      i) gets all entities and filters these on being furniture
+      ii) loads the current ed object models file
+      iii) iterates over the furniture object entities (i) and the data in the dict (ii). If the IDs match, the pose
+           of (ii) is updated with the pose of (i)
+      iv) dump the updated dict to the models file
+
+
+
+
+   .. py:method:: detect_people(rgb, depth, cam_info)
+
+      Detect people in the given color message, depth image aided by the depth camera's camera info
+
+      :param rgb: Color image
+      :type rgb: sensor_msgs/Image
+      :param depth: Depth image
+      :type depth: sensor_msgs/Image
+      :param cam_info: CamInfo for the camera that recorded the depth image.
+      :type cam_info: sensor_msgs/CamInfo
+      :return: bool success and a list strings with the IDs of the detected persons
+      :rtype: (bool, [str])
+
+
+

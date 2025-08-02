@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="generate__random__question_8py" kind="file" language="Python">
+    <compoundname>generate_random_question.py</compoundname>
+    <innernamespace refid="namespacegenerate__random__question">generate_random_question</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacegenerate__random__question" refkind="compound"><highlight class="comment">#!/usr/bin/python</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>__future__<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>print_function</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>re</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>random</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>robocup_knowledge<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>load_knowledge</highlight></codeline>
+<codeline lineno="9" refid="namespacegenerate__random__question_1aca315660a70b56162cc2ef2a97fa45d0" refkind="member"><highlight class="normal">data<sp/>=<sp/>load_knowledge(</highlight><highlight class="stringliteral">&apos;challenge_speech_recognition&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Pick<sp/>random<sp/>group<sp/>if<sp/>available</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>re.search(</highlight><highlight class="stringliteral">&apos;\([^\)]+\)&apos;</highlight><highlight class="normal">,<sp/>data.spec):</highlight></codeline>
+<codeline lineno="13" refid="namespacegenerate__random__question_1a4a83e1f6385d757f5b0ad6d2b7f27129" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>options<sp/>=<sp/>re.findall(</highlight><highlight class="stringliteral">&apos;\([^\(\)]+\)&apos;</highlight><highlight class="normal">,<sp/>data.spec)</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>option<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>options:</highlight></codeline>
+<codeline lineno="15" refid="namespacegenerate__random__question_1a7e40ee76bd484f7d48dde3bc973cd574" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data.spec<sp/>=<sp/>data.spec.replace(option,random.choice(option[1:-1].split(</highlight><highlight class="stringliteral">&quot;|&quot;</highlight><highlight class="normal">)),<sp/>1)</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Fetch<sp/>all<sp/>the<sp/>residual<sp/>choices</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="namespacegenerate__random__question_1a690605e26749bfefd4b861f0150acbcc" refkind="member"><highlight class="normal">choices<sp/>=<sp/>re.findall(</highlight><highlight class="stringliteral">&quot;&lt;([^&lt;&gt;]+)&gt;&quot;</highlight><highlight class="normal">,<sp/>data.spec)</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Parse<sp/>the<sp/>choices<sp/>in<sp/>the<sp/>ending<sp/>result<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>c<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>choices:</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>k,<sp/>v<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>data.choices.items():</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>k<sp/>==<sp/>c:</highlight></codeline>
+<codeline lineno="24" refid="namespacegenerate__random__question_1a319f18daddcf4a22adca5a47d284527f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>value<sp/>=<sp/>random.choice(v)</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>data.spec<sp/>=<sp/>data.spec.replace(</highlight><highlight class="stringliteral">&quot;&lt;%s&gt;&quot;</highlight><highlight class="normal">%c,<sp/>value)</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Check<sp/>if<sp/>result<sp/>is<sp/>clean</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>re.match(</highlight><highlight class="stringliteral">&quot;.*[&lt;&gt;\(\)\[\]]+.*&quot;</highlight><highlight class="normal">,<sp/>data.spec):</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Not<sp/>all<sp/>choices<sp/>could<sp/>be<sp/>resolved<sp/>in<sp/>the<sp/>specification,<sp/>residual<sp/>result:<sp/>&apos;%s&apos;&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Question:<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>data.spec)</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Answer:<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>data.choice_answer_mapping[data.spec])</highlight></codeline>
+    </programlisting>
+    <location file="src/generate_random_question.py"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="constrained__chainiksolvervel__pinv_8h" kind="file" language="C++">
+    <compoundname>constrained_chainiksolvervel_pinv.h</compoundname>
+    <includes local="no">kdl/chainiksolver.hpp</includes>
+    <includes local="no">kdl/chainjnttojacsolver.hpp</includes>
+    <includes local="no">kdl/utilities/svd_HH.hpp</includes>
+    <includedby refid="constrained__chainiksolvervel__pinv_8cpp" local="yes">constrained_chainiksolvervel_pinv.cpp</includedby>
+    <includedby refid="ik__solver_8cpp" local="no">ik_solver.cpp</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>constrained_chainiksolvervel_pinv.h</label>
+        <link refid="constrained__chainiksolvervel__pinv_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>kdl/utilities/svd_HH.hpp</label>
+      </node>
+      <node id="3">
+        <label>kdl/chainjnttojacsolver.hpp</label>
+      </node>
+      <node id="2">
+        <label>kdl/chainiksolver.hpp</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>constrained_chainiksolvervel_pinv.cpp</label>
+        <link refid="constrained__chainiksolvervel__pinv_8cpp"/>
+      </node>
+      <node id="1">
+        <label>constrained_chainiksolvervel_pinv.h</label>
+        <link refid="constrained__chainiksolvervel__pinv_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>ik_solver.cpp</label>
+        <link refid="ik__solver_8cpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv" prot="public">KDL::ConstrainedChainIkSolverVel_pinv</innerclass>
+    <innernamespace refid="namespaceKDL">KDL</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//<sp/>Copyright<sp/><sp/>(C)<sp/><sp/>2007<sp/><sp/>Ruben<sp/>Smits<sp/>&lt;ruben<sp/>dot<sp/>smits<sp/>at<sp/>mech<sp/>dot<sp/>kuleuven<sp/>dot<sp/>be&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Version:<sp/>1.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Author:<sp/>Ruben<sp/>Smits<sp/>&lt;ruben<sp/>dot<sp/>smits<sp/>at<sp/>mech<sp/>dot<sp/>kuleuven<sp/>dot<sp/>be&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Maintainer:<sp/>Ruben<sp/>Smits<sp/>&lt;ruben<sp/>dot<sp/>smits<sp/>at<sp/>mech<sp/>dot<sp/>kuleuven<sp/>dot<sp/>be&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">//<sp/>URL:<sp/>http://www.orocos.org/kdl</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>library<sp/>is<sp/>free<sp/>software;<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>modify<sp/>it<sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//<sp/>License<sp/>as<sp/>published<sp/>by<sp/>the<sp/>Free<sp/>Software<sp/>Foundation;<sp/>either</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">//<sp/>version<sp/>2.1<sp/>of<sp/>the<sp/>License,<sp/>or<sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">//<sp/>This<sp/>library<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">//<sp/>but<sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">//<sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">//<sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//<sp/>License<sp/>along<sp/>with<sp/>this<sp/>library;<sp/>if<sp/>not,<sp/>write<sp/>to<sp/>the<sp/>Free<sp/>Software</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Foundation,<sp/>Inc.,<sp/>51<sp/>Franklin<sp/>St,<sp/>Fifth<sp/>Floor,<sp/>Boston,<sp/>MA<sp/><sp/>02110-1301<sp/><sp/>USA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Modified<sp/>by<sp/>Janno<sp/>Lunenburg</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>KDL_CONSTRAINED_CHAIN_IKSOLVERVEL_PINV_HPP</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>KDL_CONSTRAINED_CHAIN_IKSOLVERVEL_PINV_HPP</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;kdl/chainiksolver.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;kdl/chainjnttojacsolver.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;kdl/utilities/svd_HH.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceKDL" kindref="compound">KDL</ref></highlight></codeline>
+<codeline lineno="32"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="44" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv" refkind="compound"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv" kindref="compound">ConstrainedChainIkSolverVel_pinv</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ChainIkSolverVel" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">ChainIkSolverVel</ref></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a95a21986ae73c3430e733d8c789846fd" kindref="member">ConstrainedChainIkSolverVel_pinv</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Chain" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">Chain</ref>&amp;<sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a1de6b41333684a061d4529bb6d12dd2a" kindref="member">chain</ref>,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a0a9b403aeb29fc84be5a2f83544daf0f" kindref="member">eps</ref>=0.00001,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a9046c53a08dccb29367706047564b43c" kindref="member">maxiter</ref>=150,<sp/>uint<sp/>_n_constraints=0);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a863e73ea0f729c4a8b0656f44c00b5f5" kindref="member">~ConstrainedChainIkSolverVel_pinv</ref>();</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1ae15007e2e72094fd87142a9d2824dc17" kindref="member">CartToJnt</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1JntArray" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">JntArray</ref>&amp;<sp/>q_in,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Twist" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">Twist</ref>&amp;<sp/>v_in,<sp/><ref refid="classKDL_1_1JntArray" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">JntArray</ref>&amp;<sp/>qdot_out);</highlight></codeline>
+<codeline lineno="69" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a38a9e3d40e22faa1c7d574444303a88f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a38a9e3d40e22faa1c7d574444303a88f" kindref="member">CartToJnt</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1JntArray" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">JntArray</ref>&amp;<sp/></highlight><highlight class="comment">/*q_init*/</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1FrameVel" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">FrameVel</ref>&amp;<sp/></highlight><highlight class="comment">/*v_in*/</highlight><highlight class="normal">,<sp/><ref refid="classKDL_1_1JntArrayVel" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">JntArrayVel</ref>&amp;<sp/></highlight><highlight class="comment">/*q_out*/</highlight><highlight class="normal">){</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-1;};</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1aec42dd4effe5469e054786dd8fc544a3" kindref="member">updateInternalDataStructures</ref>();</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="73" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a1de6b41333684a061d4529bb6d12dd2a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1Chain" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">Chain</ref>&amp;<sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a1de6b41333684a061d4529bb6d12dd2a" kindref="member">chain</ref>;</highlight></codeline>
+<codeline lineno="74" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1ab7e4b6cf347bc4f2aebf03024c117e4a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1ChainJntToJacSolver" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">ChainJntToJacSolver</ref><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1ab7e4b6cf347bc4f2aebf03024c117e4a" kindref="member">jnt2jac</ref>;</highlight></codeline>
+<codeline lineno="75" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a53fb485b3d0798de339de86e85a4d599" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a53fb485b3d0798de339de86e85a4d599" kindref="member">nj</ref>,<sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a233d95aa6c3b8c56980519db19200b33" kindref="member">n_constraints</ref>;</highlight></codeline>
+<codeline lineno="76" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1adf34fb1c161926afa485e5cdcb1d9477" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1JntArray" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">JntArray</ref><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1adf34fb1c161926afa485e5cdcb1d9477" kindref="member">qdot_out_reduced</ref>;</highlight></codeline>
+<codeline lineno="77" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1aa0ea1fd562d6962248df4112d8e1a3f2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1Jacobian" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">Jacobian</ref><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a2febcf7b262ef447df649b11d073fd3e" kindref="member">jac</ref>,<sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1aa0ea1fd562d6962248df4112d8e1a3f2" kindref="member">jac_reduced</ref>;</highlight></codeline>
+<codeline lineno="78" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a7043faf503afff1404d507f3b0b18d2a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1SVD__HH" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">SVD_HH</ref><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a7043faf503afff1404d507f3b0b18d2a" kindref="member">svd</ref>;</highlight></codeline>
+<codeline lineno="79" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1abe8057530b00d1c4321a389a6bc4dfb8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;JntArray&gt;</ref><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1abe8057530b00d1c4321a389a6bc4dfb8" kindref="member">U</ref>;</highlight></codeline>
+<codeline lineno="80" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1ad3d9f49f37b209813d2114d331f52d5b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1JntArray" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">JntArray</ref><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1ad3d9f49f37b209813d2114d331f52d5b" kindref="member">S</ref>;</highlight></codeline>
+<codeline lineno="81" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1acdb65b7ee81a5884a504adc2a5f4fd9e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;JntArray&gt;</ref><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1acdb65b7ee81a5884a504adc2a5f4fd9e" kindref="member">V</ref>;</highlight></codeline>
+<codeline lineno="82" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1ae676ec316335239a6e2e14fa7f02fe9a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1JntArray" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/orocos_kdl/tags">JntArray</ref><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1ae676ec316335239a6e2e14fa7f02fe9a" kindref="member">tmp</ref>;</highlight></codeline>
+<codeline lineno="83" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a0a9b403aeb29fc84be5a2f83544daf0f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a0a9b403aeb29fc84be5a2f83544daf0f" kindref="member">eps</ref>;</highlight></codeline>
+<codeline lineno="84" refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a9046c53a08dccb29367706047564b43c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1ConstrainedChainIkSolverVel__pinv_1a9046c53a08dccb29367706047564b43c" kindref="member">maxiter</ref>;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="87"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="include/tue/manipulation/constrained_chainiksolvervel_pinv.h"/>
+  </compounddef>
+</doxygen>

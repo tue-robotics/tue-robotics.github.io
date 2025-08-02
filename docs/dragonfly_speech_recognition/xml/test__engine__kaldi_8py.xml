@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="test__engine__kaldi_8py" kind="file" language="Python">
+    <compoundname>test_engine_kaldi.py</compoundname>
+    <innerclass refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1KaldiEngineTests" prot="public">dragonfly::test::test_engine_kaldi::KaldiEngineTests</innerclass>
+    <innerclass refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1MockLoggingHandler" prot="public">dragonfly::test::test_engine_kaldi::MockLoggingHandler</innerclass>
+    <innernamespace refid="namespacedragonfly_1_1test_1_1test__engine__kaldi">dragonfly::test::test_engine_kaldi</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacedragonfly_1_1test_1_1test__engine__kaldi" refkind="compound"><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="2"><highlight class="stringliteral">Tests<sp/>for<sp/>the<sp/>Kaldi<sp/>engine</highlight></codeline>
+<codeline lineno="3"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="4"><highlight class="stringliteral">Most<sp/>engine<sp/>functionality<sp/>is<sp/>tested<sp/>here,<sp/>although<sp/>the<sp/>tests<sp/>are<sp/>done</highlight></codeline>
+<codeline lineno="5"><highlight class="stringliteral">entirely<sp/>via<sp/>`mimic`,<sp/>so<sp/>there<sp/>are<sp/>some<sp/>things<sp/>which<sp/>have<sp/>to<sp/>be<sp/>tested</highlight></codeline>
+<codeline lineno="6"><highlight class="stringliteral">manually.</highlight></codeline>
+<codeline lineno="7"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="8"><highlight class="stringliteral">These<sp/>tests<sp/>assume<sp/>that<sp/>the<sp/>`kaldi_model`<sp/>model<sp/>is<sp/>used.</highlight></codeline>
+<codeline lineno="9"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="10"><highlight class="stringliteral">Adapted<sp/>from<sp/>`test_engine_sphinx.py`.</highlight></codeline>
+<codeline lineno="11"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>unittest</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>logging</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1engines" kindref="compound">dragonfly.engines</ref><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>(EngineBase,<sp/>get_engine)</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1grammar_1_1elements" kindref="compound">dragonfly.grammar.elements</ref><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Literal,<sp/>Sequence</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1test" kindref="compound">dragonfly.test</ref><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>ElementTester</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1engines_1_1backend__kaldi_1_1engine" kindref="compound">dragonfly.engines.backend_kaldi.engine</ref><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>KaldiError</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keywordflow">except</highlight><highlight class="normal"><sp/>ImportError:</highlight></codeline>
+<codeline lineno="24" refid="namespacedragonfly_1_1test_1_1test__engine__kaldi_1a3c111b389c25ae455fb18309a64b58ea" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>KaldiError<sp/>=<sp/>Exception</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27" refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1MockLoggingHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1MockLoggingHandler" kindref="compound">MockLoggingHandler</ref>(logging.Handler):</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="29"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>Mock<sp/>logging<sp/>handler<sp/>to<sp/>check<sp/>for<sp/>expected<sp/>logs.</highlight></codeline>
+<codeline lineno="30"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>Adapted<sp/>this<sp/>from<sp/>a<sp/>Stack<sp/>Overflow<sp/>answer:<sp/>https://stackoverflow.com/a/1049375</highlight></codeline>
+<codeline lineno="31"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1MockLoggingHandler_1a3cb6ebfc1d8bd2bfd7513f0c414deb52" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1MockLoggingHandler_1a3cb6ebfc1d8bd2bfd7513f0c414deb52" kindref="member">__init__</ref>(self,<sp/>*args,<sp/>**kwargs):</highlight></codeline>
+<codeline lineno="34" refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1MockLoggingHandler_1a9f3aef103233dc68220649d48890b894" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1MockLoggingHandler_1a9f3aef103233dc68220649d48890b894" kindref="member">messages</ref><sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&apos;debug&apos;</highlight><highlight class="normal">:<sp/>[],</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&apos;info&apos;</highlight><highlight class="normal">:<sp/>[],</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&apos;warning&apos;</highlight><highlight class="normal">:<sp/>[],</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&apos;error&apos;</highlight><highlight class="normal">:<sp/>[],</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&apos;critical&apos;</highlight><highlight class="normal">:<sp/>[],</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>logging.Handler.__init__(self,<sp/>*args,<sp/>**kwargs)</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1MockLoggingHandler_1ab2b4c73a557c324d4563dbfc70905683" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1MockLoggingHandler_1ab2b4c73a557c324d4563dbfc70905683" kindref="member">emit</ref>(self,<sp/>record):</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1MockLoggingHandler_1a9f3aef103233dc68220649d48890b894" kindref="member">messages</ref>[record.levelname.lower()].append(record.getMessage())</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1KaldiEngineTests" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1KaldiEngineTests" kindref="compound">KaldiEngineTests</ref>(unittest.TestCase):</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="49"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>Tests<sp/>for<sp/>the<sp/>Kaldi<sp/>engine.</highlight></codeline>
+<codeline lineno="50"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51" refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1KaldiEngineTests_1a77ec9bb3ed382ed58842ba7b03d47d79" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__engine__kaldi_1_1KaldiEngineTests_1a77ec9bb3ed382ed58842ba7b03d47d79" kindref="member">test_get_engine_kaldi_is_usable</ref>(self):</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="53"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Verify<sp/>that<sp/>the<sp/>kaldi<sp/>engine<sp/>is<sp/>usable<sp/>by<sp/>testing<sp/>that<sp/>a<sp/>simple</highlight></codeline>
+<codeline lineno="54"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rule<sp/>is<sp/>loaded<sp/>correctly<sp/>and<sp/>works<sp/>correctly.</highlight></codeline>
+<codeline lineno="55"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>engine<sp/>=<sp/><ref refid="namespacedragonfly_1_1engines_1a54a7132d79612abdb29fac07276b5681" kindref="member">get_engine</ref>()</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">assert</highlight><highlight class="normal"><sp/>engine.name<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;kaldi&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">assert</highlight><highlight class="normal"><sp/>isinstance(engine,<sp/>EngineBase)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>engine.speak(</highlight><highlight class="stringliteral">&quot;testing<sp/>kaldi&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Test<sp/>that<sp/>a<sp/>basic<sp/>rule<sp/>can<sp/>be<sp/>loaded<sp/>and<sp/>recognized.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>seq<sp/>=<sp/><ref refid="namespacedragonfly_1_1grammar_1_1elements_1afd0c0c3012ffdebee3500092a27713e7" kindref="member">Sequence</ref>([<ref refid="namespacedragonfly_1_1grammar_1_1elements_1a012cfe2ca8a31508c1262048051c398c" kindref="member">Literal</ref>(</highlight><highlight class="stringliteral">&quot;hello&quot;</highlight><highlight class="normal">),<sp/><ref refid="namespacedragonfly_1_1grammar_1_1elements_1a012cfe2ca8a31508c1262048051c398c" kindref="member">Literal</ref>(</highlight><highlight class="stringliteral">&quot;world&quot;</highlight><highlight class="normal">)])</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tester<sp/>=<sp/><ref refid="classdragonfly_1_1test_1_1element__tester_1_1ElementTester" kindref="compound">ElementTester</ref>(seq,<sp/>engine=engine)</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>results<sp/>=<sp/>tester.recognize(</highlight><highlight class="stringliteral">&quot;hello<sp/>world&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.assertEqual(results,<sp/>[</highlight><highlight class="stringliteral">u&quot;hello&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">u&quot;world&quot;</highlight><highlight class="normal">])</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>FIXME:<sp/>handling<sp/>reseting<sp/>user<sp/>lexicon</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>def<sp/>test_unknown_grammar_words(self):</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;<sp/>Verify<sp/>that<sp/>warnings<sp/>are<sp/>logged<sp/>for<sp/>a<sp/>grammar<sp/>with<sp/>unknown<sp/>words.<sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>grammar<sp/>=<sp/>Grammar(&quot;test&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>grammar.add_rule(CompoundRule(name=&quot;r1&quot;,<sp/>spec=&quot;testing<sp/>unknownword&quot;))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>grammar.add_rule(CompoundRule(name=&quot;r2&quot;,<sp/>spec=&quot;wordz|morwordz&quot;))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>#<sp/>Catch<sp/>log<sp/>messages.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>handler<sp/>=<sp/>MockLoggingHandler()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>log<sp/>=<sp/>logging.getLogger(&quot;engine.compiler&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>log.addHandler(handler)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>grammar.load()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>log.removeHandler(handler)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>#<sp/>Check<sp/>the<sp/>logged<sp/>messages.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>warnings<sp/>=<sp/>handler.messages[&quot;warning&quot;]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>self.assertEqual(len(warnings),<sp/>3)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>self.assertIn(&quot;unknownword&quot;,<sp/>warnings[0])</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>self.assertIn(&quot;wordz&quot;,<sp/>warnings[1])</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>self.assertIn(&quot;morwordz&quot;,<sp/>warnings[2])</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/><sp/><sp/><sp/><sp/>self.assertNotIn(&quot;testing&quot;,<sp/>&apos;\n&apos;.join(warnings))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment">#<sp/>---------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&apos;__main__&apos;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>unittest.main()</highlight></codeline>
+    </programlisting>
+    <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/test/test_engine_kaldi.py"/>
+  </compounddef>
+</doxygen>

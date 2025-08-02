@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="oscillation__cost__function_8cpp" kind="file" language="C++">
+    <compoundname>oscillation_cost_function.cpp</compoundname>
+    <includes refid="oscillation__cost__function_8h" local="no">base_local_planner/oscillation_cost_function.h</includes>
+    <includes local="no">cmath</includes>
+    <incdepgraph>
+      <node id="5">
+        <label>vector</label>
+        <link refid="cpp/header/vector" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="2">
+        <label>base_local_planner/oscillation_cost_function.h</label>
+        <link refid="oscillation__cost__function_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>base_local_planner/trajectory.h</label>
+        <link refid="trajectory_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Eigen/Core</label>
+      </node>
+      <node id="3">
+        <label>base_local_planner/trajectory_cost_function.h</label>
+        <link refid="trajectory__cost__function_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>cmath</label>
+        <link refid="cpp/header/cmath" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="1">
+        <label>oscillation_cost_function.cpp</label>
+        <link refid="oscillation__cost__function_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacebase__local__planner">base_local_planner</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*********************************************************************</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>Software<sp/>License<sp/>Agreement<sp/>(BSD<sp/>License)</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/><sp/>Copyright<sp/>(c)<sp/>2008,<sp/>Willow<sp/>Garage,<sp/>Inc.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/><sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/><sp/>Redistribution<sp/>and<sp/>use<sp/>in<sp/>source<sp/>and<sp/>binary<sp/>forms,<sp/>with<sp/>or<sp/>without</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/><sp/>modification,<sp/>are<sp/>permitted<sp/>provided<sp/>that<sp/>the<sp/>following<sp/>conditions</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/>are<sp/>met:</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>of<sp/>source<sp/>code<sp/>must<sp/>retain<sp/>the<sp/>above<sp/>copyright</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following<sp/>disclaimer.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>in<sp/>binary<sp/>form<sp/>must<sp/>reproduce<sp/>the<sp/>above</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>copyright<sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>disclaimer<sp/>in<sp/>the<sp/>documentation<sp/>and/or<sp/>other<sp/>materials<sp/>provided</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>with<sp/>the<sp/>distribution.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Neither<sp/>the<sp/>name<sp/>of<sp/>Willow<sp/>Garage,<sp/>Inc.<sp/>nor<sp/>the<sp/>names<sp/>of<sp/>its</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>contributors<sp/>may<sp/>be<sp/>used<sp/>to<sp/>endorse<sp/>or<sp/>promote<sp/>products<sp/>derived</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>from<sp/>this<sp/>software<sp/>without<sp/>specific<sp/>prior<sp/>written<sp/>permission.</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/><sp/>THIS<sp/>SOFTWARE<sp/>IS<sp/>PROVIDED<sp/>BY<sp/>THE<sp/>COPYRIGHT<sp/>HOLDERS<sp/>AND<sp/>CONTRIBUTORS</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/><sp/>&quot;AS<sp/>IS&quot;<sp/>AND<sp/>ANY<sp/>EXPRESS<sp/>OR<sp/>IMPLIED<sp/>WARRANTIES,<sp/>INCLUDING,<sp/>BUT<sp/>NOT</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/><sp/>LIMITED<sp/>TO,<sp/>THE<sp/>IMPLIED<sp/>WARRANTIES<sp/>OF<sp/>MERCHANTABILITY<sp/>AND<sp/>FITNESS</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*<sp/><sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE<sp/>ARE<sp/>DISCLAIMED.<sp/>IN<sp/>NO<sp/>EVENT<sp/>SHALL<sp/>THE</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/><sp/>COPYRIGHT<sp/>OWNER<sp/>OR<sp/>CONTRIBUTORS<sp/>BE<sp/>LIABLE<sp/>FOR<sp/>ANY<sp/>DIRECT,<sp/>INDIRECT,</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/>*<sp/><sp/>INCIDENTAL,<sp/>SPECIAL,<sp/>EXEMPLARY,<sp/>OR<sp/>CONSEQUENTIAL<sp/>DAMAGES<sp/>(INCLUDING,</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*<sp/><sp/>BUT<sp/>NOT<sp/>LIMITED<sp/>TO,<sp/>PROCUREMENT<sp/>OF<sp/>SUBSTITUTE<sp/>GOODS<sp/>OR<sp/>SERVICES;</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*<sp/><sp/>LOSS<sp/>OF<sp/>USE,<sp/>DATA,<sp/>OR<sp/>PROFITS;<sp/>OR<sp/>BUSINESS<sp/>INTERRUPTION)<sp/>HOWEVER</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*<sp/><sp/>CAUSED<sp/>AND<sp/>ON<sp/>ANY<sp/>THEORY<sp/>OF<sp/>LIABILITY,<sp/>WHETHER<sp/>IN<sp/>CONTRACT,<sp/>STRICT</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/>*<sp/><sp/>LIABILITY,<sp/>OR<sp/>TORT<sp/>(INCLUDING<sp/>NEGLIGENCE<sp/>OR<sp/>OTHERWISE)<sp/>ARISING<sp/>IN</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*<sp/><sp/>ANY<sp/>WAY<sp/>OUT<sp/>OF<sp/>THE<sp/>USE<sp/>OF<sp/>THIS<sp/>SOFTWARE,<sp/>EVEN<sp/>IF<sp/>ADVISED<sp/>OF<sp/>THE</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/>*<sp/><sp/>POSSIBILITY<sp/>OF<sp/>SUCH<sp/>DAMAGE.</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>Author:<sp/>TKruse</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/>*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="oscillation__cost__function_8h" kindref="compound">base_local_planner/oscillation_cost_function.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="cpp/header/cmath" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">cmath</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacebase__local__planner" kindref="compound">base_local_planner</ref><sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a50e1b85389706d2e1dcdaa36cb56cdc8" kindref="member">OscillationCostFunction::OscillationCostFunction</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a4b5ad241fd0d42863996f8e746a49b82" kindref="member">OscillationCostFunction::~OscillationCostFunction</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a0f8cf234ccff7a60e79868c33e3d9f4a" kindref="member">prev_stationary_pos_</ref><sp/>=<sp/>Eigen::Vector3f::Zero();</highlight></codeline>
+<codeline lineno="49"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a489f8c9c3f2322d6f24fe8aa1e39b118" kindref="member">OscillationCostFunction::setOscillationResetDist</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dist,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>angle)<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a8bbd803cecdd9786df4cf8c5c2996223" kindref="member">oscillation_reset_dist_</ref><sp/>=<sp/>dist;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a82d992b7b3776a2adfa576e8fd5cc136" kindref="member">oscillation_reset_angle_</ref><sp/>=<sp/>angle;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a2cd60c5b611d43697f3345e3c356f48f" kindref="member">OscillationCostFunction::updateOscillationFlags</ref>(Eigen::Vector3f<sp/>pos,<sp/><ref refid="classbase__local__planner_1_1Trajectory" kindref="compound">base_local_planner::Trajectory</ref>*<sp/>traj,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>min_vel_trans)<sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(traj-&gt;<ref refid="classbase__local__planner_1_1Trajectory_1ab4d255b7614df1a8f381d4e7eb44d385" kindref="member">cost_</ref><sp/>&gt;=<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1ada617a8fb122a0889bbbe93e6baa82de" kindref="member">setOscillationFlags</ref>(traj,<sp/>min_vel_trans))<sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a0f8cf234ccff7a60e79868c33e3d9f4a" kindref="member">prev_stationary_pos_</ref><sp/>=<sp/>pos;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//if<sp/>we&apos;ve<sp/>got<sp/>restrictions...<sp/>check<sp/>if<sp/>we<sp/>can<sp/>reset<sp/>any<sp/>oscillation<sp/>flags</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1a72f5a9ba109d22be48984bdcc2b3d461" kindref="member">forward_pos_only_</ref><sp/>||<sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a49dd0b6e2f6f7a5a9266234f0dc2a40c" kindref="member">forward_neg_only_</ref></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>||<sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1ae3f12ed64ffab83f6cc14407740a0dd3" kindref="member">strafe_pos_only_</ref><sp/>||<sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a4c9881934f9f9b62a6ea0cc39ec9cd15" kindref="member">strafe_neg_only_</ref></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>||<sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a6bbd2e3ab21235b798561a8b25694ae4" kindref="member">rot_pos_only_</ref><sp/>||<sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1ada6b20572e35e6661531663ee7aef485" kindref="member">rot_neg_only_</ref>){</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1aa6224a4812d149fcf71dc2131b92cb96" kindref="member">resetOscillationFlagsIfPossible</ref>(pos,<sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a0f8cf234ccff7a60e79868c33e3d9f4a" kindref="member">prev_stationary_pos_</ref>);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1aa6224a4812d149fcf71dc2131b92cb96" kindref="member">OscillationCostFunction::resetOscillationFlagsIfPossible</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>pos,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>prev)<sp/>{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>x_diff<sp/>=<sp/>pos[0]<sp/>-<sp/><ref refid="cpp/iterator/prev" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">prev</ref>[0];</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>y_diff<sp/>=<sp/>pos[1]<sp/>-<sp/><ref refid="cpp/iterator/prev" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">prev</ref>[1];</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sq_dist<sp/>=<sp/>x_diff<sp/>*<sp/>x_diff<sp/>+<sp/>y_diff<sp/>*<sp/>y_diff;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>th_diff<sp/>=<sp/>pos[2]<sp/>-<sp/><ref refid="cpp/iterator/prev" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">prev</ref>[2];</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//if<sp/>we&apos;ve<sp/>moved<sp/>far<sp/>enough...<sp/>we<sp/>can<sp/>reset<sp/>our<sp/>flags</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(sq_dist<sp/>&gt;<sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a8bbd803cecdd9786df4cf8c5c2996223" kindref="member">oscillation_reset_dist_</ref><sp/>*<sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a8bbd803cecdd9786df4cf8c5c2996223" kindref="member">oscillation_reset_dist_</ref><sp/>||</highlight></codeline>
+<codeline lineno="79" refid="classbase__local__planner_1_1OscillationCostFunction_1a50e1b85389706d2e1dcdaa36cb56cdc8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>fabs(th_diff)<sp/>&gt;<sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a82d992b7b3776a2adfa576e8fd5cc136" kindref="member">oscillation_reset_angle_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1afb420d9a488660f3583e182cb1939ee1" kindref="member">resetOscillationFlags</ref>();</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="82" refid="classbase__local__planner_1_1OscillationCostFunction_1a4b5ad241fd0d42863996f8e746a49b82" refkind="member"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1afb420d9a488660f3583e182cb1939ee1" kindref="member">OscillationCostFunction::resetOscillationFlags</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1ae3f12ed64ffab83f6cc14407740a0dd3" kindref="member">strafe_pos_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="86" refid="classbase__local__planner_1_1OscillationCostFunction_1a489f8c9c3f2322d6f24fe8aa1e39b118" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a4c9881934f9f9b62a6ea0cc39ec9cd15" kindref="member">strafe_neg_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a99e1d7c6f0d521b1dd3ad89dee6fdd68" kindref="member">strafing_pos_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1acfbe248a46b833410f67962551086be9" kindref="member">strafing_neg_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a6bbd2e3ab21235b798561a8b25694ae4" kindref="member">rot_pos_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="91" refid="classbase__local__planner_1_1OscillationCostFunction_1a2cd60c5b611d43697f3345e3c356f48f" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1ada6b20572e35e6661531663ee7aef485" kindref="member">rot_neg_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a782792324148e9c4f25fd293c306fca6" kindref="member">rotating_pos_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a2db7a4bf9080265e0fbde53935631bbc" kindref="member">rotating_neg_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a72f5a9ba109d22be48984bdcc2b3d461" kindref="member">forward_pos_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a49dd0b6e2f6f7a5a9266234f0dc2a40c" kindref="member">forward_neg_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a7df909c5d41cabd2b0f9f35710fe36e5" kindref="member">forward_pos_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a57abdb2c09e71ec1b42649ad27540d9b" kindref="member">forward_neg_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1ada617a8fb122a0889bbbe93e6baa82de" kindref="member">OscillationCostFunction::setOscillationFlags</ref>(<ref refid="classbase__local__planner_1_1Trajectory" kindref="compound">base_local_planner::Trajectory</ref>*<sp/>t,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>min_vel_trans)<sp/>{</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>flag_set<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//set<sp/>oscillation<sp/>flags<sp/>for<sp/>moving<sp/>forward<sp/>and<sp/>backward</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(t-&gt;<ref refid="classbase__local__planner_1_1Trajectory_1a228fb59ff438692ebedddb6899c8d957" kindref="member">xv_</ref><sp/>&lt;<sp/>0.0)<sp/>{</highlight></codeline>
+<codeline lineno="105" refid="classbase__local__planner_1_1OscillationCostFunction_1aa6224a4812d149fcf71dc2131b92cb96" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1a7df909c5d41cabd2b0f9f35710fe36e5" kindref="member">forward_pos_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a49dd0b6e2f6f7a5a9266234f0dc2a40c" kindref="member">forward_neg_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>flag_set<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a7df909c5d41cabd2b0f9f35710fe36e5" kindref="member">forward_pos_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a57abdb2c09e71ec1b42649ad27540d9b" kindref="member">forward_neg_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(t-&gt;<ref refid="classbase__local__planner_1_1Trajectory_1a228fb59ff438692ebedddb6899c8d957" kindref="member">xv_</ref><sp/>&gt;<sp/>0.0)<sp/>{</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1a57abdb2c09e71ec1b42649ad27540d9b" kindref="member">forward_neg_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a72f5a9ba109d22be48984bdcc2b3d461" kindref="member">forward_pos_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>flag_set<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a57abdb2c09e71ec1b42649ad27540d9b" kindref="member">forward_neg_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a7df909c5d41cabd2b0f9f35710fe36e5" kindref="member">forward_pos_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="119" refid="classbase__local__planner_1_1OscillationCostFunction_1afb420d9a488660f3583e182cb1939ee1" refkind="member"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//we&apos;ll<sp/>only<sp/>set<sp/>flags<sp/>for<sp/>strafing<sp/>and<sp/>rotating<sp/>when<sp/>we&apos;re<sp/>not<sp/>moving<sp/>forward<sp/>at<sp/>all</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(fabs(t-&gt;<ref refid="classbase__local__planner_1_1Trajectory_1a228fb59ff438692ebedddb6899c8d957" kindref="member">xv_</ref>)<sp/>&lt;=<sp/>min_vel_trans)<sp/>{</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//check<sp/>negative<sp/>strafe</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(t-&gt;<ref refid="classbase__local__planner_1_1Trajectory_1abb4fc9493587f61f888f2cdfec62b89a" kindref="member">yv_</ref><sp/>&lt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1a99e1d7c6f0d521b1dd3ad89dee6fdd68" kindref="member">strafing_pos_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a4c9881934f9f9b62a6ea0cc39ec9cd15" kindref="member">strafe_neg_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>flag_set<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a99e1d7c6f0d521b1dd3ad89dee6fdd68" kindref="member">strafing_pos_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1acfbe248a46b833410f67962551086be9" kindref="member">strafing_neg_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//check<sp/>positive<sp/>strafe</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(t-&gt;<ref refid="classbase__local__planner_1_1Trajectory_1abb4fc9493587f61f888f2cdfec62b89a" kindref="member">yv_</ref><sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1acfbe248a46b833410f67962551086be9" kindref="member">strafing_neg_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="136" refid="classbase__local__planner_1_1OscillationCostFunction_1ada617a8fb122a0889bbbe93e6baa82de" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1ae3f12ed64ffab83f6cc14407740a0dd3" kindref="member">strafe_pos_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>flag_set<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1acfbe248a46b833410f67962551086be9" kindref="member">strafing_neg_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a99e1d7c6f0d521b1dd3ad89dee6fdd68" kindref="member">strafing_pos_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//check<sp/>negative<sp/>rotation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(t-&gt;<ref refid="classbase__local__planner_1_1Trajectory_1a9a93bfe9bb3c3b1d65b3627ce7cbae33" kindref="member">thetav_</ref><sp/>&lt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1a782792324148e9c4f25fd293c306fca6" kindref="member">rotating_pos_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1ada6b20572e35e6661531663ee7aef485" kindref="member">rot_neg_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>flag_set<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a782792324148e9c4f25fd293c306fca6" kindref="member">rotating_pos_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a2db7a4bf9080265e0fbde53935631bbc" kindref="member">rotating_neg_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//check<sp/>positive<sp/>rotation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(t-&gt;<ref refid="classbase__local__planner_1_1Trajectory_1a9a93bfe9bb3c3b1d65b3627ce7cbae33" kindref="member">thetav_</ref><sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1a2db7a4bf9080265e0fbde53935631bbc" kindref="member">rotating_neg_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a6bbd2e3ab21235b798561a8b25694ae4" kindref="member">rot_pos_only_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>flag_set<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a2db7a4bf9080265e0fbde53935631bbc" kindref="member">rotating_neg_</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1a782792324148e9c4f25fd293c306fca6" kindref="member">rotating_pos_</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>flag_set;</highlight></codeline>
+<codeline lineno="164"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1OscillationCostFunction_1ac9fd440e97142115b8bbe81408eadc14" kindref="member">OscillationCostFunction::scoreTrajectory</ref>(Trajectory<sp/>&amp;traj)<sp/>{</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((<ref refid="classbase__local__planner_1_1OscillationCostFunction_1a72f5a9ba109d22be48984bdcc2b3d461" kindref="member">forward_pos_only_</ref><sp/>&amp;&amp;<sp/>traj.xv_<sp/>&lt;<sp/>0.0)<sp/>||</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1a49dd0b6e2f6f7a5a9266234f0dc2a40c" kindref="member">forward_neg_only_</ref><sp/>&amp;&amp;<sp/>traj.xv_<sp/>&gt;<sp/>0.0)<sp/>||</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1ae3f12ed64ffab83f6cc14407740a0dd3" kindref="member">strafe_pos_only_</ref><sp/><sp/>&amp;&amp;<sp/>traj.yv_<sp/>&lt;<sp/>0.0)<sp/>||</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1a4c9881934f9f9b62a6ea0cc39ec9cd15" kindref="member">strafe_neg_only_</ref><sp/><sp/>&amp;&amp;<sp/>traj.yv_<sp/>&gt;<sp/>0.0)<sp/>||</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1a6bbd2e3ab21235b798561a8b25694ae4" kindref="member">rot_pos_only_</ref><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>traj.thetav_<sp/>&lt;<sp/>0.0)<sp/>||</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>(<ref refid="classbase__local__planner_1_1OscillationCostFunction_1ada6b20572e35e6661531663ee7aef485" kindref="member">rot_neg_only_</ref><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>traj.thetav_<sp/>&gt;<sp/>0.0))<sp/>{</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-5.0;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal">}<sp/></highlight><highlight class="comment">/*<sp/>namespace<sp/>base_local_planner<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/oscillation_cost_function.cpp"/>
+  </compounddef>
+</doxygen>

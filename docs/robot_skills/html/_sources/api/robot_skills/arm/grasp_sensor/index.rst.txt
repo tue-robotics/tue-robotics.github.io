@@ -1,0 +1,142 @@
+robot_skills.arm.grasp_sensor
+=============================
+
+.. py:module:: robot_skills.arm.grasp_sensor
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.arm.grasp_sensor.GripperMeasurement
+   robot_skills.arm.grasp_sensor.GraspSensor
+
+
+Module Contents
+---------------
+
+.. py:class:: GripperMeasurement(distance)
+
+   Bases: :py:obj:`object`
+
+
+   Class holding measurements from the distance sensor on the grippers
+
+   Constructor
+
+   :param distance: float with measured distance
+
+
+   .. py:attribute:: EMPTY
+      :value: -1
+
+
+
+   .. py:attribute:: UNKNOWN
+      :value: 0
+
+
+
+   .. py:attribute:: HOLDING
+      :value: 1
+
+
+
+   .. py:attribute:: _distance
+
+
+   .. py:attribute:: _stamp
+
+
+   .. py:attribute:: GRASP_SENSOR_THRESHOLD
+
+
+   .. py:attribute:: GRASP_SENSOR_TIMEOUT
+
+
+   .. py:attribute:: GRASP_SENSOR_LIMITS
+
+
+   .. py:method:: _is_recent()
+
+      Checks if the sensor data is recent
+
+      :return: bool True if recent, i.e., measurement is less than GRASP_SENSOR_TIMEOUT old, False otherwise
+
+
+
+   .. py:property:: distance
+
+      Returns the measured distance. If the measurement is too old or the distance is outside of of the provided
+      limits, NaN is returned
+
+      :return: float with distance if valid, NaN otherwise
+
+
+   .. py:property:: is_holding
+
+      Returns if the gripper is holding anything based on the measurement, i.e., if the measurement is recent and
+      the value is between the lower limit and the sensor threshold
+
+      :return: bool if holding
+
+
+   .. py:property:: is_unknown
+
+      Returns if the state is unknown, i.e., either the measurement is outdated or the distance is less than the
+      limit
+
+      :return: bool if unknown
+
+
+   .. py:property:: is_empty
+
+      Returns if the gripper is empty, i.e., the measurement is recent and the value is greater than the threshold
+
+      :return: bool if holding
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: GraspSensor(robot_name, tf_buffer, sensor_topic)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   Sensor to detect whether or not the robot is holding an object.
+
+   constructor
+
+   :param robot_name: robot_name
+   :param tf_buffer: tf2_ros.Buffer
+   :param sensor_topic: name of the topic where measurements are published
+
+
+   .. py:attribute:: _grasp_sensor_state
+
+
+   .. py:property:: object_in_gripper_measurement
+
+      Returns whether the gripper is empty, holding an object or if this is unknown
+
+      :return: latest GripperMeasurement
+
+
+   .. py:property:: grasp_sensor_distance
+
+      Returns the sensor distance. If no recent measurement is available or the measurement is outside bounds
+      and hence unreliable, NaN is returned
+
+      :return: float with distance
+
+
+   .. py:method:: _grasp_sensor_callback(msg)
+
+      Callback function for grasp sensor messages
+
+      :param msg: std_msgs.msg.Float32MultiArray
+
+
+

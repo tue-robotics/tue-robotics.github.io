@@ -1,0 +1,103 @@
+robot_smach_states.human_interaction.recognize_person
+=====================================================
+
+.. py:module:: robot_smach_states.human_interaction.recognize_person
+
+
+Exceptions
+----------
+
+.. autoapisummary::
+
+   robot_smach_states.human_interaction.recognize_person.NoDetections
+   robot_smach_states.human_interaction.recognize_person.NoRecognitionMatch
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.human_interaction.recognize_person.RecognizePerson
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.human_interaction.recognize_person.get_operator_name
+
+
+Module Contents
+---------------
+
+.. py:exception:: NoDetections
+
+   Bases: :py:obj:`Exception`
+
+
+   Exception that is thrown if there is no detection, i.e., list of probabilities is empty
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. py:exception:: NoRecognitionMatch
+
+   Bases: :py:obj:`Exception`
+
+
+   Exception that is thrown if detections don't match any learned faces, i.e., all detections are below the given
+   threshold
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. py:function:: get_operator_name(recognition, threshold = 3.0)
+
+   Gets the operator name from a recognition
+
+   :param recognition: recognition of the face
+   :param threshold: if the best match is below this threshold, it is designated as unknown and an exception is raised
+   :return: operator name
+   :raises: NoDetections (if recognition is empty) or NoRecognitionMatch if all detections below threshold
+
+
+.. py:class:: RecognizePerson(robot, name_designator, expected_operator_position = None, operator_distance_threshold = 0.5, recognition_threshold = 3.0)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   State to recognize a person. Detects faces, stores name with highest probability in a designator
+
+   :param robot: robot API object
+   :param name_designator: VariableDesignator to write the name to
+   :param expected_operator_position: expected operator position w.r.t. robot base
+   :param operator_distance_threshold: people outside this radius from the expected position are discarded
+   :param recognition_threshold: if the 'probability' of the recognition is below this threshold, it is designated
+   as 'not recognized'. N.B.: this is not really a probability.
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _name_designator
+
+
+   .. py:attribute:: _expected_operator_position
+
+
+   .. py:attribute:: _operator_distance_threshold
+      :value: 0.5
+
+
+
+   .. py:attribute:: _recognition_threshold
+      :value: 3.0
+
+
+
+   .. py:method:: execute(userdata=None)
+
+

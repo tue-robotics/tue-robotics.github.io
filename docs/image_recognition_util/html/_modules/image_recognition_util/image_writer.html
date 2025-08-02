@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>image_recognition_util.image_writer &mdash; image_recognition_util 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=0a554088"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            image_recognition_util
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">image_recognition_util</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">image_recognition_util.image_writer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for image_recognition_util.image_writer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">errno</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">image_recognition_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Recognition</span>
+
+
+<div class="viewcode-block" id="mkdir_p"><a class="viewcode-back" href="../../api/image_recognition_util/image_writer/index.html#image_recognition_util.image_writer.mkdir_p">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mkdir_p</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    os.makedirs() without raising an exception in case of existence</span>
+
+<span class="sd">    :param directory: directory to create</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">:</span>
+            <span class="k">raise</span></div>
+
+
+<div class="viewcode-block" id="create_estimation_dir"><a class="viewcode-back" href="../../api/image_recognition_util/image_writer/index.html#image_recognition_util.image_writer.create_estimation_dir">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_estimation_dir</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an estimation dir in parent directory</span>
+
+<span class="sd">    :param parent_dir: parent directory</span>
+<span class="sd">    :param suffix:</span>
+<span class="sd">    :return: Created estimations directory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">parent_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">estimation_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parent_dir</span><span class="p">,</span> <span class="s2">&quot;estimations&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Make a directory of the estimation with current time</span>
+    <span class="n">estimation_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">estimation_dir</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">-%H-%M-%S_</span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">),</span>
+                                                           <span class="n">suffix</span><span class="p">]))</span>
+    <span class="n">mkdir_p</span><span class="p">(</span><span class="n">estimation_dir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">estimation_dir</span></div>
+
+
+<div class="viewcode-block" id="color_map"><a class="viewcode-back" href="../../api/image_recognition_util/image_writer/index.html#image_recognition_util.image_writer.color_map">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">color_map</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span> <span class="n">normalized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate an RGB color map of N different colors</span>
+<span class="sd">    :param n: amount of colors to generate</span>
+<span class="sd">    :type n: int</span>
+<span class="sd">    :param normalized: indicating range of each channel: float32 in [0, 1] or int in [0, 255]</span>
+<span class="sd">    :type normalized: bool</span>
+<span class="sd">    :return a numpy.array of shape (N, 3) with a row for each color and each row is [R,G,B]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bitget</span><span class="p">(</span><span class="n">byteval</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">byteval</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">idx</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span>
+
+    <span class="n">dtype</span> <span class="o">=</span> <span class="s2">&quot;float32&quot;</span> <span class="k">if</span> <span class="n">normalized</span> <span class="k">else</span> <span class="s2">&quot;uint8&quot;</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">g</span> <span class="o">=</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># skip the first color (black)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">|=</span> <span class="n">bitget</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">j</span>
+            <span class="n">g</span> <span class="o">|=</span> <span class="n">bitget</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">j</span>
+            <span class="n">b</span> <span class="o">|=</span> <span class="n">bitget</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span> <span class="o">-</span> <span class="n">j</span>
+            <span class="n">c</span> <span class="o">&gt;&gt;=</span> <span class="mi">3</span>
+
+        <span class="n">cmap</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span> <span class="o">/</span> <span class="mi">255</span> <span class="k">if</span> <span class="n">normalized</span> <span class="k">else</span> <span class="n">cmap</span>
+    <span class="k">return</span> <span class="n">cmap</span></div>
+
+
+<div class="viewcode-block" id="write_estimation"><a class="viewcode-back" href="../../api/image_recognition_util/image_writer/index.html#image_recognition_util.image_writer.write_estimation">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">write_estimation</span><span class="p">(</span>
+    <span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">annotated_original_image</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write estimation to a directory.</span>
+<span class="sd">    For the estimation, a directory of the run will be created</span>
+
+<span class="sd">    :param dir_path: Parent directory</span>
+<span class="sd">    :param image: Image to write</span>
+<span class="sd">    :param label: Label of the image</span>
+<span class="sd">    :param annotated_original_image: The entire image with annotations</span>
+<span class="sd">    :param suffix: Suffix of the run specific directory</span>
+<span class="sd">    :return: Success</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">estimation_dir</span> <span class="o">=</span> <span class="n">create_estimation_dir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">estimation_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">estimation_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">.jpg&quot;</span><span class="p">)</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">annotated_original_image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">estimation_dir</span><span class="p">,</span> <span class="s2">&quot;annotated_original_image.jpg&quot;</span><span class="p">)</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">annotated_original_image</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="write_estimations"><a class="viewcode-back" href="../../api/image_recognition_util/image_writer/index.html#image_recognition_util.image_writer.write_estimations">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">write_estimations</span><span class="p">(</span>
+    <span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">images</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">annotated_original_image</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write estimations to a directory.</span>
+<span class="sd">    For each estimation cycle, a directory of the run will be created</span>
+
+<span class="sd">    :param dir_path: Parent directory</span>
+<span class="sd">    :param images: Image to write</span>
+<span class="sd">    :param labels: Label of the image</span>
+<span class="sd">    :param annotated_original_image: The entire image with annotations</span>
+<span class="sd">    :param suffix: Suffix of the run specific directory</span>
+<span class="sd">    :return: Success</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">images</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="n">estimation_dir</span> <span class="o">=</span> <span class="n">create_estimation_dir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">estimation_dir</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">labels</span><span class="p">)):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">estimation_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.jpg&quot;</span><span class="p">)</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">annotated_original_image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">estimation_dir</span><span class="p">,</span> <span class="s2">&quot;annotated_original_image.jpg&quot;</span><span class="p">)</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">annotated_original_image</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="write_annotated"><a class="viewcode-back" href="../../api/image_recognition_util/image_writer/index.html#image_recognition_util.image_writer.write_annotated">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">write_annotated</span><span class="p">(</span><span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verified</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write an image with an annotation to a folder</span>
+
+<span class="sd">    :param dir_path: The base directory we are going to write to</span>
+<span class="sd">    :param image: The OpenCV image</span>
+<span class="sd">    :param label: The label that is used for creating the subdirectory if not exists</span>
+<span class="sd">    :param verified: Whether we are sure the label is correct</span>
+<span class="sd">    :return: Success</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">dir_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">annotated_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;annotated&quot;</span><span class="p">)</span>
+    <span class="n">annotated_verified_unverified_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">annotated_dir</span><span class="p">,</span> <span class="s2">&quot;verified&quot;</span> <span class="k">if</span> <span class="n">verified</span> <span class="k">else</span> <span class="s2">&quot;unverified&quot;</span><span class="p">)</span>
+    <span class="n">label_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">annotated_verified_unverified_dir</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+    <span class="n">mkdir_p</span><span class="p">(</span><span class="n">label_dir</span><span class="p">)</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">label_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">-%H-%M-%S_</span><span class="si">%f</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.jpg&quot;</span><span class="p">)</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="write_raw"><a class="viewcode-back" href="../../api/image_recognition_util/image_writer/index.html#image_recognition_util.image_writer.write_raw">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">write_raw</span><span class="p">(</span><span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">subfolder_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raw&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write an image to a file (path) with the label as subfolder</span>
+<span class="sd">    :param dir_path: The base directory we are going to write to</span>
+<span class="sd">    :param image: The OpenCV image</span>
+<span class="sd">    :param subfolder_name: A directory within the path is created with this name</span>
+<span class="sd">    :return: Success</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">dir_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">raw_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">subfolder_name</span><span class="p">)</span>
+    <span class="n">mkdir_p</span><span class="p">(</span><span class="n">raw_dir</span><span class="p">)</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">-%H-%M-%S_</span><span class="si">%f</span><span class="s1">&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.jpg&quot;</span><span class="p">)</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="get_annotated_cv_image"><a class="viewcode-back" href="../../api/image_recognition_util/image_writer/index.html#image_recognition_util.image_writer.get_annotated_cv_image">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_annotated_cv_image</span><span class="p">(</span>
+    <span class="n">cv_image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">recognitions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Recognition</span><span class="p">],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets an annotated CV image based on recognitions, drawing using cv.rectangle</span>
+<span class="sd">    :param cv_image: Original cv image</span>
+<span class="sd">    :param recognitions: List of recognitions</span>
+<span class="sd">    :param labels: List of labels per recognition</span>
+<span class="sd">    :return: Annotated image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">annotated_cv_image</span> <span class="o">=</span> <span class="n">cv_image</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">c_map</span> <span class="o">=</span> <span class="n">color_map</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">recognitions</span><span class="p">),</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">recognition</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">recognitions</span><span class="p">):</span>
+        <span class="n">x_min</span><span class="p">,</span> <span class="n">y_min</span> <span class="o">=</span> <span class="n">recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span><span class="p">,</span> <span class="n">recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span>
+        <span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">x_min</span> <span class="o">+</span> <span class="n">recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">y_min</span> <span class="o">+</span> <span class="n">recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">height</span>
+
+        <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">annotated_cv_image</span><span class="p">,</span> <span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">y_min</span><span class="p">),</span> <span class="p">(</span><span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">c_map</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">255</span><span class="p">,</span> <span class="n">c_map</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">255</span><span class="p">,</span> <span class="n">c_map</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">recognition</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">recognitions</span><span class="p">,</span> <span class="n">labels</span><span class="p">)):</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_PLAIN</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span><span class="p">,</span> <span class="n">recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span>
+        <span class="n">font_scale</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">font_color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="n">bg_color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">line_type</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="p">(</span><span class="n">text_width</span><span class="p">,</span> <span class="n">text_height</span><span class="p">)</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTextSize</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">font</span><span class="p">,</span> <span class="n">fontScale</span><span class="o">=</span><span class="n">font_scale</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">box_coords</span> <span class="o">=</span> <span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">text_width</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">text_height</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">annotated_cv_image</span><span class="p">,</span> <span class="n">box_coords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">box_coords</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bg_color</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">FILLED</span><span class="p">)</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">annotated_cv_image</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
+                    <span class="n">font</span><span class="p">,</span>
+                    <span class="n">font_scale</span><span class="p">,</span>
+                    <span class="n">font_color</span><span class="p">,</span>
+                    <span class="n">line_type</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">annotated_cv_image</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

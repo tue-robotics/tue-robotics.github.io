@@ -1,0 +1,226 @@
+robot_smach_states.manipulation.manipulation
+============================================
+
+.. py:module:: robot_smach_states.manipulation.manipulation
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.manipulation.manipulation.ArmToJointConfig
+   robot_smach_states.manipulation.manipulation.HandOverTo
+   robot_smach_states.manipulation.manipulation.HandoverFromHuman
+   robot_smach_states.manipulation.manipulation.HandoverToHuman
+   robot_smach_states.manipulation.manipulation.CloseGripperOnHandoverToRobot
+   robot_smach_states.manipulation.manipulation.SetGripper
+   robot_smach_states.manipulation.manipulation.TorsoToUserPos
+
+
+Module Contents
+---------------
+
+.. py:class:: ArmToJointConfig(robot, arm_designator, configuration)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Put arm of robot in some joint configuration
+
+   :param robot: robot to execute state with
+   :param arm_designator: designator that resolves to arm to put in given configuration
+   :param configuration: joint configuration to put arm in
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: arm_designator
+
+
+   .. py:attribute:: REQUIRED_ARM_PROPERTIES
+
+
+   .. py:attribute:: configuration
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: HandOverTo(robot, arm_designator, timeout=10)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Handover the object in arm to a human.
+
+   :param robot: robot to execute state with
+   :param arm_designator: designator that resolves to arm holding an object
+   :param timeout: float time the operation may take
+
+
+   .. py:attribute:: REQUIRED_ARM_PROPERTIES
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: arm_designator
+
+
+   .. py:attribute:: timeout
+      :value: 10
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: HandoverFromHuman(robot, arm_designator, grabbed_entity_label='', grabbed_entity_designator=None, timeout=15, arm_configuration='handover_to_human')
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   State that enables low level grab reflex. Besides a robot object, needs
+   an arm and an entity to grab, which is either one from ed through the
+   grabbed_entity_designator or it is made up in the
+   CloseGripperOnHandoverToRobot state and given the grabbed_entity_label
+   as id.
+
+   Hold up hand to accept an object and close hand once something is inserted
+
+   :param robot: Robot with which to execute this behavior
+   :param arm_designator: ArmDesignator resolving to arm accept item into
+   :param grabbed_entity_label: What ID to give a dummy item in case no grabbed_entity_designator is supplied
+   :param grabbed_entity_designator: EntityDesignator resolving to the accepted item. Can be a dummy
+   :param timeout: How long to hold hand over before closing without anything
+   :param arm_configuration: Which pose to put arm in when holding hand up for the item.
+
+
+.. py:class:: HandoverToHuman(robot, arm_designator, timeout=10)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   
+   State to hand over the object in the arm to a human operator
+
+   :param robot: robot to execute state with
+   :param arm_designator: designator that resolves to arm holding the object
+   :param timeout: float amount of time the procedure may take
+
+
+.. py:class:: CloseGripperOnHandoverToRobot(robot, arm_designator, grabbed_entity_label='', grabbed_entity_designator=None, timeout=10)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   State to wait until the operator pushes an object into the gripper
+
+   :param robot: robot to execute state with
+   :param arm_designator: designator that resolves to arm receiving the object
+   :param grabbed_entity_label: label to assign the dummy entity representing the received object
+                               (use this ore grabbed_entity_designator)
+   :param grabbed_entity_designator: designator resolving to the entity which will be received
+                               (use this ore grabbed_entity_designator)
+   :param timeout: float amount of time the procedure may take
+
+
+   .. py:attribute:: REQUIRED_ARM_PROPERTIES
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: arm_designator
+
+
+   .. py:attribute:: timeout
+      :value: 10
+
+
+
+   .. py:attribute:: item_label
+      :value: ''
+
+
+
+   .. py:attribute:: item_designator
+      :value: None
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: SetGripper(robot, arm_designator, gripperstate=GripperState.OPEN, grab_entity_designator=None, timeout=10)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Instruct the gripper
+
+   :param robot: robot to execute state with
+   :param arm_designator: designator that resolves to arm corresponding to the gripper
+   :param gripperstate: desired state of the gripper
+   :param grab_entity_designator: Designator resolving to the entity to be attached to the gripper
+   :param timeout: float amount of time the procedure may take
+
+
+   .. py:attribute:: REQUIRED_ARM_PROPERTIES
+
+
+   .. py:attribute:: arm_designator
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: gripperstate
+
+
+   .. py:attribute:: grab_entity_designator
+      :value: None
+
+
+
+   .. py:attribute:: timeout
+      :value: 10
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: TorsoToUserPos(robot, torso_pos, time_out=0.0)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   State to set the pose of the torso
+
+   :param robot: robot to execute state with
+   :param torso_pos: float desired position of the torso
+   :param time_out: float amount of time the procedure may take
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: torso_pos
+
+
+   .. py:attribute:: time_out
+      :value: 0.0
+
+
+
+   .. py:method:: execute(userdata=None)
+
+

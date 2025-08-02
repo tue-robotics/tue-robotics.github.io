@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="player_8py" kind="file" language="Python">
+    <compoundname>player.py</compoundname>
+    <innerclass refid="classplayer_1_1Player" prot="public">player::Player</innerclass>
+    <innernamespace refid="namespaceplayer">player</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespaceplayer" refkind="compound"><highlight class="comment">#!/usr/bin/env<sp/>python</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">#<sp/>coding:<sp/>utf-8</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="5"><highlight class="stringliteral">This<sp/>node<sp/>listens<sp/>to<sp/>a<sp/>service<sp/>call<sp/>and<sp/>a<sp/>topic<sp/>for<sp/>text<sp/>to<sp/>speech</highlight></codeline>
+<codeline lineno="6"><highlight class="stringliteral">requests.<sp/>These<sp/>will<sp/>be<sp/>processed<sp/>by<sp/>the<sp/>festival<sp/>or<sp/>the<sp/>philips<sp/>tts<sp/>module.</highlight></codeline>
+<codeline lineno="7"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>rospy</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>os</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>std_srvs.srv<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Empty</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>text_to_speech.srv<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Play</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16" refid="classplayer_1_1Player" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classplayer_1_1Player" kindref="compound">Player</ref>(object):</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="classplayer_1_1Player_1a208e7d0ae3cef2a90515526ac7cd0c26" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classplayer_1_1Player_1a208e7d0ae3cef2a90515526ac7cd0c26" kindref="member">__init__</ref>(self):</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>services</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20" refid="classplayer_1_1Player_1a14a8f6da9bd1595bdd7195bb81fc13da" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a14a8f6da9bd1595bdd7195bb81fc13da" kindref="member">srv_play</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/>rospy.Service(</highlight><highlight class="stringliteral">&apos;~play&apos;</highlight><highlight class="normal">,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Play,<sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a9cc631256f3dbd36fdd5e8923eb1f7dc" kindref="member">play_srv</ref>)</highlight></codeline>
+<codeline lineno="21" refid="classplayer_1_1Player_1ac27b575411e3998feebf428e3f8fdf24" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1ac27b575411e3998feebf428e3f8fdf24" kindref="member">srv_clear_buffer</ref><sp/>=<sp/>rospy.Service(</highlight><highlight class="stringliteral">&apos;~clear_buffer&apos;</highlight><highlight class="normal">,<sp/>Empty,<sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1ab916fd96e8ebe7d820d8854e34f3b7d0" kindref="member">clear_buffer_srv</ref>)</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>buffer<sp/>audio<sp/>requests</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24" refid="classplayer_1_1Player_1a7330723fe48faf8e18462fe03f3062ed" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a7330723fe48faf8e18462fe03f3062ed" kindref="member">buffer</ref><sp/>=<sp/>[]</highlight></codeline>
+<codeline lineno="25" refid="classplayer_1_1Player_1a6fb574749caf204d4f84053ddc9f869b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a6fb574749caf204d4f84053ddc9f869b" kindref="member">is_playing</ref><sp/>=<sp/></highlight><highlight class="keyword">False</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27" refid="classplayer_1_1Player_1a9cc631256f3dbd36fdd5e8923eb1f7dc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classplayer_1_1Player_1a9cc631256f3dbd36fdd5e8923eb1f7dc" kindref="member">play_srv</ref>(self,<sp/>req):</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>req.audio_type<sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>[</highlight><highlight class="stringliteral">&quot;wav&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;mp3&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;oga&quot;</highlight><highlight class="normal">]:</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>msg<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;Audio<sp/>format<sp/>&apos;%s&apos;<sp/>not<sp/>supported&quot;</highlight><highlight class="normal"><sp/>%<sp/>req.audio_type</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logerr(msg)</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>msg</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a7330723fe48faf8e18462fe03f3062ed" kindref="member">buffer</ref><sp/>+=<sp/>[req]</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>req.blocking_call:</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>rospy.is_shutdown()<sp/></highlight><highlight class="keywordflow">and</highlight><highlight class="normal"><sp/>self.<ref refid="classplayer_1_1Player_1a7330723fe48faf8e18462fe03f3062ed" kindref="member">buffer</ref>:</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a4b8ca836138b97835b404146d68a433d" kindref="member">step</ref>()</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.sleep(0.01)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="classplayer_1_1Player_1a048d6cc9f088633e7a8411b46067830a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classplayer_1_1Player_1a048d6cc9f088633e7a8411b46067830a" kindref="member">play</ref>(self,<sp/>req):</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a6fb574749caf204d4f84053ddc9f869b" kindref="member">is_playing</ref><sp/>=<sp/></highlight><highlight class="keyword">True</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>time</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>filename<sp/>=<sp/>time.strftime(</highlight><highlight class="stringliteral">&quot;/tmp/%Y-%m-%d-%H-%M-%S&quot;</highlight><highlight class="normal">)<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;.&quot;</highlight><highlight class="normal"><sp/>+<sp/>req.audio_type</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">with</highlight><highlight class="normal"><sp/>open(filename,<sp/></highlight><highlight class="stringliteral">&quot;wb&quot;</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>f:</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>f.write(bytearray(req.audio_data))</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>err_code<sp/>=<sp/>os.system(</highlight><highlight class="stringliteral">&quot;play<sp/>%s<sp/>pitch<sp/>%i<sp/>&gt;<sp/>/dev/null<sp/>2&gt;&amp;1&quot;</highlight><highlight class="normal"><sp/>%<sp/>(filename,<sp/>req.pitch))</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>err_code:</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logerr(</highlight><highlight class="stringliteral">&quot;Could<sp/>not<sp/>play<sp/>%s:<sp/>return<sp/>code:<sp/>%i&quot;</highlight><highlight class="normal"><sp/>%<sp/>(filename,<sp/>err_code))</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a6fb574749caf204d4f84053ddc9f869b" kindref="member">is_playing</ref><sp/>=<sp/></highlight><highlight class="keyword">False</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58" refid="classplayer_1_1Player_1a4b8ca836138b97835b404146d68a433d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classplayer_1_1Player_1a4b8ca836138b97835b404146d68a433d" kindref="member">step</ref>(self):</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>self.<ref refid="classplayer_1_1Player_1a7330723fe48faf8e18462fe03f3062ed" kindref="member">buffer</ref><sp/></highlight><highlight class="keywordflow">or</highlight><highlight class="normal"><sp/>self.<ref refid="classplayer_1_1Player_1a6fb574749caf204d4f84053ddc9f869b" kindref="member">is_playing</ref>:</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Play<sp/>first<sp/>request<sp/>from<sp/>the<sp/>buffer</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a048d6cc9f088633e7a8411b46067830a" kindref="member">play</ref>(self.<ref refid="classplayer_1_1Player_1a7330723fe48faf8e18462fe03f3062ed" kindref="member">buffer</ref>[0])</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>If<sp/>the<sp/>buffer<sp/>was<sp/>not<sp/>emptied<sp/>in<sp/>the<sp/>meantime,<sp/>pop<sp/>the<sp/>first<sp/>request</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>self.<ref refid="classplayer_1_1Player_1a7330723fe48faf8e18462fe03f3062ed" kindref="member">buffer</ref>:</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a7330723fe48faf8e18462fe03f3062ed" kindref="member">buffer</ref>.pop(0)</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="classplayer_1_1Player_1ab916fd96e8ebe7d820d8854e34f3b7d0" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classplayer_1_1Player_1ab916fd96e8ebe7d820d8854e34f3b7d0" kindref="member">clear_buffer_srv</ref>(self,<sp/>req):</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classplayer_1_1Player_1a7330723fe48faf8e18462fe03f3062ed" kindref="member">buffer</ref><sp/>=<sp/>[]</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>[]</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;__main__&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.init_node(</highlight><highlight class="stringliteral">&apos;audio_player&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="namespaceplayer_1a47726a3ec0f0c2473ed5d0339f1b3032" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>player<sp/>=<sp/><ref refid="classplayer_1_1Player" kindref="compound">Player</ref>()</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>rospy.is_shutdown():</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>player.step()</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.sleep(0.1)</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">except</highlight><highlight class="normal"><sp/>rospy.ROSInterruptException:</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">pass</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="scripts/player.py"/>
+  </compounddef>
+</doxygen>

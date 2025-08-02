@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="tuning_8py" kind="file" language="Python">
+    <compoundname>tuning.py</compoundname>
+    <innernamespace refid="namespacechallenge__serve__breakfast_1_1tuning">challenge_serve_breakfast::tuning</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacechallenge__serve__breakfast_1_1tuning" refkind="compound"><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Copyright<sp/>(c)<sp/>2022,<sp/>TU/e<sp/>Robotics,<sp/>Netherlands</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">#<sp/>All<sp/>rights<sp/>reserved.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">#<sp/>\author<sp/>Rein<sp/>Appeldoorn</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>copy</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>math</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>PyKDL</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>rospy</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>geometry_msgs.msg<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>PoseStamped</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>std_msgs.msg<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>ColorRGBA</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>tf_conversions<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>toMsg</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16" refid="namespacechallenge__serve__breakfast_1_1tuning_1aea9627d9d375af3989fa577beeb495f9" refkind="member"><highlight class="normal">REQUIRED_ITEMS<sp/>=<sp/>[</highlight><highlight class="stringliteral">&quot;spoon&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;bowl&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;milk_carton&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;cereal_box&quot;</highlight><highlight class="normal">]</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">#<sp/>pose<sp/>of<sp/>the<sp/>breakfast<sp/>on<sp/>the<sp/>table</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19" refid="namespacechallenge__serve__breakfast_1_1tuning_1a06d7b5a6f6b23cd6f176cf126f8c6f31" refkind="member"><highlight class="normal">BREAKFAST_POSE<sp/>=<sp/>PyKDL.Frame(PyKDL.Rotation.RPY(0,<sp/>0,<sp/>math.pi),<sp/>PyKDL.Vector(0.7,<sp/>0,<sp/>0.76))</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment">#<sp/>vectors<sp/>of<sp/>the<sp/>items<sp/>with<sp/>respect<sp/>to<sp/>the<sp/>breakfast<sp/>frame</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="namespacechallenge__serve__breakfast_1_1tuning_1ab13269e89c260910a250311be1c7ac3f" refkind="member"><highlight class="normal">ITEM_VECTOR_DICT<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;spoon&quot;</highlight><highlight class="normal">:<sp/>PyKDL.Vector(0.0,<sp/>-0.15,<sp/>0),</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;bowl&quot;</highlight><highlight class="normal">:<sp/>PyKDL.Vector(0.0,<sp/>0.0,<sp/>0),</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;milk_carton&quot;</highlight><highlight class="normal">:<sp/>PyKDL.Vector(-0.05,<sp/>0.15,<sp/>0),</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;cereal_box&quot;</highlight><highlight class="normal">:<sp/>PyKDL.Vector(0.0,<sp/>-0.3,<sp/>0),</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">#<sp/>frame<sp/>indicating<sp/>the<sp/>pose<sp/>of<sp/>the<sp/>hand<sp/>with<sp/>respect<sp/>to<sp/>the<sp/>vector<sp/>in<sp/>ITEM_VECTOR_DICT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30" refid="namespacechallenge__serve__breakfast_1_1tuning_1a477a2f13eeffe777999b4694829c7ed2" refkind="member"><highlight class="normal">ITEM_OFFSET_DICT<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;spoon&quot;</highlight><highlight class="normal">:<sp/>PyKDL.Frame(PyKDL.Rotation.RPY(0,<sp/>0.5*math.pi,<sp/>0),<sp/>PyKDL.Vector(0.0,<sp/>0.0,<sp/>0.1)),</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;bowl&quot;</highlight><highlight class="normal">:<sp/>PyKDL.Frame(PyKDL.Rotation.RPY(0.5*math.pi,<sp/>0.25*math.pi,<sp/>0.0),<sp/>PyKDL.Vector(-0.08,<sp/>0.0,<sp/>0.07)),</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;milk_carton&quot;</highlight><highlight class="normal">:<sp/>PyKDL.Frame(PyKDL.Rotation.RPY(0,<sp/>0,<sp/>0),<sp/>PyKDL.Vector(0.0,<sp/>0.0,<sp/>0.07)),</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;cereal_box&quot;</highlight><highlight class="normal">:<sp/>PyKDL.Frame(PyKDL.Rotation.RPY(0,<sp/>0,<sp/>0),<sp/>PyKDL.Vector(0.0,<sp/>0.0,<sp/>0.07)),</highlight></codeline>
+<codeline lineno="35"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="namespacechallenge__serve__breakfast_1_1tuning_1aedf590dd50cae49c55aa20b6f23650c8" refkind="member"><highlight class="normal">POUR_OFFSET_DICT<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;bowl&quot;</highlight><highlight class="normal">:<sp/>[PyKDL.Frame(PyKDL.Rotation.RPY(0,<sp/>0,<sp/>0),<sp/>PyKDL.Vector(0.0,<sp/>-0.07,<sp/>0.20)),</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PyKDL.Frame(PyKDL.Rotation.RPY(-0.5*math.pi,<sp/>0,<sp/>0),<sp/>PyKDL.Vector(0.0,<sp/>-0.07,<sp/>0.20)),</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>PyKDL.Frame(PyKDL.Rotation.RPY(0,<sp/>0,<sp/>0),<sp/>PyKDL.Vector(0.0,<sp/>-0.07,<sp/>0.20))]</highlight></codeline>
+<codeline lineno="41"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="namespacechallenge__serve__breakfast_1_1tuning_1ae8081acece49c8ae009fd2d0ca014a77" refkind="member"><highlight class="normal">COLOR_DICT<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;spoon&quot;</highlight><highlight class="normal">:<sp/>ColorRGBA(1,<sp/>0,<sp/>1,<sp/>1),</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;bowl&quot;</highlight><highlight class="normal">:<sp/>ColorRGBA(0,<sp/>1,<sp/>1,<sp/>1),</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;milk_carton&quot;</highlight><highlight class="normal">:<sp/>ColorRGBA(0,<sp/>0,<sp/>1,<sp/>1),</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;cereal_box&quot;</highlight><highlight class="normal">:<sp/>ColorRGBA(1,<sp/>1,<sp/>0,<sp/>1),</highlight></codeline>
+<codeline lineno="48"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="namespacechallenge__serve__breakfast_1_1tuning_1aad8ca1bb6a8a517967b00045084adb96" refkind="member"><highlight class="normal">JOINTS_HANDOVER<sp/>=<sp/>[0.4,<sp/>-0.2,<sp/>0.0,<sp/>-1.37,<sp/>0]</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="namespacechallenge__serve__breakfast_1_1tuning_1a2588c6b3a328bf20947e54ce794b6d89" refkind="member"><highlight class="normal">JOINTS_POST_PICK<sp/>=<sp/>[0.7,<sp/>-1.2,<sp/>0,<sp/>0,<sp/>0]</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="namespacechallenge__serve__breakfast_1_1tuning_1af8bea39a754fd8905041a968a389d45f" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacechallenge__serve__breakfast_1_1tuning_1af8bea39a754fd8905041a968a389d45f" kindref="member">item_vector_to_item_frame</ref>(item_vector):</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>frame<sp/>=<sp/>copy.deepcopy(BREAKFAST_POSE)</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>item_placement_vector<sp/>=<sp/>item_vector</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>item_frame<sp/>=<sp/>frame</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>item_frame.p<sp/>=<sp/>frame<sp/>*<sp/>item_placement_vector</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.loginfo(</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Placing<sp/>at<sp/>frame<sp/>({f})<sp/>*<sp/>item_placement_vector<sp/>({ipv})<sp/>=<sp/>{itf}&quot;</highlight><highlight class="normal">.format(</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>f=frame,<sp/>ipv=item_placement_vector,<sp/>itf=item_frame</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item_frame</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="namespacechallenge__serve__breakfast_1_1tuning_1a780fcb6ae67d4cad23074fdd0676f623" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacechallenge__serve__breakfast_1_1tuning_1a780fcb6ae67d4cad23074fdd0676f623" kindref="member">get_item_place_pose</ref>(item_name):</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>item_vector<sp/>=<sp/>ITEM_VECTOR_DICT[item_name]</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>item_frame<sp/>=<sp/>copy.deepcopy(BREAKFAST_POSE)</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>item_frame.p<sp/>=<sp/>BREAKFAST_POSE<sp/>*<sp/>item_vector</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>item_place_offset<sp/>=<sp/>ITEM_OFFSET_DICT[item_name]</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>item_place_pose<sp/>=<sp/>item_frame<sp/>*<sp/>item_place_offset</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.loginfo(f</highlight><highlight class="stringliteral">&quot;Placing<sp/>at<sp/>frame<sp/>{item_frame}<sp/>with<sp/>place<sp/>pose<sp/>{item_place_pose}&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item_place_pose</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81" refid="namespacechallenge__serve__breakfast_1_1tuning_1a18650b939dcc709c1ba06ea2435ff6ae" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacechallenge__serve__breakfast_1_1tuning_1a18650b939dcc709c1ba06ea2435ff6ae" kindref="member">get_item_pour_poses</ref>(item_name):</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>item_vector<sp/>=<sp/>ITEM_VECTOR_DICT[item_name]</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>item_frame<sp/>=<sp/>copy.deepcopy(BREAKFAST_POSE)</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>item_frame.p<sp/>=<sp/>BREAKFAST_POSE<sp/>*<sp/>item_vector</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>item_pour_offsets<sp/>=<sp/>POUR_OFFSET_DICT[item_name]</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>item_pour_poses<sp/>=<sp/>[]</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>offset<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>item_pour_offsets:</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>item_pour_poses.append(item_frame<sp/>*<sp/>offset)</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item_pour_poses</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="namespacechallenge__serve__breakfast_1_1tuning_1abf2e6a57e6a197db1a4ff528cb0c5737" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacechallenge__serve__breakfast_1_1tuning_1abf2e6a57e6a197db1a4ff528cb0c5737" kindref="member">item_frame_to_pose</ref>(item_frame,<sp/>frame_id):</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>goal_pose<sp/>=<sp/>PoseStamped()</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>goal_pose.header.stamp<sp/>=<sp/>rospy.Time()</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>goal_pose.header.frame_id<sp/>=<sp/>frame_id</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/>goal_pose.pose<sp/>=<sp/>toMsg(item_frame)</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>goal_pose</highlight></codeline>
+    </programlisting>
+    <location file="src/challenge_serve_breakfast/tuning.py"/>
+  </compounddef>
+</doxygen>

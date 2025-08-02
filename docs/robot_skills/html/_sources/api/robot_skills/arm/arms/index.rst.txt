@@ -1,0 +1,461 @@
+robot_skills.arm.arms
+=====================
+
+.. py:module:: robot_skills.arm.arms
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_skills.arm.arms.MAX_JOINT_VEL
+   robot_skills.arm.arms.JOINT_TIMEOUT
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.arm.arms.GripperTypes
+   robot_skills.arm.arms.PseudoObjects
+   robot_skills.arm.arms.PublicArm
+   robot_skills.arm.arms.Arm
+
+
+Module Contents
+---------------
+
+.. py:data:: MAX_JOINT_VEL
+   :value: 0.7
+
+
+.. py:data:: JOINT_TIMEOUT
+   :value: 5.0
+
+
+.. py:class:: GripperTypes
+
+   Bases: :py:obj:`object`
+
+
+   .. py:attribute:: PINCH
+      :value: 'gripper-type-pinch'
+
+
+
+   .. py:attribute:: PARALLEL
+      :value: 'gripper-type-parallel'
+
+
+
+   .. py:attribute:: SUCTION
+      :value: 'gripper-type-suction'
+
+
+
+   .. py:attribute:: GRASPING
+      :value: 'pseudo-gripper-type-any-grasping-will-do'
+
+
+
+   .. py:attribute:: NONE
+      :value: 'pseudo-gripper-type-no-gripper'
+
+
+
+.. py:class:: PseudoObjects
+
+   Bases: :py:obj:`object`
+
+
+   .. py:attribute:: ANY
+      :value: 'pseudo-object-saying-any-object-will-do'
+
+
+
+   .. py:attribute:: EMPTY
+      :value: 'pseudo-object-saying-lack-of-object-will-do'
+
+
+
+.. py:class:: PublicArm(arm, available_gripper_types, default_gripper_type, has_occupied_by, allow_force_sensor, available_joint_goals, available_joint_trajectories)
+
+   Bases: :py:obj:`object`
+
+
+   Public arm interface, also checks a challenge doesn't try to use more than it asked for.
+
+   THE ARM SHOULD NEVER ALLOW ANYTHING THAT WAS NOT ASKED FOR IN THE CONSTRUCTOR!
+
+
+   :ivar _arm: Private link to the real arm.
+   :vartype _arm: Arm
+
+   :ivar default_gripper_type: Gripper type to use if the user didn't provide one.
+   :vartpe default_gripper_type: str or None
+
+   :ivar _available_gripper_types: Gripper types that may be used.
+   :vartype _available_gripper_types: set of str (the GripperTypes.* constants)
+
+   :ivar _has_occupied_by: Whether the arm supports 'occupied_by' calls.
+   :vartype _has_occupied_by: bool
+
+   :ivar _allow_force_sensor: Whether use of the force sensor is allowed.
+   :vartype _allow_force_sensor: bool
+
+   :ivar _available_joint_goals: Joint goals that may be used.
+   :vartype _available_joint_goals: set of str
+
+   :ivar _available_joint_trajectories: Joint trajectories that may be used.
+   :vartype _available_joint_trajectories: set of str
+
+
+
+   .. py:attribute:: _arm
+
+
+   .. py:attribute:: default_gripper_type
+
+
+   .. py:attribute:: _available_gripper_types
+
+
+   .. py:attribute:: _has_occupied_by
+
+
+   .. py:attribute:: _allow_force_sensor
+
+
+   .. py:attribute:: _available_joint_goals
+
+
+   .. py:attribute:: _available_joint_trajectories
+
+
+   .. py:method:: has_occupied_by()
+
+      Test whether the arm supports 'occupied_by' calls.
+
+
+
+   .. py:property:: occupied_by
+      :type: ed.entity.Entity
+
+
+      use arm.gripper.occupied_by instead!
+      Query the object currently held by the arm.
+
+      :type: !Deprecated
+
+
+   .. py:method:: has_joint_goal(configuration)
+
+      Query whether the provided joint goal exists for the arm.
+
+
+
+   .. py:method:: send_joint_goal(configuration, timeout = JOINT_TIMEOUT, max_joint_vel = MAX_JOINT_VEL)
+
+
+   .. py:method:: has_joint_trajectory(configuration)
+
+      Query whether the provided joint trajectory exists for the arm.
+
+
+
+   .. py:method:: send_joint_trajectory(configuration, timeout = JOINT_TIMEOUT, max_joint_vel = MAX_JOINT_VEL)
+
+
+   .. py:method:: send_goal(frame_stamped, timeout = 30.0, pre_grasp = False, first_joint_pos_only = False, allowed_touch_objects = None)
+
+
+   .. py:property:: gripper
+      :type: robot_skills.arm.gripper.Gripper
+
+
+
+   .. py:property:: handover_detector
+      :type: robot_skills.arm.handover_detector.HandoverDetector
+
+
+
+   .. py:method:: has_gripper_type(gripper_type = None)
+
+      Query whether the arm has the provided specific type of gripper.
+
+      :param gripper_type: Optional type of gripper to test.
+
+
+
+   .. py:property:: has_force_sensor
+      :type: bool
+
+
+
+   .. py:method:: move_down_until_force_sensor_edge_up(timeout = 10, retract_distance = 0.01, distance_move_down = None)
+
+
+   .. py:method:: send_gripper_goal(state, timeout = 5.0, gripper_type = None, max_torque = 0.1)
+
+      Tell the gripper to perform a motion.
+      :param state: New state (GripperState) of the gripper.
+      :param timeout: Amount of time available to reach the goal, default is 5
+      :param gripper_type: Optional type of gripper to perform the action.
+      :param max_torque: How much torque [Nm] to apply
+      :return: success
+
+
+
+   .. py:method:: handover_to_human(timeout = 10.0, gripper_type = None)
+
+
+   .. py:method:: handover_to_robot(timeout = 10, gripper_type = None)
+
+
+   .. py:method:: wait_for_motion_done(timeout = 10.0, cancel = False, gripper_type = None)
+
+
+   .. py:method:: cancel_goals()
+
+      Cancels the currently active grasp-precompute and joint-trajectory-action goals
+
+
+
+   .. py:method:: close()
+
+
+   .. py:method:: reset()
+
+
+   .. py:method:: selfreset()
+
+
+   .. py:property:: base_offset
+      :type: PyKDL.Vector
+
+
+      Retrieves the 'optimal' position of an object w.r.t. the base link of a
+      robot for this arm to grasp it.
+
+      :return: Position of an object w.r.t. the base link of a robot.
+
+
+   .. py:method:: _test_die(cond, feature, hint = '')
+
+      Test the condition, if it fails, die with an assertion error explaining what is wrong.
+
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: Arm(robot_name, tf_buffer, get_joint_states, name)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   A kinematic chain ending in an end_effector. Can be controlled using either joint goals or a goal to reach with
+   the end_effector described in carthesian coordinates.
+
+   constructor
+
+   :param robot_name: robot_name
+   :param tf_buffer: tf2_ros.Buffer
+   :param get_joint_states: get_joint_states function for getting the last joint states
+   :param name: string used to identify the arm
+
+
+   .. py:attribute:: name
+
+
+   .. py:attribute:: _operational
+      :value: True
+
+
+
+   .. py:attribute:: offset
+
+
+   .. py:attribute:: marker_to_grippoint_offset
+
+
+   .. py:attribute:: _base_offset
+
+
+   .. py:attribute:: joint_names
+
+
+   .. py:attribute:: torso_joint_names
+
+
+   .. py:attribute:: default_configurations
+
+
+   .. py:attribute:: default_trajectories
+
+
+   .. py:attribute:: grasp_frame
+
+
+   .. py:attribute:: _ac_grasp_precompute
+
+
+   .. py:attribute:: _ac_joint_traj
+
+
+   .. py:attribute:: _marker_publisher
+
+
+   .. py:attribute:: get_joint_states
+
+
+   .. py:method:: collect_gripper_types(gripper_type)
+
+      Query the arm for having the proper gripper type and collect the types that fulfill the
+      requirement.
+
+      :param gripper_type: Wanted type of the gripper. May be a pseudo gripper type.
+      :return: Collection gripper types at the arm that meet the requirements.
+
+
+
+   .. py:method:: _has_specific_gripper_types(gripper_type)
+
+      Verify whether the arm as the given type of specific gripper.
+
+      :param gripper_type: Type of gripper to check for. Must not be a pseudo gripper type.
+      :return: Gripper types that match the requirement.
+
+
+
+   .. py:method:: has_joint_goal(configuration)
+
+      Query the arm for having a given joint goal.
+
+      :param configuration: name of jint goal to check.
+      :return: Whether the joint goal is available.
+
+
+
+   .. py:method:: has_joint_trajectory(configuration)
+
+      Query the arm for having a given joint trajectory.
+
+      :param configuration: name of jint trajectory to check.
+      :return: Whether the joint trajectory is available.
+
+
+
+   .. py:method:: cancel_goals()
+
+      Cancels the currently active grasp-precompute and joint-trajectory-action goals
+
+
+
+   .. py:method:: close()
+
+      Cancels all active goals for the arm and the gripper
+
+
+
+   .. py:method:: send_goal(frameStamped, timeout = 30.0, pre_grasp = False, first_joint_pos_only = False, allowed_touch_objects = None)
+
+      Send a arm to a goal:
+
+      Using a combination of position and orientation: a kdl.Frame. A time
+      out time_out. pre_grasp means go to an offset that is normally needed
+      for things such as grasping. You can also specify the frame_id which
+      defaults to base_link
+
+      :param frameStamped: A FrameStamped to move the arm's end effector to
+      :param timeout: timeout in seconds; In case of 0.0, goal is executed without feedback and waiting
+      :param pre_grasp: Bool to use pre_grasp or not
+      :param first_joint_pos_only: Bool to only execute first joint position of whole trajectory
+      :param allowed_touch_objects: List of object names in the worldmodel, which are allowed to be touched
+      :return: True of False
+
+
+
+   .. py:method:: send_joint_goal(configuration, timeout = JOINT_TIMEOUT, max_joint_vel = MAX_JOINT_VEL)
+
+      Send a named joint goal (pose) defined in the parameter default_configurations to the arm
+      :param configuration: Name of configuration, configuration should be loaded as parameter
+      :param timeout: Timeout in seconds
+      :param max_joint_vel: Speed the robot can have when getting to the desired configuration
+      :return: True or False, False in case of nonexistent configuration or failed execution
+
+
+
+   .. py:method:: send_joint_trajectory(configuration, timeout = JOINT_TIMEOUT, max_joint_vel = MAX_JOINT_VEL)
+
+      Send a named joint trajectory (sequence of poses) defined in the default_trajectories to the arm
+
+      :param configuration: Name of configuration, configuration should be loaded as parameter
+      :param timeout: Timeout in seconds
+      :param max_joint_vel: Speed the robot can have when getting to the desired configuration
+      :return: True or False, False in case of nonexistent configuration or failed execution
+
+
+
+   .. py:method:: selfreset()
+
+      Put the arm into the 'reset' pose
+
+      :return: True or False
+
+
+
+   .. py:method:: _send_joint_trajectory(joints_references, max_joint_vel = MAX_JOINT_VEL, timeout = JOINT_TIMEOUT)
+
+      Low level method that sends a array of joint references to the arm.
+
+      If timeout is defined, it will wait for timeout*len(joints_reference) seconds for the
+      completion of the actionlib goal. It will return True as soon as possible when the goal
+      succeeded. On timeout, it will return False. If timeout is set to 0.0 it will return False immediately.
+      The motion will not be cancelled on timeout.
+
+      :param joints_references: List of joint configurations,
+          which should be a list of the length equal to the number of joints to be moved
+      :param max_joint_vel: Speed the robot can have when getting to the desired
+          configuration. A single value can be given, which will be used for all joints, or a list of values can be
+          given in which the order has to agree with the joints according to the joints_references.
+      :param timeout: Timeout for each joint configuration in rospy.Duration(seconds). If 0.0 function will return without waiting for motion done.
+      :return: Whether or not the motion was completed within the timeout.
+
+
+
+   .. py:method:: wait_for_motion_done(timeout = 10.0, cancel = False)
+
+      Waits until all action clients are done
+
+      :param timeout: timeout in seconds; in case 0.0, no sensible output is provided, just False
+      :param cancel: bool specifying whether goals should be cancelled
+          if timeout is exceeded
+      :return: bool indicates whether motion was done (True if reached, False otherwise)
+
+
+
+   .. py:property:: base_offset
+      :type: PyKDL.Vector
+
+
+      Retrieves the 'optimal' position of an object w.r.t. the base link of a
+      robot for this arm to grasp it.
+
+      :return: Position of an object w.r.t. the base link of a robot.
+
+
+   .. py:method:: _publish_marker(goal, color, ns = '')
+
+      Publish markers for visualisation
+      :param goal: frame_stamped
+      :param color: list of rgb colors (0.0-1.0)
+      :param ns: namespace
+
+
+
+   .. py:method:: __repr__()
+
+

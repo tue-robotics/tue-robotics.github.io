@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robot_smach_states.util.designators.introspection &mdash; robot_smach_states 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            robot_smach_states
+              <img src="../../../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">robot_smach_states</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robot_smach_states.util.designators.introspection</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robot_smach_states.util.designators.introspection</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Introspection for designators.</span>
+<span class="sd">Usage: pass a Smach state-machine to analyse_designators.</span>
+
+<span class="sd">A .dot and .png will be saved to the current directory, showing the relations and composition of states,</span>
+<span class="sd">state_machines and designators.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="c1"># System</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">graphviz</span><span class="w"> </span><span class="kn">import</span> <span class="n">Digraph</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">smach</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Designator</span><span class="p">,</span> <span class="n">VariableWriter</span><span class="p">,</span> <span class="n">VariableDesignator</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;loy&#39;</span>
+
+
+<div class="viewcode-block" id="DesignatorUsage"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.DesignatorUsage">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DesignatorUsage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">designator</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">designator</span> <span class="o">=</span> <span class="n">designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">=</span> <span class="n">role</span></div>
+
+
+<div class="viewcode-block" id="DesignatorUsedInState"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.DesignatorUsedInState">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DesignatorUsedInState</span><span class="p">(</span><span class="n">DesignatorUsage</span><span class="p">):</span>
+<div class="viewcode-block" id="DesignatorUsedInState.add_graphviz_edge"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.DesignatorUsedInState.add_graphviz_edge">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_graphviz_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
+        <span class="n">desig_name</span> <span class="o">=</span> <span class="n">format_designator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">designator</span><span class="p">)</span>
+
+        <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="n">gv_safe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;bisque&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;filled&quot;</span><span class="p">)</span>
+
+        <span class="n">graph</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">gv_safe</span><span class="p">(</span><span class="n">desig_name</span><span class="p">),</span>
+                   <span class="n">gv_safe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span>
+                   <span class="n">label</span><span class="o">=</span><span class="n">gv_safe</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.resolve&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">)),</span>
+                   <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DesignatorWrittenInState"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.DesignatorWrittenInState">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DesignatorWrittenInState</span><span class="p">(</span><span class="n">DesignatorUsage</span><span class="p">):</span>
+<div class="viewcode-block" id="DesignatorWrittenInState.add_graphviz_edge"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.DesignatorWrittenInState.add_graphviz_edge">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_graphviz_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
+        <span class="n">writer_name</span> <span class="o">=</span> <span class="n">format_designator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">designator</span><span class="p">)</span>
+        <span class="n">variable_name</span> <span class="o">=</span> <span class="n">format_designator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">designator</span><span class="o">.</span><span class="n">variable_designator</span><span class="p">)</span>
+
+        <span class="c1"># graph.edge(gv_safe(self.parent),</span>
+        <span class="c1">#            gv_safe(variable_name),</span>
+        <span class="c1">#            label=gv_safe(&quot;sets {}&quot;.format(self.role)),</span>
+        <span class="c1">#            color=&quot;red&quot;)</span>
+
+        <span class="n">graph</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">gv_safe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span>
+                   <span class="n">gv_safe</span><span class="p">(</span><span class="n">variable_name</span><span class="p">),</span>
+                   <span class="n">label</span><span class="o">=</span><span class="n">gv_safe</span><span class="p">(</span><span class="s2">&quot;write </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">)),</span>
+                   <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+
+        <span class="n">graph</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">gv_safe</span><span class="p">(</span><span class="n">variable_name</span><span class="p">),</span>
+                   <span class="n">gv_safe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span>
+                   <span class="n">gv_safe</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.resolve&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">)),</span>
+                   <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="DesignatorUsedInDesignator"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.DesignatorUsedInDesignator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DesignatorUsedInDesignator</span><span class="p">(</span><span class="n">DesignatorUsage</span><span class="p">):</span>
+<div class="viewcode-block" id="DesignatorUsedInDesignator.add_graphviz_edge"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.DesignatorUsedInDesignator.add_graphviz_edge">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_graphviz_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
+        <span class="n">parent_name</span> <span class="o">=</span> <span class="n">format_designator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">desig_name</span> <span class="o">=</span> <span class="n">format_designator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">designator</span><span class="p">)</span>
+
+        <span class="n">graph</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">gv_safe</span><span class="p">(</span><span class="n">desig_name</span><span class="p">),</span>
+                   <span class="n">gv_safe</span><span class="p">(</span><span class="n">parent_name</span><span class="p">),</span>
+                   <span class="n">gv_safe</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.resolve&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">)),</span>
+                   <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkgreen&quot;</span><span class="p">,</span>
+                   <span class="n">style</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="gv_safe"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.gv_safe">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">gv_safe</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">string</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="format_designator"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.format_designator">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">format_designator</span><span class="p">(</span><span class="n">desig</span><span class="p">):</span>
+    <span class="n">resolve_type_format</span> <span class="o">=</span> <span class="n">desig</span><span class="o">.</span><span class="n">resolve_type</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">desig</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">desig</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">desig</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># If the resolve_type is a collection, then show the type of the collection elements</span>
+                <span class="n">resolve_type_format</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">desig</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">resolve_type_format</span> <span class="o">=</span> <span class="n">desig</span><span class="o">.</span><span class="n">resolve_type</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="n">desig_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{name}</span><span class="se">\\</span><span class="s2">n</span><span class="si">{cls}</span><span class="se">\\</span><span class="s2">n@</span><span class="si">{addr}</span><span class="se">\\</span><span class="s2">n&lt;</span><span class="si">{resolve_type}</span><span class="s2">&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">desig</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="k">if</span> <span class="n">desig</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                                                      <span class="bp">cls</span><span class="o">=</span><span class="n">desig</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                                                                      <span class="n">addr</span><span class="o">=</span><span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">desig</span><span class="p">)),</span>
+                                                                      <span class="n">resolve_type</span><span class="o">=</span><span class="n">resolve_type_format</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">desig_name</span></div>
+
+
+<div class="viewcode-block" id="flatten"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.flatten">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">flatten</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">parentname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
+    <span class="n">flat</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">get_children</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">this_name</span> <span class="o">=</span> <span class="n">parentname</span> <span class="o">+</span> <span class="n">sep</span> <span class="o">+</span> <span class="n">branch_name</span> <span class="k">if</span> <span class="n">parentname</span> <span class="k">else</span> <span class="n">branch_name</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">smach</span><span class="o">.</span><span class="n">Iterator</span><span class="p">):</span>
+            <span class="n">flat</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">this_name</span><span class="p">,</span> <span class="n">branch</span><span class="p">)]</span>
+            <span class="n">flat</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">parentname</span><span class="o">=</span><span class="n">this_name</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flat</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">this_name</span><span class="p">,</span> <span class="n">branch</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">flat</span></div>
+
+
+<div class="viewcode-block" id="make_legend"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.make_legend">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">make_legend</span><span class="p">():</span>
+    <span class="n">legend</span> <span class="o">=</span> <span class="n">Digraph</span><span class="p">(</span><span class="s1">&#39;cluster_1&#39;</span><span class="p">)</span>
+
+    <span class="n">state</span> <span class="o">=</span> <span class="n">smach</span><span class="o">.</span><span class="n">State</span><span class="p">()</span>
+    <span class="n">parent_desig</span> <span class="o">=</span> <span class="n">Designator</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;parent_designator&quot;</span><span class="p">,</span> <span class="n">resolve_type</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span>  <span class="c1"># No resolve_type really needed but required</span>
+    <span class="n">desig</span> <span class="o">=</span> <span class="n">Designator</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;designator&quot;</span><span class="p">,</span> <span class="n">resolve_type</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span>  <span class="c1"># No resolve_type really needed but required</span>
+    <span class="n">vardesig</span> <span class="o">=</span> <span class="n">VariableDesignator</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">writeable</span>
+
+    <span class="n">used_in_state</span> <span class="o">=</span> <span class="n">DesignatorUsedInState</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">desig</span><span class="p">,</span> <span class="s2">&quot;role_resolved_from&quot;</span><span class="p">)</span>
+    <span class="n">written_in_state</span> <span class="o">=</span> <span class="n">DesignatorWrittenInState</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">vardesig</span><span class="p">,</span> <span class="s2">&quot;role_written_to&quot;</span><span class="p">)</span>
+    <span class="n">used_in_desig</span> <span class="o">=</span> <span class="n">DesignatorUsedInDesignator</span><span class="p">(</span><span class="n">parent_desig</span><span class="p">,</span> <span class="n">desig</span><span class="p">,</span> <span class="s2">&quot;role_in_parent&quot;</span><span class="p">)</span>
+
+    <span class="n">usages</span> <span class="o">=</span> <span class="p">[</span><span class="n">used_in_state</span><span class="p">,</span> <span class="n">written_in_state</span><span class="p">,</span> <span class="n">used_in_desig</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">usage</span> <span class="ow">in</span> <span class="n">usages</span><span class="p">:</span>
+        <span class="n">usage</span><span class="o">.</span><span class="n">add_graphviz_edge</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span>
+
+    <span class="n">legend</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;label = &quot;Legend&quot;&#39;</span><span class="p">)</span>
+    <span class="n">legend</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;color=black&#39;</span><span class="p">)</span>
+    <span class="n">legend</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;width=0.25&#39;</span><span class="p">)</span>
+    <span class="n">legend</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;height=0.25&#39;</span><span class="p">)</span>
+    <span class="n">legend</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;size=&quot;2.0, 2.0&quot;&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">legend</span></div>
+
+
+<div class="viewcode-block" id="analyse_designators"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/introspection/index.html#robot_smach_states.util.designators.introspection.analyse_designators">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">analyse_designators</span><span class="p">(</span><span class="n">statemachine</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">statemachine_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">save_dot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">):</span>
+    <span class="n">designators</span> <span class="o">=</span> <span class="n">Designator</span><span class="o">.</span><span class="n">instances</span>
+    <span class="n">writers</span> <span class="o">=</span> <span class="n">VariableWriter</span><span class="o">.</span><span class="n">instances</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">statemachine</span><span class="p">:</span>
+        <span class="n">statemachine</span> <span class="o">=</span> <span class="n">smach</span><span class="o">.</span><span class="n">StateMachine</span><span class="o">.</span><span class="n">_currently_opened_container</span><span class="p">()</span>
+    <span class="n">label2state</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">statemachine</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n.&quot;</span><span class="p">))</span>
+    <span class="n">states</span> <span class="o">=</span> <span class="n">label2state</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+    <span class="n">state2label</span> <span class="o">=</span> <span class="p">{</span><span class="n">state</span><span class="p">:</span> <span class="n">label</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">label2state</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="n">usages</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">states</span><span class="p">:</span>
+        <span class="n">state_label</span> <span class="o">=</span> <span class="n">state2label</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>  <span class="c1"># Get the label of state but default to ugly __repr__</span>
+        <span class="k">for</span> <span class="n">designator_role</span><span class="p">,</span> <span class="n">designator</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># Iterate the self.xxx members of each state</span>
+            <span class="c1"># If the member is also a designator, then process it.</span>
+            <span class="c1"># This check is espcially added to catch sets before checked if they are in the weaksets, which will raise</span>
+            <span class="c1"># a TypeError.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">designator</span><span class="p">,</span> <span class="n">Designator</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">designator</span><span class="p">,</span> <span class="n">VariableWriter</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">designator</span> <span class="ow">in</span> <span class="n">designators</span><span class="p">:</span>
+                <span class="n">usages</span> <span class="o">+=</span> <span class="p">[</span><span class="n">DesignatorUsedInState</span><span class="p">(</span><span class="n">state_label</span><span class="p">,</span> <span class="n">designator</span><span class="p">,</span> <span class="n">designator_role</span><span class="p">)]</span>
+
+            <span class="k">if</span> <span class="n">designator</span> <span class="ow">in</span> <span class="n">writers</span><span class="p">:</span>
+                <span class="n">usages</span> <span class="o">+=</span> <span class="p">[</span><span class="n">DesignatorWrittenInState</span><span class="p">(</span><span class="n">state_label</span><span class="p">,</span> <span class="n">designator</span><span class="p">,</span> <span class="n">designator_role</span><span class="p">)]</span>
+
+    <span class="k">for</span> <span class="n">parent_designator</span> <span class="ow">in</span> <span class="n">designators</span><span class="p">:</span>
+        <span class="c1"># Iterate the self.xxx members of each designator</span>
+        <span class="k">for</span> <span class="n">child_role</span><span class="p">,</span> <span class="n">child_designator</span> <span class="ow">in</span> <span class="n">parent_designator</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># If the member is also a designator, then process it.</span>
+            <span class="k">if</span> <span class="n">child_designator</span> <span class="ow">in</span> <span class="n">designators</span><span class="p">:</span>
+                <span class="n">usages</span> <span class="o">+=</span> <span class="p">[</span><span class="n">DesignatorUsedInDesignator</span><span class="p">(</span><span class="n">parent_designator</span><span class="p">,</span> <span class="n">child_designator</span><span class="p">,</span> <span class="n">child_role</span><span class="p">)]</span>
+
+    <span class="n">dot</span> <span class="o">=</span> <span class="n">Digraph</span><span class="p">(</span><span class="n">comment</span><span class="o">=</span><span class="n">statemachine_name</span> <span class="o">+</span> <span class="s1">&#39; Designators&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">fmt</span><span class="p">)</span>
+    <span class="n">dot</span><span class="o">.</span><span class="n">graph_attr</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">statemachine_name</span>
+    <span class="n">dot</span><span class="o">.</span><span class="n">graph_attr</span><span class="p">[</span><span class="s1">&#39;labelloc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;t&quot;</span>
+
+    <span class="k">for</span> <span class="n">usage</span> <span class="ow">in</span> <span class="n">usages</span><span class="p">:</span>
+        <span class="n">usage</span><span class="o">.</span><span class="n">add_graphviz_edge</span><span class="p">(</span><span class="n">dot</span><span class="p">)</span>
+
+    <span class="n">dot</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">make_legend</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">save_dot</span><span class="p">:</span>
+        <span class="n">dot</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;/tmp/&quot;</span> <span class="o">+</span> <span class="n">statemachine_name</span> <span class="o">+</span> <span class="s1">&#39;_designators.dot&#39;</span><span class="p">)</span>
+    <span class="n">dot</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s2">&quot;/tmp/&quot;</span> <span class="o">+</span> <span class="n">statemachine_name</span> <span class="o">+</span> <span class="s1">&#39;_designators&#39;</span><span class="p">)</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;/tmp/&quot;</span> <span class="o">+</span> <span class="n">statemachine_name</span> <span class="o">+</span> <span class="s1">&#39;_designators&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

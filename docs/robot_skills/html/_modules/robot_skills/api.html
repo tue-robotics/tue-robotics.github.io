@@ -1,0 +1,213 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robot_skills.api &mdash; robot_skills 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            robot_skills
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_skills</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robot_skills.api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robot_skills.api</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ROS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cv_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">CvBridge</span>
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hmi_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryAction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompressedImage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">std_srvs.srv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Empty</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">hmi.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">TimeoutException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hmi.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">HMIResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">robot_skills.robot_part</span><span class="w"> </span><span class="kn">import</span> <span class="n">RobotPart</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Api</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="p">,</span> <span class="n">pre_hook</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">post_hook</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        constructor</span>
+
+<span class="sd">        :param robot_name: robot_name</span>
+<span class="sd">        :param tf_buffer: tf2_ros.Buffer</span>
+<span class="sd">        :param pre_hook: callable function to execute before a query call, i.e. to set light color</span>
+<span class="sd">        :param post_hook: callable function to execute after a query call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Api</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="o">=</span><span class="n">tf_buffer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pre_hook</span> <span class="o">=</span> <span class="n">pre_hook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_hook</span> <span class="o">=</span> <span class="n">post_hook</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cv_bridge</span> <span class="o">=</span> <span class="n">CvBridge</span><span class="p">()</span>
+
+        <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_simple_action_client</span><span class="p">(</span><span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/hmi&#39;</span><span class="p">,</span> <span class="n">QueryAction</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">simple_action_client</span><span class="o">=</span><span class="n">client</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">restart_srv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_service_client</span><span class="p">(</span><span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/hmi/dragonfly_speech_recognition/restart_node&#39;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_image_from_ros_publisher</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/hmi/image&#39;</span><span class="p">,</span> <span class="n">CompressedImage</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Api.query"><a class="viewcode-back" href="../../api/robot_skills/api/index.html#robot_skills.api.Api.query">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HMIResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform a HMI query, returns a HMIResult</span>
+
+<span class="sd">        :param description: text describing the query</span>
+<span class="sd">        :param grammar: string with the grammar to load</span>
+<span class="sd">        :param target: string identifying the target of the grammar to recognize</span>
+<span class="sd">        :param timeout: timeout in seconds (float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pre_hook</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pre_hook</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">grammar</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restart_dragonfly</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">TimeoutException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_post_hook</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_post_hook</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restart_dragonfly</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_post_hook</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_post_hook</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">answer</span></div>
+
+<div class="viewcode-block" id="Api._show_image"><a class="viewcode-back" href="../../api/robot_skills/api/index.html#robot_skills.api.Api._show_image">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_show_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show an image on the HMI display interface</span>
+
+<span class="sd">        :param msg: CompressedImage to display</span>
+<span class="sd">        :param seconds: How many seconds you would like to display the image on the screen</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">from_sec</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_image_from_ros_publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Api.show_image"><a class="viewcode-back" href="../../api/robot_skills/api/index.html#robot_skills.api.Api.show_image">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">show_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_to_image</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show an image on the HMI display interface</span>
+
+<span class="sd">        :param path_to_image: Absolute path to image file</span>
+<span class="sd">        :param seconds: How many seconds you would like to display the image on the screen</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">compressed_image_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv_bridge</span><span class="o">.</span><span class="n">cv2_to_compressed_imgmsg</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">path_to_image</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_image</span><span class="p">(</span><span class="n">compressed_image_msg</span><span class="p">,</span> <span class="n">seconds</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Api.show_image_from_msg"><a class="viewcode-back" href="../../api/robot_skills/api/index.html#robot_skills.api.Api.show_image_from_msg">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">show_image_from_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show an image on the HMI display interface</span>
+
+<span class="sd">        :param msg: rgb msg</span>
+<span class="sd">        :param seconds: How many seconds you would like to display the image on the screen</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">compressed_image_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cv_bridge</span><span class="o">.</span><span class="n">cv2_to_compressed_imgmsg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cv_bridge</span><span class="o">.</span><span class="n">imgmsg_to_cv2</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;bgr8&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_image</span><span class="p">(</span><span class="n">compressed_image_msg</span><span class="p">,</span> <span class="n">seconds</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">last_talker_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">last_talker_id</span>
+
+<div class="viewcode-block" id="Api.old_query"><a class="viewcode-back" href="../../api/robot_skills/api/index.html#robot_skills.api.Api.old_query">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">old_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;robot.ears.recognize IS REMOVED. Use `robot.hmi.query`&#39;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Api.selfreset"><a class="viewcode-back" href="../../api/robot_skills/api/index.html#robot_skills.api.Api.selfreset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">selfreset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restart_dragonfly</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Api.restart_dragonfly"><a class="viewcode-back" href="../../api/robot_skills/api/index.html#robot_skills.api.Api.restart_dragonfly">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">restart_dragonfly</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restart_srv</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Service call failed: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

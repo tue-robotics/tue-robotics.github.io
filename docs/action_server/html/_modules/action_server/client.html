@@ -1,0 +1,269 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>action_server.client &mdash; action_server 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            action_server
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">action_server</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">action_server.client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for action_server.client</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">action_server_msgs.msg</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">action_server_msgs.srv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">actionlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+
+
+<div class="viewcode-block" id="TaskOutcome"><a class="viewcode-back" href="../../api/action_server/client/index.html#action_server.client.TaskOutcome">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TaskOutcome</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">RESULT_MISSING_INFORMATION</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">RESULT_TASK_EXECUTION_FAILED</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">RESULT_UNKNOWN</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">RESULT_SUCCEEDED</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="n">RESULT_UNKNOWN</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">missing_field</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">messages</span><span class="p">:</span>
+            <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">missing_field</span> <span class="o">=</span> <span class="n">missing_field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">messages</span> <span class="o">=</span> <span class="n">messages</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">succeeded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">RESULT_SUCCEEDED</span>
+
+    <span class="nd">@succeeded</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">succeeded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RESULT_SUCCEEDED</span>
+
+<div class="viewcode-block" id="TaskOutcome.__repr__"><a class="viewcode-back" href="../../api/action_server/client/index.html#action_server.client.TaskOutcome.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;TaskOutcome(result=</span><span class="si">{}</span><span class="s2">, messages=</span><span class="si">{}</span><span class="s2">, missing_field=&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">,</span>
+                                                                                <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">,</span>
+                                                                                <span class="bp">self</span><span class="o">.</span><span class="n">missing_field</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="task_outcome_from_result"><a class="viewcode-back" href="../../api/action_server/client/index.html#action_server.client.task_outcome_from_result">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">task_outcome_from_result</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts action_server_msgs.msg.TaskResult to TaskOutcome class</span>
+
+<span class="sd">    :param result: (action_server_msgs.msg.TaskResult) result input</span>
+<span class="sd">    :return: (TaskOutcome) result output</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check result to return the correct outcome</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="o">.</span><span class="n">RESULT_MISSING_INFORMATION</span><span class="p">:</span>
+
+        <span class="n">to</span> <span class="o">=</span> <span class="n">TaskOutcome</span><span class="p">(</span><span class="n">TaskOutcome</span><span class="o">.</span><span class="n">RESULT_MISSING_INFORMATION</span><span class="p">,</span>
+                         <span class="n">result</span><span class="o">.</span><span class="n">log_messages</span><span class="p">)</span>
+        <span class="n">to</span><span class="o">.</span><span class="n">missing_field</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">missing_field</span>
+        <span class="k">return</span> <span class="n">to</span>
+
+    <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="o">.</span><span class="n">RESULT_TASK_EXECUTION_FAILED</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TaskOutcome</span><span class="p">(</span><span class="n">TaskOutcome</span><span class="o">.</span><span class="n">RESULT_TASK_EXECUTION_FAILED</span><span class="p">,</span>
+                           <span class="n">result</span><span class="o">.</span><span class="n">log_messages</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="o">.</span><span class="n">RESULT_UNKNOWN</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TaskOutcome</span><span class="p">(</span><span class="n">TaskOutcome</span><span class="o">.</span><span class="n">RESULT_UNKNOWN</span><span class="p">,</span>
+                           <span class="n">result</span><span class="o">.</span><span class="n">log_messages</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span> <span class="o">==</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="o">.</span><span class="n">RESULT_SUCCEEDED</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TaskOutcome</span><span class="p">(</span><span class="n">TaskOutcome</span><span class="o">.</span><span class="n">RESULT_SUCCEEDED</span><span class="p">,</span>
+                           <span class="n">result</span><span class="o">.</span><span class="n">log_messages</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">TaskOutcome</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">log_messages</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../api/action_server/client/index.html#action_server.client.Client">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Client</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A client for the action server</span>
+
+<span class="sd">    Wraps the client side of the actionlib interface so that it can be easily used in client side applications.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        client = Client(&#39;amigo&#39;)</span>
+<span class="sd">        semantics = &quot;{&#39;actions&#39;: [{&#39;action&#39;: &#39;say&#39;, &#39;sentence&#39;: &#39;ROBOT_NAME&#39;}]}&quot;</span>
+<span class="sd">        client.send_task(semantics)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">):</span>
+        <span class="n">action_name</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/action_server/task&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span> <span class="o">=</span> <span class="n">actionlib</span><span class="o">.</span><span class="n">SimpleActionClient</span><span class="p">(</span><span class="n">action_name</span><span class="p">,</span>
+                                                           <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskAction</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Waiting for task action server to come online...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">wait_for_server</span><span class="p">()</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Connected to task action server&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_actions_proxy</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="s1">&#39;get_actions&#39;</span><span class="p">,</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">srv</span><span class="o">.</span><span class="n">GetActions</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Client.get_actions"><a class="viewcode-back" href="../../api/action_server/client/index.html#action_server.client.Client.get_actions">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query the available actions from the action server.</span>
+
+<span class="sd">        :return: List of action names as registered with the action server, or an empty list if the service call fails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_actions_proxy</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceException</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Failed to get actions from the action server.&quot;</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">actions</span></div>
+
+<div class="viewcode-block" id="Client.send_async_task"><a class="viewcode-back" href="../../api/action_server/client/index.html#action_server.client.Client.send_async_task">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_async_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semantics</span><span class="p">,</span> <span class="n">done_cb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">feedback_cb</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a task to the action server and return immediately. A task is composed of one or multiple actions.</span>
+
+<span class="sd">        :param semantics: A json string with a list of dicts, every dict in the list has at least an &#39;action&#39; field,</span>
+<span class="sd">            and depending on the type of action, several parameter fields may be required.</span>
+<span class="sd">        :param done_cb:	(callable) Callback that gets called on transitions to Done. The callback should take one</span>
+<span class="sd">            parameter: TaskOutCome</span>
+<span class="sd">        :param feedback_cb: (callable)Callback that gets called whenever feedback for this goal is received. Takes one</span>
+<span class="sd">            parameter: the feedback.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Define the wrapped done callback</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_wrapped_done_cb</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+            <span class="n">taskoutcome</span> <span class="o">=</span> <span class="n">task_outcome_from_result</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">done_cb</span><span class="p">(</span><span class="n">taskoutcome</span><span class="p">)</span>
+
+        <span class="c1"># The wrapped done callback is only used if the provided done callback is callable. Otherwise it&#39;s useless</span>
+        <span class="n">_done_cb</span> <span class="o">=</span> <span class="n">_wrapped_done_cb</span> <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">done_cb</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="c1"># Create and send the goal</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskGoal</span><span class="p">(</span><span class="n">recipe</span><span class="o">=</span><span class="n">semantics</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">goal</span><span class="o">=</span><span class="n">goal</span><span class="p">,</span> <span class="n">done_cb</span><span class="o">=</span><span class="n">_done_cb</span><span class="p">,</span> <span class="n">feedback_cb</span><span class="o">=</span><span class="n">feedback_cb</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.send_task"><a class="viewcode-back" href="../../api/action_server/client/index.html#action_server.client.Client.send_task">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semantics</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TaskOutcome</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a task to the action server. A task is composed of one or multiple actions.</span>
+
+<span class="sd">        :param semantics: A json string with a list of dicts, every dict in the list has at least an &#39;action&#39; field,</span>
+<span class="sd">            and depending on the type of action, several parameter fields may be required.</span>
+<span class="sd">        :return: result output, which provides information about success of the task execution and some</span>
+<span class="sd">            information messages</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskGoal</span><span class="p">(</span><span class="n">recipe</span><span class="o">=</span><span class="n">semantics</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">goal</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">wait_for_result</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">get_result</span><span class="p">()</span>
+
+        <span class="c1"># if user presses ctrl+C, stop waiting and cancel all goals</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cancel_all</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">action_server_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">TaskResult</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Result not instance of &#39;action_server_msgs.msg.TaskResult&#39;, but </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">TaskOutcome</span><span class="p">(</span><span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">msg</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">task_outcome_from_result</span><span class="p">(</span><span class="n">result</span><span class="o">=</span><span class="n">result</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.cancel_all"><a class="viewcode-back" href="../../api/action_server/client/index.html#action_server.client.Client.cancel_all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancels all goals of the action client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;cancelling all goals...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">cancel_all_goals</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">wait_for_result</span><span class="p">()</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;... all goals cancelled!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.cancel_all_async"><a class="viewcode-back" href="../../api/action_server/client/index.html#action_server.client.Client.cancel_all_async">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_all_async</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancels all goals of the action client and returns directly without waiting for the result</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;cancelling all goals async...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_client</span><span class="o">.</span><span class="n">cancel_all_goals</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

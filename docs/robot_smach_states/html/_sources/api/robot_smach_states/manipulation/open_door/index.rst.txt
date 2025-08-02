@@ -1,0 +1,299 @@
+robot_smach_states.manipulation.open_door
+=========================================
+
+.. py:module:: robot_smach_states.manipulation.open_door
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_smach_states.manipulation.open_door.hero
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.manipulation.open_door.Direction
+   robot_smach_states.manipulation.open_door.Door
+   robot_smach_states.manipulation.open_door.OpenDoor
+   robot_smach_states.manipulation.open_door.NavigateToHandle
+   robot_smach_states.manipulation.open_door.DetermineDoorState
+   robot_smach_states.manipulation.open_door.UpdateHandleLocation
+   robot_smach_states.manipulation.open_door.GraspHandle
+   robot_smach_states.manipulation.open_door.UnlatchHandle
+   robot_smach_states.manipulation.open_door.DetermineDoorDirection
+   robot_smach_states.manipulation.open_door.PushDoorOpen
+   robot_smach_states.manipulation.open_door.PullDoorOpen
+   robot_smach_states.manipulation.open_door.PassDoor
+
+
+Module Contents
+---------------
+
+.. py:class:: Direction
+
+   .. py:attribute:: INWARD
+      :value: 'inward'
+
+
+
+   .. py:attribute:: OUTWARD
+      :value: 'outward'
+
+
+
+.. py:class:: Door(entity)
+
+   Bases: :py:obj:`ed.entity.Entity`
+
+
+   .. py:attribute:: HANDLE_ID
+      :value: 'handle'
+
+
+
+   .. py:attribute:: FRAME_LEFT_POINT_ID
+      :value: 'frame_left_point'
+
+
+
+   .. py:attribute:: FRAME_RIGHT_POINT_ID
+      :value: 'frame_right_point'
+
+
+
+   .. py:property:: handle_pose
+      :type: pykdl_ros.VectorStamped
+
+
+      Returns the pose of the handle in map frame
+
+
+   .. py:property:: frame_points
+      :type: List[pykdl_ros.VectorStamped]
+
+
+      Returns the ground points of the door frame in map frame
+
+
+   .. py:method:: _get_volume_center_point_in_map(volume_id)
+
+      Gets the center point of a volume (typically defined w.r.t. the entity frame) and converts this to map frame.
+
+      :param volume_id: id of the volume to get the center point from
+      :return: center point converted to map frame
+
+
+
+   .. py:method:: get_direction(base_pose)
+
+      Determines whether the open the door inward or outward.
+
+      In the current implementation, this is simply deduced from the fact if the robot is currently closer to the
+      'inward' or 'outward' volume
+
+      :param base_pose: pose of the base
+      :return: inward or outward
+
+
+
+.. py:class:: OpenDoor(robot, door_designator, arm_designator=None)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   
+   Enter the arena by force driving through the door
+   :param robot: robot object
+   :param door_designator: door_designator object
+   :param arm_designator: Designator resolving to an arm. Defaults to None to use an UnoccupiedArm
+
+
+.. py:class:: NavigateToHandle(robot, door_des, arm_des)
+
+   Bases: :py:obj:`robot_smach_states.navigation.NavigateTo`
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _door_des
+
+
+   .. py:attribute:: _arm_des
+
+
+   .. py:method:: generateConstraint()
+
+
+.. py:class:: DetermineDoorState(robot, door_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Constructor
+   :param robot: robot object
+   :type robot: robot
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _door_des
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: UpdateHandleLocation(robot, door_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Constructor
+   :param robot: robot object
+   :type robot: robot
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _door_des
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: GraspHandle(robot, door_des, arm_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Grasp the handle.
+   :param robot: robot object
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _door_des
+
+
+   .. py:attribute:: _arm_des
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: UnlatchHandle(robot, door_des, arm_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Wait till the average distance in front of the robot is bigger than 1 meter. Only point in front of the middle
+   are taken into account
+   :param robot: robot object
+   :param timeout: timeout for waiting till the door is opened
+
+
+   .. py:attribute:: _move_dist
+      :value: 0.03
+
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _door_des
+
+
+   .. py:attribute:: _arm_des
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: DetermineDoorDirection(robot, door_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   :param robot: robot object
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _door_des
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: PushDoorOpen(robot, door_des, arm_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   :param robot: robot object
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _door_des
+
+
+   .. py:attribute:: _arm_des
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: PullDoorOpen(robot, door_des, arm_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   :param robot: robot object
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _door_des
+
+
+   .. py:attribute:: _arm_des
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: PassDoor(robot, door_designator, before_area, behind_area)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   
+   Mock state for passing doors (this means it should be replaced by the real implementation)
+
+   :param robot: robot API object
+   :param door_designator: designator returning the door entity to pass through
+   :param before_area: indicates the area in front of the door
+   :param behind_area: indicates the area behind the door
+
+
+.. py:data:: hero
+

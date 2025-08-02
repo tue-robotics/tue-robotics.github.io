@@ -1,0 +1,76 @@
+robot_skills.test_tools.test_robot
+==================================
+
+.. py:module:: robot_skills.test_tools.test_robot
+
+.. autoapi-nested-parse::
+
+   Contains test tools enabling testing of deriving robot API classes to make sure they meet the required API.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.test_tools.test_robot.TestRobot
+
+
+Module Contents
+---------------
+
+.. py:class:: TestRobot(methodName='runTest')
+
+   Bases: :py:obj:`unittest.TestCase`
+
+
+   Testcase to include in deriving <robot_name>_skills packages
+
+   To use this, create a Python file (in this case: test_amigo.py) with the following (example) contents:
+   #! /usr/bin/env python
+
+   import rostest
+   from robot_skills.test_tools import TestRobot
+   from amigo_skills import Amigo
+
+
+   class TestAmigo(TestRobot):
+       ROBOT_CLASS = Amigo
+
+
+   if __name__ == '__main__':
+       rostest.rosrun('amigo_skills', 'test_amigo', TestAmigo)
+
+   The corresponding rostest file (in this case: test_amigo.test) with the following contents:
+   <?xml version="1.0"?>
+   <launch>
+       <!-- N.B.: test-name MUST be amigo in order for namespacing to work -->
+       <test test-name="amigo" pkg="amigo_skills" type="test_amigo.py">
+           <rosparam file="$(find amigo_description)/custom/skills.yaml" command="load"/>
+       </test>
+   </launch>
+
+   As is clear from the rostest file, some parameters (in this case included in the amigo_description package) need
+   to be loaded on the parameter server.
+
+   Create an instance of the class that will use the named test
+   method when executed. Raises a ValueError if the instance does
+   not have a method with the specified name.
+
+
+   .. py:method:: test_robot()
+
+      Top level test method. Calls other functions in this class
+
+
+
+   .. py:method:: part_commons(part)
+
+
+   .. py:method:: lights(robot)
+
+
+   .. py:method:: assert_has_attr(obj, intended_attr)
+
+

@@ -1,0 +1,73 @@
+robot_skills.arm.gripper_position_detector
+==========================================
+
+.. py:module:: robot_skills.arm.gripper_position_detector
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.arm.gripper_position_detector.GripperPositionDetector
+
+
+Module Contents
+---------------
+
+.. py:class:: GripperPositionDetector(robot_name, tf_buffer, joint_topic)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   Base class for robot parts
+
+   Class for getting the position of the hand motor joint (how much the gripper is open or closed)
+   Values go from 1 (open) to -1 (closed)
+
+   :param robot_name: Name of the robot
+   :param tf_buffer: tf2_ros.Buffer for use in RobotPart
+   :param joint_topic: Topic to use for measurement
+
+
+   .. py:attribute:: _topic
+
+
+   .. py:attribute:: timeout
+
+
+   .. py:attribute:: wrench_sub
+
+
+   .. py:attribute:: current_position
+      :value: None
+
+
+
+   .. py:attribute:: store_position
+      :value: False
+
+
+
+   .. py:attribute:: start_time
+      :value: None
+
+
+
+   .. py:method:: _joint_callback(msg)
+
+      Will be executed every time a new message is received.
+      Stores current position of hand motor joint
+
+      :param msg: input joint message
+
+
+
+   .. py:method:: detect()
+
+      Returns the position of the gripper if possible
+
+      :return: The current position as a float or a None value if position can't be retrieved
+
+
+

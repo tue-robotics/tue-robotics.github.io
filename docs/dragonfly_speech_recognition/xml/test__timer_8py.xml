@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="test__timer_8py" kind="file" language="Python">
+    <compoundname>test_timer.py</compoundname>
+    <innerclass refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler" prot="public">dragonfly::test::test_timer::CapturingHandler</innerclass>
+    <innerclass refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer" prot="public">dragonfly::test::test_timer::TestTimer</innerclass>
+    <innernamespace refid="namespacedragonfly_1_1test_1_1test__timer">dragonfly::test::test_timer</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacedragonfly_1_1test_1_1test__timer" refkind="compound"><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">#<sp/>This<sp/>file<sp/>is<sp/>part<sp/>of<sp/>Dragonfly.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">#<sp/>(c)<sp/>Copyright<sp/>2007,<sp/>2008<sp/>by<sp/>Christo<sp/>Butcher</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Licensed<sp/>under<sp/>the<sp/>LGPL.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Dragonfly<sp/>is<sp/>free<sp/>software:<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or<sp/>modify<sp/>it</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>as<sp/>published</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>by<sp/>the<sp/>Free<sp/>Software<sp/>Foundation,<sp/>either<sp/>version<sp/>3<sp/>of<sp/>the<sp/>License,<sp/>or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Dragonfly<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,<sp/>but</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>License<sp/>along<sp/>with<sp/>Dragonfly.<sp/><sp/>If<sp/>not,<sp/>see</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>&lt;http://www.gnu.org/licenses/&gt;.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>unittest</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>time</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>logging</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1engines" kindref="compound">dragonfly.engines</ref><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>get_engine</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">#===========================================================================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30" refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler" kindref="compound">CapturingHandler</ref>(logging.Handler):</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler_1a99f15bc2afd51457e61a5e402e393603" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler_1a99f15bc2afd51457e61a5e402e393603" kindref="member">__init__</ref>(self):</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>logging.Handler.__init__(self)</highlight></codeline>
+<codeline lineno="34" refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler_1a25662673616aadf273fa4ed88be3a70d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler_1a25662673616aadf273fa4ed88be3a70d" kindref="member">records</ref><sp/>=<sp/>[]</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler_1a8b8d86b849b2c1190eabb834590f4614" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler_1a8b8d86b849b2c1190eabb834590f4614" kindref="member">emit</ref>(self,<sp/>record):</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler_1a25662673616aadf273fa4ed88be3a70d" kindref="member">records</ref>.append(record)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">#===========================================================================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer" kindref="compound">TestTimer</ref>(unittest.TestCase):</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1a77b25de373d592ee021394b601c78b40" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1a77b25de373d592ee021394b601c78b40" kindref="member">setUp</ref>(self):</highlight></codeline>
+<codeline lineno="45" refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1a828639dd03429f5dbc742b1decf31e6a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1a828639dd03429f5dbc742b1decf31e6a" kindref="member">log_capture</ref><sp/>=<sp/><ref refid="classdragonfly_1_1test_1_1test__timer_1_1CapturingHandler" kindref="compound">CapturingHandler</ref>()</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>logging.getLogger(</highlight><highlight class="stringliteral">&quot;engine.timer&quot;</highlight><highlight class="normal">).addHandler(self.<ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1a828639dd03429f5dbc742b1decf31e6a" kindref="member">log_capture</ref>)</highlight></codeline>
+<codeline lineno="47" refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1aca2e130b32028215301e308b94adf3b8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1aca2e130b32028215301e308b94adf3b8" kindref="member">engine</ref><sp/>=<sp/><ref refid="namespacedragonfly_1_1engines_1a54a7132d79612abdb29fac07276b5681" kindref="member">get_engine</ref>()</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1aec96866c37d2248bacfd40082d02fb35" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1aec96866c37d2248bacfd40082d02fb35" kindref="member">test_timer_callback_exception</ref>(self):</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;<sp/>Test<sp/>handling<sp/>of<sp/>exceptions<sp/>during<sp/>timer<sp/>callback.<sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>callback_called<sp/>=<sp/>[0]</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal">callback():</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>callback_called[0]<sp/>+=<sp/>1</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">raise</highlight><highlight class="normal"><sp/>Exception(</highlight><highlight class="stringliteral">&quot;Exception<sp/>from<sp/>timer<sp/>callback&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>interval<sp/>=<sp/>0.01</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timer<sp/>=<sp/>self.<ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1aca2e130b32028215301e308b94adf3b8" kindref="member">engine</ref>.create_timer(callback,<sp/>interval)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>time.sleep(0.02)</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timer.manager.main_callback()</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Callback<sp/>was<sp/>called<sp/>once.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.assertTrue(callback_called[0]<sp/>==<sp/>1)</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.assertTrue(len(self.<ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1a828639dd03429f5dbc742b1decf31e6a" kindref="member">log_capture</ref>.records)<sp/>==<sp/>1)</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>log_message<sp/>=<sp/>self.<ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1a828639dd03429f5dbc742b1decf31e6a" kindref="member">log_capture</ref>.records[0].msg</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.assertTrue(</highlight><highlight class="stringliteral">&quot;Exception<sp/>from<sp/>timer<sp/>callback&quot;</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>log_message)</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">finally</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Stop<sp/>the<sp/>timer<sp/>at<sp/>the<sp/>end<sp/>regardless<sp/>of<sp/>the<sp/>result.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timer.stop()</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1abb8a092527018c871b829a7c955dd802" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1abb8a092527018c871b829a7c955dd802" kindref="member">test_non_repeating_timers</ref>(self):</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;<sp/>Test<sp/>that<sp/>non-repeating<sp/>timers<sp/>only<sp/>run<sp/>once.<sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>callback_called<sp/>=<sp/>[0]</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal">callback():</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>callback_called[0]<sp/>+=<sp/>1</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>interval<sp/>=<sp/>0.01</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timer<sp/>=<sp/>self.<ref refid="classdragonfly_1_1test_1_1test__timer_1_1TestTimer_1aca2e130b32028215301e308b94adf3b8" kindref="member">engine</ref>.create_timer(callback,<sp/>interval,<sp/></highlight><highlight class="keyword">False</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>time.sleep(0.02)</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timer.manager.main_callback()</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>time.sleep(0.02)</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timer.manager.main_callback()</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Callback<sp/>was<sp/>only<sp/>called<sp/>once.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.assertEqual(callback_called[0],<sp/>1)</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">finally</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Stop<sp/>the<sp/>timer<sp/>at<sp/>the<sp/>end<sp/>regardless<sp/>of<sp/>the<sp/>result.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>timer.stop()</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight><highlight class="comment">#===========================================================================</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;__main__&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Use<sp/>the<sp/>&quot;text&quot;<sp/>engine<sp/>by<sp/>default<sp/>and<sp/>disable<sp/>timer<sp/>manager<sp/>callbacks</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>to<sp/>avoid<sp/>race<sp/>conditions.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacedragonfly_1_1engines_1a54a7132d79612abdb29fac07276b5681" kindref="member">get_engine</ref>(</highlight><highlight class="stringliteral">&quot;text&quot;</highlight><highlight class="normal">)._timer_manager.disable()</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1log" kindref="compound">dragonfly.log</ref><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>setup_log</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacedragonfly_1_1log_1a63ebb656a7eac0e092eaf67bebccd865" kindref="member">setup_log</ref>()<sp/><sp/></highlight><highlight class="comment">#<sp/>tests<sp/>require<sp/>sane<sp/>logging<sp/>levels</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/>unittest.main()</highlight></codeline>
+    </programlisting>
+    <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/test/test_timer.py"/>
+  </compounddef>
+</doxygen>

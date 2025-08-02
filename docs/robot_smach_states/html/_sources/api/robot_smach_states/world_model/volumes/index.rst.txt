@@ -1,0 +1,129 @@
+robot_smach_states.world_model.volumes
+======================================
+
+.. py:module:: robot_smach_states.world_model.volumes
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.world_model.volumes.CheckEmpty
+   robot_smach_states.world_model.volumes.CheckFreeSpaceVolume
+   robot_smach_states.world_model.volumes.CheckFreeSpacePercentage
+   robot_smach_states.world_model.volumes.CheckVolumeEmpty
+
+
+Module Contents
+---------------
+
+.. py:class:: CheckEmpty(robot, segmented_entity_ids_designator)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Check whether any entities are present in the entity designation
+
+   Constructor
+
+   :param segmented_entity_ids_designator: designator containing the segmented objects in the volume
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: seen_entities_des
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: CheckFreeSpaceVolume(robot, segmented_entity_ids_designator, entity_designator, volume, threshold_val)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Compare the free space in a volume to a threshold. Volume is determined as the sum of all entities within a
+   designator
+
+   Constructor
+
+   :param segmented_entity_ids_designator: designator containing the segmented objects in the volume
+   :param entity_designator: EdEntityDesignator indicating the (furniture) object to check
+   :param volume: string or designator to a string, defining which volume of the entity is checked
+   :param threshold_val: Indicating the free volume above which the area is considered
+   occupied
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: seen_entities_des
+
+
+   .. py:attribute:: entity_des
+
+
+   .. py:attribute:: volume
+
+
+   .. py:attribute:: threshold_val
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: CheckFreeSpacePercentage(robot, segmented_entity_ids_designator, entity_designator, volume, threshold_perc)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Compare the free space in a volume to a threshold. Volume is determined as the sum of all entities within a
+   designator
+
+   Constructor
+
+   :param segmented_entity_ids_designator: designator containing the segmented objects in the volume
+   :param entity_designator: EdEntityDesignator indicating the (furniture) object to check
+   :param volume: string or designator to a string, defining which volume of the entity is checked
+   :param threshold_perc: Indicating the free volume percentage above which the area is considered occupied
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: seen_entities_des
+
+
+   .. py:attribute:: entity_des
+
+
+   .. py:attribute:: volume
+
+
+   .. py:attribute:: threshold_perc
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: CheckVolumeEmpty(robot, entity_des, volume='on_top_of', volume_threshold_per = None, volume_threshold_val = None, fit_supporting_entity = True)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   
+   Constructor
+
+   :param robot: robot object
+   :param entity_des: EdEntityDesignator indicating the (furniture) object to check
+   :param volume: string or designator to a string, defining volume of the entity to be checked
+   :param volume_threshold_per: Indicating the free volume percentage above which the area is considered
+   partially_occupied (If both thresholds are None any entities filling the volume will result in 'occupied')
+   :param volume_threshold_val: float [m^3] indicating the free volume above which the area is considered
+   partially_occupied. (If both thresholds are None any entities filling the volume will result in 'occupied')
+   :param fit_supporting_entity: Fit or not fit the supporting entity
+
+
+

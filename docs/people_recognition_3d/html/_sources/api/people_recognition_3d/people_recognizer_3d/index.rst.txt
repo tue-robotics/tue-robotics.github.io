@@ -1,0 +1,212 @@
+people_recognition_3d.people_recognizer_3d
+==========================================
+
+.. py:module:: people_recognition_3d.people_recognizer_3d
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   people_recognition_3d.people_recognizer_3d.Joint
+   people_recognition_3d.people_recognizer_3d.Skeleton
+   people_recognition_3d.people_recognizer_3d.PeopleRecognizer3D
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   people_recognition_3d.people_recognizer_3d._get_and_wait_for_service
+   people_recognition_3d.people_recognizer_3d._get_service_response
+   people_recognition_3d.people_recognizer_3d.geometry_msg_point_to_kdl_vector
+   people_recognition_3d.people_recognizer_3d.get_frame_from_vector
+
+
+Module Contents
+---------------
+
+.. py:function:: _get_and_wait_for_service(srv_name, srv_class)
+
+   Function to start and wait for dependent service
+
+   :param: srv_name: Service name
+   :param: srv_class: Service class
+   :return: started ServiceProxy object
+
+
+.. py:function:: _get_service_response(srv, args)
+
+   Method to get service response with checks
+
+   :param: srv: service
+   :param: args: Input arguments of the service request
+   :return: response
+
+
+.. py:class:: Joint
+
+   Bases: :py:obj:`tuple`
+
+
+   .. py:attribute:: group_id
+
+
+   .. py:attribute:: name
+
+
+   .. py:attribute:: p
+
+
+   .. py:attribute:: point
+
+
+.. py:function:: geometry_msg_point_to_kdl_vector(msg)
+
+.. py:function:: get_frame_from_vector(x_vector, translation, z_direction=kdl.Vector(0, 0, 1))
+
+   Function to generate an affine transformation frame given the x_vector, z_direction and
+   translation of the frame.
+
+   How this works:
+       Any two given vectors form a plane so, x_vector and z_direction can be
+       considered as such vectors. Taking vector cross-product of these two
+       vectors will give a vector perpendicular to the plane.
+
+       1. First normalize the x_vector to get a unit_x vector.
+       2. Take cross product of z_direction and unit_x, the will give the
+           y_direction. Normalize y_direction to get the unit_y vector.
+       3. Take the cross product between unit_x and unit_y to get unit_z
+
+   :param: x_vector: The x_vector in some coordinate frame.
+   :param: origin: The origin of the frame to be created
+   :param: z_direction (default kdl.Vector(0, 0, 1)): The direction of z
+   :return: frame: KDL frame
+
+
+.. py:class:: Skeleton(body_parts)
+
+   Bases: :py:obj:`object`
+
+
+   Dictionary of all joints, the following joins could be available:
+
+   Nose
+   Neck
+   {L, R}{Shoulder, Elbow, Wrist, Hip, Knee, Ankle, Eye, Ear}
+
+   Constructor
+
+   :param body_parts: {name: Joint}
+
+
+   .. py:attribute:: body_parts
+
+
+   .. py:method:: filter_body_parts(threshold)
+
+      Method to remove body parts from a Skeleton object based on the
+      maximum length of a link
+
+      :param: threshold: Maximum length of a link
+      :return: Skeleton object containing body parts within the threshold
+
+
+
+   .. py:method:: __getitem__(key)
+
+
+   .. py:method:: __contains__(item)
+
+
+   .. py:method:: get_links()
+
+      :returns [Point], with point pairs for all the links
+
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: PeopleRecognizer3D(recognize_people_srv_name, probability_threshold, link_threshold, heuristic, arm_norm_threshold, neck_norm_threshold, waving_threshold, vert_threshold, hor_threshold, padding)
+
+   Bases: :py:obj:`object`
+
+
+   .. py:attribute:: _recognize_people_srv
+
+
+   .. py:attribute:: _bridge
+
+
+   .. py:attribute:: _threshold
+
+
+   .. py:attribute:: _link_threshold
+
+
+   .. py:attribute:: _heuristic
+
+
+   .. py:attribute:: _arm_norm_threshold
+
+
+   .. py:attribute:: _neck_norm_threshold
+
+
+   .. py:attribute:: _waving_threshold
+
+
+   .. py:attribute:: _vert_threshold
+
+
+   .. py:attribute:: _hor_threshold
+
+
+   .. py:attribute:: _padding
+
+
+   .. py:method:: recognize(rgb, depth, camera_info)
+
+      Service call function
+
+      :param: rgb: RGB Image msg
+      :param: depth: Depth Image_msg
+      :param: depth_info: Depth CameraInfo msg
+
+
+
+   .. py:method:: recognitions_to_joints(recognitions, cv_depth, cam_model, regions_viz, scale)
+
+      Method to convert 2D recognitions of body parts to Joint named tuple
+
+      :param: recognitions: List of body part recognitions
+      :param: cv_depth: cv2 Depth image
+      :param: cam_model: Depth camera model
+      :param: regions_viz: numpy array the size of cv_depth to store depth
+              values of the ROIs
+      :param: scale: Scaling factor of ROIs based on difference in size of RGB
+              and D images
+      :return: joints: List of joints of type Joint
+
+
+
+   .. py:method:: get_person_tags(skeleton)
+
+      Method to get tags for a skeleton. The possible elements of the tag
+      list are:
+          1. LWaving/LPointing | RWaving/RPointing
+          2. LLaying/LSitting | RLaying/RSitting
+          3. LHolding | RHolding
+          4. LNotHolding | RNotHolding
+
+      :param: skeleton: The filtered skeleton of a person
+      :return: tags: List of tags for the person
+
+
+
+   .. py:method:: get_pointing_pose(skeleton)
+
+

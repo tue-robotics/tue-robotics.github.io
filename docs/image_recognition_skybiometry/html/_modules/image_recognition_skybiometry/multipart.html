@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>image_recognition_skybiometry.multipart &mdash; image_recognition_skybiometry 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=0a554088"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            image_recognition_skybiometry
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">image_recognition_skybiometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">image_recognition_skybiometry.multipart</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for image_recognition_skybiometry.multipart</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes for using multipart form data from Python, which does not (at the</span>
+<span class="sd">time of writing) support this directly.</span>
+
+<span class="sd">To use this, make an instance of Multipart and add parts to it via the factory</span>
+<span class="sd">methods field and file.  When you are done, get the content via the get method.</span>
+
+<span class="sd">@author: Stacy Prowell (http://stacyprowell.com)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mimetypes</span>
+
+
+<div class="viewcode-block" id="Part"><a class="viewcode-back" href="../../api/image_recognition_skybiometry/multipart/index.html#image_recognition_skybiometry.multipart.Part">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Part</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class holding a single part of the form.  You should never need to use</span>
+<span class="sd">    this class directly; instead, use the factory methods in Multipart:</span>
+<span class="sd">    field and file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># The boundary to use.  This is shamelessly taken from the standard.</span>
+    <span class="n">BOUNDARY</span> <span class="o">=</span> <span class="s1">&#39;----------AaB03x&#39;</span>
+    <span class="n">CRLF</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span>
+    <span class="c1"># Common headers.</span>
+    <span class="n">CONTENT_TYPE</span> <span class="o">=</span> <span class="s1">&#39;Content-Type&#39;</span>
+    <span class="n">CONTENT_DISPOSITION</span> <span class="o">=</span> <span class="s1">&#39;Content-Disposition&#39;</span>
+    <span class="c1"># The default content type for parts.</span>
+    <span class="n">DEFAULT_CONTENT_TYPE</span> <span class="o">=</span> <span class="s1">&#39;application/octet-stream&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a new part.  The part will have the given headers added initially.</span>
+
+<span class="sd">        @param name: The part name.</span>
+<span class="sd">        @type name: str</span>
+<span class="sd">        @param filename: If this is a file, the name of the file.  Otherwise</span>
+<span class="sd">                        None.</span>
+<span class="sd">        @type filename: str</span>
+<span class="sd">        @param body: The body of the part.</span>
+<span class="sd">        @type body: str</span>
+<span class="sd">        @param headers: Additional headers, or overrides, for this part.</span>
+<span class="sd">                        You can override Content-Type here.</span>
+<span class="sd">        @type headers: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_body</span> <span class="o">=</span> <span class="n">body</span>
+        <span class="c1"># We respect any content type passed in, but otherwise set it here.</span>
+        <span class="c1"># We set the content disposition now, overwriting any prior value.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="n">Part</span><span class="o">.</span><span class="n">CONTENT_DISPOSITION</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">(</span><span class="s1">&#39;form-data; name=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">Part</span><span class="o">.</span><span class="n">CONTENT_TYPE</span><span class="p">,</span>
+                                     <span class="n">Part</span><span class="o">.</span><span class="n">DEFAULT_CONTENT_TYPE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">[</span><span class="n">Part</span><span class="o">.</span><span class="n">CONTENT_DISPOSITION</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">(</span><span class="s1">&#39;form-data; name=&quot;</span><span class="si">%s</span><span class="s1">&quot;; filename=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span>
+                 <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">Part</span><span class="o">.</span><span class="n">CONTENT_TYPE</span><span class="p">,</span>
+                                     <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                                     <span class="ow">or</span> <span class="n">Part</span><span class="o">.</span><span class="n">DEFAULT_CONTENT_TYPE</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Part.get"><a class="viewcode-back" href="../../api/image_recognition_skybiometry/multipart/index.html#image_recognition_skybiometry.multipart.Part.get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the part into a list of lines for output.  This includes</span>
+<span class="sd">        the boundary lines, part header lines, and the part itself.  A</span>
+<span class="sd">        blank line is included between the header and the body.</span>
+
+<span class="sd">        @return: Lines of this part.</span>
+<span class="sd">        @rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--&#39;</span> <span class="o">+</span> <span class="n">Part</span><span class="o">.</span><span class="n">BOUNDARY</span><span class="p">]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_body</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lines</span></div></div>
+
+
+<div class="viewcode-block" id="Multipart"><a class="viewcode-back" href="../../api/image_recognition_skybiometry/multipart/index.html#image_recognition_skybiometry.multipart.Multipart">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Multipart</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encapsulate multipart form data.  To use this, make an instance and then</span>
+<span class="sd">    add parts to it via the two methods (field and file).  When done, you can</span>
+<span class="sd">    get the result via the get method.</span>
+
+<span class="sd">    See http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2 for</span>
+<span class="sd">    details on multipart/form-data.</span>
+
+<span class="sd">    Watch http://bugs.python.org/issue3244 to see if this is fixed in the</span>
+<span class="sd">    Python libraries.</span>
+
+<span class="sd">    @return: content type, body</span>
+<span class="sd">    @rtype: tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Multipart.field"><a class="viewcode-back" href="../../api/image_recognition_skybiometry/multipart/index.html#image_recognition_skybiometry.multipart.Multipart.field">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and append a field part.  This kind of part has a field name</span>
+<span class="sd">        and value.</span>
+
+<span class="sd">        @param name: The field name.</span>
+<span class="sd">        @type name: str</span>
+<span class="sd">        @param value: The field value.</span>
+<span class="sd">        @type value: str</span>
+<span class="sd">        @param headers: Headers to set in addition to disposition.</span>
+<span class="sd">        @type headers: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Part</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">headers</span><span class="p">))</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Multipart.file"><a class="viewcode-back" href="../../api/image_recognition_skybiometry/multipart/index.html#image_recognition_skybiometry.multipart.Multipart.file">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and append a file part.  THis kind of part has a field name,</span>
+<span class="sd">        a filename, and a value.</span>
+
+<span class="sd">        @param name: The field name.</span>
+<span class="sd">        @type name: str</span>
+<span class="sd">        @param filename: The file name</span>
+<span class="sd">        @type filename: str</span>
+<span class="sd">        @param value: The field value.</span>
+<span class="sd">        @type value: str</span>
+<span class="sd">        @param headers: Headers to set in addition to disposition.</span>
+<span class="sd">        @type headers: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Part</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">headers</span><span class="p">))</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Multipart.get"><a class="viewcode-back" href="../../api/image_recognition_skybiometry/multipart/index.html#image_recognition_skybiometry.multipart.Multipart.get">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the multipart form data.  This returns the content type, which</span>
+<span class="sd">        specifies the boundary marker, and also returns the body containing</span>
+<span class="sd">        all parts and bondary markers.</span>
+
+<span class="sd">        @return: content type, body</span>
+<span class="sd">        @rtype: tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="p">:</span>
+            <span class="n">all_parts</span> <span class="o">+=</span> <span class="n">part</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">all_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;--&#39;</span> <span class="o">+</span> <span class="n">Part</span><span class="o">.</span><span class="n">BOUNDARY</span> <span class="o">+</span> <span class="s1">&#39;--&#39;</span><span class="p">)</span>
+        <span class="n">all_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="c1"># We have to return the content type, since it specifies the boundary.</span>
+        <span class="n">content_type</span> <span class="o">=</span> <span class="s1">&#39;multipart/form-data; boundary=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">Part</span><span class="o">.</span><span class="n">BOUNDARY</span>
+        <span class="k">return</span> <span class="n">content_type</span><span class="p">,</span> <span class="n">Part</span><span class="o">.</span><span class="n">CRLF</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">all_parts</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,205 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>upower_ros.battery_node &mdash; upower_ros 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=f6245a2f"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            upower_ros
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">upower_ros</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">upower_ros.battery_node</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for upower_ros.battery_node</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">upower_ros.upower</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">UPowerDevice</span><span class="p">,</span>
+    <span class="n">dbus_battery_status_mapping</span><span class="p">,</span>
+    <span class="n">dbus_battery_technology_mapping</span><span class="p">,</span>
+    <span class="n">BatteryState</span> <span class="k">as</span> <span class="n">BatteryStateEnum</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">BatteryState</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+
+
+<div class="viewcode-block" id="BatteryNode"><a class="viewcode-back" href="../../api/upower_ros/battery_node/index.html#upower_ros.battery_node.BatteryNode">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BatteryNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">battery_topic</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">topic_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">upower_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If parameter isn&#39;t provided. The ROS parameter server is checked (private params). Otherwise the default value</span>
+<span class="sd">        is used.</span>
+<span class="sd">        :param battery_topic: Topic to publish on (Default: &quot;battery_state&quot;)</span>
+<span class="sd">        :type battery_topic: str</span>
+<span class="sd">        :param topic_rate: Rate of publishing (Default: 1.0)</span>
+<span class="sd">        :type topic_rate: float</span>
+<span class="sd">        :param upower_path: UPower path of the battery (Default: &quot;/org/freedesktop/UPower/devices/battery_BAT0&quot;)</span>
+<span class="sd">        :type upower_path: str</span>
+<span class="sd">        :param upower_path: Location of the battery (Default: &quot;&quot;)</span>
+<span class="sd">        :type upower_path: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">battery_topic</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">battery_topic</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s2">&quot;~battery_topic&quot;</span><span class="p">,</span> <span class="s2">&quot;battery_state&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">topic_rate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">topic_rate</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s2">&quot;~topic_rate&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">upower_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">upower_path</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s2">&quot;~upower_path&quot;</span><span class="p">,</span> <span class="s2">&quot;/org/freedesktop/UPower/devices/battery_BAT0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">location</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">location</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s2">&quot;~location&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s2">&quot;Location must be a string&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">battery</span> <span class="o">=</span> <span class="n">UPowerDevice</span><span class="p">(</span><span class="n">upower_path</span><span class="o">=</span><span class="n">upower_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="n">battery_topic</span><span class="p">,</span> <span class="n">BatteryState</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="n">topic_rate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_master_check</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BatteryNode.generate_msg"><a class="viewcode-back" href="../../api/upower_ros/battery_node/index.html#upower_ros.battery_node.BatteryNode.generate_msg">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BatteryState</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a BatteryState msg with the current state of the battery</span>
+<span class="sd">        :return: filled BatteryState msg</span>
+<span class="sd">        :rtype: BatteryState</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">BatteryState</span><span class="p">()</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span><span class="o">.</span><span class="n">secs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;UpdateTime&quot;</span><span class="p">]</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">voltage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;Voltage&quot;</span><span class="p">]</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;EnergyRate&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;State&quot;</span><span class="p">])</span> <span class="o">!=</span> <span class="n">BatteryStateEnum</span><span class="o">.</span><span class="n">Charging</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="o">-</span><span class="n">msg</span><span class="o">.</span><span class="n">current</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;Energy&quot;</span><span class="p">]</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">capacity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;EnergyFull&quot;</span><span class="p">]</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">design_capacity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;EnergyFullDesign&quot;</span><span class="p">]</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">percentage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;Percentage&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">100.0</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">power_supply_status</span> <span class="o">=</span> <span class="n">dbus_battery_status_mapping</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;State&quot;</span><span class="p">]]</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">power_supply_health</span> <span class="o">=</span> <span class="n">BatteryState</span><span class="o">.</span><span class="n">POWER_SUPPLY_HEALTH_UNKNOWN</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">power_supply_technology</span> <span class="o">=</span> <span class="n">dbus_battery_technology_mapping</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;Technology&quot;</span><span class="p">]]</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">present</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;IsPresent&quot;</span><span class="p">]</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">serial_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">battery</span><span class="p">[</span><span class="s2">&quot;Serial&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">msg</span></div>
+
+<div class="viewcode-block" id="BatteryNode.loop"><a class="viewcode-back" href="../../api/upower_ros/battery_node/index.html#upower_ros.battery_node.BatteryNode.loop">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check_master</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loop function to publish with a constant rate</span>
+
+<span class="sd">        :param check_master: Check connection to master at 1Hz</span>
+<span class="sd">        :return: return code to indicate connection to master was lost</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">publish</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">check_master</span> <span class="ow">and</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_master_check</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_master_check</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">get_master</span><span class="p">()</span><span class="o">.</span><span class="n">getPid</span><span class="p">()</span>
+                <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Connection to master is lost&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="mi">1</span>  <span class="c1"># This should result in a non-zero error code of the entire program</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rate</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="BatteryNode.publish"><a class="viewcode-back" href="../../api/upower_ros/battery_node/index.html#upower_ros.battery_node.BatteryNode.publish">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Publish function to be called. Can be used if multiple batteries are monitored in one node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pub</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_msg</span><span class="p">())</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,785 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robot_skills.arm.arms &mdash; robot_skills 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            robot_skills
+              <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_skills</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robot_skills.arm.arms</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robot_skills.arm.arms</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">PyKDL</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">kdl</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">visualization_msgs.msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">actionlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">GoalStatus</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">control_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">FollowJointTrajectoryAction</span><span class="p">,</span> <span class="n">FollowJointTrajectoryGoal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">trajectory_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">JointTrajectory</span><span class="p">,</span> <span class="n">JointTrajectoryPoint</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tue_manipulation_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraspPrecomputeAction</span><span class="p">,</span> <span class="n">GraspPrecomputeGoal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ed.entity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Entity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pykdl_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrameStamped</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">robot_skills.arm.gripper</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParrallelGripper</span><span class="p">,</span> <span class="n">Gripper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">robot_skills.arm.handover_detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">HandoverDetector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">robot_skills.robot_part</span><span class="w"> </span><span class="kn">import</span> <span class="n">RobotPart</span>
+
+<span class="c1"># Constants for arm requirements. Note that &quot;don&#39;t care at all&quot; is not here, as</span>
+<span class="c1"># it can be expressed by not imposing a requirement (set it to None).</span>
+
+
+<span class="c1"># Commonly used values when sending goals to a joint</span>
+<span class="n">MAX_JOINT_VEL</span> <span class="o">=</span> <span class="mf">0.7</span>
+<span class="n">JOINT_TIMEOUT</span> <span class="o">=</span> <span class="mf">5.0</span>
+
+
+<span class="c1"># Specific types of gripper.</span>
+<div class="viewcode-block" id="GripperTypes"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.GripperTypes">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GripperTypes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="c1"># Concrete types of gripper.</span>
+    <span class="n">PINCH</span> <span class="o">=</span> <span class="s2">&quot;gripper-type-pinch&quot;</span>
+    <span class="n">PARALLEL</span> <span class="o">=</span> <span class="s2">&quot;gripper-type-parallel&quot;</span>
+    <span class="n">SUCTION</span> <span class="o">=</span> <span class="s2">&quot;gripper-type-suction&quot;</span>
+
+    <span class="c1"># Pseudo gripper types.</span>
+    <span class="n">GRASPING</span> <span class="o">=</span> <span class="s2">&quot;pseudo-gripper-type-any-grasping-will-do&quot;</span>  <span class="c1"># Either pinch or parallel</span>
+    <span class="n">NONE</span> <span class="o">=</span> <span class="s2">&quot;pseudo-gripper-type-no-gripper&quot;</span></div>
+
+
+<span class="c1"># Pseudo objects for &#39;any object&#39; or &#39;no object&#39;.</span>
+<div class="viewcode-block" id="PseudoObjects"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PseudoObjects">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PseudoObjects</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">ANY</span> <span class="o">=</span> <span class="s2">&quot;pseudo-object-saying-any-object-will-do&quot;</span>
+    <span class="n">EMPTY</span> <span class="o">=</span> <span class="s2">&quot;pseudo-object-saying-lack-of-object-will-do&quot;</span></div>
+
+
+<div class="viewcode-block" id="PublicArm"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PublicArm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Public arm interface, also checks a challenge doesn&#39;t try to use more than it asked for.</span>
+
+<span class="sd">    THE ARM SHOULD NEVER ALLOW ANYTHING THAT WAS NOT ASKED FOR IN THE CONSTRUCTOR!</span>
+
+
+<span class="sd">    :ivar _arm: Private link to the real arm.</span>
+<span class="sd">    :vartype _arm: Arm</span>
+
+<span class="sd">    :ivar default_gripper_type: Gripper type to use if the user didn&#39;t provide one.</span>
+<span class="sd">    :vartpe default_gripper_type: str or None</span>
+
+<span class="sd">    :ivar _available_gripper_types: Gripper types that may be used.</span>
+<span class="sd">    :vartype _available_gripper_types: set of str (the GripperTypes.* constants)</span>
+
+<span class="sd">    :ivar _has_occupied_by: Whether the arm supports &#39;occupied_by&#39; calls.</span>
+<span class="sd">    :vartype _has_occupied_by: bool</span>
+
+<span class="sd">    :ivar _allow_force_sensor: Whether use of the force sensor is allowed.</span>
+<span class="sd">    :vartype _allow_force_sensor: bool</span>
+
+<span class="sd">    :ivar _available_joint_goals: Joint goals that may be used.</span>
+<span class="sd">    :vartype _available_joint_goals: set of str</span>
+
+<span class="sd">    :ivar _available_joint_trajectories: Joint trajectories that may be used.</span>
+<span class="sd">    :vartype _available_joint_trajectories: set of str</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arm</span><span class="p">:</span> <span class="n">Arm</span><span class="p">,</span> <span class="n">available_gripper_types</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">default_gripper_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">has_occupied_by</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">allow_force_sensor</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">available_joint_goals</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">available_joint_trajectories</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span> <span class="o">=</span> <span class="n">arm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_gripper_type</span> <span class="o">=</span> <span class="n">default_gripper_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_available_gripper_types</span> <span class="o">=</span> <span class="n">available_gripper_types</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_occupied_by</span> <span class="o">=</span> <span class="n">has_occupied_by</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_allow_force_sensor</span> <span class="o">=</span> <span class="n">allow_force_sensor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_available_joint_goals</span> <span class="o">=</span> <span class="n">available_joint_goals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_available_joint_trajectories</span> <span class="o">=</span> <span class="n">available_joint_trajectories</span>
+
+    <span class="c1"># Occupied by</span>
+<div class="viewcode-block" id="PublicArm.has_occupied_by"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.has_occupied_by">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_occupied_by</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test whether the arm supports &#39;occupied_by&#39; calls.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_occupied_by</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">occupied_by</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Entity</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        !Deprecated: use arm.gripper.occupied_by instead!</span>
+<span class="sd">        Query the object currently held by the arm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Deprecation Warning: publicarm.occupied_by is deprecated, use publicarm.gripper.occupied_by instead!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_occupied_by</span><span class="p">,</span> <span class="s2">&quot;occupied_by&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;Specify get_arm(..., required_objects=[PseudoObjects.EMPTY]) or get_arm(..., required_objects=&quot;</span>
+                       <span class="s2">&quot;[PseudoObjects.ANY]) or get_arm(..., required_objects=[Entity(...)])&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="p">,</span> <span class="s1">&#39;gripper&#39;</span><span class="p">),</span> <span class="s2">&quot;This arm does not have a gripper&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">occupied_by</span>
+
+    <span class="nd">@occupied_by</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">occupied_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        !Deprecated: use arm.gripper.occupied_by instead!</span>
+<span class="sd">        Set the object currently held by the arm,</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Deprecation Warning: publicarm.occupied_by is deprecated, use publicarm.gripper.occupied_by instead!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_occupied_by</span><span class="p">,</span> <span class="s2">&quot;occupied_by&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;Specify get_arm(..., required_objects=[PseudoObjects.EMPTY]) or get_arm(..., required_objects=&quot;</span>
+                       <span class="s2">&quot;[PseudoObjects.ANY]) or get_arm(..., required_objects=[Entity(...)])&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="p">,</span> <span class="s1">&#39;gripper&#39;</span><span class="p">),</span> <span class="s2">&quot;This arm does not have a gripper&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">occupied_by</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c1"># Joint goals</span>
+<div class="viewcode-block" id="PublicArm.has_joint_goal"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.has_joint_goal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_joint_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query whether the provided joint goal exists for the arm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">configuration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_available_joint_goals</span></div>
+
+<div class="viewcode-block" id="PublicArm.send_joint_goal"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.send_joint_goal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_joint_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">JOINT_TIMEOUT</span><span class="p">,</span>
+                        <span class="n">max_joint_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">MAX_JOINT_VEL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="n">configuration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_available_joint_goals</span><span class="p">,</span> <span class="s1">&#39;joint-goal &#39;</span> <span class="o">+</span> <span class="n">configuration</span><span class="p">,</span>
+                       <span class="s2">&quot;Specify get_arm(..., required_goals=[&#39;</span><span class="si">{}</span><span class="s2">&#39;])&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configuration</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">send_joint_goal</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                                         <span class="n">max_joint_vel</span><span class="o">=</span><span class="n">max_joint_vel</span><span class="p">)</span></div>
+
+    <span class="c1"># Joint trajectories</span>
+<div class="viewcode-block" id="PublicArm.has_joint_trajectory"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.has_joint_trajectory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_joint_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query whether the provided joint trajectory exists for the arm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">configuration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_available_joint_trajectories</span></div>
+
+<div class="viewcode-block" id="PublicArm.send_joint_trajectory"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.send_joint_trajectory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_joint_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">JOINT_TIMEOUT</span><span class="p">,</span>
+                              <span class="n">max_joint_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">MAX_JOINT_VEL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="n">configuration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_available_joint_trajectories</span><span class="p">,</span> <span class="s1">&#39;joint-goal &#39;</span> <span class="o">+</span> <span class="n">configuration</span><span class="p">,</span>
+                       <span class="s2">&quot;Specify get_arm(..., required_trajectories=[&#39;</span><span class="si">{}</span><span class="s2">&#39;])&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configuration</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">send_joint_trajectory</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                                               <span class="n">max_joint_vel</span><span class="o">=</span><span class="n">max_joint_vel</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PublicArm.send_goal"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.send_goal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_stamped</span><span class="p">:</span> <span class="n">FrameStamped</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span> <span class="n">pre_grasp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                  <span class="n">first_joint_pos_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">allowed_touch_objects</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">allowed_touch_objects</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">allowed_touch_objects</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">frame_stamped</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">pre_grasp</span><span class="p">,</span> <span class="n">first_joint_pos_only</span><span class="p">,</span> <span class="n">allowed_touch_objects</span><span class="p">)</span></div>
+
+    <span class="c1"># Gripper</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gripper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Gripper</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="p">,</span> <span class="s1">&#39;gripper&#39;</span><span class="p">),</span> <span class="s2">&quot;This arm does not have a gripper&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">gripper</span>
+
+    <span class="c1"># handover</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handover_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HandoverDetector</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="p">,</span> <span class="s1">&#39;handover_detector&#39;</span><span class="p">),</span> <span class="s2">&quot;This arm does not have a handover_detector&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">handover_detector</span>
+
+<div class="viewcode-block" id="PublicArm.has_gripper_type"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.has_gripper_type">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_gripper_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gripper_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query whether the arm has the provided specific type of gripper.</span>
+
+<span class="sd">        :param gripper_type: Optional type of gripper to test.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">gripper_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gripper_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gripper_type</span>
+
+        <span class="k">return</span> <span class="n">gripper_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">gripper_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_available_gripper_types</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_force_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Check that the user enabled force sensor access.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_allow_force_sensor</span><span class="p">,</span> <span class="s1">&#39;allow_force_sensor=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_allow_force_sensor</span><span class="p">),</span>
+                       <span class="s2">&quot;Specify get_arm(..., force_sensor_required=True)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="p">,</span> <span class="s2">&quot;force_sensor&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PublicArm.move_down_until_force_sensor_edge_up"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.move_down_until_force_sensor_edge_up">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">move_down_until_force_sensor_edge_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">retract_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+                                             <span class="n">distance_move_down</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has_force_sensor</span><span class="p">,</span> <span class="s1">&#39;has_force_sensor=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has_force_sensor</span><span class="p">),</span>
+                       <span class="s2">&quot;Specify get_arm(..., force_sensor_required=True)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">move_down_until_force_sensor_edge_up</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                                                              <span class="n">retract_distance</span><span class="o">=</span><span class="n">retract_distance</span><span class="p">,</span>
+                                                              <span class="n">distance_move_down</span><span class="o">=</span><span class="n">distance_move_down</span><span class="p">)</span></div>
+
+    <span class="c1"># salvaged deprecated functionality</span>
+<div class="viewcode-block" id="PublicArm.send_gripper_goal"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.send_gripper_goal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_gripper_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">gripper_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">max_torque</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tell the gripper to perform a motion.</span>
+<span class="sd">        :param state: New state (GripperState) of the gripper.</span>
+<span class="sd">        :param timeout: Amount of time available to reach the goal, default is 5</span>
+<span class="sd">        :param gripper_type: Optional type of gripper to perform the action.</span>
+<span class="sd">        :param max_torque: How much torque [Nm] to apply</span>
+<span class="sd">        :return: success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Deprication warning: publicarm.send_gripper_goal is deprecated, use publicarm.gripper.send_goal instead!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">gripper_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gripper_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gripper_type</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="n">gripper_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_available_gripper_types</span><span class="p">,</span> <span class="s1">&#39;gripper type &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">gripper_type</span><span class="p">),</span>
+                <span class="s2">&quot;Specify get_arm(..., required_gripper_types=[GripperTypes.X])&quot;</span><span class="p">)</span>
+        <span class="c1"># Specified type of gripper currently not used.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="p">,</span> <span class="s1">&#39;gripper&#39;</span><span class="p">),</span> <span class="s2">&quot;This arm does not have a gripper&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">gripper</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">max_torque</span><span class="o">=</span><span class="n">max_torque</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PublicArm.handover_to_human"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.handover_to_human">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">handover_to_human</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">gripper_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span>
+            <span class="s2">&quot;Deprication warning: publicarm.handover_to_human is deprecated, use publicarm.handover_detector.handover_to_human instead!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">gripper_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gripper_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gripper_type</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="n">gripper_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_available_gripper_types</span><span class="p">,</span> <span class="s1">&#39;gripper type &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">gripper_type</span><span class="p">),</span>
+                <span class="s2">&quot;Specify get_arm(..., required_gripper_types=[GripperTypes.X])&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="p">,</span> <span class="s1">&#39;handover_detector&#39;</span><span class="p">),</span> <span class="s2">&quot;This arm does not have a handover_detector&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">handover_detector</span><span class="o">.</span><span class="n">handover_to_human</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PublicArm.handover_to_robot"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.handover_to_robot">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">handover_to_robot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">gripper_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span>
+            <span class="s2">&quot;Deprication warning: publicarm.handover_to_robot is deprecated, use publicarm.handover_detector.handover_to_robot instead!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">gripper_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gripper_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_gripper_type</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="n">gripper_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_available_gripper_types</span><span class="p">,</span> <span class="s1">&#39;gripper type &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">gripper_type</span><span class="p">),</span>
+               <span class="s2">&quot;Specify get_arm(..., required_gripper_types=[GripperTypes.X])&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_die</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="p">,</span> <span class="s1">&#39;handover_detector&#39;</span><span class="p">),</span> <span class="s2">&quot;This arm does not have a handover_detector&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">handover_detector</span><span class="o">.</span><span class="n">handover_to_robot</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PublicArm.wait_for_motion_done"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.wait_for_motion_done">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_motion_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                             <span class="n">gripper_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Provided gripper type currently ignored.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">wait_for_motion_done</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="n">cancel</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PublicArm.cancel_goals"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.cancel_goals">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_goals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancels the currently active grasp-precompute and joint-trajectory-action goals</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">cancel_goals</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PublicArm.close"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PublicArm.reset"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.reset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PublicArm.selfreset"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.selfreset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">selfreset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">selfreset</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">base_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the &#39;optimal&#39; position of an object w.r.t. the base link of a</span>
+<span class="sd">        robot for this arm to grasp it.</span>
+
+<span class="sd">        :return: Position of an object w.r.t. the base link of a robot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">base_offset</span>
+
+<div class="viewcode-block" id="PublicArm._test_die"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm._test_die">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_test_die</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cond</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test the condition, if it fails, die with an assertion error explaining what is wrong.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cond</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;get_arm for &#39;</span><span class="si">{}</span><span class="s2">&#39; arm did not request &#39;</span><span class="si">{}</span><span class="s2">&#39; access. Hint: </span><span class="si">{}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">hint</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PublicArm.__repr__"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.PublicArm.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;PublicArm(arm=</span><span class="si">{arm}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_arm</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Arm"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Arm</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A kinematic chain ending in an end_effector. Can be controlled using either joint goals or a goal to reach with</span>
+<span class="sd">    the end_effector described in carthesian coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">get_joint_states</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        constructor</span>
+
+<span class="sd">        :param robot_name: robot_name</span>
+<span class="sd">        :param tf_buffer: tf2_ros.Buffer</span>
+<span class="sd">        :param get_joint_states: get_joint_states function for getting the last joint states</span>
+<span class="sd">        :param name: string used to identify the arm</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Arm</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="o">=</span><span class="n">tf_buffer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operational</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># In simulation, there will be no hardware cb</span>
+
+        <span class="c1"># Get stuff from the parameter server</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/gripper/grasp_offset/&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">RPY</span><span class="p">(</span><span class="n">offset</span><span class="p">[</span><span class="s2">&quot;roll&quot;</span><span class="p">],</span> <span class="n">offset</span><span class="p">[</span><span class="s2">&quot;pitch&quot;</span><span class="p">],</span> <span class="n">offset</span><span class="p">[</span><span class="s2">&quot;yaw&quot;</span><span class="p">]),</span>
+                                <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">offset</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">offset</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">offset</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">marker_to_grippoint_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/gripper/marker_to_grippoint&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Grasp offsets</span>
+        <span class="n">go</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;/base_offset&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_offset</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">go</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">go</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">go</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;/joint_names&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">torso_joint_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/torso/joint_names&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_configurations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;/default_configurations&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_trajectories</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;/default_trajectories&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grasp_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/gripper/grasp_frame&#39;</span><span class="p">)</span>  <span class="c1">#TODO remove gripper specific parameters</span>
+
+        <span class="c1"># listen to the hardware status to determine if the arm is available</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscribe_hardware_status</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Init grasp precompute actionlib</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_grasp_precompute</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_simple_action_client</span><span class="p">(</span>
+            <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;/grasp_precompute&quot;</span><span class="p">,</span> <span class="n">GraspPrecomputeAction</span><span class="p">)</span>
+
+        <span class="c1"># Init joint trajectory action server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_joint_traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_simple_action_client</span><span class="p">(</span>
+            <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/body/joint_trajectory_action&quot;</span><span class="p">,</span> <span class="n">FollowJointTrajectoryAction</span><span class="p">)</span>
+
+        <span class="c1"># Init marker publisher</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_marker_publisher</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span>
+            <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;/grasp_target&quot;</span><span class="p">,</span>
+            <span class="n">visualization_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Marker</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_joint_states</span> <span class="o">=</span> <span class="n">get_joint_states</span>
+
+<div class="viewcode-block" id="Arm.collect_gripper_types"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.collect_gripper_types">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">collect_gripper_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gripper_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query the arm for having the proper gripper type and collect the types that fulfill the</span>
+<span class="sd">        requirement.</span>
+
+<span class="sd">        :param gripper_type: Wanted type of the gripper. May be a pseudo gripper type.</span>
+<span class="sd">        :return: Collection gripper types at the arm that meet the requirements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#TODO move this function outside of arms.py</span>
+        <span class="k">if</span> <span class="n">gripper_type</span> <span class="o">==</span> <span class="n">GripperTypes</span><span class="o">.</span><span class="n">NONE</span><span class="p">:</span>
+            <span class="c1"># There are no arms without a gripper.</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">gripper_type</span> <span class="o">==</span> <span class="n">GripperTypes</span><span class="o">.</span><span class="n">GRASPING</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_has_specific_gripper_types</span><span class="p">(</span><span class="n">GripperTypes</span><span class="o">.</span><span class="n">PINCH</span><span class="p">)</span> <span class="o">+</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_has_specific_gripper_types</span><span class="p">(</span><span class="n">GripperTypes</span><span class="o">.</span><span class="n">PARALLEL</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_specific_gripper_types</span><span class="p">(</span><span class="n">gripper_type</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Arm._has_specific_gripper_types"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm._has_specific_gripper_types">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_has_specific_gripper_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gripper_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify whether the arm as the given type of specific gripper.</span>
+
+<span class="sd">        :param gripper_type: Type of gripper to check for. Must not be a pseudo gripper type.</span>
+<span class="sd">        :return: Gripper types that match the requirement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#TODO move this function outside of arms.py</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;gripper&#39;</span><span class="p">):</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;This arm does not have a &#39;gripper&#39; &quot;</span><span class="p">)</span>
+
+        <span class="c1"># TODO: Extend grippers to have knowledge about the gripper type that it has.</span>
+        <span class="k">if</span> <span class="n">gripper_type</span> <span class="o">==</span> <span class="n">GripperTypes</span><span class="o">.</span><span class="n">PINCH</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gripper</span><span class="p">,</span> <span class="n">ParrallelGripper</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">GripperTypes</span><span class="o">.</span><span class="n">PARALLEL</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">gripper_type</span> <span class="o">==</span> <span class="n">GripperTypes</span><span class="o">.</span><span class="n">PARALLEL</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gripper</span><span class="p">,</span> <span class="n">ParrallelGripper</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">GripperTypes</span><span class="o">.</span><span class="n">PARALLEL</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">gripper_type</span> <span class="o">==</span> <span class="n">GripperTypes</span><span class="o">.</span><span class="n">SUCTION</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>  <span class="c1"># Arm has no unknown types of grippers,</span></div>
+
+<div class="viewcode-block" id="Arm.has_joint_goal"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.has_joint_goal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_joint_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query the arm for having a given joint goal.</span>
+
+<span class="sd">        :param configuration: name of jint goal to check.</span>
+<span class="sd">        :return: Whether the joint goal is available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">configuration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_configurations</span></div>
+
+<div class="viewcode-block" id="Arm.has_joint_trajectory"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.has_joint_trajectory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_joint_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Query the arm for having a given joint trajectory.</span>
+
+<span class="sd">        :param configuration: name of jint trajectory to check.</span>
+<span class="sd">        :return: Whether the joint trajectory is available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">configuration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_trajectories</span></div>
+
+<div class="viewcode-block" id="Arm.cancel_goals"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.cancel_goals">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_goals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancels the currently active grasp-precompute and joint-trajectory-action goals</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_grasp_precompute</span><span class="o">.</span><span class="n">cancel_all_goals</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_joint_traj</span><span class="o">.</span><span class="n">cancel_all_goals</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Arm.close"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancels all active goals for the arm and the gripper</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> arm cancelling all goals on all arm-related ACs on close&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> arm cancelling all goals on all arm-related ACs on close. rospy is already deleted.&quot;</span><span class="o">.</span>
+                  <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_grasp_precompute</span><span class="o">.</span><span class="n">cancel_all_goals</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_joint_traj</span><span class="o">.</span><span class="n">cancel_all_goals</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Arm.send_goal"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.send_goal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frameStamped</span><span class="p">:</span> <span class="n">FrameStamped</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span> <span class="n">pre_grasp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                  <span class="n">first_joint_pos_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">allowed_touch_objects</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a arm to a goal:</span>
+
+<span class="sd">        Using a combination of position and orientation: a kdl.Frame. A time</span>
+<span class="sd">        out time_out. pre_grasp means go to an offset that is normally needed</span>
+<span class="sd">        for things such as grasping. You can also specify the frame_id which</span>
+<span class="sd">        defaults to base_link</span>
+
+<span class="sd">        :param frameStamped: A FrameStamped to move the arm&#39;s end effector to</span>
+<span class="sd">        :param timeout: timeout in seconds; In case of 0.0, goal is executed without feedback and waiting</span>
+<span class="sd">        :param pre_grasp: Bool to use pre_grasp or not</span>
+<span class="sd">        :param first_joint_pos_only: Bool to only execute first joint position of whole trajectory</span>
+<span class="sd">        :param allowed_touch_objects: List of object names in the worldmodel, which are allowed to be touched</span>
+<span class="sd">        :return: True of False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">allowed_touch_objects</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">allowed_touch_objects</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="c1"># save the arguments for debugging later</span>
+        <span class="n">myargs</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
+
+        <span class="c1"># Convert to baselink, which is needed because the offset is defined in the base_link frame</span>
+        <span class="n">frame_in_baselink</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_buffer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">frameStamped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/base_link&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_publish_marker</span><span class="p">(</span><span class="n">frameStamped</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;grasp_point&quot;</span><span class="p">)</span>
+
+        <span class="n">end_effector_frame</span> <span class="o">=</span> <span class="n">frame_in_baselink</span><span class="o">.</span><span class="n">frame</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
+
+        <span class="c1"># TODO: Get rid of this custom message type</span>
+        <span class="c1"># Create goal:</span>
+        <span class="n">grasp_precompute_goal</span> <span class="o">=</span> <span class="n">GraspPrecomputeGoal</span><span class="p">()</span>
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">frame_in_baselink</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span>
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">PERFORM_PRE_GRASP</span> <span class="o">=</span> <span class="n">pre_grasp</span>
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">FIRST_JOINT_POS_ONLY</span> <span class="o">=</span> <span class="n">first_joint_pos_only</span>
+
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">allowed_touch_objects</span> <span class="o">=</span> <span class="n">allowed_touch_objects</span>
+
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">end_effector_frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">end_effector_frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">end_effector_frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()</span>
+
+        <span class="n">roll</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">yaw</span> <span class="o">=</span> <span class="n">end_effector_frame</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">GetRPY</span><span class="p">()</span>
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">roll</span> <span class="o">=</span> <span class="n">roll</span>
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">pitch</span> <span class="o">=</span> <span class="n">pitch</span>
+        <span class="n">grasp_precompute_goal</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">yaw</span> <span class="o">=</span> <span class="n">yaw</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>   <span class="c1"># This is necessary: the rtt_actionlib in the hardware seems</span>
+                            <span class="c1"># to only have a queue size of 1 and runs at 1000 hz. This</span>
+                            <span class="c1"># means that if two goals are send approximately at the same</span>
+                            <span class="c1"># time (e.g. an arm goal and a torso goal), one of the two</span>
+                            <span class="c1"># goals probably won&#39;t make it. This sleep makes sure the</span>
+                            <span class="c1"># goals will always arrive in different update hooks in the</span>
+                            <span class="c1"># hardware TrajectoryActionLib server.</span>
+
+        <span class="c1"># Send goal:</span>
+
+        <span class="k">if</span> <span class="n">timeout</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ac_grasp_precompute</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">grasp_precompute_goal</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ac_grasp_precompute</span><span class="o">.</span><span class="n">send_goal_and_wait</span><span class="p">(</span>
+                <span class="n">grasp_precompute_goal</span><span class="p">,</span>
+                <span class="n">execute_timeout</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="n">GoalStatus</span><span class="o">.</span><span class="n">SUCCEEDED</span><span class="p">:</span>
+                <span class="n">result_pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tf_buffer</span><span class="o">.</span><span class="n">lookup_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s2">&quot;/base_link&quot;</span><span class="p">,</span>
+                                                              <span class="bp">self</span><span class="o">.</span><span class="n">grasp_frame</span><span class="p">,</span>
+                                                              <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="n">frame_in_baselink</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">result_pose</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">translation</span><span class="o">.</span><span class="n">x</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="n">frame_in_baselink</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="n">result_pose</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">translation</span><span class="o">.</span><span class="n">y</span>
+                <span class="n">dz</span> <span class="o">=</span> <span class="n">frame_in_baselink</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()</span> <span class="o">-</span> <span class="n">result_pose</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">translation</span><span class="o">.</span><span class="n">z</span>
+
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.005</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.005</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dz</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.005</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Grasp-precompute error too large: [</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                  <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">))</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># failure</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;grasp precompute goal failed: </span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">myargs</span><span class="p">))</span>
+                <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Arm.send_joint_goal"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.send_joint_goal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_joint_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">JOINT_TIMEOUT</span><span class="p">,</span>
+                        <span class="n">max_joint_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">MAX_JOINT_VEL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a named joint goal (pose) defined in the parameter default_configurations to the arm</span>
+<span class="sd">        :param configuration: Name of configuration, configuration should be loaded as parameter</span>
+<span class="sd">        :param timeout: Timeout in seconds</span>
+<span class="sd">        :param max_joint_vel: Speed the robot can have when getting to the desired configuration</span>
+<span class="sd">        :return: True or False, False in case of nonexistent configuration or failed execution</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">configuration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_configurations</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_joint_trajectory</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">default_configurations</span><span class="p">[</span><span class="n">configuration</span><span class="p">]],</span>
+                                               <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                                               <span class="n">max_joint_vel</span><span class="o">=</span><span class="n">max_joint_vel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s1">&#39;Default configuration </span><span class="si">{0}</span><span class="s1"> does not exist&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configuration</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Arm.send_joint_trajectory"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.send_joint_trajectory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_joint_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">JOINT_TIMEOUT</span><span class="p">,</span>
+                              <span class="n">max_joint_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">MAX_JOINT_VEL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a named joint trajectory (sequence of poses) defined in the default_trajectories to the arm</span>
+
+<span class="sd">        :param configuration: Name of configuration, configuration should be loaded as parameter</span>
+<span class="sd">        :param timeout: Timeout in seconds</span>
+<span class="sd">        :param max_joint_vel: Speed the robot can have when getting to the desired configuration</span>
+<span class="sd">        :return: True or False, False in case of nonexistent configuration or failed execution</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">configuration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_trajectories</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_joint_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_trajectories</span><span class="p">[</span><span class="n">configuration</span><span class="p">],</span>
+                                               <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+                                               <span class="n">max_joint_vel</span><span class="o">=</span><span class="n">max_joint_vel</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s1">&#39;Default trajectories </span><span class="si">{0}</span><span class="s1"> does not exist&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configuration</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Arm.selfreset"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.selfreset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">selfreset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Put the arm into the &#39;reset&#39; pose</span>
+
+<span class="sd">        :return: True or False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_joint_goal</span><span class="p">(</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Arm._send_joint_trajectory"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm._send_joint_trajectory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_send_joint_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">joints_references</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                               <span class="n">max_joint_vel</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">MAX_JOINT_VEL</span><span class="p">,</span>
+                               <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">JOINT_TIMEOUT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Low level method that sends a array of joint references to the arm.</span>
+
+<span class="sd">        If timeout is defined, it will wait for timeout*len(joints_reference) seconds for the</span>
+<span class="sd">        completion of the actionlib goal. It will return True as soon as possible when the goal</span>
+<span class="sd">        succeeded. On timeout, it will return False. If timeout is set to 0.0 it will return False immediately.</span>
+<span class="sd">        The motion will not be cancelled on timeout.</span>
+
+<span class="sd">        :param joints_references: List of joint configurations,</span>
+<span class="sd">            which should be a list of the length equal to the number of joints to be moved</span>
+<span class="sd">        :param max_joint_vel: Speed the robot can have when getting to the desired</span>
+<span class="sd">            configuration. A single value can be given, which will be used for all joints, or a list of values can be</span>
+<span class="sd">            given in which the order has to agree with the joints according to the joints_references.</span>
+<span class="sd">        :param timeout: Timeout for each joint configuration in rospy.Duration(seconds). If 0.0 function will return without waiting for motion done.</span>
+<span class="sd">        :return: Whether or not the motion was completed within the timeout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">joints_references</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">joints_references</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">torso_joint_names</span><span class="p">):</span>
+            <span class="n">joint_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">torso_joint_names</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">joint_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">joint_names</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_joint_vel</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="n">max_joint_vel</span> <span class="o">=</span> <span class="p">[</span><span class="n">max_joint_vel</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">joint_names</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_joint_vel</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_joint_vel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">max_joint_vel</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">joint_names</span><span class="p">):</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;The length of &#39;max_joint_vel&#39; is </span><span class="si">{}</span><span class="s2"> and the length of &#39;joint_names&#39; is </span><span class="si">{}</span><span class="s2">. </span><span class="se">\n</span><span class="s2">&quot;</span>
+                                 <span class="s2">&quot;Please give the velocities for the following joints (in the correct order!): </span><span class="si">{}</span><span class="s2">&quot;</span>
+                                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">max_joint_vel</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">joint_names</span><span class="p">),</span> <span class="n">joint_names</span><span class="p">))</span>
+
+        <span class="n">ps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">time_from_start</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">start_joint_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_joint_states</span><span class="p">()</span>
+        <span class="n">prev_joint_ref</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_joint_state</span><span class="p">[</span><span class="n">jn</span><span class="p">]</span> <span class="k">for</span> <span class="n">jn</span> <span class="ow">in</span> <span class="n">joint_names</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">joints_reference</span> <span class="ow">in</span> <span class="n">joints_references</span><span class="p">:</span>
+            <span class="n">max_diff</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">prev</span> <span class="o">-</span> <span class="n">new</span><span class="p">)</span> <span class="k">for</span> <span class="n">prev</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">prev_joint_ref</span><span class="p">,</span> <span class="n">joints_reference</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">joints_reference</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">joint_names</span><span class="p">):</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s1">&#39;Please use the correct </span><span class="si">{}</span><span class="s1"> number of joint references (current = </span><span class="si">{}</span><span class="s1">)&#39;</span>
+                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">joint_names</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">joints_references</span><span class="p">)))</span>
+            <span class="n">time_from_start</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">max_diff</span><span class="p">,</span> <span class="n">max_joint_vel</span><span class="p">))</span>
+            <span class="n">ps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">JointTrajectoryPoint</span><span class="p">(</span>
+                <span class="n">positions</span><span class="o">=</span><span class="n">joints_reference</span><span class="p">,</span>
+                <span class="n">time_from_start</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="o">.</span><span class="n">from_sec</span><span class="p">(</span><span class="n">time_from_start</span><span class="p">)))</span>
+
+        <span class="n">joint_trajectory</span> <span class="o">=</span> <span class="n">JointTrajectory</span><span class="p">(</span><span class="n">joint_names</span><span class="o">=</span><span class="n">joint_names</span><span class="p">,</span>
+                                           <span class="n">points</span><span class="o">=</span><span class="n">ps</span><span class="p">)</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="n">FollowJointTrajectoryGoal</span><span class="p">(</span><span class="n">trajectory</span><span class="o">=</span><span class="n">joint_trajectory</span><span class="p">,</span> <span class="n">goal_time_tolerance</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Send </span><span class="si">{0}</span><span class="s2"> arm to jointcoords </span><span class="se">\n</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ps</span><span class="p">))</span>
+
+        <span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="p">;</span> <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>  <span class="c1"># This is necessary: the rtt_actionlib in the hardware seems</span>
+                                        <span class="c1"># to only have a queue size of 1 and runs at 1000 hz. This</span>
+                                        <span class="c1"># means that if two goals are send approximately at the same</span>
+                                        <span class="c1"># time (e.g. an arm goal and a torso goal), one of the two</span>
+                                        <span class="c1"># goals probably won&#39;t make it. This sleep makes sure the</span>
+                                        <span class="c1"># goals will always arrive in different update hooks in the</span>
+                                        <span class="c1"># hardware TrajectoryActionLib server.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_joint_traj</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">goal</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">timeout</span> <span class="o">!=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ac_joint_traj</span><span class="o">.</span><span class="n">wait_for_result</span><span class="p">(</span><span class="n">timeout</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">joints_references</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Cannot reach joint goal </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">goal</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">done</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Arm.wait_for_motion_done"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.wait_for_motion_done">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_motion_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Waits until all action clients are done</span>
+
+<span class="sd">        :param timeout: timeout in seconds; in case 0.0, no sensible output is provided, just False</span>
+<span class="sd">        :param cancel: bool specifying whether goals should be cancelled</span>
+<span class="sd">            if timeout is exceeded</span>
+<span class="sd">        :return: bool indicates whether motion was done (True if reached, False otherwise)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># rospy.loginfo(&#39;Waiting for ac_joint_traj&#39;)</span>
+        <span class="n">starttime</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ac_joint_traj</span><span class="o">.</span><span class="n">gh</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ac_joint_traj</span><span class="o">.</span><span class="n">wait_for_result</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">timeout</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">cancel</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Arms: cancelling all goals (1)&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cancel_goals</span><span class="p">()</span>
+
+        <span class="n">passed_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">passed_time</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># rospy.loginfo(&#39;Waiting for ac_grasp_precompute&#39;)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ac_grasp_precompute</span><span class="o">.</span><span class="n">gh</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ac_grasp_precompute</span><span class="o">.</span><span class="n">wait_for_result</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">timeout</span><span class="o">-</span><span class="n">passed_time</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">cancel</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Arms: cancelling all goals (2)&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cancel_goals</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">base_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves the &#39;optimal&#39; position of an object w.r.t. the base link of a</span>
+<span class="sd">        robot for this arm to grasp it.</span>
+
+<span class="sd">        :return: Position of an object w.r.t. the base link of a robot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_offset</span>
+
+<div class="viewcode-block" id="Arm._publish_marker"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm._publish_marker">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_publish_marker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">goal</span><span class="p">:</span> <span class="n">FrameStamped</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">ns</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Publish markers for visualisation</span>
+<span class="sd">        :param goal: frame_stamped</span>
+<span class="sd">        :param color: list of rgb colors (0.0-1.0)</span>
+<span class="sd">        :param ns: namespace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">marker</span> <span class="o">=</span> <span class="n">visualization_msgs</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">Marker</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">goal</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">goal</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">goal</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">pose</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">goal</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">()</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">lifetime</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">20.0</span><span class="p">)</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">ns</span> <span class="o">=</span> <span class="n">ns</span>
+
+        <span class="n">marker</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">marker</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_marker_publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Arm.__repr__"><a class="viewcode-back" href="../../../api/robot_skills/arm/arms/index.html#robot_skills.arm.arms.Arm.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Arm(name=&#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

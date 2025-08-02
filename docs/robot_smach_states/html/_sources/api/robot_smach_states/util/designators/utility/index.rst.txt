@@ -1,0 +1,272 @@
+robot_smach_states.util.designators.utility
+===========================================
+
+.. py:module:: robot_smach_states.util.designators.utility
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_smach_states.util.designators.utility.__author__
+   robot_smach_states.util.designators.utility.R
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.util.designators.utility.LockingDesignator
+   robot_smach_states.util.designators.utility.AttrDesignator
+   robot_smach_states.util.designators.utility.ValueByKeyDesignator
+   robot_smach_states.util.designators.utility.FuncDesignator
+   robot_smach_states.util.designators.utility.DeferToRuntime
+   robot_smach_states.util.designators.utility.RandomDesignator
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.util.designators.utility.value_or_resolve
+
+
+Module Contents
+---------------
+
+.. py:data:: __author__
+   :value: 'loy'
+
+
+.. py:data:: R
+
+.. py:function:: value_or_resolve(value)
+
+   If value is a designator, resolve it, otherwise return value
+
+
+.. py:class:: LockingDesignator(to_be_locked, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.core.Designator`
+
+
+   A designator's resolve() method may return a different object everytime.
+   For some cases, this may be unwanted because a process has to be done with the same object.
+   In that case, a designator resolving to a different object every time is not usable.
+   A LockingDesignator will resolve to the same object after a call to .lock() and
+   will only resolve to a different value after an unlock() call.
+
+   >>> varying = VariableDesignator(0, int).writeable #To be able to write to a designator, it must be writeable!
+   >>> locking = LockingDesignator(varying)
+   >>> assert(varying.resolve() == 0)
+   >>> assert(locking.resolve() == 0)
+   >>>
+   >>> locking.lock()
+   >>>
+   >>> varying.write(1)
+   >>> assert(varying.resolve() == 1)  # The value changed
+   >>> assert(locking.resolve() == 0)  # This one sticks to the value it had when locked
+   >>>
+   >>> varying.write(2)
+   >>> assert(varying.resolve() == 2)  # The value changed
+   >>> assert(locking.resolve() == 0)  # This one sticks to the value it had when locked
+   >>>
+   >>> locking.unlock()
+   >>>
+   >>> varying.write(3)
+   >>> assert(varying.resolve() == 3)  # The value changed
+   >>> assert(locking.resolve() == 3)  # This one sticks to the value it had when locked
+   >>>
+   >>> locking.lock()
+   >>>
+   >>> varying.write(4)
+   >>> assert(varying.resolve() == 4)  # The value changed
+   >>> assert(locking.resolve() == 3)  # This one sticks to the value it had when locked
+   >>>
+   >>> varying.write(5)
+   >>> assert(varying.resolve() == 5)  # The value changed
+   >>> assert(locking.resolve() == 3)  # This one sticks to the value it had when locked
+   >>>
+   >>> locking.unlock()
+   >>>
+   >>> varying.write(6)
+   >>> assert(varying.resolve() == 6)  # The value changed
+   >>> assert(locking.resolve() == 6)  # This one sticks to the value it had when locked
+
+   >>> assert(varying.resolve_type == int)
+   >>> assert(locking.resolve_type == int)
+
+
+   .. py:attribute:: to_be_locked
+
+
+   .. py:attribute:: _locked
+      :value: False
+
+
+
+   .. py:attribute:: _current
+      :value: None
+
+
+
+   .. py:method:: lock()
+
+
+   .. py:method:: unlock()
+
+
+   .. py:method:: current()
+
+
+   .. py:method:: _resolve()
+
+
+   .. py:method:: __repr__()
+
+
+   .. py:method:: _get_name()
+
+
+.. py:class:: AttrDesignator(orig, attribute, resolve_type=None, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.core.Designator`
+
+
+   Get some attribute of the object a wrapped designator resolves to.
+   This can be recursive, so you can specify a chain of nested attributes like <resolved_object>.foo.bar
+
+   For example:
+   >>> d = Designator(bool, resolve_type=object)
+   >>> #Get the __doc__ attribute of the object that d resolves to. d is an object and d.__doc__ is 'The most base type'
+   >>> wrapped = AttrDesignator(d, '__doc__', resolve_type=str)
+   >>> print(wrapped.resolve())
+   bool(x) -> bool
+   <BLANKLINE>
+   Returns True when the argument x is true, False otherwise.
+   The builtins True and False are the only two instances of the class bool.
+   The class bool is a subclass of the class int, and cannot be subclassed.
+
+   >>> assert(issubclass(wrapped.resolve_type, str))
+
+   >>> d2 = Designator("banana", resolve_type=str)
+   >>> wrapped2 = AttrDesignator(d2, 'endswith.__doc__', resolve_type=str)
+   >>> print(wrapped2.resolve())
+   S.endswith(suffix[, start[, end]]) -> bool
+   <BLANKLINE>
+   Return True if S ends with the specified suffix, False otherwise.
+   With optional start, test S beginning at that position.
+   With optional end, stop comparing S at that position.
+   suffix can also be a tuple of strings to try.
+
+   >>> from collections import namedtuple
+   >>> A = namedtuple("A", ['foo'])
+   >>> B = namedtuple("B", ['bar'])
+   >>> a = A(foo=B(bar='banana'))
+   >>> d3 = Designator(a, resolve_type=A)
+   >>> wrapped3 = AttrDesignator(d3, 'foo.bar', resolve_type=str)
+   >>> wrapped3.resolve()
+   'banana'
+
+   >>> wrapped3 = AttrDesignator(d3, 'foo.not_bar', resolve_type=str)
+   >>> wrapped3.resolve() is None  # Will not resolve and return None
+   True
+
+
+   .. py:attribute:: orig
+
+
+   .. py:attribute:: _get_attr
+
+
+   .. py:method:: _resolve()
+
+
+.. py:class:: ValueByKeyDesignator(container, key, resolve_type, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.core.Designator`
+
+
+   
+   Get a value from a dictionary by it's key
+
+   :param container: any object with a __getitem__ method or a designator that resolves to it
+   :param name: Name of the designator for introspection purposes
+
+
+   .. py:attribute:: _container
+
+
+   .. py:attribute:: _key
+
+
+   .. py:method:: _resolve()
+
+
+.. py:class:: FuncDesignator(orig, func, resolve_type=None, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.core.Designator`
+
+
+   Apply a function to the object a wrapped designator resolves to
+   For example:
+   >>> d = Designator("Hello")
+   >>> wrapped = FuncDesignator(d, len, resolve_type=int) #Determine the len of whatever d resolves to
+   >>> wrapped.resolve()
+   5
+
+   >>> assert(issubclass(wrapped.resolve_type, int))
+
+
+   .. py:attribute:: orig
+
+
+   .. py:attribute:: func
+
+
+   .. py:method:: _resolve()
+
+
+.. py:class:: DeferToRuntime(func, resolve_type, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.core.Designator`
+
+
+   Run the given function at runtime. Using Python closures, you can use any variable in scope in this function.
+   For example:
+   >>> d1 = Designator("world") #Create a designator and assign it to a variable
+   >>> prefix = "Hello" #Create a string variable
+   >>> def prepend(): return prefix + " " + d1.resolve() #This function takes prefix and d1 as variables from the outer scope!
+   >>> d = DeferToRuntime(prepend, resolve_type=str) #A designator to execute the prepend-function
+   >>> d.resolve()
+   'Hello world'
+
+
+   .. py:attribute:: func
+
+
+   .. py:method:: _resolve()
+
+
+.. py:class:: RandomDesignator(orig, resolve_type=None, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.core.Designator`
+
+
+   Return a random value from a given iterable
+
+   For example:
+   >>> d = RandomDesignator([1,2,3], resolve_type=int)
+   >>> d.resolve() in [1,2,3]
+   True
+
+
+   .. py:attribute:: orig
+
+
+   .. py:method:: _resolve()
+
+

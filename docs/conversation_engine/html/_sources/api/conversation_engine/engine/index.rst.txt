@@ -1,0 +1,420 @@
+conversation_engine.engine
+==========================
+
+.. py:module:: conversation_engine.engine
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   conversation_engine.engine.ConversationState
+   conversation_engine.engine.ConversationEngine
+   conversation_engine.engine.ConversationEngineUsingTopic
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   conversation_engine.engine.sanitize_text
+   conversation_engine.engine.describe_current_subtask
+
+
+Module Contents
+---------------
+
+.. py:function:: sanitize_text(txt)
+
+.. py:function:: describe_current_subtask(subtask, prefix=True)
+
+   Make a 'natural' language description of subtask name
+
+
+.. py:class:: ConversationState
+
+   Bases: :py:obj:`object`
+
+
+   Encapsulate all conversation state.
+   This makes it impossible to transition to a next state without setting the correct fields
+
+   When a new conversation is started, the ConversationState is IDLE.
+   Then the user can initiate the conversation by supplying text, which then initializes the semantics of an action.
+   The ConversationEngine then sends this to the action_server and we wait for the robot to execute the action or
+   think about why the action cannot be performed yet.
+   When calling the action_server, we must indicate that we are waiting for the robot via the the wait_for_robot()
+   method.
+
+   In the case of missing info, the robot misses some field from the semantics.
+   The ConversationEngine figures out which subtree of the grammar to use to parse the user's eventual input and
+   passes this in the wait_for_user() method.
+   The missing field can, for example, be a location to do something with.
+   This means the grammar should not try to parse the reply to come as a type of drink or as a verb, for example, but
+   as a location.
+   What rule to parse text with is stored in .target
+
+   The ConversationEngine then says something to the user and waits for the user to reply.
+   When this is received, the ConversationEngine reads the grammar target from the ConversationState before it parses
+   the replied text for additional info.
+
+   The current semantics are updated using update_semantics() and the action_server is called again with the now
+   updated semantics.
+   When this happens, the ConversationEngine must call wait_for_robot() again.
+
+   The user can also ask to abort() the conversation to stop.
+
+
+   .. py:attribute:: IDLE
+      :value: 'IDLE'
+
+
+
+   .. py:attribute:: WAIT_FOR_USER
+      :value: 'WAIT_FOR_USER'
+
+
+
+   .. py:attribute:: WAIT_FOR_ROBOT
+      :value: 'WAIT_FOR_ROBOT'
+
+
+
+   .. py:attribute:: ABORTING
+      :value: 'ABORTING'
+
+
+
+   .. py:attribute:: _state
+      :value: 'IDLE'
+
+
+
+   .. py:attribute:: _target
+      :value: None
+
+
+
+   .. py:attribute:: _missing_field
+      :value: None
+
+
+
+   .. py:attribute:: _current_semantics
+
+
+   .. py:property:: state
+
+      Part of the conversation we're in
+
+
+   .. py:property:: target
+
+      Subtree of the grammar tree to use when parsing text
+
+
+   .. py:property:: missing_field
+
+      What field is missing in the current_semantics before the action_server can execute it
+      The user must provide useful information to fill this field.
+
+
+   .. py:property:: current_semantics
+
+      A dict containing an (incomplete) action description for the action_server
+
+
+   .. py:method:: wait_for_user(target, missing_field)
+
+      Indicate that the ConversationEngine is waiting for the user's input.
+
+      This is to wait for additional info, that must be parsed according to target in order to fill some missing field
+
+      :param target: name of the grammar rule to parse the user's reply with
+      :type target: str
+      :param missing_field: a 'path' indicating where to insert the additional info from the user into the
+      current_semantics dictionary
+      :type missing_field: str
+
+
+
+   .. py:method:: wait_for_robot()
+
+      Indicate that the ConversationEngine is waiting for the robot to either finish (planning) the action
+
+
+
+   .. py:method:: aborting(timeout, timeout_callback)
+
+      Set the state to ABORTING. If the action server hasn't aborted the action after the given timeout,
+      call the callback to deal with that
+
+      :param timeout: duration to wait before killing
+      :type timeout: rospy.Duration
+      :param timeout_callback: callback is called when the aborting takes too long
+      :type timeout_callback: (event: rospy.TimerEvent)
+
+
+
+   .. py:method:: initialize_semantics(semantics)
+
+      Initialize an action description for the action_server. This gets updated as the conversation progresses, via
+      update_semantics()
+
+
+
+   .. py:method:: update_semantics(semantics, missing_field_path)
+
+      Update the current action description for the action_server
+
+      The semantics will be filled into current_semantics at the missing_field_path
+
+      :param semantics: dictionary with additional info
+      :type semantics: dict
+      :param missing_field_path: a 'path' indicating where to insert the additional info from the user into the
+      current_semantics dictionary
+      :type missing_field_path: str
+
+
+
+.. py:class:: ConversationEngine(action_client, grammar, command_target, give_examples=True)
+
+   Bases: :py:obj:`object`
+
+
+   ConversationEngine provides the bridge between the user and the action_server.
+
+   It accepts text and parses it to a 'semantics' dictionary that the action_server can interpret.
+
+   The action_server then tries to formulate a plan based on the semantics and either:
+   - starts execution and succeeds or fails
+   - indicates it is missing information.
+   In the case of missing information, the action_server indicates what field of information it is missing.
+
+   Based on that, the ConversationEngine must converse with the user to obtain more information.
+   There is some logic to determine with grammar rules/target to use to parse the additional information with.
+
+   Once the information is obtained, the semantics of the current conversation state are updated
+   and sent to the action_server again, in hope the semantics is now complete enough for execution.
+
+   ConversationEngine is set up as a base class, that leaves the implementation of talking with the user to subclasses.
+   Implement
+   - _say_to_user to say something to the user
+   - user_to_robot_text to accept text from the user
+
+   Initialize a new ConversationEngine for the given robot, using some grammar with a command_target.
+   Indicate whether to give examples of thins to say to the user via give_examples
+
+   :param action_client: interface to the action server
+   :type action_client: Client
+   :param grammar: string to initialize a CFGParser with see https://github.com/tue-robotics/grammar_parser/
+       The grammar must result in an action description dictionary, like
+       {'actions': [{'action': 'hand-over',
+                     'object': {'type': 'drink'},
+                     'target-location': {'type': 'person', 'id': 'operator'}}]}
+   :type grammar: str
+   :param command_target: the root of the grammar's parse tree
+   :type command_target: str
+   :param give_examples: Include examples when talking with the user.
+       These are randomly generated from the active part of the grammar
+   :type give_examples: bool
+
+
+   .. py:attribute:: _state
+
+
+   .. py:attribute:: _action_client
+
+
+   .. py:attribute:: _parser
+
+
+   .. py:attribute:: _grammar
+
+
+   .. py:attribute:: _command_target
+
+
+   .. py:attribute:: give_examples
+      :value: True
+
+
+
+   .. py:attribute:: _latest_feedback
+      :value: None
+
+
+
+   .. py:method:: user_to_robot_text(text)
+
+      Accept raw text from the user.
+
+      :param text: what the user typed or said
+      :type text str
+
+
+
+   .. py:method:: _handle_user_to_robot(text)
+
+      Start processing text from the user. This handles sanitation of the strings and
+      any special commands that affect the conversation flow rather than the action (like aborting etc)
+
+      :param text: what the user typed or said
+      :type text str
+
+
+
+   .. py:method:: _handle_special_commands(text)
+
+      Check for special commands that should not be parsed further
+
+      :return: indicating if the text is a special command
+      :rtype: bool
+
+
+
+   .. py:method:: _stop()
+
+
+   .. py:method:: _start_new_conversation()
+
+
+   .. py:method:: _handle_command(text)
+
+      Parse text into goal semantics, send to action_server
+
+
+
+   .. py:method:: _handle_additional_info(text)
+
+      Parse text into additional info according to grammar & target received from action_server result
+
+
+
+   .. py:method:: _handle_user_while_waiting_for_robot(text)
+
+      Talk with the user while the robot is busy doing stuff
+
+
+
+   .. py:method:: _handle_user_while_aborting(text)
+
+      Talk with the user while the robot is busy aborting the action
+
+
+
+   .. py:method:: _say_ready_for_command()
+
+
+   .. py:method:: _done_cb(task_outcome)
+
+      The action_server's action is done, which can mean the action is finished (successfully or failed) or
+      needs additional info. This last option is handled by _on_request_missing_information and
+      the other cases by a starting a new conversation
+
+
+
+   .. py:method:: _feedback_cb(feedback)
+
+
+   .. py:method:: _get_grammar_target(missing_field_path)
+      :staticmethod:
+
+
+      Determine which grammar target to use when a particular field of info is missing.
+
+
+
+   .. py:method:: _log_invalid_command(text)
+      :staticmethod:
+
+
+
+   .. py:method:: _say_to_user(message)
+      :abstractmethod:
+
+
+
+   .. py:method:: _on_task_successful(message)
+
+
+   .. py:method:: _on_request_missing_information(description, grammar, target)
+
+
+   .. py:method:: _on_task_outcome_failed(message)
+
+
+   .. py:method:: _on_task_outcome_unknown(message)
+
+
+   .. py:method:: _start_wait_for_command(grammar, target)
+
+
+   .. py:method:: is_text_valid_input(text)
+
+      Checks if the provided text input is valid by parsing it
+
+      :param text: input text
+      :type text: str
+      :return: whether the parsing succeeded or failed
+      :rtype: bool
+
+
+
+.. py:class:: ConversationEngineUsingTopic(robot_name, grammar, command_target)
+
+   Bases: :py:obj:`ConversationEngine`
+
+
+   ConversationEngine provides the bridge between the user and the action_server.
+
+   It accepts text and parses it to a 'semantics' dictionary that the action_server can interpret.
+
+   The action_server then tries to formulate a plan based on the semantics and either:
+   - starts execution and succeeds or fails
+   - indicates it is missing information.
+   In the case of missing information, the action_server indicates what field of information it is missing.
+
+   Based on that, the ConversationEngine must converse with the user to obtain more information.
+   There is some logic to determine with grammar rules/target to use to parse the additional information with.
+
+   Once the information is obtained, the semantics of the current conversation state are updated
+   and sent to the action_server again, in hope the semantics is now complete enough for execution.
+
+   ConversationEngine is set up as a base class, that leaves the implementation of talking with the user to subclasses.
+   Implement
+   - _say_to_user to say something to the user
+   - user_to_robot_text to accept text from the user
+
+   Initialize a new ConversationEngine for the given robot, using some grammar with a command_target.
+   Indicate whether to give examples of thins to say to the user via give_examples
+
+   :param action_client: interface to the action server
+   :type action_client: Client
+   :param grammar: string to initialize a CFGParser with see https://github.com/tue-robotics/grammar_parser/
+       The grammar must result in an action description dictionary, like
+       {'actions': [{'action': 'hand-over',
+                     'object': {'type': 'drink'},
+                     'target-location': {'type': 'person', 'id': 'operator'}}]}
+   :type grammar: str
+   :param command_target: the root of the grammar's parse tree
+   :type command_target: str
+   :param give_examples: Include examples when talking with the user.
+       These are randomly generated from the active part of the grammar
+   :type give_examples: bool
+
+
+   .. py:attribute:: _user_to_robot_sub
+
+
+   .. py:attribute:: _robot_to_user_pub
+
+
+   .. py:method:: user_to_robot_msg(msg)
+
+
+   .. py:method:: _say_to_user(message)
+
+

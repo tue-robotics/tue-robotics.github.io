@@ -1,0 +1,124 @@
+robot_smach_states.designator_iterator
+======================================
+
+.. py:module:: robot_smach_states.designator_iterator
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.designator_iterator.IterateDesignator
+
+
+Module Contents
+---------------
+
+.. py:class:: IterateDesignator(collection_des, element_des)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Iterate over a designator that resolves to a collection.
+
+   The collection is resolved on each iteration. When the resolved collection is different from the collection in use,
+   it will start from the beginning of the new collection. It keeps iterating the new collection in futher calls.
+
+   Once the collection is exhausted, the outcome will be 'stop_iteration'.
+   The next time the state is executed, the collection will be resolved again
+
+   :param collection_des: Designator with a iterable resolve_type
+   :param element_des: Writeable designator with a resolve_type that should match the element type of the collection
+
+   >>> collection_des = ds.VariableDesignator(['a', 'b', 'c']).writeable
+   >>> element_des = ds.VariableDesignator(resolve_type=str)
+   >>> iterator = IterateDesignator(collection_des, element_des.writeable)
+
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'a'
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'b'
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'c'
+   >>> iterator.execute()
+   'stop_iteration'
+   >>> element_des.resolve()
+   'c'
+
+   The iterator will start from the beginning of the collection again
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'a'
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'b'
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'c'
+   >>> iterator.execute()
+   'stop_iteration'
+
+   >>> collection_des.write(['a', 'b', 'c'])
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'a'
+
+   >>> collection_des.write(['d', 'e', 'f', 'g'])
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'd'
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'e'
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'f'
+   >>> iterator.execute()
+   'next'
+   >>> element_des.resolve()
+   'g'
+   >>> iterator.execute()
+   'stop_iteration'
+
+   >>> collection_des2 = ds.VariableDesignator(resolve_type=[str]).writeable
+   >>> collection_des2.resolve()  # Should resolve to None
+   >>> element_des2 = ds.VariableDesignator(resolve_type=str)
+   >>> iterator2 = IterateDesignator(collection_des2, element_des2.writeable)
+   >>> iterator2.execute()
+   'stop_iteration'
+
+
+   .. py:attribute:: collection_des
+
+
+   .. py:attribute:: element_des
+
+
+   .. py:attribute:: _current_collection
+      :value: None
+
+
+
+   .. py:attribute:: _current_elements
+      :value: None
+
+
+
+   .. py:method:: execute(userdata=None)
+
+

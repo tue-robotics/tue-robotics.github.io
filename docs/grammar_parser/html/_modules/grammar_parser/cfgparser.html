@@ -1,0 +1,817 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grammar_parser.cfgparser &mdash; grammar_parser 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=f6245a2f"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            grammar_parser
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">grammar_parser</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">grammar_parser.cfgparser</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for grammar_parser.cfgparser</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;Grammars for the ContextFreeGrammarParser are built from production rules, corresponding to the Rule-class below.</span>
+<span class="sd">This means that sentences can be generated (and auto-completed), according to this grammar.</span>
+<span class="sd">Moreover, sentences can be parsed according to the same rules.</span>
+
+<span class="sd">See https://www.tutorialspoint.com/automata_theory/context_free_grammar_introduction.htm and https://en.wikipedia.org/wiki/Context-free_grammar for an introduction to context free grammars.</span>
+
+<span class="sd">If there is a rule &quot;A -&gt; one&quot;, then that means that to generate something according to rule A, the generated sentence is &quot;one&quot;</span>
+<span class="sd">In this example &quot;A&quot; is the lname. lname stands for left name, as it&#39;s on the left of the arrow.</span>
+<span class="sd">Sentences are produced and parsed from left to right.</span>
+
+<span class="sd">There can be multiple lines in the grammar definition file with the same lname, which simply add ways to produce/parse sentences for that lname.</span>
+
+<span class="sd">Rules can refer to each other via their lname.</span>
+<span class="sd">If a rule A defines a way to start a sentence and refers to B, that means the completion of rule A is one via rule B.</span>
+<span class="sd">For example, the grammar:</span>
+<span class="sd">A -&gt; go B</span>
+<span class="sd">B -&gt; forward</span>
+<span class="sd">B -&gt; backward</span>
+<span class="sd">can generate the sentences &quot;go forward&quot; and &quot;go backward&quot;. And thus parse these sentences as well.</span>
+
+<span class="sd">Rules can also have variables that will be assigned to when a sentence is parsed.</span>
+<span class="sd">For example, the line:</span>
+
+<span class="sd">    VP[&quot;action&quot;: A] -&gt; V_PLACE[A]</span>
+
+<span class="sd">adds a rule for the lname VP, with a field called &quot;action&quot;, which will be set to A.</span>
+<span class="sd">The value for A is determined by a rule with lname V_PLACE, which will determine the value of A.</span>
+
+<span class="sd">The rule</span>
+
+<span class="sd">    V_PLACE[&quot;place&quot;] -&gt; place | put</span>
+
+<span class="sd">applies when the text is &quot;place&quot; or &quot;put&quot;.</span>
+<span class="sd">When that is the case, the rule applies and the text &quot;place&quot; is filled in for A.</span>
+<span class="sd">That means when the text &quot;put&quot; is typed, the variable &quot;action&quot; will be assigned the value &quot;place&quot;.</span>
+
+<span class="sd">The whole grammar has an entry point, or root rule, from which all the other rules are referred.</span>
+<span class="sd">Each rule forms branch upon branch, together building a Tree.</span>
+
+<span class="sd">When a sentence is parsed, a Tree is built. While this happens, the variables are collected.</span>
+<span class="sd">When the Tree is completely parsed, the collected variables and their assignments are fetched from the Tree with the get_semantics-method.</span>
+<span class="sd">This returns a string. However, this string represents a (nested) dictionary that maps a variable to a value.</span>
+
+<span class="sd">Semantics describe what a sentence means. In this case, it describes what action to perform and with what to perform it.</span>
+
+<span class="sd">The semantics are returned to whomever called CFGParser.parse(...), usually the REPL on console.py.</span>
+<span class="sd">The REPL sends the semantics to the action_server, which grounds the semantics by implementing the actions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">graphviz</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+
+
+<div class="viewcode-block" id="GrammarError"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.GrammarError">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GrammarError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exception indicating a problem in the grammar rules.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ParseError"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.ParseError">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ParseError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exception indicating that the given sentence does not match on the grammar.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">words</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">word_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">word_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">word_index</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Word index </span><span class="si">{</span><span class="n">word_index</span><span class="si">}</span><span class="s2"> is missing (sentence has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span><span class="si">}</span><span class="s2"> words)&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Word &#39;</span><span class="si">{</span><span class="n">words</span><span class="p">[</span><span class="n">word_index</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; at index </span><span class="si">{</span><span class="n">word_index</span><span class="si">}</span><span class="s2"> failed to match&quot;</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bcolors"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.bcolors">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">bcolors</span><span class="p">:</span>
+    <span class="n">HEADER</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[95m&quot;</span>
+    <span class="n">OKBLUE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[94m&quot;</span>
+    <span class="n">OKGREEN</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[92m&quot;</span>
+    <span class="n">WARNING</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[93m&quot;</span>
+    <span class="n">FAIL</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91m&quot;</span>
+    <span class="n">ENDC</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
+    <span class="n">BOLD</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1m&quot;</span>
+    <span class="n">UNDERLINE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[4m&quot;</span></div>
+
+
+<div class="viewcode-block" id="Option"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Option">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Option</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An option is a continuation of a sentence of where there are multiple ways to continue the sentence.</span>
+<span class="sd">    These choices in an Option are called conjuncts.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lsemantic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">conjs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Conjunct</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor of an Option</span>
+<span class="sd">        :param lsemantic the name of the semantics that the option is the continuation of. E.g. if the lsemantic is some action, this option might be the object to perform that action with.</span>
+<span class="sd">        :param conjs the choices in this option&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lsemantic</span> <span class="o">=</span> <span class="n">lsemantic</span>
+        <span class="k">if</span> <span class="n">conjs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">conjs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Conjunct</span><span class="p">]</span> <span class="o">=</span> <span class="n">conjs</span>
+
+<div class="viewcode-block" id="Option.__repr__"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Option.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Option(lsemantic=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lsemantic</span><span class="si">}</span><span class="s2">&#39;, conjs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">conjuncts</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+<div class="viewcode-block" id="Option.__eq__"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Option.__eq__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Option</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Option</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lsemantic</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">lsemantic</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">conjuncts</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">conjuncts</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Option.from_cfg_def"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Option.from_cfg_def">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_cfg_def</span><span class="p">(</span><span class="n">option_definition</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">left_semantics</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Option</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse text from the CFG definition into an Option and the choices it is composed of.&quot;&quot;&quot;</span>
+        <span class="n">opt_strs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">option_definition</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">opt_str</span> <span class="ow">in</span> <span class="n">opt_strs</span><span class="p">:</span>  <span class="c1"># type: str</span>
+            <span class="n">opt_str</span> <span class="o">=</span> <span class="n">opt_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="n">opt</span> <span class="o">=</span> <span class="n">Option</span><span class="p">(</span><span class="n">left_semantics</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="n">opt_str</span><span class="p">:</span>
+                <span class="n">rname</span><span class="p">,</span> <span class="n">rsem</span><span class="p">,</span> <span class="n">opt_str</span> <span class="o">=</span> <span class="n">parse_next_atom</span><span class="p">(</span><span class="n">opt_str</span><span class="p">)</span>
+                <span class="n">is_variable</span> <span class="o">=</span> <span class="n">rname</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span>
+                <span class="n">opt</span><span class="o">.</span><span class="n">conjuncts</span> <span class="o">+=</span> <span class="p">[</span><span class="n">Conjunct</span><span class="p">(</span><span class="n">rname</span><span class="p">,</span> <span class="n">rsem</span><span class="p">,</span> <span class="n">is_variable</span><span class="p">)]</span>
+
+            <span class="k">yield</span> <span class="n">opt</span></div>
+
+<div class="viewcode-block" id="Option.pretty_print"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Option.pretty_print">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pretty_print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;    &quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">tabs</span> <span class="o">=</span> <span class="n">level</span> <span class="o">*</span> <span class="n">indent</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="n">tabs</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Option(lsemantic=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lsemantic</span><span class="si">}</span><span class="s2">&#39;, conjs=[&quot;</span>
+        <span class="k">for</span> <span class="n">conj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">:</span>
+            <span class="c1"># ret += &quot;\n&quot;</span>
+            <span class="c1"># ret += tabs + &quot;    &quot; + f&quot;{conj},&quot;</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="n">conj</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">()</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="s2">&quot;])&quot;</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="Option.graphviz_id"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Option.graphviz_id">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">graphviz_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Option &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lsemantic</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Option.to_graphviz"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Option.to_graphviz">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_graphviz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="n">graphviz</span><span class="o">.</span><span class="n">Digraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">conj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">:</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphviz_id</span><span class="p">(),</span> <span class="n">conj</span><span class="o">.</span><span class="n">graphviz_id</span><span class="p">())</span>
+            <span class="n">conj</span><span class="o">.</span><span class="n">to_graphviz</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Conjunct"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Conjunct">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Conjunct</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Conjunct is a placeholder in the parse-tree, which can be filled in by an Option or a word&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rsemantic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">is_variable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param name: the word or variable</span>
+<span class="sd">        :param rsemantic: what option is the Conjunct part of</span>
+<span class="sd">        :param is_variable: is the conjunct variable or terminal?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rsemantic</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">rsemantic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_variable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">is_variable</span>
+
+<div class="viewcode-block" id="Conjunct.__repr__"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Conjunct.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Conjunct(name=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;, rsemantic=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rsemantic</span><span class="si">}</span><span class="s2">&#39;, is_variable=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_variable</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+<div class="viewcode-block" id="Conjunct.__eq__"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Conjunct.__eq__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Conjunct</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Conjunct</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rsemantic</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">rsemantic</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_variable</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">is_variable</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Conjunct.pretty_print"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Conjunct.pretty_print">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pretty_print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_variable</span> <span class="ow">or</span> <span class="s2">&quot;$&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rsemantic</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span>
+            <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># + str(self)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">bcolors</span><span class="o">.</span><span class="n">OKGREEN</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span>  <span class="c1"># + str(self)</span></div>
+
+<div class="viewcode-block" id="Conjunct.graphviz_id"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Conjunct.graphviz_id">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">graphviz_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Conjunct </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+<div class="viewcode-block" id="Conjunct.to_graphviz"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Conjunct.to_graphviz">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_graphviz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphviz_id</span><span class="p">())</span></div></div>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Rule"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Rule">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Rule</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Option</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">lname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Option</span><span class="p">]</span> <span class="o">=</span> <span class="n">options</span>
+
+<div class="viewcode-block" id="Rule.__repr__"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Rule.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Rule(lname=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lname</span><span class="si">}</span><span class="s2">&#39;, options=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+<div class="viewcode-block" id="Rule.__eq__"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Rule.__eq__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Rule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Rule</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lname</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">lname</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">options</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Rule.from_cfg_def"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Rule.from_cfg_def">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_cfg_def</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Rule</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; -&gt; &quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid grammar, please use proper &#39; -&gt; &#39; arrows&quot;</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+
+        <span class="n">lname</span><span class="p">,</span> <span class="n">lsem</span><span class="p">,</span> <span class="n">outstr</span> <span class="o">=</span> <span class="n">parse_next_atom</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="n">rule</span> <span class="o">=</span> <span class="n">Rule</span><span class="p">(</span><span class="n">lname</span><span class="p">)</span>
+
+        <span class="n">rule</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Option</span><span class="o">.</span><span class="n">from_cfg_def</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">lsem</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">rule</span></div>
+
+<div class="viewcode-block" id="Rule.pretty_print"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Rule.pretty_print">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pretty_print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;    &quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">tabs</span> <span class="o">=</span> <span class="n">level</span> <span class="o">*</span> <span class="n">indent</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="n">tabs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">lname</span>
+        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="n">option</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+<div class="viewcode-block" id="Rule.graphviz_id"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Rule.graphviz_id">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">graphviz_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Rule </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lname</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+<div class="viewcode-block" id="Rule.to_graphviz"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Rule.to_graphviz">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_graphviz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="n">graphviz</span><span class="o">.</span><span class="n">Digraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphviz_id</span><span class="p">(),</span> <span class="n">opt</span><span class="o">.</span><span class="n">graphviz_id</span><span class="p">())</span>
+            <span class="n">opt</span><span class="o">.</span><span class="n">to_graphviz</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Tree"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Tree">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Tree</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">:</span> <span class="n">Option</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="p">:</span> <span class="n">Option</span> <span class="o">=</span> <span class="n">option</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtrees</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Tree</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tree</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent_tree_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="Tree.next"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Tree.next">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Tree</span><span class="p">],</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">,</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent_tree_idx</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Tree.add_subtree"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Tree.add_subtree">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_subtree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tree</span><span class="p">:</span>
+        <span class="n">tree</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">tree</span><span class="o">.</span><span class="n">parent_tree_idx</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtrees</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">tree</span>
+        <span class="k">return</span> <span class="n">tree</span></div>
+
+<div class="viewcode-block" id="Tree.__repr__"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Tree.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># TODO: Make this print like a tree</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtrees</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Tree.pretty_print"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.Tree.pretty_print">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pretty_print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;    &quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># print self, level</span>
+        <span class="c1"># tabs = (level-1)*indent + &quot;│   ├───&quot;</span>
+        <span class="n">tabs</span> <span class="o">=</span> <span class="n">level</span> <span class="o">*</span> <span class="n">indent</span> <span class="o">+</span> <span class="s2">&quot;└───&quot;</span>
+        <span class="c1"># tabs = &quot;\t&quot; * level #</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;#tabs + self.option.pretty_print(level=level)</span>
+        <span class="k">for</span> <span class="n">conjunct</span><span class="p">,</span> <span class="n">subtree</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subtrees</span><span class="p">):</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="n">tabs</span> <span class="o">+</span> <span class="n">conjunct</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">subtree</span><span class="p">,</span> <span class="s2">&quot;pretty_print&quot;</span><span class="p">):</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="n">subtree</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># ret += &quot;\n&quot;</span>
+
+        <span class="k">return</span> <span class="n">ret</span></div></div>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="parse_next_atom"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.parse_next_atom">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_next_atom</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns (name, semantics, remaining_str)</span>
+<span class="sd">    For example, for &quot;VP[X, Y] foo bar&quot; it returns:</span>
+
+<span class="sd">        (&quot;VP&quot;, &quot;X, Y&quot;, &quot;foo bar&quot;)</span>
+
+<span class="sd">    :param s:</span>
+<span class="sd">    :return: Tuple with the rule&#39;s lname, the variables involved and the remaining text: (&quot;VP&quot;, &quot;X, Y&quot;, &quot;foo bar&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s2">&quot; &quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">c</span> <span class="o">==</span> <span class="s2">&quot;[&quot;</span><span class="p">:</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span>
+            <span class="k">return</span> <span class="n">s</span><span class="p">[:</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">j</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<span class="c1"># ----------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="CFGParser"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CFGParser</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parser for parsing the heard sentence, and converting it to information for</span>
+<span class="sd">    the action that should be performed.</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">    - For loading a grammar from a file use fromfile().</span>
+<span class="sd">    - For loading a grammar from a text string use fromstring().</span>
+
+<span class="sd">    - For loading a grammar with functions, construct a CFGParser object, add</span>
+<span class="sd">      the functions using CFGParser.set_function(), and finally load the</span>
+<span class="sd">      grammar using fromfile or fromstring, passing in the CFGParser object</span>
+<span class="sd">      as well.</span>
+
+<span class="sd">    The parser performs a few basic checks on the grammar, such as missing</span>
+<span class="sd">    sub-rules and missing functions while loading. The CFGParser.verify function</span>
+<span class="sd">    goes a step further by expanding all alternatives.</span>
+
+<span class="sd">    To parse a sentence, use parse_raw() at a CFGParser instance to get maximum information, or</span>
+<span class="sd">    use parse() at a CFGParser instance to avoid getting exceptions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Rule</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="CFGParser.fromfile"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.fromfile">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fromfile</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CFGParser</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CFGParser</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the grammar from the provided file.</span>
+
+<span class="sd">        :param filename: Path to the text file containing the grammar</span>
+<span class="sd">        :param parser: If not None, the parser to use (else a new parser is created).</span>
+<span class="sd">        :return: The parser contains the grammar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">CFGParser</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">parser</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CFGParser.fromstring"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.fromstring">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fromstring</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CFGParser</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CFGParser</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the grammar from the provided text.</span>
+
+<span class="sd">        :param s: Text containing the grammar</span>
+<span class="sd">        :param parser: If not None, the parser to use (else a new parser is created).</span>
+<span class="sd">        :return: The parser contains the grammar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">parser</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">CFGParser</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">check_rules</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">parser</span></div>
+
+<div class="viewcode-block" id="CFGParser.check_rules"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.check_rules">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Verify the completeness of the loaded grammar, no rules that refer to missing</span>
+<span class="sd">        subrules and no functions that don&#39;t exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">conj</span> <span class="ow">in</span> <span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">conj</span><span class="o">.</span><span class="n">is_variable</span><span class="p">:</span>
+                        <span class="k">assert</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Rule &#39;</span><span class="si">{</span><span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; is missing&quot;</span>
+                    <span class="k">if</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;$&quot;</span><span class="p">:</span>
+                        <span class="k">assert</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Function &#39;</span><span class="si">{</span><span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&#39; is missing&quot;</span></div>
+
+<div class="viewcode-block" id="CFGParser.verify"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.verify">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Try whether all rules in the grammar are valid</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_unwrapped</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_unwrapped</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="CFGParser.add_rule"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.add_rule">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rule</span><span class="p">:</span> <span class="n">Rule</span> <span class="o">=</span> <span class="n">Rule</span><span class="o">.</span><span class="n">from_cfg_def</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="c1"># See if a rule with this lname already exists. If not, add it</span>
+        <span class="k">if</span> <span class="n">rule</span><span class="o">.</span><span class="n">lname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="n">original_rule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">lname</span><span class="p">]</span>
+            <span class="n">original_rule</span><span class="o">.</span><span class="n">options</span> <span class="o">+=</span> <span class="n">rule</span><span class="o">.</span><span class="n">options</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">lname</span><span class="p">]</span> <span class="o">=</span> <span class="n">rule</span></div>
+
+<div class="viewcode-block" id="CFGParser.set_function"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.set_function">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new function to the parser. Must be done before loading the grammar.</span>
+
+<span class="sd">        TODO #11: Ensure the function expansion result does not refer to missing sub-rules or functions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span></div>
+
+<div class="viewcode-block" id="CFGParser.get_semantics"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.get_semantics">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_semantics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the semantics of a tree.</span>
+<span class="sd">        This means that variables are unified with their values, which may be recursively gotten from the tree&#39;s subtrees.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">semantics</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">lsemantic</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">subtrees</span><span class="p">)):</span>
+            <span class="n">conj</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">subtree</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">subtrees</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">subtree</span><span class="p">:</span>
+                <span class="n">child_semantics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_semantics</span><span class="p">(</span><span class="n">subtree</span><span class="p">)</span>
+                <span class="n">semantics</span> <span class="o">=</span> <span class="n">semantics</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">conj</span><span class="o">.</span><span class="n">rsemantic</span><span class="p">,</span> <span class="n">child_semantics</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">semantics</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+<div class="viewcode-block" id="CFGParser.parse"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">words</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the given sentence against the grammar loaded in the class. This</span>
+<span class="sd">        method hides all errors (and returns False in that case). Use the</span>
+<span class="sd">        self.parse_raw function if the difference between a successful and</span>
+<span class="sd">        failed parse is relevant.</span>
+
+<span class="sd">        :param target: Target rule in the grammar to start parsing the sentence.</span>
+<span class="sd">        :type target: str.</span>
+
+<span class="sd">        :param words: Sentence to parse, either as a single string or a list of words.</span>
+<span class="sd">        :type words: str, or a list of str.</span>
+
+<span class="sd">        :param debug: If True, output the matched sequence in the tree.</span>
+<span class="sd">        :type debug: Boolean, by default False.</span>
+
+<span class="sd">        :return: The captured data value collected during parsing if parsing</span>
+<span class="sd">                 succeeds, else False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_raw</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">words</span><span class="p">,</span> <span class="n">debug</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">GrammarError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;grammar_parser, Grammar error: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+        <span class="k">except</span> <span class="n">ParseError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;grammar_parser, Parse error: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="CFGParser.parse_raw"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.parse_raw">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">parse_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">words</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the given sentence against the grammar loaded in the class. This</span>
+<span class="sd">        method throws exceptions on failures, the self.parse function returns</span>
+<span class="sd">        False in such a case.</span>
+
+<span class="sd">        :param target: Target rule in the grammar to start parsing the sentence.</span>
+<span class="sd">        :type target: str.</span>
+
+<span class="sd">        :param words: Sentence to parse, either as a single string or a list of words.</span>
+<span class="sd">        :type words: str, or a list of str.</span>
+
+<span class="sd">        :param debug: If True, output the matched sequence in the tree.</span>
+<span class="sd">        :type debug: Boolean, by default False.</span>
+
+<span class="sd">        :return: The captured data value collected during parsing if parsing</span>
+<span class="sd">                 succeeds, a GrammarError exception if the grammar is found to</span>
+<span class="sd">                 be incorrect, or a ParseError exception if the sentence fails</span>
+<span class="sd">                 to match the grammar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">words</span> <span class="o">=</span> <span class="n">words</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> not present in grammar rules&quot;</span><span class="p">)</span>
+
+        <span class="n">rule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+
+        <span class="n">best_fail</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="n">tree</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">((</span><span class="n">tree</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">words</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">pretty_print</span><span class="p">())</span>
+                <span class="c1"># Simply take the first tree that successfully parses</span>
+                <span class="n">semantics_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_semantics</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;[&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;]&quot;</span><span class="p">)</span>
+                <span class="n">semantics</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">semantics_str</span><span class="p">)</span>
+                <span class="c1"># just let the yaml error bubble up, this will give a nice backtrace</span>
+                <span class="k">return</span> <span class="n">semantics</span>
+
+            <span class="k">elif</span> <span class="n">best_fail</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">best_fail</span> <span class="o">&lt;</span> <span class="n">ret</span><span class="p">:</span>
+                <span class="n">best_fail</span> <span class="o">=</span> <span class="n">ret</span>
+
+        <span class="k">assert</span> <span class="n">best_fail</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">best_fail</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CFGParser._parse"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser._parse">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree_idx</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">words</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">word_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to match the provided words on the given grammar rule option.</span>
+
+<span class="sd">        :param tree_idx: Tuple of grammar Rule, and rule alternative index.</span>
+<span class="sd">        :param words: Words to match on the alternative.</span>
+<span class="sd">        :param word_index: First word in words to match on the alternative.</span>
+<span class="sd">        :return: On successful match None is returned, else an index in words</span>
+<span class="sd">                 pointing at the position that failed to match. Note that the</span>
+<span class="sd">                 index may be equal to the number of words (indicating that</span>
+<span class="sd">                 words are missing).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tree</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">tree_idx</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tree</span><span class="p">:</span>
+            <span class="c1"># We ran out of grammar.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">==</span> <span class="n">word_index</span><span class="p">:</span>
+                <span class="c1"># And out of words at the same time, hooray!</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">word_index</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">)</span> <span class="o">==</span> <span class="n">idx</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="n">words</span><span class="p">,</span> <span class="n">word_index</span><span class="p">)</span>
+
+        <span class="c1"># At least one grammar symbol exists.</span>
+        <span class="n">conj</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">conj</span><span class="o">.</span><span class="n">is_variable</span><span class="p">:</span>
+            <span class="c1"># Conjunct is a sub-rule, &#39;check_rules&#39; ensures a sub-rule exists,</span>
+            <span class="c1"># but functions may introduce new sub-rule calls.</span>
+            <span class="k">if</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">GrammarError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rule &#39;</span><span class="si">{</span><span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; does not exist&quot;</span><span class="p">)</span>
+
+            <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">options</span>
+
+        <span class="k">elif</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;$&quot;</span><span class="p">:</span>
+            <span class="c1"># Conjunct is a function that must be expanded.</span>
+            <span class="n">func_name</span> <span class="o">=</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+            <span class="c1"># &#39;check_rules&#39; ensures the function exists, but a previous</span>
+            <span class="c1"># $function expansion may be wrong.</span>
+            <span class="k">if</span> <span class="n">func_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">GrammarError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function &#39;</span><span class="si">{</span><span class="n">func_name</span><span class="si">}</span><span class="s2">&#39; does not exist&quot;</span><span class="p">)</span>
+
+            <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">[</span><span class="n">func_name</span><span class="p">](</span><span class="n">words</span><span class="p">[</span><span class="n">word_index</span><span class="p">:])</span>
+            <span class="c1"># XXX Expanded result should not refer to missing sub-rules or</span>
+            <span class="c1"># functions. However, any check at this time is too late.</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Conjunct is an actual word.</span>
+            <span class="k">if</span> <span class="n">word_index</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">):</span>
+                <span class="c1"># Ran out of words but not out of grammar terminals.</span>
+                <span class="k">return</span> <span class="n">word_index</span>
+
+            <span class="k">if</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">words</span><span class="p">[</span><span class="n">word_index</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="n">words</span><span class="p">,</span> <span class="n">word_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">word_index</span>
+
+        <span class="n">best_fail</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">subtree</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">add_subtree</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">Tree</span><span class="p">(</span><span class="n">opt</span><span class="p">))</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse</span><span class="p">((</span><span class="n">subtree</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">words</span><span class="p">,</span> <span class="n">word_index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">best_fail</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">best_fail</span> <span class="o">&lt;</span> <span class="n">ret</span><span class="p">:</span>
+                <span class="n">best_fail</span> <span class="o">=</span> <span class="n">ret</span>
+
+        <span class="k">assert</span> <span class="n">best_fail</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">best_fail</span></div>
+
+    <span class="c1"># - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+
+<div class="viewcode-block" id="CFGParser.next_word"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.next_word">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">next_word</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">words</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">rule</span><span class="p">:</span> <span class="n">Rule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+
+        <span class="n">next_words</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="n">next_words</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_word</span><span class="p">((</span><span class="n">Tree</span><span class="p">(</span><span class="n">opt</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="n">words</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">next_words</span></div>
+
+<div class="viewcode-block" id="CFGParser._next_word"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser._next_word">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_next_word</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree_idx</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tree</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">words</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">tree</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">tree_idx</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tree</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">conj</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">conj</span><span class="o">.</span><span class="n">is_variable</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[]</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">options</span>
+
+        <span class="k">elif</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;$&quot;</span><span class="p">:</span>
+            <span class="n">func_name</span> <span class="o">=</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_completion_function</span><span class="p">(</span><span class="n">func_name</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">[]</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_completion_function</span><span class="p">(</span><span class="n">func_name</span><span class="p">)(</span><span class="n">words</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">words</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">conj</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_word</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="n">words</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">next_words</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">subtree</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">add_subtree</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">Tree</span><span class="p">(</span><span class="n">opt</span><span class="p">))</span>
+            <span class="n">next_words</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_word</span><span class="p">((</span><span class="n">subtree</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">words</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">next_words</span></div>
+
+<div class="viewcode-block" id="CFGParser.has_completion_function"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.has_completion_function">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_completion_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">func_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span></div>
+
+<div class="viewcode-block" id="CFGParser.get_completion_function"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.get_completion_function">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_completion_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">functions</span><span class="p">[</span><span class="n">func_name</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CFGParser.graphviz_id"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.graphviz_id">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">graphviz_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;CFGParser&quot;</span></div>
+
+<div class="viewcode-block" id="CFGParser.to_graphviz"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.to_graphviz">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_graphviz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphviz_id</span><span class="p">(),</span> <span class="n">rule</span><span class="o">.</span><span class="n">graphviz_id</span><span class="p">())</span>
+            <span class="n">rule</span><span class="o">.</span><span class="n">to_graphviz</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CFGParser.visualize_options"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.visualize_options">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">visualize_options</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="n">graphviz</span><span class="o">.</span><span class="n">Digraph</span><span class="p">,</span> <span class="n">target_rule</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">previous_words</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">previous_words</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">previous_words</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">colors</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">cycle</span><span class="p">([</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span> <span class="s2">&quot;magenta&quot;</span><span class="p">,</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">previous_words</span><span class="p">:</span>
+            <span class="n">previous_word</span> <span class="o">=</span> <span class="n">previous_words</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">previous_word</span> <span class="o">=</span> <span class="n">target_rule</span>
+
+        <span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">(</span><span class="n">previous_word</span><span class="p">)</span>
+        <span class="n">next_words</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_word</span><span class="p">(</span><span class="n">target_rule</span><span class="p">,</span> <span class="n">previous_words</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">next_words</span> <span class="ow">and</span> <span class="n">depth</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">next_word</span> <span class="ow">in</span> <span class="n">next_words</span><span class="p">:</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">previous_word</span><span class="p">,</span> <span class="n">next_word</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">colors</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">visualize_options</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">target_rule</span><span class="p">,</span> <span class="n">previous_words</span> <span class="o">+</span> <span class="p">[</span><span class="n">next_word</span><span class="p">],</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CFGParser.get_unwrapped"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.get_unwrapped">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_unwrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">lname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target </span><span class="si">{</span><span class="n">lname</span><span class="si">}</span><span class="s2"> not present in grammar rules&quot;</span><span class="p">)</span>
+
+        <span class="n">rule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">lname</span><span class="p">]</span>
+
+        <span class="n">opt_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="n">conj_strings</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">conj</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">conjuncts</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">conj</span><span class="o">.</span><span class="n">is_variable</span><span class="p">:</span>
+                    <span class="n">unwrapped_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unwrapped</span><span class="p">(</span><span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">unwrapped_string</span><span class="p">:</span>
+                        <span class="n">conj_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unwrapped_string</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">conj_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">opt_strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">conj_strings</span><span class="p">))</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opt_strings</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">opt_strings</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+
+        <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="CFGParser.get_random_sentence"><a class="viewcode-back" href="../../api/grammar_parser/cfgparser/index.html#grammar_parser.cfgparser.CFGParser.get_random_sentence">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_random_sentence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">unwrapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_unwrapped</span><span class="p">(</span><span class="n">lname</span><span class="p">)</span>
+
+        <span class="n">spec</span> <span class="o">=</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">unwrapped</span>
+        <span class="k">while</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;\([^)]+\)&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">):</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;\([^()]+\)&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="n">spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">option</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)),</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">spec</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
