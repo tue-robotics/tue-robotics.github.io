@@ -1,0 +1,740 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>people_recognition_3d.people_recognizer_3d &mdash; people_recognition_3d 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=f6245a2f"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            people_recognition_3d
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">people_recognition_3d</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">people_recognition_3d.people_recognizer_3d</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for people_recognition_3d.people_recognizer_3d</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">image_geometry</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">PyKDL</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">kdl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cv_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">CvBridge</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geometry_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Pose</span><span class="p">,</span> <span class="n">Quaternion</span><span class="p">,</span> <span class="n">Vector3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">image_recognition_util.image_writer</span><span class="w"> </span><span class="kn">import</span> <span class="n">color_map</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">image_recognition_pose_estimation.body_parts</span><span class="w"> </span><span class="kn">import</span> <span class="n">BODY_PART_LINKS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">people_recognition_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Person3D</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">people_recognition_msgs.srv</span><span class="w"> </span><span class="kn">import</span> <span class="n">RecognizePeople2D</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">CameraInfo</span><span class="p">,</span> <span class="n">Image</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColorRGBA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">visualization_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Marker</span><span class="p">,</span> <span class="n">MarkerArray</span>
+
+
+<div class="viewcode-block" id="_get_and_wait_for_service"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d._get_and_wait_for_service">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">_get_and_wait_for_service</span><span class="p">(</span><span class="n">srv_name</span><span class="p">,</span> <span class="n">srv_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to start and wait for dependent service</span>
+
+<span class="sd">    :param: srv_name: Service name</span>
+<span class="sd">    :param: srv_class: Service class</span>
+<span class="sd">    :return: started ServiceProxy object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srv_name</span><span class="p">),</span> <span class="n">srv_class</span><span class="p">)</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Waiting for service </span><span class="si">{}</span><span class="s2"> ...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">resolved_name</span><span class="p">))</span>
+    <span class="n">service</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">service</span></div>
+
+
+<div class="viewcode-block" id="_get_service_response"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d._get_service_response">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">_get_service_response</span><span class="p">(</span><span class="n">srv</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method to get service response with checks</span>
+
+<span class="sd">    :param: srv: service</span>
+<span class="sd">    :param: args: Input arguments of the service request</span>
+<span class="sd">    :return: response</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">srv</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> service call failed: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">srv</span><span class="o">.</span><span class="n">resolved_name</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+        <span class="k">raise</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+
+<span class="n">Joint</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Joint&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;group_id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;point&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="geometry_msg_point_to_kdl_vector"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.geometry_msg_point_to_kdl_vector">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">geometry_msg_point_to_kdl_vector</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">z</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_frame_from_vector"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.get_frame_from_vector">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_frame_from_vector</span><span class="p">(</span><span class="n">x_vector</span><span class="p">,</span>
+                          <span class="n">translation</span><span class="p">,</span>
+                          <span class="n">z_direction</span><span class="o">=</span><span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to generate an affine transformation frame given the x_vector, z_direction and</span>
+<span class="sd">    translation of the frame.</span>
+
+<span class="sd">    How this works:</span>
+<span class="sd">        Any two given vectors form a plane so, x_vector and z_direction can be</span>
+<span class="sd">        considered as such vectors. Taking vector cross-product of these two</span>
+<span class="sd">        vectors will give a vector perpendicular to the plane.</span>
+
+<span class="sd">        1. First normalize the x_vector to get a unit_x vector.</span>
+<span class="sd">        2. Take cross product of z_direction and unit_x, the will give the</span>
+<span class="sd">            y_direction. Normalize y_direction to get the unit_y vector.</span>
+<span class="sd">        3. Take the cross product between unit_x and unit_y to get unit_z</span>
+
+<span class="sd">    :param: x_vector: The x_vector in some coordinate frame.</span>
+<span class="sd">    :param: origin: The origin of the frame to be created</span>
+<span class="sd">    :param: z_direction (default kdl.Vector(0, 0, 1)): The direction of z</span>
+<span class="sd">    :return: frame: KDL frame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unit_x</span> <span class="o">=</span> <span class="n">x_vector</span> <span class="o">/</span> <span class="n">x_vector</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+    <span class="n">unit_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">z_direction</span> <span class="o">*</span> <span class="n">unit_x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">z_direction</span> <span class="o">*</span> <span class="n">unit_x</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+    <span class="n">unit_z</span> <span class="o">=</span> <span class="n">unit_x</span> <span class="o">*</span> <span class="n">unit_y</span>
+
+    <span class="n">rotation</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="p">(</span><span class="n">unit_x</span><span class="p">,</span> <span class="n">unit_y</span><span class="p">,</span> <span class="n">unit_z</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Skeleton"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.Skeleton">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Skeleton</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dictionary of all joints, the following joins could be available:</span>
+
+<span class="sd">    Nose</span>
+<span class="sd">    Neck</span>
+<span class="sd">    {L, R}{Shoulder, Elbow, Wrist, Hip, Knee, Ankle, Eye, Ear}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body_parts</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Joint</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param body_parts: {name: Joint}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span> <span class="o">=</span> <span class="n">body_parts</span>
+
+<div class="viewcode-block" id="Skeleton.filter_body_parts"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.Skeleton.filter_body_parts">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">filter_body_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to remove body parts from a Skeleton object based on the</span>
+<span class="sd">        maximum length of a link</span>
+
+<span class="sd">        :param: threshold: Maximum length of a link</span>
+<span class="sd">        :return: Skeleton object containing body parts within the threshold</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">return_list</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">BODY_PART_LINKS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span> <span class="ow">and</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span><span class="p">:</span>
+                <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">point</span>
+                <span class="n">p2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span><span class="p">[</span><span class="n">b</span><span class="p">]</span><span class="o">.</span><span class="n">point</span>
+
+                <span class="n">length</span> <span class="o">=</span> <span class="p">(</span><span class="n">geometry_msg_point_to_kdl_vector</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span> <span class="o">-</span>
+                     <span class="n">geometry_msg_point_to_kdl_vector</span><span class="p">(</span><span class="n">p2</span><span class="p">))</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;=</span> <span class="n">threshold</span><span class="p">:</span>
+                    <span class="n">return_list</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+                    <span class="n">return_list</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">({</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">joint</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">joint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">return_list</span>
+        <span class="p">})</span></div>
+
+    <span class="c1"># def __iter__(self):</span>
+    <span class="c1">#     return self.body_parts.__iter__()</span>
+    <span class="c1">#</span>
+    <span class="c1"># def __index__(self, value):</span>
+    <span class="c1">#     return self.body_parts.__index__(value)</span>
+    <span class="c1">#</span>
+<div class="viewcode-block" id="Skeleton.__getitem__"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.Skeleton.__getitem__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Skeleton.__contains__"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.Skeleton.__contains__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+    <span class="c1">#</span>
+    <span class="c1"># def items(self):</span>
+    <span class="c1">#     return self.body_parts.items()</span>
+
+<div class="viewcode-block" id="Skeleton.get_links"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.Skeleton.get_links">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_links</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns [Point], with point pairs for all the links</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="n">BODY_PART_LINKS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span> <span class="ow">and</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">point</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span><span class="p">[</span><span class="n">b</span><span class="p">]</span><span class="o">.</span><span class="n">point</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Skeleton.__repr__"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.Skeleton.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">(</span><span class="si">%r</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_parts</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PeopleRecognizer3D"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.PeopleRecognizer3D">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PeopleRecognizer3D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">recognize_people_srv_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">probability_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">link_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">heuristic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">arm_norm_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">neck_norm_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">waving_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">vert_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">hor_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">padding</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recognize_people_srv</span> <span class="o">=</span> <span class="n">_get_and_wait_for_service</span><span class="p">(</span><span class="n">recognize_people_srv_name</span><span class="p">,</span> <span class="n">RecognizePeople2D</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bridge</span> <span class="o">=</span> <span class="n">CvBridge</span><span class="p">()</span>
+
+        <span class="c1"># parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span> <span class="o">=</span> <span class="n">probability_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_link_threshold</span> <span class="o">=</span> <span class="n">link_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_heuristic</span> <span class="o">=</span> <span class="n">heuristic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arm_norm_threshold</span> <span class="o">=</span> <span class="n">arm_norm_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_neck_norm_threshold</span> <span class="o">=</span> <span class="n">neck_norm_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_waving_threshold</span> <span class="o">=</span> <span class="n">waving_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vert_threshold</span> <span class="o">=</span> <span class="n">vert_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hor_threshold</span> <span class="o">=</span> <span class="n">hor_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_padding</span> <span class="o">=</span> <span class="n">padding</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;People recognizer 3D initialized&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PeopleRecognizer3D.recognize"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.PeopleRecognizer3D.recognize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">recognize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rgb</span><span class="p">:</span> <span class="n">Image</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="n">Image</span><span class="p">,</span> <span class="n">camera_info</span><span class="p">:</span> <span class="n">CameraInfo</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Service call function</span>
+
+<span class="sd">        :param: rgb: RGB Image msg</span>
+<span class="sd">        :param: depth: Depth Image_msg</span>
+<span class="sd">        :param: depth_info: Depth CameraInfo msg</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">Image</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">Image</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">camera_info</span><span class="p">,</span> <span class="n">CameraInfo</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Got recognize service call&#39;</span><span class="p">)</span>
+        <span class="n">cam_model</span> <span class="o">=</span> <span class="n">image_geometry</span><span class="o">.</span><span class="n">PinholeCameraModel</span><span class="p">()</span>
+        <span class="n">cam_model</span><span class="o">.</span><span class="n">fromCameraInfo</span><span class="p">(</span><span class="n">camera_info</span><span class="p">)</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="n">recognize_people_response</span> <span class="o">=</span> <span class="n">_get_service_response</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_recognize_people_srv</span><span class="p">,</span> <span class="n">rgb</span><span class="p">)</span>
+
+        <span class="n">people2d</span> <span class="o">=</span> <span class="n">recognize_people_response</span><span class="o">.</span><span class="n">people</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;PeopleRecognizer2D took </span><span class="si">%f</span><span class="s1"> seconds&#39;</span><span class="p">,</span>
+                      <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">to_sec</span><span class="p">())</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s1">&#39;Found </span><span class="si">{}</span><span class="s1"> people&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">people2d</span><span class="p">)))</span>
+
+        <span class="c1"># Max group is the maximum of the group ids assigned to the body parts of people. This may not be</span>
+        <span class="c1"># consecutive ids as some identified people might be rejected in people recognition 2d</span>
+        <span class="c1"># Starting value of group_id is 1</span>
+        <span class="n">max_group</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">person2d</span><span class="o">.</span><span class="n">body_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">group_id</span> <span class="k">for</span> <span class="n">person2d</span> <span class="ow">in</span> <span class="n">people2d</span><span class="p">)</span> <span class="k">if</span> <span class="n">people2d</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Creating </span><span class="si">{}</span><span class="s2"> color maps for 3D skeleton visualization&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_group</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">color_map</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">max_group</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">markers</span> <span class="o">=</span> <span class="n">MarkerArray</span><span class="p">()</span>
+        <span class="n">delete_all</span> <span class="o">=</span> <span class="n">Marker</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="n">Marker</span><span class="o">.</span><span class="n">DELETEALL</span><span class="p">)</span>
+        <span class="n">delete_all</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">rgb</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span>
+        <span class="n">markers</span><span class="o">.</span><span class="n">markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">delete_all</span><span class="p">)</span>
+
+        <span class="n">cv_depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bridge</span><span class="o">.</span><span class="n">imgmsg_to_cv2</span><span class="p">(</span><span class="n">depth</span><span class="p">)</span>
+        <span class="n">people3d</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">depth_image_scaling</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="k">if</span> <span class="n">rgb</span><span class="o">.</span><span class="n">width</span> <span class="o">!=</span> <span class="n">depth</span><span class="o">.</span><span class="n">width</span> <span class="ow">or</span> <span class="n">rgb</span><span class="o">.</span><span class="n">height</span> <span class="o">!=</span> <span class="n">depth</span><span class="o">.</span><span class="n">height</span><span class="p">:</span>
+            <span class="n">depth_image_scaling</span> <span class="o">=</span> <span class="n">depth</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="n">rgb</span><span class="o">.</span><span class="n">width</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span>
+                <span class="s2">&quot;RGB and D don&#39;t have same dimensions, using scaling factor &#39;</span><span class="si">%f</span><span class="s2">&#39; on ROIs&quot;</span><span class="p">,</span>
+                <span class="n">depth_image_scaling</span><span class="p">)</span>
+
+        <span class="n">regions_viz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">cv_depth</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">person2d</span> <span class="ow">in</span> <span class="n">people2d</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">person2d</span><span class="o">.</span><span class="n">body_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">group_id</span>
+            <span class="n">color_i</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">cmap</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cmap</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="n">joints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recognitions_to_joints</span><span class="p">(</span><span class="n">person2d</span><span class="o">.</span><span class="n">body_parts</span><span class="p">,</span> <span class="n">cv_depth</span><span class="p">,</span>
+                                                 <span class="n">cam_model</span><span class="p">,</span> <span class="n">regions_viz</span><span class="p">,</span>
+                                                 <span class="n">depth_image_scaling</span><span class="p">)</span>
+
+            <span class="c1"># visualize joints</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s1">&#39;found </span><span class="si">%s</span><span class="s1"> objects for group </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">joints</span><span class="p">),</span> <span class="n">i</span><span class="p">)</span>
+
+            <span class="c1"># Skip the person for who has no 3D joints</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">joints</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span><span class="o">.</span><span class="n">point</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">joints</span><span class="p">]</span>
+            <span class="n">markers</span><span class="o">.</span><span class="n">markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Marker</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="n">rgb</span><span class="o">.</span><span class="n">header</span><span class="p">,</span>
+                       <span class="n">ns</span><span class="o">=</span><span class="s1">&#39;joints&#39;</span><span class="p">,</span>
+                       <span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                       <span class="nb">type</span><span class="o">=</span><span class="n">Marker</span><span class="o">.</span><span class="n">SPHERE_LIST</span><span class="p">,</span>
+                       <span class="n">action</span><span class="o">=</span><span class="n">Marker</span><span class="o">.</span><span class="n">ADD</span><span class="p">,</span>
+                       <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span>
+                       <span class="n">scale</span><span class="o">=</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">),</span>
+                       <span class="n">color</span><span class="o">=</span><span class="n">ColorRGBA</span><span class="p">(</span><span class="n">color_i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color_i</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color_i</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">)))</span>
+
+            <span class="n">unfiltered_skeleton</span> <span class="o">=</span> <span class="n">Skeleton</span><span class="p">({</span><span class="n">j</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">joints</span><span class="p">})</span>
+            <span class="n">skeleton</span> <span class="o">=</span> <span class="n">unfiltered_skeleton</span><span class="o">.</span><span class="n">filter_body_parts</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_link_threshold</span><span class="p">)</span>
+
+            <span class="c1"># visualize links</span>
+            <span class="n">markers</span><span class="o">.</span><span class="n">markers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Marker</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="n">rgb</span><span class="o">.</span><span class="n">header</span><span class="p">,</span>
+                       <span class="n">ns</span><span class="o">=</span><span class="s1">&#39;links&#39;</span><span class="p">,</span>
+                       <span class="nb">id</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                       <span class="nb">type</span><span class="o">=</span><span class="n">Marker</span><span class="o">.</span><span class="n">LINE_LIST</span><span class="p">,</span>
+                       <span class="n">action</span><span class="o">=</span><span class="n">Marker</span><span class="o">.</span><span class="n">ADD</span><span class="p">,</span>
+                       <span class="n">points</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">skeleton</span><span class="o">.</span><span class="n">get_links</span><span class="p">()),</span>
+                       <span class="n">scale</span><span class="o">=</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.03</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                       <span class="n">color</span><span class="o">=</span><span class="n">ColorRGBA</span><span class="p">(</span><span class="n">color_i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">color_i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">color_i</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+
+            <span class="c1"># If the skeleton has no body parts do not add the recognition in</span>
+            <span class="c1"># the list of 3D people</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">skeleton</span><span class="o">.</span><span class="n">body_parts</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">point3d</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="s1">&#39;Neck&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">z</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">joint</span> <span class="ow">in</span> <span class="n">skeleton</span><span class="o">.</span><span class="n">body_parts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">joint</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                        <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">joint</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+                        <span class="n">z</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">joint</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+                    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+                    <span class="n">point3d</span> <span class="o">=</span> <span class="n">Vector3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span>
+                    <span class="s2">&quot;3D recognition of </span><span class="si">{}</span><span class="s2"> failed as no body parts found&quot;</span><span class="o">.</span>
+                    <span class="nb">format</span><span class="p">(</span><span class="n">person2d</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># rospy.loginfo(&quot;Skeleton: {}&quot;.format(skeleton))</span>
+
+            <span class="n">person3d</span> <span class="o">=</span> <span class="n">Person3D</span><span class="p">(</span>
+                <span class="n">header</span><span class="o">=</span><span class="n">rgb</span><span class="o">.</span><span class="n">header</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">person2d</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">age</span><span class="o">=</span><span class="n">person2d</span><span class="o">.</span><span class="n">age</span><span class="p">,</span>
+                <span class="n">gender</span><span class="o">=</span><span class="n">person2d</span><span class="o">.</span><span class="n">gender</span><span class="p">,</span>
+                <span class="n">gender_confidence</span><span class="o">=</span><span class="n">person2d</span><span class="o">.</span><span class="n">gender_confidence</span><span class="p">,</span>
+                <span class="n">posture</span><span class="o">=</span><span class="n">person2d</span><span class="o">.</span><span class="n">posture</span><span class="p">,</span>
+                <span class="n">emotion</span><span class="o">=</span><span class="n">person2d</span><span class="o">.</span><span class="n">emotion</span><span class="p">,</span>
+                <span class="n">shirt_colors</span><span class="o">=</span><span class="n">person2d</span><span class="o">.</span><span class="n">shirt_colors</span><span class="p">,</span>
+                <span class="n">body_parts_pose</span><span class="o">=</span><span class="n">person2d</span><span class="o">.</span><span class="n">body_parts</span><span class="p">,</span>
+                <span class="n">position</span><span class="o">=</span><span class="n">point3d</span><span class="p">,</span>
+                <span class="n">tags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_person_tags</span><span class="p">(</span><span class="n">skeleton</span><span class="p">),</span>
+                <span class="n">face</span><span class="o">=</span><span class="n">person2d</span><span class="o">.</span><span class="n">face</span>
+            <span class="p">)</span>
+
+            <span class="n">pointing_pose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pointing_pose</span><span class="p">(</span><span class="n">skeleton</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">pointing_pose</span><span class="p">:</span>
+                <span class="n">person3d</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;is_pointing&quot;</span><span class="p">)</span>
+                <span class="n">person3d</span><span class="o">.</span><span class="n">pointing_pose</span> <span class="o">=</span> <span class="n">pointing_pose</span>
+
+<span class="c1">#               Commented to reduce number of markers, which causes RVIZ to crash</span>
+<span class="c1">#                markers.markers.append(</span>
+<span class="c1">#                    Marker(header=rgb.header,</span>
+<span class="c1">#                           ns=&#39;pointing_pose&#39;,</span>
+<span class="c1">#                           id=i,</span>
+<span class="c1">#                           type=Marker.ARROW,</span>
+<span class="c1">#                           action=Marker.ADD,</span>
+<span class="c1">#                           pose=person3d.pointing_pose,</span>
+<span class="c1">#                           scale=Vector3(0.5, 0.05, 0.05),</span>
+<span class="c1">#                           color=ColorRGBA(color_i[0], color_i[1], color_i[2], 1.0)))</span>
+
+<span class="c1">#            markers.markers.append(</span>
+<span class="c1">#                Marker(header=rgb.header,</span>
+<span class="c1">#                       ns=&#39;tags&#39;,</span>
+<span class="c1">#                       text=&quot;,&quot;.join(person3d.tags),</span>
+<span class="c1">#                       id=i,</span>
+<span class="c1">#                       type=Marker.TEXT_VIEW_FACING,</span>
+<span class="c1">#                       action=Marker.ADD,</span>
+<span class="c1">#                       pose=Pose(</span>
+<span class="c1">#                           position=point3d,</span>
+<span class="c1">#                           orientation=Quaternion(w=1)</span>
+<span class="c1">#                       ),</span>
+<span class="c1">#                       scale=Vector3(0.1, 0.1, 0.1),</span>
+<span class="c1">#                       color=ColorRGBA(r=1, g=1, b=1, a=1)))</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Found person with tags: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">person3d</span><span class="o">.</span><span class="n">tags</span><span class="p">))</span>
+            <span class="n">people3d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">person3d</span><span class="p">)</span>
+
+        <span class="c1"># After completion of people recognition, the regions_viz matrix is</span>
+        <span class="c1"># populated with the depth data of all recognized people</span>
+        <span class="n">regions_viz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bridge</span><span class="o">.</span><span class="n">cv2_to_imgmsg</span><span class="p">(</span><span class="n">regions_viz</span><span class="p">)</span>
+        <span class="n">regions_viz</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">rgb</span><span class="o">.</span><span class="n">header</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Done. Found </span><span class="si">{}</span><span class="s2"> people, </span><span class="si">{}</span><span class="s2"> markers&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">people3d</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">markers</span><span class="o">.</span><span class="n">markers</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">people3d</span><span class="p">,</span> <span class="n">markers</span><span class="p">,</span> <span class="n">regions_viz</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer3D.recognitions_to_joints"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.PeopleRecognizer3D.recognitions_to_joints">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">recognitions_to_joints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recognitions</span><span class="p">,</span> <span class="n">cv_depth</span><span class="p">,</span> <span class="n">cam_model</span><span class="p">,</span>
+                               <span class="n">regions_viz</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to convert 2D recognitions of body parts to Joint named tuple</span>
+
+<span class="sd">        :param: recognitions: List of body part recognitions</span>
+<span class="sd">        :param: cv_depth: cv2 Depth image</span>
+<span class="sd">        :param: cam_model: Depth camera model</span>
+<span class="sd">        :param: regions_viz: numpy array the size of cv_depth to store depth</span>
+<span class="sd">                values of the ROIs</span>
+<span class="sd">        :param: scale: Scaling factor of ROIs based on difference in size of RGB</span>
+<span class="sd">                and D images</span>
+<span class="sd">        :return: joints: List of joints of type Joint</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">joints</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">joints_with_invalid_3D_roi</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">recognitions</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">probabilities</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">pl</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">probabilities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">label</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">probability</span>
+
+            <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">roi</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">roi</span>
+            <span class="n">x_min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_padding</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
+            <span class="n">x_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">+</span> <span class="n">roi</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_padding</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
+            <span class="n">y_min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_padding</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
+            <span class="n">y_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">+</span> <span class="n">roi</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_padding</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">x_min</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">y_min</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">x_max</span> <span class="o">&gt;</span> <span class="n">cv_depth</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span>
+                    <span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">y_max</span> <span class="o">&gt;</span> <span class="n">cv_depth</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">continue</span>  <span class="c1"># outside of the image</span>
+            <span class="c1"># rospy.loginfo(&#39;roi=[%d %d %d %d] in %dx%d&#39;, x_min, x_max, y_min, y_max, depth.width, depth.height)</span>
+
+            <span class="n">region</span> <span class="o">=</span> <span class="n">cv_depth</span><span class="p">[</span><span class="n">y_min</span><span class="p">:</span><span class="n">y_max</span><span class="p">,</span> <span class="n">x_min</span><span class="p">:</span><span class="n">x_max</span><span class="p">]</span>
+
+            <span class="c1"># debugging viz</span>
+            <span class="n">regions_viz</span><span class="p">[</span><span class="n">y_min</span><span class="p">:</span><span class="n">y_max</span><span class="p">,</span> <span class="n">x_min</span><span class="p">:</span><span class="n">x_max</span><span class="p">]</span> <span class="o">=</span> <span class="n">region</span>
+
+            <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_min</span> <span class="o">+</span> <span class="n">x_max</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_min</span> <span class="o">+</span> <span class="n">y_max</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+            <span class="n">ray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cam_model</span><span class="o">.</span><span class="n">projectPixelTo3dRay</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)))</span>
+
+            <span class="c1"># Create a dummy joint for full nan and correct the position if non</span>
+            <span class="c1"># nan regions based joints exist</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">region</span><span class="p">)):</span>
+                <span class="n">joints_with_invalid_3D_roi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Joint</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">group_id</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">ray</span><span class="p">)))</span>
+                <span class="k">continue</span>
+
+            <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
+
+            <span class="c1"># project to 3d</span>
+            <span class="n">point3d</span> <span class="o">=</span> <span class="n">ray</span> <span class="o">*</span> <span class="n">d</span>
+
+            <span class="n">point</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">point3d</span><span class="p">)</span>
+            <span class="n">joints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Joint</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">group_id</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">point</span><span class="p">))</span>
+
+        <span class="n">new_joints</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">joints</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">joints_with_invalid_3D_roi</span><span class="p">:</span>
+                <span class="n">mean_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">j</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">z</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">joints</span><span class="p">])</span>
+
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">joints_with_invalid_3D_roi</span><span class="p">:</span>
+                    <span class="n">j</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">x</span> <span class="o">*=</span> <span class="n">mean_z</span>
+                    <span class="n">j</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">y</span> <span class="o">*=</span> <span class="n">mean_z</span>
+                    <span class="n">j</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">z</span> <span class="o">*=</span> <span class="n">mean_z</span>
+
+                <span class="n">new_joints</span> <span class="o">=</span> <span class="n">joints</span> <span class="o">+</span> <span class="n">joints_with_invalid_3D_roi</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_joints</span> <span class="o">=</span> <span class="n">joints</span>
+
+        <span class="k">return</span> <span class="n">new_joints</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer3D.get_person_tags"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.PeopleRecognizer3D.get_person_tags">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_person_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skeleton</span><span class="p">:</span> <span class="n">Skeleton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to get tags for a skeleton. The possible elements of the tag</span>
+<span class="sd">        list are:</span>
+<span class="sd">            1. LWaving/LPointing | RWaving/RPointing</span>
+<span class="sd">            2. LLaying/LSitting | RLaying/RSitting</span>
+<span class="sd">            3. LHolding | RHolding</span>
+<span class="sd">            4. LNotHolding | RNotHolding</span>
+
+<span class="sd">        :param: skeleton: The filtered skeleton of a person</span>
+<span class="sd">        :return: tags: List of tags for the person</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">side</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_heuristic</span> <span class="o">==</span> <span class="s1">&#39;shoulder&#39;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">shoulder</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="n">side</span> <span class="o">+</span> <span class="s1">&#39;Shoulder&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">tags</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;wrong heuristic&#39;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">wrist</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="n">side</span> <span class="o">+</span> <span class="s1">&#39;Wrist&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">wrist</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">shoulder</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_waving_threshold</span><span class="p">)</span> <span class="ow">and</span> <span class="n">wrist</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="p">(</span>
+                        <span class="n">shoulder</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hor_threshold</span><span class="p">):</span>
+                    <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">side</span> <span class="o">+</span> <span class="s1">&#39;Waving&#39;</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">wrist</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">shoulder</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hor_threshold</span><span class="p">):</span>
+                    <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">side</span> <span class="o">+</span> <span class="s1">&#39;Pointing&#39;</span><span class="p">)</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">elbow</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="n">side</span> <span class="o">+</span> <span class="s1">&#39;Elbow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">shoulder</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">wrist</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">elbow</span><span class="o">.</span><span class="n">y</span><span class="p">:</span>
+                        <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">side</span> <span class="o">+</span> <span class="s1">&#39;Holding&#39;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">side</span> <span class="o">+</span> <span class="s1">&#39;NotHolding&#39;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">knee</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="n">side</span> <span class="o">+</span> <span class="s1">&#39;Knee&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">knee</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">shoulder</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vert_threshold</span><span class="p">)</span> <span class="ow">and</span> <span class="n">knee</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;</span> <span class="p">(</span>
+                        <span class="n">shoulder</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hor_threshold</span><span class="p">):</span>
+                    <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">side</span> <span class="o">+</span> <span class="s1">&#39;Laying&#39;</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">knee</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">shoulder</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vert_threshold</span><span class="p">)</span> <span class="ow">and</span> <span class="n">knee</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="p">(</span>
+                        <span class="n">shoulder</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hor_threshold</span><span class="p">):</span>
+                    <span class="n">tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">side</span> <span class="o">+</span> <span class="s1">&#39;Sitting&#39;</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="n">tags</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tags</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer3D.get_pointing_pose"><a class="viewcode-back" href="../../api/people_recognition_3d/people_recognizer_3d/index.html#people_recognition_3d.people_recognizer_3d.PeopleRecognizer3D.get_pointing_pose">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_pointing_pose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skeleton</span><span class="p">:</span> <span class="n">Skeleton</span><span class="p">):</span>
+        <span class="c1"># We do require the shoulders for pointing calculation</span>
+        <span class="c1"># if &quot;Neck&quot; not in skeleton or &quot;Nose&quot; not in skeleton:</span>
+        <span class="c1">#     return None</span>
+        <span class="c1">#</span>
+        <span class="c1"># neck = geometry_msg_point_to_kdl_vector(skeleton[&#39;Neck&#39;].point)</span>
+        <span class="c1"># nose = geometry_msg_point_to_kdl_vector(skeleton[&#39;Nose&#39;].point)</span>
+        <span class="c1"># neck_vector = (nose - neck) / (nose - neck).Norm()</span>
+        <span class="n">neck_vector</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Check if arms are pointing</span>
+        <span class="c1"># left_arm_valid = &quot;LWrist&quot; in skeleton and &quot;LElbow&quot; in skeleton and &quot;LShoulder&quot; in skeleton</span>
+        <span class="c1"># right_arm_valid = &quot;RWrist&quot; in skeleton and &quot;RElbow&quot; in skeleton and &quot;RShoulder&quot; in skeleton</span>
+        <span class="n">left_arm_valid</span> <span class="o">=</span> <span class="s2">&quot;LElbow&quot;</span> <span class="ow">in</span> <span class="n">skeleton</span> <span class="ow">and</span> <span class="s2">&quot;LShoulder&quot;</span> <span class="ow">in</span> <span class="n">skeleton</span>
+        <span class="n">right_arm_valid</span> <span class="o">=</span> <span class="s2">&quot;RElbow&quot;</span> <span class="ow">in</span> <span class="n">skeleton</span> <span class="ow">and</span> <span class="s2">&quot;RShoulder&quot;</span> <span class="ow">in</span> <span class="n">skeleton</span>
+
+        <span class="k">if</span> <span class="n">left_arm_valid</span><span class="p">:</span>
+
+            <span class="n">left_elbow</span> <span class="o">=</span> <span class="n">geometry_msg_point_to_kdl_vector</span><span class="p">(</span>
+                <span class="n">skeleton</span><span class="p">[</span><span class="s1">&#39;LElbow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">)</span>
+            <span class="n">left_shoulder</span> <span class="o">=</span> <span class="n">geometry_msg_point_to_kdl_vector</span><span class="p">(</span>
+                <span class="n">skeleton</span><span class="p">[</span><span class="s1">&#39;LShoulder&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">)</span>
+
+            <span class="n">left_upper_arm_vector</span> <span class="o">=</span> <span class="p">(</span><span class="n">left_elbow</span> <span class="o">-</span> <span class="n">left_shoulder</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="n">left_elbow</span> <span class="o">-</span> <span class="n">left_shoulder</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+            <span class="n">left_frame</span> <span class="o">=</span> <span class="n">get_frame_from_vector</span><span class="p">(</span><span class="n">left_upper_arm_vector</span><span class="p">,</span>
+                                               <span class="n">left_elbow</span><span class="p">)</span>
+
+            <span class="n">left_arm_neck_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">neck_vector</span> <span class="o">*</span> <span class="n">left_upper_arm_vector</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="s2">&quot;LWrist&quot;</span> <span class="ow">in</span> <span class="n">skeleton</span><span class="p">:</span>
+                <span class="n">left_wrist</span> <span class="o">=</span> <span class="n">geometry_msg_point_to_kdl_vector</span><span class="p">(</span>
+                    <span class="n">skeleton</span><span class="p">[</span><span class="s1">&#39;LWrist&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">)</span>
+                <span class="n">left_lower_arm_vector</span> <span class="o">=</span> <span class="p">(</span><span class="n">left_wrist</span> <span class="o">-</span> <span class="n">left_elbow</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="n">left_wrist</span> <span class="o">-</span> <span class="n">left_elbow</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+
+                <span class="n">left_arm_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">left_lower_arm_vector</span> <span class="o">*</span>
+                                 <span class="n">left_upper_arm_vector</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">left_arm_norm</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm_norm_threshold</span><span class="p">:</span>
+                    <span class="n">left_arm_valid</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">left_arm_vector</span> <span class="o">=</span> <span class="p">(</span><span class="n">left_wrist</span> <span class="o">-</span> <span class="n">left_shoulder</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="n">left_wrist</span> <span class="o">-</span> <span class="n">left_shoulder</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+                    <span class="n">left_frame</span> <span class="o">=</span> <span class="n">get_frame_from_vector</span><span class="p">(</span><span class="n">left_arm_vector</span><span class="p">,</span>
+                                                       <span class="n">left_wrist</span><span class="p">)</span>
+
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Left arm norm: </span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">left_arm_norm</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span>
+                <span class="s2">&quot;Left arm not valid because it does not contain all required body parts&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">right_arm_valid</span><span class="p">:</span>
+
+            <span class="n">right_elbow</span> <span class="o">=</span> <span class="n">geometry_msg_point_to_kdl_vector</span><span class="p">(</span>
+                <span class="n">skeleton</span><span class="p">[</span><span class="s1">&#39;RElbow&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">)</span>
+            <span class="n">right_shoulder</span> <span class="o">=</span> <span class="n">geometry_msg_point_to_kdl_vector</span><span class="p">(</span>
+                <span class="n">skeleton</span><span class="p">[</span><span class="s1">&#39;RShoulder&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">)</span>
+
+            <span class="n">right_upper_arm_vector</span> <span class="o">=</span> <span class="p">(</span><span class="n">right_elbow</span> <span class="o">-</span> <span class="n">right_shoulder</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="n">right_elbow</span> <span class="o">-</span> <span class="n">right_shoulder</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+            <span class="n">right_frame</span> <span class="o">=</span> <span class="n">get_frame_from_vector</span><span class="p">(</span><span class="n">right_upper_arm_vector</span><span class="p">,</span>
+                                                <span class="n">right_elbow</span><span class="p">)</span>
+
+            <span class="n">right_arm_neck_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">neck_vector</span> <span class="o">*</span> <span class="n">right_upper_arm_vector</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="s2">&quot;RWrist&quot;</span> <span class="ow">in</span> <span class="n">skeleton</span><span class="p">:</span>
+                <span class="n">right_wrist</span> <span class="o">=</span> <span class="n">geometry_msg_point_to_kdl_vector</span><span class="p">(</span>
+                    <span class="n">skeleton</span><span class="p">[</span><span class="s1">&#39;RWrist&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="p">)</span>
+                <span class="n">right_lower_arm_vector</span> <span class="o">=</span> <span class="p">(</span><span class="n">right_wrist</span> <span class="o">-</span> <span class="n">right_elbow</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="n">right_wrist</span> <span class="o">-</span> <span class="n">right_elbow</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+
+                <span class="n">right_arm_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">right_lower_arm_vector</span> <span class="o">*</span>
+                                  <span class="n">right_upper_arm_vector</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">right_arm_norm</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm_norm_threshold</span><span class="p">:</span>
+                    <span class="n">right_arm_valid</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">right_arm_vector</span> <span class="o">=</span> <span class="p">(</span><span class="n">right_wrist</span> <span class="o">-</span> <span class="n">right_shoulder</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="n">right_wrist</span> <span class="o">-</span> <span class="n">right_shoulder</span><span class="p">)</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+                    <span class="n">right_frame</span> <span class="o">=</span> <span class="n">get_frame_from_vector</span><span class="p">(</span>
+                        <span class="n">right_arm_vector</span><span class="p">,</span> <span class="n">right_wrist</span><span class="p">)</span>
+
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Right arm norm: </span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">right_arm_norm</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span>
+                <span class="s2">&quot;Right arm not valid because it does not contain all required body parts&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Arm norm threshold: </span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arm_norm_threshold</span><span class="p">)</span>
+
+        <span class="c1"># Constraint based on parralelliness arm and neck</span>
+        <span class="k">if</span> <span class="n">left_arm_valid</span> <span class="ow">and</span> <span class="n">left_arm_neck_norm</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neck_norm_threshold</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span>
+                <span class="s2">&quot;Rejecting left arm because of neck norm threshold ...&quot;</span><span class="p">)</span>
+            <span class="n">left_arm_valid</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">right_arm_valid</span> <span class="ow">and</span> <span class="n">right_arm_neck_norm</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neck_norm_threshold</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span>
+                <span class="s2">&quot;Rejecting right arm because of neck norm threshold ...&quot;</span><span class="p">)</span>
+            <span class="n">right_arm_valid</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Optimize</span>
+        <span class="k">if</span> <span class="n">left_arm_valid</span> <span class="ow">and</span> <span class="n">right_arm_valid</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">left_arm_neck_norm</span> <span class="o">&gt;</span> <span class="n">right_arm_neck_norm</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Right arm is pointing the most, using this one&quot;</span><span class="p">)</span>
+                <span class="n">frame</span> <span class="o">=</span> <span class="n">right_frame</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Left arm is pointing the most, using this one&quot;</span><span class="p">)</span>
+                <span class="n">frame</span> <span class="o">=</span> <span class="n">left_frame</span>
+        <span class="c1"># if left_arm_valid and right_arm_valid:</span>
+        <span class="c1">#     if left_arm_norm &gt; right_arm_norm:</span>
+        <span class="c1">#         rospy.loginfo(&quot;Right arm is pointing the most, using this one&quot;)</span>
+        <span class="c1">#         frame = right_frame</span>
+        <span class="c1">#     else:</span>
+        <span class="c1">#         rospy.loginfo(&quot;Left arm is pointing the most, using this one&quot;)</span>
+        <span class="c1">#         frame = left_frame</span>
+        <span class="k">elif</span> <span class="n">left_arm_valid</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">left_frame</span>
+        <span class="k">elif</span> <span class="n">right_arm_valid</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">right_frame</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;No valid arms found ...&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">Pose</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">Point</span><span class="p">(</span><span class="o">*</span><span class="n">frame</span><span class="o">.</span><span class="n">p</span><span class="p">),</span>
+                    <span class="n">orientation</span><span class="o">=</span><span class="n">Quaternion</span><span class="p">(</span><span class="o">*</span><span class="n">frame</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">GetQuaternion</span><span class="p">()))</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

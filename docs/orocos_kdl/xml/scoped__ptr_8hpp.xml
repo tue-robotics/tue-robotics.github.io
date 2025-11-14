@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="scoped__ptr_8hpp" kind="file" language="C++">
+    <compoundname>scoped_ptr.hpp</compoundname>
+    <includes local="no">algorithm</includes>
+    <includedby refid="path_8cpp" local="yes">path.cpp</includedby>
+    <includedby refid="path__composite_8cpp" local="yes">path_composite.cpp</includedby>
+    <includedby refid="path__roundedcomposite_8cpp" local="yes">path_roundedcomposite.cpp</includedby>
+    <includedby refid="trajectory_8cpp" local="yes">trajectory.cpp</includedby>
+    <incdepgraph>
+      <node id="2">
+        <label>algorithm</label>
+        <link refid="cpp/header/algorithm" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="1">
+        <label>scoped_ptr.hpp</label>
+        <link refid="scoped__ptr_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>scoped_ptr.hpp</label>
+        <link refid="scoped__ptr_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>path_roundedcomposite.cpp</label>
+        <link refid="path__roundedcomposite_8cpp"/>
+      </node>
+      <node id="3">
+        <label>path_composite.cpp</label>
+        <link refid="path__composite_8cpp"/>
+      </node>
+      <node id="5">
+        <label>trajectory.cpp</label>
+        <link refid="trajectory_8cpp"/>
+      </node>
+      <node id="2">
+        <label>path.cpp</label>
+        <link refid="path_8cpp"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classKDL_1_1scoped__ptr" prot="public">KDL::scoped_ptr</innerclass>
+    <innerclass refid="classKDL_1_1scoped__ptr" prot="public">KDL::scoped_ptr</innerclass>
+    <innernamespace refid="namespaceKDL">KDL</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/***************************************************************************</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/><sp/><sp/><sp/>scoped_ptr<sp/>-<sp/>a<sp/>not<sp/>too<sp/>smart<sp/>pointer<sp/>for<sp/>exception<sp/>safe<sp/>heap<sp/>objects</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-------------------------</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/><sp/><sp/><sp/>begin<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>May<sp/>2019</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/><sp/><sp/><sp/>copyright<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>(C)<sp/>2019<sp/>Intermodalics</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/></highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>***************************************************************************</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/><sp/><sp/>This<sp/>library<sp/>is<sp/>free<sp/>software;<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/><sp/><sp/>modify<sp/>it<sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>License<sp/>as<sp/>published<sp/>by<sp/>the<sp/>Free<sp/>Software<sp/>Foundation;<sp/>either<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*<sp/><sp/><sp/>version<sp/>2.1<sp/>of<sp/>the<sp/>License,<sp/>or<sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.<sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/><sp/><sp/>This<sp/>library<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,<sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/><sp/><sp/>but<sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/><sp/><sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU<sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/><sp/><sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/><sp/><sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public<sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/><sp/><sp/>License<sp/>along<sp/>with<sp/>this<sp/>library;<sp/>if<sp/>not,<sp/>write<sp/>to<sp/>the<sp/>Free<sp/>Software<sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/><sp/><sp/>Foundation,<sp/>Inc.,<sp/>59<sp/>Temple<sp/>Place,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*<sp/><sp/><sp/>Suite<sp/>330,<sp/>Boston,<sp/>MA<sp/><sp/>02111-1307<sp/><sp/>USA<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>***************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/>(__cplusplus<sp/>&gt;<sp/>199711L)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="cpp/header/utility" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">utility</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="cpp/header/algorithm" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">algorithm</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceKDL" kindref="compound">KDL</ref><sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">scoped_ptr;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceKDL_1a8d333b9b7dd404a61e9a28d18cf9b798" kindref="member">swap</ref>(scoped_ptr&lt;T&gt;&amp;,<sp/>scoped_ptr&lt;T&gt;&amp;);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">scoped_ptr<sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><ref refid="classKDL_1_1scoped__ptr_1ae18b88b008b2f933c05cafd42402f413" kindref="member">scoped_ptr</ref>()<sp/>:<sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref>(0)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1scoped__ptr_1ae18b88b008b2f933c05cafd42402f413" kindref="member">scoped_ptr</ref>(T*<sp/>p)<sp/>:<sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref>(p)<sp/>{<sp/>}</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><ref refid="classKDL_1_1scoped__ptr_1a60457670ff59a9da4b1c84838b25de0a" kindref="member">~scoped_ptr</ref>()<sp/>{<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>T*<sp/><ref refid="classKDL_1_1scoped__ptr_1af0503ffb738f87f4ad7dbe9be57773b2" kindref="member">operator-&gt;</ref>()<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>T*<sp/><ref refid="classKDL_1_1scoped__ptr_1af0503ffb738f87f4ad7dbe9be57773b2" kindref="member">operator-&gt;</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>T*<sp/><ref refid="classKDL_1_1scoped__ptr_1a89dacd95a397d18f4e010b9c8cd4d26f" kindref="member">get</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref>;<sp/>}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1scoped__ptr_1a5734aa713ac4a9cc52cdc46a4fa19106" kindref="member">reset</ref>(T*<sp/>p<sp/>=<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>T*<sp/>old<sp/>=<sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref>;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref><sp/>=<sp/>p;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>old;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="55" refid="classKDL_1_1scoped__ptr" refkind="compound"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>T*<sp/><ref refid="classKDL_1_1scoped__ptr_1a5408247363f13d24352e4fa8c1fae92b" kindref="member">release</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>T*<sp/>old<sp/>=<sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref>;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>old;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="classKDL_1_1scoped__ptr_1ae18b88b008b2f933c05cafd42402f413" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>swap&lt;&gt;(<ref refid="classKDL_1_1scoped__ptr" kindref="compound">scoped_ptr&lt;T&gt;</ref>&amp;<sp/>a,<sp/><ref refid="classKDL_1_1scoped__ptr" kindref="compound">scoped_ptr&lt;T&gt;</ref>&amp;<sp/>b);</highlight></codeline>
+<codeline lineno="63" refid="classKDL_1_1scoped__ptr_1aa589bdae5030158a9b7e67c22b7b953d" refkind="member"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="65" refid="classKDL_1_1scoped__ptr_1a60457670ff59a9da4b1c84838b25de0a" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classKDL_1_1scoped__ptr_1ae18b88b008b2f933c05cafd42402f413" kindref="member">scoped_ptr</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1scoped__ptr" kindref="compound">scoped_ptr</ref>&amp;);<sp/><sp/></highlight><highlight class="comment">//<sp/>not-copyable</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><ref refid="classKDL_1_1scoped__ptr" kindref="compound">scoped_ptr</ref>&amp;<sp/><ref refid="classKDL_1_1scoped__ptr_1a0cf917963212e291b24d18f675ca0d5e" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classKDL_1_1scoped__ptr" kindref="compound">scoped_ptr</ref>&amp;);<sp/></highlight><highlight class="comment">//<sp/>not-copyable</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="classKDL_1_1scoped__ptr_1af0503ffb738f87f4ad7dbe9be57773b2" refkind="member"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68" refid="classKDL_1_1scoped__ptr_1af4f20bc0cb6b36021cc12dd9b9cf747f" refkind="member"><highlight class="normal"><sp/><sp/>T*<sp/><ref refid="classKDL_1_1scoped__ptr_1aa96c300b12fbcb35094a73d5b48af5cc" kindref="member">ptr_</ref>;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="70" refid="classKDL_1_1scoped__ptr_1a89dacd95a397d18f4e010b9c8cd4d26f" refkind="member"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="72" refid="classKDL_1_1scoped__ptr_1a5734aa713ac4a9cc52cdc46a4fa19106" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="namespaceKDL_1a8d333b9b7dd404a61e9a28d18cf9b798" kindref="member">swap</ref>(<ref refid="classKDL_1_1scoped__ptr" kindref="compound">scoped_ptr&lt;T&gt;</ref>&amp;<sp/>a,<sp/><ref refid="classKDL_1_1scoped__ptr" kindref="compound">scoped_ptr&lt;T&gt;</ref>&amp;<sp/>b)<sp/>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="cpp/algorithm/swap" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::swap</ref>;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><ref refid="namespaceKDL_1a8d333b9b7dd404a61e9a28d18cf9b798" kindref="member">swap</ref>(a.ptr_,<sp/>b.ptr_);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78" refid="classKDL_1_1scoped__ptr_1a5408247363f13d24352e4fa8c1fae92b" refkind="member"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>KDL</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/utilities/scoped_ptr.hpp"/>
+  </compounddef>
+</doxygen>

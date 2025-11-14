@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="observation_8h" kind="file" language="C++">
+    <compoundname>observation.h</compoundname>
+    <includes local="no">geometry_msgs/Point.h</includes>
+    <includes local="no">sensor_msgs/PointCloud2.h</includes>
+    <includedby refid="observation__buffer_8h" local="no">observation_buffer.h</includedby>
+    <incdepgraph>
+      <node id="3">
+        <label>sensor_msgs/PointCloud2.h</label>
+      </node>
+      <node id="2">
+        <label>geometry_msgs/Point.h</label>
+      </node>
+      <node id="1">
+        <label>observation.h</label>
+        <link refid="observation_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="5">
+        <label>inflation_tests.cpp</label>
+        <link refid="inflation__tests_8cpp"/>
+      </node>
+      <node id="4">
+        <label>testing_helper.h</label>
+        <link refid="testing__helper_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>observation_buffer.h</label>
+        <link refid="observation__buffer_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>obstacle_tests.cpp</label>
+        <link refid="obstacle__tests_8cpp"/>
+      </node>
+      <node id="11">
+        <label>observation_buffer.cpp</label>
+        <link refid="observation__buffer_8cpp"/>
+      </node>
+      <node id="12">
+        <label>module_tests.cpp</label>
+        <link refid="module__tests_8cpp"/>
+      </node>
+      <node id="7">
+        <label>static_tests.cpp</label>
+        <link refid="static__tests_8cpp"/>
+      </node>
+      <node id="9">
+        <label>voxel_layer.cpp</label>
+        <link refid="voxel__layer_8cpp"/>
+      </node>
+      <node id="10">
+        <label>obstacle_layer.cpp</label>
+        <link refid="obstacle__layer_8cpp"/>
+      </node>
+      <node id="3">
+        <label>obstacle_layer.h</label>
+        <link refid="obstacle__layer_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>observation.h</label>
+        <link refid="observation_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>voxel_layer.h</label>
+        <link refid="voxel__layer_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classcostmap__2d_1_1Observation" prot="public">costmap_2d::Observation</innerclass>
+    <innernamespace refid="namespacecostmap__2d">costmap_2d</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2008,<sp/>2013,<sp/>Willow<sp/>Garage,<sp/>Inc.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>Redistribution<sp/>and<sp/>use<sp/>in<sp/>source<sp/>and<sp/>binary<sp/>forms,<sp/>with<sp/>or<sp/>without</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>modification,<sp/>are<sp/>permitted<sp/>provided<sp/>that<sp/>the<sp/>following<sp/>conditions<sp/>are<sp/>met:</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>*<sp/>Redistributions<sp/>of<sp/>source<sp/>code<sp/>must<sp/>retain<sp/>the<sp/>above<sp/>copyright</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following<sp/>disclaimer.</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>*<sp/>Redistributions<sp/>in<sp/>binary<sp/>form<sp/>must<sp/>reproduce<sp/>the<sp/>above<sp/>copyright</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following<sp/>disclaimer<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>documentation<sp/>and/or<sp/>other<sp/>materials<sp/>provided<sp/>with<sp/>the<sp/>distribution.</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>*<sp/>Neither<sp/>the<sp/>name<sp/>of<sp/>the<sp/>Willow<sp/>Garage,<sp/>Inc.<sp/>nor<sp/>the<sp/>names<sp/>of<sp/>its</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>contributors<sp/>may<sp/>be<sp/>used<sp/>to<sp/>endorse<sp/>or<sp/>promote<sp/>products<sp/>derived<sp/>from</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/><sp/>this<sp/>software<sp/>without<sp/>specific<sp/>prior<sp/>written<sp/>permission.</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>THIS<sp/>SOFTWARE<sp/>IS<sp/>PROVIDED<sp/>BY<sp/>THE<sp/>COPYRIGHT<sp/>HOLDERS<sp/>AND<sp/>CONTRIBUTORS<sp/>&quot;AS<sp/>IS&quot;</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/>AND<sp/>ANY<sp/>EXPRESS<sp/>OR<sp/>IMPLIED<sp/>WARRANTIES,<sp/>INCLUDING,<sp/>BUT<sp/>NOT<sp/>LIMITED<sp/>TO,<sp/>THE</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/>IMPLIED<sp/>WARRANTIES<sp/>OF<sp/>MERCHANTABILITY<sp/>AND<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/>ARE<sp/>DISCLAIMED.<sp/>IN<sp/>NO<sp/>EVENT<sp/>SHALL<sp/>THE<sp/>COPYRIGHT<sp/>OWNER<sp/>OR<sp/>CONTRIBUTORS<sp/>BE</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*<sp/>LIABLE<sp/>FOR<sp/>ANY<sp/>DIRECT,<sp/>INDIRECT,<sp/>INCIDENTAL,<sp/>SPECIAL,<sp/>EXEMPLARY,<sp/>OR</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/>CONSEQUENTIAL<sp/>DAMAGES<sp/>(INCLUDING,<sp/>BUT<sp/>NOT<sp/>LIMITED<sp/>TO,<sp/>PROCUREMENT<sp/>OF</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/>SUBSTITUTE<sp/>GOODS<sp/>OR<sp/>SERVICES;<sp/>LOSS<sp/>OF<sp/>USE,<sp/>DATA,<sp/>OR<sp/>PROFITS;<sp/>OR<sp/>BUSINESS</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/>INTERRUPTION)<sp/>HOWEVER<sp/>CAUSED<sp/>AND<sp/>ON<sp/>ANY<sp/>THEORY<sp/>OF<sp/>LIABILITY,<sp/>WHETHER<sp/>IN</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*<sp/>CONTRACT,<sp/>STRICT<sp/>LIABILITY,<sp/>OR<sp/>TORT<sp/>(INCLUDING<sp/>NEGLIGENCE<sp/>OR<sp/>OTHERWISE)</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/>ARISING<sp/>IN<sp/>ANY<sp/>WAY<sp/>OUT<sp/>OF<sp/>THE<sp/>USE<sp/>OF<sp/>THIS<sp/>SOFTWARE,<sp/>EVEN<sp/>IF<sp/>ADVISED<sp/>OF<sp/>THE</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/>*<sp/>POSSIBILITY<sp/>OF<sp/>SUCH<sp/>DAMAGE.</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*<sp/>Authors:<sp/>Conor<sp/>McGann</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>COSTMAP_2D_OBSERVATION_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>COSTMAP_2D_OBSERVATION_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;geometry_msgs/Point.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sensor_msgs/PointCloud2.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacecostmap__2d" kindref="compound">costmap_2d</ref></highlight></codeline>
+<codeline lineno="39"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="classcostmap__2d_1_1Observation" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classcostmap__2d_1_1Observation" kindref="compound">Observation</ref></highlight></codeline>
+<codeline lineno="47"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="52" refid="classcostmap__2d_1_1Observation_1ab3b54bbb4ea6f16e3b51565990a2dc6b" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1Observation_1ab3b54bbb4ea6f16e3b51565990a2dc6b" kindref="member">Observation</ref>()<sp/>:</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" kindref="member">cloud_</ref>(new<sp/>sensor_msgs::PointCloud2()),<sp/><ref refid="classcostmap__2d_1_1Observation_1a0b437e4f5adbe6bf77c31e2c450ef6b9" kindref="member">obstacle_range_</ref>(0.0),<sp/><ref refid="classcostmap__2d_1_1Observation_1a294ab9f395c665c81502d3f04b997d75" kindref="member">raytrace_range_</ref>(0.0)</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="classcostmap__2d_1_1Observation_1a883a07a854be2d0c42e9e0dee4b8b141" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1Observation_1a883a07a854be2d0c42e9e0dee4b8b141" kindref="member">~Observation</ref>()</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" kindref="member">cloud_</ref>;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="classcostmap__2d_1_1Observation_1a5e401bcb67757893cef8dc990914c053" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1Observation_1a5e401bcb67757893cef8dc990914c053" kindref="member">Observation</ref>(geometry_msgs::Point&amp;<sp/>origin,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>sensor_msgs::PointCloud2<sp/>&amp;cloud,</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>obstacle_range,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>raytrace_range)<sp/>:</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1Observation_1a8095d100ad18cc1c7864c69c82be4c08" kindref="member">origin_</ref>(origin),<sp/><ref refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" kindref="member">cloud_</ref>(new<sp/>sensor_msgs::PointCloud2(cloud)),</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1Observation_1a0b437e4f5adbe6bf77c31e2c450ef6b9" kindref="member">obstacle_range_</ref>(obstacle_range),<sp/><ref refid="classcostmap__2d_1_1Observation_1a294ab9f395c665c81502d3f04b997d75" kindref="member">raytrace_range_</ref>(raytrace_range)</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80" refid="classcostmap__2d_1_1Observation_1ab2d183c4dbf581b5cd17d413b4a0bd15" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1Observation_1ab2d183c4dbf581b5cd17d413b4a0bd15" kindref="member">Observation</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1Observation" kindref="compound">Observation</ref>&amp;<sp/>obs)<sp/>:</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1Observation_1a8095d100ad18cc1c7864c69c82be4c08" kindref="member">origin_</ref>(obs.<ref refid="classcostmap__2d_1_1Observation_1a8095d100ad18cc1c7864c69c82be4c08" kindref="member">origin_</ref>),<sp/><ref refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" kindref="member">cloud_</ref>(new<sp/>sensor_msgs::PointCloud2(*(obs.<ref refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" kindref="member">cloud_</ref>))),</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1Observation_1a0b437e4f5adbe6bf77c31e2c450ef6b9" kindref="member">obstacle_range_</ref>(obs.<ref refid="classcostmap__2d_1_1Observation_1a0b437e4f5adbe6bf77c31e2c450ef6b9" kindref="member">obstacle_range_</ref>),<sp/><ref refid="classcostmap__2d_1_1Observation_1a294ab9f395c665c81502d3f04b997d75" kindref="member">raytrace_range_</ref>(obs.<ref refid="classcostmap__2d_1_1Observation_1a294ab9f395c665c81502d3f04b997d75" kindref="member">raytrace_range_</ref>)</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="classcostmap__2d_1_1Observation_1a7b575e70158fec46b4ed125e3dd5231a" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classcostmap__2d_1_1Observation_1a7b575e70158fec46b4ed125e3dd5231a" kindref="member">Observation</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>sensor_msgs::PointCloud2<sp/>&amp;cloud,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>obstacle_range)<sp/>:</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" kindref="member">cloud_</ref>(new<sp/>sensor_msgs::PointCloud2(cloud)),<sp/><ref refid="classcostmap__2d_1_1Observation_1a0b437e4f5adbe6bf77c31e2c450ef6b9" kindref="member">obstacle_range_</ref>(obstacle_range),<sp/><ref refid="classcostmap__2d_1_1Observation_1a294ab9f395c665c81502d3f04b997d75" kindref="member">raytrace_range_</ref>(0.0)</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96" refid="classcostmap__2d_1_1Observation_1a8095d100ad18cc1c7864c69c82be4c08" refkind="member"><highlight class="normal"><sp/><sp/>geometry_msgs::Point<sp/><ref refid="classcostmap__2d_1_1Observation_1a8095d100ad18cc1c7864c69c82be4c08" kindref="member">origin_</ref>;</highlight></codeline>
+<codeline lineno="97" refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" refkind="member"><highlight class="normal"><sp/><sp/>sensor_msgs::PointCloud2*<sp/><ref refid="classcostmap__2d_1_1Observation_1ab8c978e705ccda394fb3a1f55e86ac62" kindref="member">cloud_</ref>;</highlight></codeline>
+<codeline lineno="98" refid="classcostmap__2d_1_1Observation_1a294ab9f395c665c81502d3f04b997d75" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classcostmap__2d_1_1Observation_1a0b437e4f5adbe6bf77c31e2c450ef6b9" kindref="member">obstacle_range_</ref>,<sp/><ref refid="classcostmap__2d_1_1Observation_1a294ab9f395c665c81502d3f04b997d75" kindref="member">raytrace_range_</ref>;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>costmap_2d</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/>//<sp/>COSTMAP_2D_OBSERVATION_H_</highlight></codeline>
+    </programlisting>
+    <location file="include/costmap_2d/observation.h"/>
+  </compounddef>
+</doxygen>

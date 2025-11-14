@@ -1,0 +1,146 @@
+action_server.client
+====================
+
+.. py:module:: action_server.client
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   action_server.client.TaskOutcome
+   action_server.client.Client
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   action_server.client.task_outcome_from_result
+
+
+Module Contents
+---------------
+
+.. py:class:: TaskOutcome(result=RESULT_UNKNOWN, messages=None, missing_field='')
+
+   Bases: :py:obj:`object`
+
+
+   .. py:attribute:: RESULT_MISSING_INFORMATION
+      :value: 0
+
+
+
+   .. py:attribute:: RESULT_TASK_EXECUTION_FAILED
+      :value: 1
+
+
+
+   .. py:attribute:: RESULT_UNKNOWN
+      :value: 2
+
+
+
+   .. py:attribute:: RESULT_SUCCEEDED
+      :value: 3
+
+
+
+   .. py:attribute:: result
+      :value: 2
+
+
+
+   .. py:attribute:: missing_field
+      :value: ''
+
+
+
+   .. py:attribute:: messages
+      :value: None
+
+
+
+   .. py:property:: succeeded
+
+
+   .. py:method:: __repr__()
+
+
+.. py:function:: task_outcome_from_result(result)
+
+   Converts action_server_msgs.msg.TaskResult to TaskOutcome class
+
+   :param result: (action_server_msgs.msg.TaskResult) result input
+   :return: (TaskOutcome) result output
+
+
+.. py:class:: Client(robot_name)
+
+   Bases: :py:obj:`object`
+
+
+   A client for the action server
+
+   Wraps the client side of the actionlib interface so that it can be easily used in client side applications.
+
+   .. admonition:: Example
+
+      client = Client('amigo')
+      semantics = "{'actions': [{'action': 'say', 'sentence': 'ROBOT_NAME'}]}"
+      client.send_task(semantics)
+
+
+   .. py:attribute:: _action_client
+
+
+   .. py:attribute:: get_actions_proxy
+
+
+   .. py:method:: get_actions()
+
+      Query the available actions from the action server.
+
+      :return: List of action names as registered with the action server, or an empty list if the service call fails.
+
+
+
+   .. py:method:: send_async_task(semantics, done_cb=None, feedback_cb=None)
+
+      Send a task to the action server and return immediately. A task is composed of one or multiple actions.
+
+      :param semantics: A json string with a list of dicts, every dict in the list has at least an 'action' field,
+          and depending on the type of action, several parameter fields may be required.
+      :param done_cb: (callable) Callback that gets called on transitions to Done. The callback should take one
+          parameter: TaskOutCome
+      :param feedback_cb: (callable)Callback that gets called whenever feedback for this goal is received. Takes one
+          parameter: the feedback.
+
+
+
+   .. py:method:: send_task(semantics)
+
+      Send a task to the action server. A task is composed of one or multiple actions.
+
+      :param semantics: A json string with a list of dicts, every dict in the list has at least an 'action' field,
+          and depending on the type of action, several parameter fields may be required.
+      :return: result output, which provides information about success of the task execution and some
+          information messages
+
+
+
+   .. py:method:: cancel_all()
+
+      Cancels all goals of the action client
+
+
+
+   .. py:method:: cancel_all_async()
+
+      Cancels all goals of the action client and returns directly without waiting for the result
+
+
+

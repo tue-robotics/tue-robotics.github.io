@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>telegram_ros.bridge &mdash; telegram_ros 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            telegram_ros
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">telegram_ros</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">telegram_ros.bridge</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for telegram_ros.bridge</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cv_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">CvBridge</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">NavSatFix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">std_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">String</span><span class="p">,</span> <span class="n">Header</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">telegram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Location</span><span class="p">,</span> <span class="n">ReplyKeyboardMarkup</span><span class="p">,</span> <span class="n">Update</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">telegram.error</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimedOut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">telegram.ext</span><span class="w"> </span><span class="kn">import</span> <span class="n">Updater</span><span class="p">,</span> <span class="n">CallbackContext</span><span class="p">,</span> <span class="n">CommandHandler</span><span class="p">,</span> <span class="n">MessageHandler</span><span class="p">,</span> <span class="n">Filters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">telegram_ros.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Options</span>
+
+
+<span class="n">WHITELIST</span> <span class="o">=</span> <span class="s2">&quot;~whitelist&quot;</span>
+
+
+<div class="viewcode-block" id="telegram_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.telegram_callback">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">telegram_callback</span><span class="p">(</span><span class="n">callback_function</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator to restrict telegram methods only to the active chat or tell to /start one if needed</span>
+
+<span class="sd">    :param callback_function: A callback function taking a telegram.Bot and a telegram.Update</span>
+<span class="sd">    :return: Wrapped callback function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">callback_function</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="n">Update</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">CallbackContext</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Incoming update from telegram: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">update</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Discarding message. No active chat_id.&quot;</span><span class="p">)</span>
+            <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">reply_text</span><span class="p">(</span><span class="s2">&quot;ROS Bridge not initialized. Type /start to set-up ROS bridge&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span> <span class="o">!=</span> <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">chat_id</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Discarding message. Invalid chat_id&quot;</span><span class="p">)</span>
+            <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">reply_text</span><span class="p">(</span>
+                <span class="s2">&quot;ROS Bridge initialized to another chat_id. Type /start to connect to this chat_id&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">callback_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="ros_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.ros_callback">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">ros_callback</span><span class="p">(</span><span class="n">callback_function</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator that verifies whether we have an active chat id and handles possible exceptions</span>
+
+<span class="sd">    :param callback_function: A callback function taking a ros msg</span>
+<span class="sd">    :return: Wrapped callback function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">callback_function</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;ROS Bridge not initialized, dropping message of type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">_type</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">callback_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">TimedOut</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Telegram timeout: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="TelegramROSBridge"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TelegramROSBridge</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_token</span><span class="p">,</span> <span class="n">caption_as_frame_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Telegram ROS bridge that bridges between a Telegram chat conversation and ROS</span>
+
+<span class="sd">        :param api_token: The Telegram API token</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_caption_as_frame_id</span> <span class="o">=</span> <span class="n">caption_as_frame_id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_from_telegram_string_publisher</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;message_to_ros&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_from_telegram_image_publisher</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;image_to_ros&quot;</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_from_telegram_location_publisher</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Publisher</span><span class="p">(</span><span class="s2">&quot;location_to_ros&quot;</span><span class="p">,</span> <span class="n">NavSatFix</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_telegram_string_subscriber</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span>
+            <span class="s2">&quot;message_from_ros&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ros_string_callback</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_telegram_image_subscriber</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span>
+            <span class="s2">&quot;image_from_ros&quot;</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ros_image_callback</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_telegram_location_subscriber</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span>
+            <span class="s2">&quot;location_from_ros&quot;</span><span class="p">,</span> <span class="n">NavSatFix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ros_location_callback</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to_telegram_options_subscriber</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span>
+            <span class="s2">&quot;options_from_ros&quot;</span><span class="p">,</span> <span class="n">Options</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ros_options_callback</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Set CvBridge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cv_bridge</span> <span class="o">=</span> <span class="n">CvBridge</span><span class="p">()</span>
+
+        <span class="c1"># Telegram IO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span> <span class="o">=</span> <span class="n">Updater</span><span class="p">(</span><span class="n">api_token</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">add_error_handler</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">update</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Update </span><span class="si">{}</span><span class="s2"> caused error </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">update</span><span class="p">,</span> <span class="n">error</span><span class="p">))</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">CommandHandler</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_start_callback</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">CommandHandler</span><span class="p">(</span><span class="s2">&quot;stop&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_stop_callback</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">MessageHandler</span><span class="p">(</span><span class="n">Filters</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_message_callback</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">MessageHandler</span><span class="p">(</span><span class="n">Filters</span><span class="o">.</span><span class="n">photo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_photo_callback</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">dispatcher</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span>
+            <span class="n">MessageHandler</span><span class="p">(</span><span class="n">Filters</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_location_callback</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">add_preshutdown_hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shutdown</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TelegramROSBridge._shutdown"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge._shutdown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sending a message to the current chat id on destruction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;Stopping Telegram ROS bridge, ending this chat. Reason of shutdown: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="s2">&quot; Type /start to connect again after starting a new Telegram ROS bridge.&quot;</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TelegramROSBridge.spin"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge.spin">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">spin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Starts the Telegram update thread and spins until a SIGINT is received</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">start_polling</span><span class="p">()</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Telegram updater started polling, spinning ..&quot;</span><span class="p">)</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">spin</span><span class="p">()</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Shutting down Telegram updater ...&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TelegramROSBridge._telegram_start_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge._telegram_start_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_telegram_start_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="n">Update</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">CallbackContext</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a Telegram user sends the &#39;/start&#39; event to the bot, using this event, the bridge can be connected</span>
+<span class="sd">        to a specific conversation.</span>
+<span class="sd">        This checks whether the user is on the whitelist if the whitelist is a list and allows any user if whitelist is empty</span>
+
+<span class="sd">        :param update: Received update event that holds the chat_id and message data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Whitelist defaults to an empty list to disable it and allow anyone. To enable the whitelist, set it to a list with at least one item</span>
+        <span class="n">whitelist</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="n">WHITELIST</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">whitelist</span> <span class="ow">or</span> <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">from_user</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">whitelist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span> <span class="o">!=</span> <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">chat_id</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Changing to different chat_id!&quot;</span><span class="p">)</span>
+                <span class="n">new_user</span> <span class="o">=</span> <span class="s2">&quot;&#39;somebody&#39;&quot;</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">chat</span><span class="p">,</span> <span class="s2">&quot;first_name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">first_name</span><span class="p">:</span>
+                    <span class="n">new_user</span> <span class="o">=</span> <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">first_name</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">,</span>
+                    <span class="s2">&quot;Lost ROS bridge connection to this chat_id </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2"> took over)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">new_user</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Starting Telegram ROS bridge for new chat id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">chat_id</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span> <span class="o">=</span> <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">chat_id</span>
+
+            <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">reply_text</span><span class="p">(</span>
+                <span class="s2">&quot;Telegram ROS bridge initialized, only replying to chat_id </span><span class="si">{}</span><span class="s2"> (current)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Discarding message. User </span><span class="si">{}</span><span class="s2"> not whitelisted&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">from_user</span><span class="p">))</span>
+            <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">reply_text</span><span class="p">(</span>
+                <span class="s2">&quot;You (user id </span><span class="si">{}</span><span class="s2">) are not authorized to chat with this bot&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">from_user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TelegramROSBridge._telegram_stop_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge._telegram_stop_callback">[docs]</a>    <span class="nd">@telegram_callback</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_telegram_stop_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="n">Update</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">CallbackContext</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a Telegram user sends the &#39;/stop&#39; event to the bot. Then, the user is disconnected from the bot and</span>
+<span class="sd">        will no longer receive messages.</span>
+
+<span class="sd">        :param update: Received update event that holds the chat_id and message data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Stopping Telegram ROS bridge for chat id </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">))</span>
+        <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">reply_text</span><span class="p">(</span>
+            <span class="s2">&quot;Disconnecting chat_id </span><span class="si">{}</span><span class="s2">. So long and thanks for all the fish!&quot;</span>
+            <span class="s2">&quot; Type /start to reconnect&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="TelegramROSBridge._telegram_message_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge._telegram_message_callback">[docs]</a>    <span class="nd">@telegram_callback</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_telegram_message_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="n">Update</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">CallbackContext</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a new Telegram message has been received. The method will verify whether the incoming message is</span>
+<span class="sd">        from the bridges Telegram conversation by comparing the chat_id.</span>
+
+<span class="sd">        :param update: Received update that holds the chat_id and message data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_from_telegram_string_publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">text</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TelegramROSBridge._ros_string_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge._ros_string_callback">[docs]</a>    <span class="nd">@ros_callback</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ros_string_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">String</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a new ROS String message is coming in that should be sent to the Telegram conversation</span>
+
+<span class="sd">        :param msg: String message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Ignoring empty string message&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TelegramROSBridge._telegram_photo_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge._telegram_photo_callback">[docs]</a>    <span class="nd">@telegram_callback</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_telegram_photo_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="n">Update</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">CallbackContext</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a new Telegram photo has been received. The method will verify whether the incoming message is</span>
+<span class="sd">        from the bridges Telegram conversation by comparing the chat_id.</span>
+
+<span class="sd">        :param update: Received update that holds the chat_id and message data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Received image, downloading highest resolution image ...&quot;</span><span class="p">)</span>
+        <span class="n">byte_array</span> <span class="o">=</span> <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">photo</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_file</span><span class="p">()</span><span class="o">.</span><span class="n">download_as_bytearray</span><span class="p">()</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Download complete, publishing ...&quot;</span><span class="p">)</span>
+
+        <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imdecode</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">byte_array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cv_bridge</span><span class="o">.</span><span class="n">cv2_to_imgmsg</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;bgr8&quot;</span><span class="p">)</span>
+        <span class="n">msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">stamp</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caption_as_frame_id</span><span class="p">:</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">caption</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_from_telegram_image_publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">caption</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_from_telegram_string_publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">caption</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TelegramROSBridge._ros_image_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge._ros_image_callback">[docs]</a>    <span class="nd">@ros_callback</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ros_image_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Image</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a new ROS Image message is coming in that should be sent to the Telegram conversation</span>
+
+<span class="sd">        :param msg: Image message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cv2_img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cv_bridge</span><span class="o">.</span><span class="n">imgmsg_to_cv2</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">&quot;bgr8&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">send_photo</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">,</span>
+            <span class="n">photo</span><span class="o">=</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">imencode</span><span class="p">(</span><span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="n">cv2_img</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()),</span>
+            <span class="n">caption</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TelegramROSBridge._telegram_location_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge._telegram_location_callback">[docs]</a>    <span class="nd">@telegram_callback</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_telegram_location_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="n">Update</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">CallbackContext</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a new Telegram Location is received. The method will verify whether the incoming Location is</span>
+<span class="sd">        from the bridged Telegram conversation by comparing the chat_id.</span>
+
+<span class="sd">        :param update: Received update that holds the chat_id and message data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_from_telegram_location_publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span>
+            <span class="n">NavSatFix</span><span class="p">(</span>
+                <span class="n">header</span><span class="o">=</span><span class="n">Header</span><span class="p">(</span><span class="n">stamp</span><span class="o">=</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()),</span>
+                <span class="n">latitude</span><span class="o">=</span><span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">latitude</span><span class="p">,</span>
+                <span class="n">longitude</span><span class="o">=</span><span class="n">update</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">longitude</span><span class="p">,</span>
+                <span class="n">position_covariance_type</span><span class="o">=</span><span class="n">NavSatFix</span><span class="o">.</span><span class="n">COVARIANCE_TYPE_UNKNOWN</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TelegramROSBridge._ros_location_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge._ros_location_callback">[docs]</a>    <span class="nd">@ros_callback</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ros_location_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">NavSatFix</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a new ROS NavSatFix message is coming in that should be sent to the Telegram conversation</span>
+
+<span class="sd">        :param msg: NavSatFix that the robot wants to share</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">send_location</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="n">Location</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">longitude</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">latitude</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TelegramROSBridge._ros_options_callback"><a class="viewcode-back" href="../../api/telegram_ros/bridge/index.html#telegram_ros.bridge.TelegramROSBridge._ros_options_callback">[docs]</a>    <span class="nd">@ros_callback</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ros_options_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Options</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when a new ROS Options message is coming in that should be sent to the Telegram conversation</span>
+
+<span class="sd">        :param msg: Options that the robot wants to share</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">chunks</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>  <span class="c1"># noqa: E741</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Yield successive n-sized chunks from l.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">),</span> <span class="n">n</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span>  <span class="c1"># noqa: E203</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_updater</span><span class="o">.</span><span class="n">bot</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_telegram_chat_id</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">question</span><span class="p">,</span>
+            <span class="n">reply_markup</span><span class="o">=</span><span class="n">ReplyKeyboardMarkup</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">chunks</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> <span class="mi">5</span><span class="p">)),</span> <span class="n">resize_keyboard</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">one_time_keyboard</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

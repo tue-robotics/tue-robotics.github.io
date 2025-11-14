@@ -1,0 +1,295 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="kdtree_8cpp" kind="file" language="C++">
+    <compoundname>kdtree.cpp</compoundname>
+    <includes refid="kdtree_8h" local="yes">kdtree.h</includes>
+    <includes local="no">cmath</includes>
+    <incdepgraph>
+      <node id="5">
+        <label>vector</label>
+        <link refid="cpp/header/vector" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="4">
+        <label>memory</label>
+        <link refid="cpp/header/memory" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="3">
+        <label>array</label>
+        <link refid="cpp/header/array" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="6">
+        <label>geolib/math_types.h</label>
+        <link refid="math__types_8h.html" external="/home/docker/ros/noetic/system/build/docs/geolib2/tags"/>
+      </node>
+      <node id="2">
+        <label>kdtree.h</label>
+        <link refid="kdtree_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>kdtree.cpp</label>
+        <link refid="kdtree_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>cmath</label>
+        <link refid="cpp/header/cmath" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+    </incdepgraph>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;<ref refid="kdtree_8h" kindref="compound">kdtree.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="cpp/header/cmath" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">cmath</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8" refid="classKDTree_1a9aece62c92da86dcbc72bf572e1f38f4" refkind="member"><highlight class="normal"><ref refid="classKDTree_1a9aece62c92da86dcbc72bf572e1f38f4" kindref="member">KDTree::KDTree</ref>(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>initial_size,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/container/array" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::array&lt;double, 3&gt;</ref>&amp;<sp/>cell_size)<sp/>:<sp/>res_(cell_size),<sp/>root_(nullptr),<sp/>node_count_(0),<sp/>nodes_(initial_size),<sp/>leaf_count_(0)</highlight></codeline>
+<codeline lineno="9"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="10"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14" refid="classKDTree_1a0920219cb85bb5abc8dc1bb22c44a56c" refkind="member"><highlight class="normal"><ref refid="classKDTree_1a0920219cb85bb5abc8dc1bb22c44a56c" kindref="member">KDTree::~KDTree</ref>()</highlight></codeline>
+<codeline lineno="15"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ptr<sp/>:<sp/><ref refid="classKDTree_1ababfd89284def0a8b8e894af43bb3e78" kindref="member">nodes_</ref>)</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>ptr;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="classKDTree_1aa3d51702134742be2145dab4ce673688" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDTree_1aa3d51702134742be2145dab4ce673688" kindref="member">KDTree::clear</ref>()</highlight></codeline>
+<codeline lineno="23"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDTree_1a90a7db553f71f17b6501cf6412230fe2" kindref="member">root_</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDTree_1abf8e8c2618c509a88d577b3f007158f5" kindref="member">leaf_count_</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDTree_1a5b3c50eb18c713542da5b7b4bde5e108" kindref="member">node_count_</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="classKDTree_1a28ea9a971d85d7f412c90b7f904cea70" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDTree_1a28ea9a971d85d7f412c90b7f904cea70" kindref="member">KDTree::insert</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classgeo_1_1Transform2T" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/geolib2/tags">geo::Transform2</ref>&amp;<sp/>pose,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>value)</highlight></codeline>
+<codeline lineno="32"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classKDTree_1a90a7db553f71f17b6501cf6412230fe2" kindref="member">root_</ref><sp/>=<sp/><ref refid="classKDTree_1ac44bcaea1077c05275aed1cfd24b99e0" kindref="member">insertNode</ref>(</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/><ref refid="classKDTree_1a90a7db553f71f17b6501cf6412230fe2" kindref="member">root_</ref>,<sp/><ref refid="classKDTree_1ade91eaa32f6af2a82b9ac08702c11b60" kindref="member">generateKey</ref>(pose),<sp/>value);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="classKDTree_1a48b57a1ac7c64962c79f1c4f6958aad7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDTree_1a48b57a1ac7c64962c79f1c4f6958aad7" kindref="member">KDTree::cluster</ref>()</highlight></codeline>
+<codeline lineno="39"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>queue_count<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>cluster_count<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;KDTreeNode*&gt;</ref><sp/>queue(<ref refid="classKDTree_1a5b3c50eb18c713542da5b7b4bde5e108" kindref="member">node_count_</ref>);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Put<sp/>all<sp/>the<sp/>leaves<sp/>in<sp/>a<sp/>queue</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>i=0;<sp/>i&lt;<ref refid="classKDTree_1a5b3c50eb18c713542da5b7b4bde5e108" kindref="member">node_count_</ref>;<sp/>++i)</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/>node<sp/>=<sp/><ref refid="classKDTree_1ababfd89284def0a8b8e894af43bb3e78" kindref="member">nodes_</ref>[i];</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(node-&gt;<ref refid="structKDTreeNode_1a4baff95278c2584c361ba6b2d5317b73" kindref="member">leaf</ref>)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a2fcba618c02e31df05b896849215b8bd" kindref="member">cluster</ref><sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>queue[queue_count++]<sp/>=<sp/>node;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>i=queue_count;<sp/>i&gt;0;<sp/>--i)</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/>node<sp/>=<sp/>queue[i-1];</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>this<sp/>node<sp/>has<sp/>already<sp/>been<sp/>labelled,<sp/>skip<sp/>it</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(node-&gt;<ref refid="structKDTreeNode_1a2fcba618c02e31df05b896849215b8bd" kindref="member">cluster</ref><sp/>&gt;=<sp/>0)</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Assign<sp/>a<sp/>label<sp/>to<sp/>this<sp/>cluster</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a2fcba618c02e31df05b896849215b8bd" kindref="member">cluster</ref><sp/>=<sp/>cluster_count++;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Recursively<sp/>label<sp/>nodes<sp/>in<sp/>this<sp/>cluster</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDTree_1ad4fbd4b1d89bd07e517ca0d74d23401b" kindref="member">clusterNode</ref>(node,<sp/>0);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="classKDTree_1ab1d31aa0b1a1efcd0a9614a1fa171f38" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classKDTree_1ab1d31aa0b1a1efcd0a9614a1fa171f38" kindref="member">KDTree::getCluster</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classgeo_1_1Transform2T" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/geolib2/tags">geo::Transform2</ref>&amp;<sp/>pose)</highlight></codeline>
+<codeline lineno="75"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/>node<sp/>=<sp/><ref refid="classKDTree_1aa8f3e067a28788b2a95f09e9ab044d9b" kindref="member">findNode</ref>(<ref refid="classKDTree_1a90a7db553f71f17b6501cf6412230fe2" kindref="member">root_</ref>,<sp/><ref refid="classKDTree_1ade91eaa32f6af2a82b9ac08702c11b60" kindref="member">generateKey</ref>(pose));</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!node)</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>-1;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>node-&gt;<ref refid="structKDTreeNode_1a2fcba618c02e31df05b896849215b8bd" kindref="member">cluster</ref>;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84" refid="classKDTree_1a4b8376f9441c69412b3e3e8a5899e273" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classKDTree_1a4b8376f9441c69412b3e3e8a5899e273" kindref="member">KDTree::getValue</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classgeo_1_1Transform2T" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/geolib2/tags">geo::Transform2</ref>&amp;<sp/>pose)</highlight></codeline>
+<codeline lineno="85"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/>node<sp/>=<sp/><ref refid="classKDTree_1aa8f3e067a28788b2a95f09e9ab044d9b" kindref="member">findNode</ref>(<ref refid="classKDTree_1a90a7db553f71f17b6501cf6412230fe2" kindref="member">root_</ref>,<sp/><ref refid="classKDTree_1ade91eaa32f6af2a82b9ac08702c11b60" kindref="member">generateKey</ref>(pose));</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!node)</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>node-&gt;<ref refid="structKDTreeNode_1a9eb7eac1d2d755999e709e54cc39d3f6" kindref="member">value</ref>;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="classKDTree_1ade91eaa32f6af2a82b9ac08702c11b60" refkind="member"><highlight class="normal"><ref refid="cpp/container/array" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::array&lt;int, 3&gt;</ref><sp/><ref refid="classKDTree_1ade91eaa32f6af2a82b9ac08702c11b60" kindref="member">KDTree::generateKey</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classgeo_1_1Transform2T" kindref="compound" external="/home/docker/ros/noetic/system/build/docs/geolib2/tags">geo::Transform2</ref><sp/>&amp;pose)</highlight></codeline>
+<codeline lineno="95"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/array" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::array&lt;int, 3&gt;</ref><sp/>key;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>key[0]<sp/>=<sp/><ref refid="cpp/numeric/math/floor" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::floor</ref>(pose.<ref refid="classgeo_1_1Transform2T_1aed7a26b999f43c9186efe8991823bf13" kindref="member" external="/home/docker/ros/noetic/system/build/docs/geolib2/tags">t</ref>.<ref refid="classgeo_1_1Vec2T_1a476c2f7cacbf6b233746ab18f2a87c54" kindref="member" external="/home/docker/ros/noetic/system/build/docs/geolib2/tags">x</ref><sp/>/<sp/><ref refid="classKDTree_1aa49bd93996776edaefb9ee33ef33b96e" kindref="member">res_</ref>[0]);</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/>key[1]<sp/>=<sp/><ref refid="cpp/numeric/math/floor" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::floor</ref>(pose.<ref refid="classgeo_1_1Transform2T_1aed7a26b999f43c9186efe8991823bf13" kindref="member" external="/home/docker/ros/noetic/system/build/docs/geolib2/tags">t</ref>.<ref refid="classgeo_1_1Vec2T_1a506e3148ad901feea9e7658a4d35fe8b" kindref="member" external="/home/docker/ros/noetic/system/build/docs/geolib2/tags">y</ref><sp/>/<sp/><ref refid="classKDTree_1aa49bd93996776edaefb9ee33ef33b96e" kindref="member">res_</ref>[1]);</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>key[2]<sp/>=<sp/><ref refid="cpp/numeric/math/floor" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::floor</ref>(pose.<ref refid="classgeo_1_1Transform2T_1afe0ff43534bc176195bd3e70887fba95" kindref="member" external="/home/docker/ros/noetic/system/build/docs/geolib2/tags">rotation</ref>()<sp/>/<sp/><ref refid="classKDTree_1aa49bd93996776edaefb9ee33ef33b96e" kindref="member">res_</ref>[2]);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>key;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106" refid="classKDTree_1a5b2fcd1df93b9586bf6dffdf04cb0a66" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classKDTree_1a5b2fcd1df93b9586bf6dffdf04cb0a66" kindref="member">KDTree::equal</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/container/array" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::array&lt;int, 3&gt;</ref>&amp;<sp/>key_a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/container/array" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::array&lt;int, 3&gt;</ref>&amp;<sp/>key_b)</highlight></codeline>
+<codeline lineno="107"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(key_a[0]<sp/>!=<sp/>key_b[0])</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(key_a[1]<sp/>!=<sp/>key_b[1])</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(key_a[2]<sp/>!=<sp/>key_b[2])</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120" refid="classKDTree_1ac44bcaea1077c05275aed1cfd24b99e0" refkind="member"><highlight class="normal"><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/><ref refid="classKDTree_1ac44bcaea1077c05275aed1cfd24b99e0" kindref="member">KDTree::insertNode</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/>parent,<sp/><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/>node,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/container/array" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::array&lt;int, 3&gt;</ref>&amp;<sp/>key,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>value)</highlight></codeline>
+<codeline lineno="121"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>the<sp/>node<sp/>doesnt<sp/>exist<sp/>yet</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!node)</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Resize<sp/>if<sp/>end<sp/>is<sp/>reached</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classKDTree_1a5b3c50eb18c713542da5b7b4bde5e108" kindref="member">node_count_</ref><sp/>&gt;=<sp/><ref refid="classKDTree_1ababfd89284def0a8b8e894af43bb3e78" kindref="member">nodes_</ref>.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>())</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDTree_1ababfd89284def0a8b8e894af43bb3e78" kindref="member">nodes_</ref>.<ref refid="cpp/container/vector/resize" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">resize</ref>(<ref refid="classKDTree_1a5b3c50eb18c713542da5b7b4bde5e108" kindref="member">node_count_</ref><sp/>+<sp/>10);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classKDTree_1ababfd89284def0a8b8e894af43bb3e78" kindref="member">nodes_</ref>[<ref refid="classKDTree_1a5b3c50eb18c713542da5b7b4bde5e108" kindref="member">node_count_</ref>])</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDTree_1ababfd89284def0a8b8e894af43bb3e78" kindref="member">nodes_</ref>[<ref refid="classKDTree_1a5b3c50eb18c713542da5b7b4bde5e108" kindref="member">node_count_</ref>]<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal">(<ref refid="classKDTree_1ababfd89284def0a8b8e894af43bb3e78" kindref="member">nodes_</ref>[<ref refid="classKDTree_1a5b3c50eb18c713542da5b7b4bde5e108" kindref="member">node_count_</ref>])<sp/><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDTree_1ababfd89284def0a8b8e894af43bb3e78" kindref="member">nodes_</ref>[<ref refid="classKDTree_1a5b3c50eb18c713542da5b7b4bde5e108" kindref="member">node_count_</ref>]<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>;</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node<sp/>=<sp/><ref refid="classKDTree_1ababfd89284def0a8b8e894af43bb3e78" kindref="member">nodes_</ref>[<ref refid="classKDTree_1a5b3c50eb18c713542da5b7b4bde5e108" kindref="member">node_count_</ref>++];</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a4baff95278c2584c361ba6b2d5317b73" kindref="member">leaf</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!parent)</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1abcc45b240690a9fb5eb54dd7fe882ac9" kindref="member">depth</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1abcc45b240690a9fb5eb54dd7fe882ac9" kindref="member">depth</ref><sp/>=<sp/>parent-&gt;<ref refid="structKDTreeNode_1abcc45b240690a9fb5eb54dd7fe882ac9" kindref="member">depth</ref><sp/>+<sp/>1;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a39aa8d7db84e14b4cf274e387a70766d" kindref="member">key</ref><sp/>=<sp/>key;</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a9eb7eac1d2d755999e709e54cc39d3f6" kindref="member">value</ref><sp/>=<sp/>value;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDTree_1abf8e8c2618c509a88d577b3f007158f5" kindref="member">leaf_count_</ref><sp/>+=<sp/>1;</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>the<sp/>node<sp/>exists,<sp/>and<sp/>it<sp/>is<sp/>a<sp/>leaf<sp/>node</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(node-&gt;<ref refid="structKDTreeNode_1a4baff95278c2584c361ba6b2d5317b73" kindref="member">leaf</ref>)</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>the<sp/>keys<sp/>are<sp/>equal,<sp/>increment<sp/>the<sp/>value</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classKDTree_1a5b2fcd1df93b9586bf6dffdf04cb0a66" kindref="member">equal</ref>(key,<sp/>node-&gt;<ref refid="structKDTreeNode_1a39aa8d7db84e14b4cf274e387a70766d" kindref="member">key</ref>))</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a9eb7eac1d2d755999e709e54cc39d3f6" kindref="member">value</ref><sp/>+=<sp/>value;</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>keys<sp/>are<sp/>not<sp/>equal,<sp/>so<sp/>split<sp/>this<sp/>node</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Pivot<sp/>dimension<sp/>should<sp/>be<sp/>x,<sp/>y,<sp/>th,<sp/>x,<sp/>y,<sp/>th,<sp/>etc.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a6529ab039696978304bbb8e853c92b15" kindref="member">pivot_dim</ref><sp/>=<sp/>node-&gt;<ref refid="structKDTreeNode_1abcc45b240690a9fb5eb54dd7fe882ac9" kindref="member">depth</ref><sp/>%<sp/>3;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1acaeb33084858cecb02967ad4990415f6" kindref="member">pivot_value</ref><sp/>=<sp/>(key[node-&gt;<ref refid="structKDTreeNode_1a6529ab039696978304bbb8e853c92b15" kindref="member">pivot_dim</ref>]<sp/>+<sp/>node-&gt;<ref refid="structKDTreeNode_1a39aa8d7db84e14b4cf274e387a70766d" kindref="member">key</ref>[node-&gt;<ref refid="structKDTreeNode_1a6529ab039696978304bbb8e853c92b15" kindref="member">pivot_dim</ref>])<sp/>/<sp/>2.;</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(key[node-&gt;<ref refid="structKDTreeNode_1a6529ab039696978304bbb8e853c92b15" kindref="member">pivot_dim</ref>]<sp/>&lt;<sp/>node-&gt;<ref refid="structKDTreeNode_1acaeb33084858cecb02967ad4990415f6" kindref="member">pivot_value</ref>)</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a2c99c20ada6ad250fca9a475111b868f" kindref="member">children</ref>[0]<sp/>=<sp/><ref refid="classKDTree_1ac44bcaea1077c05275aed1cfd24b99e0" kindref="member">insertNode</ref>(node,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/>key,<sp/>value);</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a2c99c20ada6ad250fca9a475111b868f" kindref="member">children</ref>[1]<sp/>=<sp/><ref refid="classKDTree_1ac44bcaea1077c05275aed1cfd24b99e0" kindref="member">insertNode</ref>(node,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/>node-&gt;<ref refid="structKDTreeNode_1a39aa8d7db84e14b4cf274e387a70766d" kindref="member">key</ref>,<sp/>node-&gt;<ref refid="structKDTreeNode_1a9eb7eac1d2d755999e709e54cc39d3f6" kindref="member">value</ref>);</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a2c99c20ada6ad250fca9a475111b868f" kindref="member">children</ref>[0]<sp/>=<sp/><ref refid="classKDTree_1ac44bcaea1077c05275aed1cfd24b99e0" kindref="member">insertNode</ref>(node,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/>node-&gt;<ref refid="structKDTreeNode_1a39aa8d7db84e14b4cf274e387a70766d" kindref="member">key</ref>,<sp/>node-&gt;<ref refid="structKDTreeNode_1a9eb7eac1d2d755999e709e54cc39d3f6" kindref="member">value</ref>);</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a2c99c20ada6ad250fca9a475111b868f" kindref="member">children</ref>[1]<sp/>=<sp/><ref refid="classKDTree_1ac44bcaea1077c05275aed1cfd24b99e0" kindref="member">insertNode</ref>(node,<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,<sp/>key,<sp/>value);</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>node-&gt;<ref refid="structKDTreeNode_1a4baff95278c2584c361ba6b2d5317b73" kindref="member">leaf</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDTree_1abf8e8c2618c509a88d577b3f007158f5" kindref="member">leaf_count_</ref><sp/>-=<sp/>1;</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>the<sp/>node<sp/>exists<sp/>and<sp/>it<sp/>has<sp/>children</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(key[node-&gt;<ref refid="structKDTreeNode_1a6529ab039696978304bbb8e853c92b15" kindref="member">pivot_dim</ref>]<sp/>&lt;<sp/>node-&gt;<ref refid="structKDTreeNode_1acaeb33084858cecb02967ad4990415f6" kindref="member">pivot_value</ref>)</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDTree_1ac44bcaea1077c05275aed1cfd24b99e0" kindref="member">insertNode</ref>(node,<sp/>node-&gt;<ref refid="structKDTreeNode_1a2c99c20ada6ad250fca9a475111b868f" kindref="member">children</ref>[0],<sp/>key,<sp/>value);</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDTree_1ac44bcaea1077c05275aed1cfd24b99e0" kindref="member">insertNode</ref>(node,<sp/>node-&gt;<ref refid="structKDTreeNode_1a2c99c20ada6ad250fca9a475111b868f" kindref="member">children</ref>[1],<sp/>key,<sp/>value);</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>node;</highlight></codeline>
+<codeline lineno="190"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight></codeline>
+<codeline lineno="194" refid="classKDTree_1aa8f3e067a28788b2a95f09e9ab044d9b" refkind="member"><highlight class="normal"><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/><ref refid="classKDTree_1aa8f3e067a28788b2a95f09e9ab044d9b" kindref="member">KDTree::findNode</ref>(<ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/>node,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="cpp/container/array" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::array&lt;int, 3&gt;</ref>&amp;<sp/>key)</highlight></codeline>
+<codeline lineno="195"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(node-&gt;<ref refid="structKDTreeNode_1a4baff95278c2584c361ba6b2d5317b73" kindref="member">leaf</ref>)</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>the<sp/>keys<sp/>are<sp/>the<sp/>same</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classKDTree_1a5b2fcd1df93b9586bf6dffdf04cb0a66" kindref="member">equal</ref>(key,<sp/>node-&gt;<ref refid="structKDTreeNode_1a39aa8d7db84e14b4cf274e387a70766d" kindref="member">key</ref>))</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>node;</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>the<sp/>keys<sp/>are<sp/>different</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(key[node-&gt;<ref refid="structKDTreeNode_1a6529ab039696978304bbb8e853c92b15" kindref="member">pivot_dim</ref>]<sp/>&lt;<sp/>node-&gt;<ref refid="structKDTreeNode_1acaeb33084858cecb02967ad4990415f6" kindref="member">pivot_value</ref>)</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDTree_1aa8f3e067a28788b2a95f09e9ab044d9b" kindref="member">findNode</ref>(node-&gt;<ref refid="structKDTreeNode_1a2c99c20ada6ad250fca9a475111b868f" kindref="member">children</ref>[0],<sp/>key);</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classKDTree_1aa8f3e067a28788b2a95f09e9ab044d9b" kindref="member">findNode</ref>(node-&gt;<ref refid="structKDTreeNode_1a2c99c20ada6ad250fca9a475111b868f" kindref="member">children</ref>[1],<sp/>key);</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="212"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight><highlight class="comment">//<sp/>----------------------------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight></codeline>
+<codeline lineno="216" refid="classKDTree_1ad4fbd4b1d89bd07e517ca0d74d23401b" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classKDTree_1ad4fbd4b1d89bd07e517ca0d74d23401b" kindref="member">KDTree::clusterNode</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/>node,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>depth)</highlight></codeline>
+<codeline lineno="217"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/array" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::array&lt;int, 3&gt;</ref><sp/>nkey;</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structKDTreeNode" kindref="compound">KDTreeNode</ref>*<sp/>nnode;</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>i=0;<sp/>i&lt;27;<sp/>++i)<sp/></highlight><highlight class="comment">//<sp/>all<sp/>surrounding<sp/>bins,<sp/>including<sp/>yourself</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nkey[0]<sp/>=<sp/>node-&gt;<ref refid="structKDTreeNode_1a39aa8d7db84e14b4cf274e387a70766d" kindref="member">key</ref>[0]<sp/>+<sp/>(i<sp/>/<sp/>9)<sp/>-<sp/>1;</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nkey[1]<sp/>=<sp/>node-&gt;<ref refid="structKDTreeNode_1a39aa8d7db84e14b4cf274e387a70766d" kindref="member">key</ref>[1]<sp/>+<sp/>((i<sp/>%<sp/>9)<sp/>/<sp/>3)<sp/>-<sp/>1;</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nkey[2]<sp/>=<sp/>node-&gt;<ref refid="structKDTreeNode_1a39aa8d7db84e14b4cf274e387a70766d" kindref="member">key</ref>[2]<sp/>+<sp/>((i<sp/>%<sp/>9)<sp/>%<sp/>3)<sp/>-<sp/>1;</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"></highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nnode<sp/>=<sp/><ref refid="classKDTree_1aa8f3e067a28788b2a95f09e9ab044d9b" kindref="member">findNode</ref>(<ref refid="classKDTree_1a90a7db553f71f17b6501cf6412230fe2" kindref="member">root_</ref>,<sp/>nkey);</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!nnode)</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>node<sp/>already<sp/>has<sp/>a<sp/>label,<sp/>skip<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(nnode-&gt;<ref refid="structKDTreeNode_1a2fcba618c02e31df05b896849215b8bd" kindref="member">cluster</ref><sp/>&gt;=<sp/>0)</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Label<sp/>this<sp/>node<sp/>and<sp/>recurse</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nnode-&gt;<ref refid="structKDTreeNode_1a2fcba618c02e31df05b896849215b8bd" kindref="member">cluster</ref><sp/>=<sp/>node-&gt;<ref refid="structKDTreeNode_1a2fcba618c02e31df05b896849215b8bd" kindref="member">cluster</ref>;</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classKDTree_1ad4fbd4b1d89bd07e517ca0d74d23401b" kindref="member">clusterNode</ref>(nnode,<sp/>depth<sp/>+<sp/>1);</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="238"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="src/kdtree.cpp"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,239 @@
+ed.entity
+=========
+
+.. py:module:: ed.entity
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   ed.entity.Entity
+   ed.entity.PersonProperties
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   ed.entity.from_entity_info
+
+
+Module Contents
+---------------
+
+.. py:class:: Entity(identifier, object_type, frame_id, pose, shape, volumes, super_types, last_update_time, person_properties=None)
+
+   Bases: :py:obj:`ed.util.equal_hash_mixin.EqualHashMixin`
+
+
+   Holds all data concerning entities
+
+   Constructor
+
+   :param identifier: str with the id of this entity
+   :param object_type: str with the type of this entity
+   :param frame_id: str frame id w.r.t. which the pose is defined
+   :param pose: kdl.Frame with the pose of this entity
+   :param shape: Shape of this entity
+   :param volumes: dict mapping strings to Volume
+   :param super_types: list with strings representing super types in an ontology of object types
+   :param last_update_time: Time of last update
+
+
+   .. py:attribute:: uuid
+
+
+   .. py:attribute:: etype
+
+
+   .. py:attribute:: frame_id
+
+
+   .. py:attribute:: _pose
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: _volumes
+
+
+   .. py:attribute:: super_types
+
+
+   .. py:attribute:: _last_update_time
+
+
+   .. py:attribute:: _person_properties
+      :value: None
+
+
+
+   .. py:property:: volumes
+
+
+   .. py:method:: in_volume(point, volume_id, padding = 0)
+
+      Checks if the point is in the volume identified by the volume id
+
+      :param point: VectorStamped with the point to check
+      :param volume_id: string with the volume
+      :param padding: Padding to take into account. Positive values make the volume bigger, negative values smaller.
+      :return: boolean indicating whether the point is in the designated volume. If an error occurs, False is returned
+
+
+
+   .. py:method:: entities_in_volume(entities, volume_id)
+
+      Filter the collection of entities down to only those in the given volume
+
+      :param entities: collection/sequence of entities
+      :param volume_id: volume these entities need to be in
+      :return: entities that are both in the given volume and in the list 'entities'
+
+
+
+   .. py:property:: last_update_time
+
+
+   .. py:method:: distance_to_2d(point)
+
+      Calculate the distance between this entity's pose and the given point.
+
+      :param point: Assumed to be in the same frame_id as the entity itself
+      :return: the distance between the entity's pose and the point
+
+      >>> pose = kdl.Frame(kdl.Rotation.RPY(1, 0, 0), kdl.Vector(3, 3, 3))
+      >>> e = Entity("dummy", None, "map", pose, None, {}, None, rospy.Time())
+      >>> point = kdl.Vector(1, 1, 1)
+      >>> e.distance_to_2d(point)
+      2.8284271247461903
+
+
+
+   .. py:method:: distance_to_3d(point)
+
+      Calculate the distance between this entity's pose and the given point.
+
+      :param point: Assumed to be in the same frame_id as the entity itself
+      :return: the distance between the entity's pose and the point
+
+      >>> pose = kdl.Frame(kdl.Rotation.RPY(1, 0, 0), kdl.Vector(3, 3, 3))
+      >>> e = Entity("dummy", None, "map", pose, None, {}, None, rospy.Time())
+      >>> point = kdl.Vector(1, 1, 1)
+      >>> e.distance_to_3d(point)
+      3.4641016151377544
+
+
+
+   .. py:method:: is_a(super_type)
+
+      Check whether the entity is a (subclass of) some supertype
+
+      :param super_type: Representing the name of the super_type
+      :return: True if the entity is a (sub)type of the given super_type
+
+      >>> e = Entity("dummy", "coffee_table", None, None, None, {}, ["coffee_table", "table", "furniture", "thing"], 0)
+      >>> e.is_a("furniture")
+      True
+      >>> e.is_a("food")
+      False
+
+
+
+   .. py:property:: pose
+      :type: pykdl_ros.FrameStamped
+
+
+      Returns the pose of the Entity as a FrameStamped
+
+
+   .. py:property:: person_properties
+      :type: Optional[PersonProperties]
+
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: PersonProperties(name, age, emotion, gender, gender_confidence, pointing_pose, posture, reliability, shirt_colors, tags, tagnames, velocity, parent_entity)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Container for several properties related to a person
+
+   :param name: the person's name. This is separate from the entity, which is unique while this doesn't have to be
+   :param age: Estimated age of the person
+   :param emotion: Indicating the emotion
+   :param gender: Predicted gender of the person
+   :param gender_confidence: Confidence of the classifier in the gender above.
+   :param pointing_pose: In which direction is the person pointing
+   :param posture: String with a value like 'sitting', 'laying', 'standing' etc.
+   :param reliability:  ToDO
+   :param shirt_colors: list of 3 shirt colors, sorted from most dominant to less dominant
+   :param tags: Other tags
+   :param tagnames: Other tagnames
+   :param velocity: Velocity with which the person in moving
+   :param parent_entity: The Entity that these properties belong to
+
+
+   .. py:attribute:: _name
+
+
+   .. py:attribute:: age
+
+
+   .. py:attribute:: emotion
+
+
+   .. py:attribute:: gender
+
+
+   .. py:attribute:: gender_confidence
+
+
+   .. py:attribute:: pointing_pose
+
+
+   .. py:attribute:: posture
+
+
+   .. py:attribute:: reliability
+
+
+   .. py:attribute:: shirt_colors
+
+
+   .. py:attribute:: tags
+
+
+   .. py:attribute:: tagnames
+
+
+   .. py:attribute:: velocity
+
+
+   .. py:attribute:: _parent_entity
+
+
+   .. py:property:: name
+      :type: str
+
+
+
+   .. py:method:: __repr__()
+
+
+.. py:function:: from_entity_info(e)
+
+   Converts ed_msgs.msg.EntityInfo to an Entity
+
+   :param e: ed_msgs.msg.EntityInfo
+   :return: Entity
+
+

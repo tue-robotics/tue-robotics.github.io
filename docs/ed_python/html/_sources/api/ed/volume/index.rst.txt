@@ -1,0 +1,262 @@
+ed.volume
+=========
+
+.. py:module:: ed.volume
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   ed.volume.Volume
+   ed.volume.BoxVolume
+   ed.volume.CompositeBoxVolume
+   ed.volume.OffsetVolume
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   ed.volume.volume_from_entity_volume_msg
+   ed.volume.volumes_from_entity_volumes_msg
+
+
+Module Contents
+---------------
+
+.. py:class:: Volume
+
+   Bases: :py:obj:`ed.util.equal_hash_mixin.EqualHashMixin`
+
+
+   Represents a volume of an entity
+
+   Points are defined relative to the object they belong to
+
+   Constructor
+
+
+   .. py:property:: center_point
+      :type: PyKDL.Vector
+
+
+      Get the center of the Volume
+
+
+   .. py:method:: _calc_center_point()
+      :abstractmethod:
+
+
+
+   .. py:method:: contains(point, padding = 0)
+      :abstractmethod:
+
+
+      Checks if the point is inside this volume
+
+      :param point: kdl Vector w.r.t. the same frame as this volume
+      :param padding: Padding to take into account. Positive values make the volume bigger, negative values smaller.
+      :return: True if inside, False otherwise
+
+
+
+   .. py:property:: size
+      :type: float
+
+
+
+   .. py:method:: _calc_size()
+      :abstractmethod:
+
+
+
+.. py:class:: BoxVolume(min_corner, max_corner)
+
+   Bases: :py:obj:`Volume`
+
+
+   Represents a box shaped volume
+
+   Constructor
+
+   Points are defined relative to the object they belong to
+
+   :param min_corner: Vector with the minimum bounding box corner
+   :param max_corner: Vector with the maximum bounding box corner
+
+
+   .. py:attribute:: _min_corner
+
+
+   .. py:attribute:: _max_corner
+
+
+   .. py:method:: _calc_center_point()
+
+      Calculate where the center of the box is located
+
+      >>> b = BoxVolume(kdl.Vector(0,0,0), kdl.Vector(1,1,1))
+      >>> b.center_point
+      [         0.5,         0.5,         0.5]
+
+
+
+   .. py:method:: _calc_size()
+
+      Calculate the size of a volume
+
+      >>> BoxVolume(kdl.Vector(0, 0, 0), kdl.Vector(1, 1, 1)).size
+      1.0
+      >>> BoxVolume(kdl.Vector(0, 0, 0), kdl.Vector(10, 10, 0.1)).size
+      10.0
+      >>> BoxVolume(kdl.Vector(0, 0, 0), kdl.Vector(1, 1, 10)).size
+      10.0
+
+
+
+   .. py:property:: min_corner
+      :type: PyKDL.Vector
+
+
+
+   .. py:property:: max_corner
+      :type: PyKDL.Vector
+
+
+
+   .. py:property:: bottom_area
+      :type: List[PyKDL.Vector]
+
+
+
+   .. py:method:: contains(point, padding = 0)
+
+      Checks if the point is inside this volume
+
+      >>> b = BoxVolume(kdl.Vector(0,0,0), kdl.Vector(1,1,1))
+      >>> b.contains(kdl.Vector(0.1, 0.1, 0.1))
+      True
+      >>> b.contains(kdl.Vector(0.1, 0.1, 0.1), padding=0.2)
+      True
+      >>> b.contains(kdl.Vector(0.1, 0.1, 0.1), padding=-0.2)
+      False
+      >>> b.contains(kdl.Vector(-0.1, -0.1, -0.1))
+      False
+      >>> b.contains(kdl.Vector(-0.1, -0.1, -0.1), padding=0.2)
+      True
+      >>> b.contains(kdl.Vector(-0.1, -0.1, -0.1), padding=-0.2)
+      False
+
+      :param point: Vector w.r.t. the same frame as this volume
+      :param padding: Padding to take into account. Positive values make the volume bigger, negative values smaller.
+      :return: True if inside, False otherwise
+
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: CompositeBoxVolume(boxes)
+
+   Bases: :py:obj:`Volume`
+
+
+   Represents a composite box shaped volume
+
+   Constructor
+
+   Points are defined relative to the object they belong to.
+
+   :param boxes: list of tuples of two vectors. First one with the minimum bounding box corners,
+                       second one with the maximum bounding box corners
+
+
+   .. py:attribute:: _min_corners
+
+
+   .. py:attribute:: _max_corners
+
+
+   .. py:method:: _calc_center_point()
+
+      Calculate where the center of the box is located
+
+      >>> b = CompositeBoxVolume([(kdl.Vector(0,0,0), kdl.Vector(1,1,1))])
+      >>> b.center_point
+      [         0.5,         0.5,         0.5]
+
+
+
+   .. py:property:: min_corner
+      :type: PyKDL.Vector
+
+
+
+   .. py:property:: max_corner
+      :type: PyKDL.Vector
+
+
+
+   .. py:property:: bottom_area
+      :type: List[PyKDL.Vector]
+
+
+
+   .. py:method:: contains(point, padding = 0)
+
+      Checks if the point is inside this volume
+
+      >>> b = CompositeBoxVolume([(kdl.Vector(0,0,0), kdl.Vector(1,1,1))])
+      >>> b.contains(kdl.Vector(0.1, 0.1, 0.1))
+      True
+      >>> b.contains(kdl.Vector(0.1, 0.1, 0.1), padding=0.2)
+      True
+      >>> b.contains(kdl.Vector(0.1, 0.1, 0.1), padding=-0.2)
+      False
+      >>> b.contains(kdl.Vector(-0.1, -0.1, -0.1))
+      False
+      >>> b.contains(kdl.Vector(-0.1, -0.1, -0.1), padding=0.2)
+      True
+      >>> b.contains(kdl.Vector(-0.1, -0.1, -0.1), padding=-0.2)
+      False
+
+      :param point: Vector w.r.t. the same frame as this volume
+      :param padding: Padding to take into account. Positive values make the volume bigger, negative values smaller.
+      :return: True if inside, False otherwise
+
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: OffsetVolume(offset)
+
+   Bases: :py:obj:`Volume`
+
+
+   Represents a volume with a certain offset from the convex hull of the entity
+
+   Constructor
+
+   :param offset: Offset [m]
+
+
+   .. py:attribute:: _offset
+
+
+   .. py:method:: __repr__()
+
+
+.. py:function:: volume_from_entity_volume_msg(msg)
+
+   Creates a dict mapping strings to Volumes from the EntityInfo data dictionary
+
+   :param msg: ed_msgs.msg.Volume
+   :return: tuple of name and volume object
+
+
+.. py:function:: volumes_from_entity_volumes_msg(msgs)
+

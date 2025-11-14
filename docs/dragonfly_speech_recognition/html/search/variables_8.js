@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['handle_9602',['handle',['../classdragonfly_1_1engines_1_1backend__sapi5_1_1engine_1_1GrammarWrapper.html#aa22589184f27185e6d5f9b4d8c4ab59f',1,'dragonfly::engines::backend_sapi5::engine::GrammarWrapper']]],
+  ['handler_5ffilter_5fpairs_9603',['handler_filter_pairs',['../classdragonfly_1_1log_1_1DispatchingHandler.html#a6afdca5eb7cb08ded75560d33ca066b1',1,'dragonfly::log::DispatchingHandler']]],
+  ['hardware_5fapps_9604',['HARDWARE_APPS',['../namespacedragonfly_1_1actions_1_1action__base__keyboard.html#a390ca424f78a8f2b6193c7467156211f',1,'dragonfly::actions::action_base_keyboard']]],
+  ['has_5fdictation_9605',['has_dictation',['../classdragonfly_1_1engines_1_1backend__kaldi_1_1audio_1_1AudioStoreEntry.html#a846a1a71ee2da9c14c379997c30f63a1',1,'dragonfly.engines.backend_kaldi.audio.AudioStoreEntry.has_dictation()'],['../classdragonfly_1_1engines_1_1backend__kaldi_1_1engine_1_1Recognition.html#a3e464e4f49bc8cd6326e04c5ab07a513',1,'dragonfly.engines.backend_kaldi.engine.Recognition.has_dictation()']]],
+  ['has_5funique_5fobject_5frepresentations_5fv_9606',['has_unique_object_representations_v',['https://en.cppreference.com/w/cpp/types/has_unique_object_representations.html',1,'std']]],
+  ['has_5fvirtual_5fdestructor_5fv_9607',['has_virtual_destructor_v',['https://en.cppreference.com/w/cpp/types/has_virtual_destructor.html',1,'std::has_virtual_destructor_v()'],['https://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::has_virtual_destructor_v()']]],
+  ['header_9608',['HEADER',['../classdragonfly__speech__recognition_1_1dragonfly__server_1_1bcolors.html#a00b739b4ab896a21e3474aafe3577b5a',1,'dragonfly_speech_recognition.dragonfly_server.bcolors.HEADER()'],['../classgrammar__parser_1_1cfgparser_1_1bcolors.html#a9dff198e145c22349476e141cc4f418b',1,'grammar_parser.cfgparser.bcolors.HEADER()']]],
+  ['height_9609',['height',['../classdragonfly_1_1accessibility_1_1atspi_1_1BoundingBox.html#ae41f2521dc5e8e90fa4540776483f0a5',1,'dragonfly.accessibility.atspi.BoundingBox.height()'],['../classdragonfly_1_1accessibility_1_1ia2_1_1BoundingBox.html#a4c39935638d46fff89742bea12fea646',1,'dragonfly.accessibility.ia2.BoundingBox.height()']]],
+  ['home_9610',['HOME',['../classdragonfly_1_1actions_1_1keyboard_1_1__pynput_1_1BasePynputKeySymbols.html#a822bdadff8abc75078cb231caf3f783b',1,'dragonfly.actions.keyboard._pynput.BasePynputKeySymbols.HOME()'],['../classdragonfly_1_1actions_1_1keyboard_1_1__win32_1_1Win32KeySymbols.html#ae6477b1feb42d558cc56f3baf8d5be5d',1,'dragonfly.actions.keyboard._win32.Win32KeySymbols.HOME()'],['../classdragonfly_1_1actions_1_1keyboard_1_1__x11__base_1_1XdoKeySymbols.html#accf4896394f26ccbd959d29293c8e4e3',1,'dragonfly.actions.keyboard._x11_base.XdoKeySymbols.HOME()']]],
+  ['horizontal_9611',['horizontal',['../classdragonfly_1_1actions_1_1mouse_1_1__base_1_1MoveEvent.html#a20307e9de84c3b41c793028ccc8b482a',1,'dragonfly.actions.mouse._base.MoveEvent.horizontal()'],['../classdragonfly_1_1actions_1_1mouse_1_1__base_1_1MoveRelativeEvent.html#a91182cdabc39632501bd2d6d9cee63c5',1,'dragonfly.actions.mouse._base.MoveRelativeEvent.horizontal()']]],
+  ['hresult_9612',['hresult',['../namespacedragonfly_1_1windows_1_1win32__monitor.html#ab51a90238efdb9b922f8616192df38bc',1,'dragonfly::windows::win32_monitor']]],
+  ['html_5fcopy_5fsource_9613',['html_copy_source',['../namespaceconf.html#abc54bfed61f245a4bf93a800ca1c5b06',1,'conf']]],
+  ['html_5flast_5fupdated_5ffmt_9614',['html_last_updated_fmt',['../namespaceconf.html#a65371021a0b434251045fdb650f90b87',1,'conf']]],
+  ['html_5flogo_9615',['html_logo',['../namespaceconf.html#a85ebd472b7d3a9e41a63030cdd5944e6',1,'conf']]],
+  ['html_5fstatic_5fpath_9616',['html_static_path',['../namespaceconf.html#af4fb5d8851ccaade135c2668dd3ced41',1,'conf']]],
+  ['html_5ftheme_9617',['html_theme',['../namespaceconf.html#a7f1b143ff25817758abd21a7db110510',1,'conf']]],
+  ['html_5ftheme_5fpath_9618',['html_theme_path',['../namespaceconf.html#a4960231f83b1b44a1ffcd212903b62e8',1,'conf']]],
+  ['htmlhelp_5fbasename_9619',['htmlhelp_basename',['../namespaceconf.html#a74d707b34bba474e9057f383ad01de83',1,'conf']]]
+];

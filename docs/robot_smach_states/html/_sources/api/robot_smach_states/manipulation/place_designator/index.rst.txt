@@ -1,0 +1,145 @@
+robot_smach_states.manipulation.place_designator
+================================================
+
+.. py:module:: robot_smach_states.manipulation.place_designator
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.manipulation.place_designator.Candidate
+   robot_smach_states.manipulation.place_designator.EmptySpotDesignator
+
+
+Module Contents
+---------------
+
+.. py:class:: Candidate
+
+   Bases: :py:obj:`tuple`
+
+
+   .. py:attribute:: frame_stamped
+
+
+   .. py:attribute:: edge_score
+
+
+   .. py:attribute:: distance
+
+
+.. py:class:: EmptySpotDesignator(robot, place_location_designator, arm_designator, area=None, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.Designator`
+
+
+   Designates an empty spot on the empty placement-shelve.
+   It does this by querying ED for entities that occupy some space.
+       If the result is no entities, then we found an open spot.
+
+   To test this in the robotics_test_lab with amigo-console:
+   robot = amigo
+   CABINET = "bookcase"
+   PLACE_SHELF = "shelf2"
+   cabinet = ds.EntityByIdDesignator(robot, uuid=CABINET, name="pick_shelf")
+   arm = ds.UnoccupiedArmDesignator(robot, {})
+   place_position = ds.LockingDesignator(EmptySpotDesignator(robot, cabinet, arm, name="placement", area=PLACE_SHELF),
+                                         name="place_position")
+
+   Designate an empty spot (as PoseStamped) on some designated entity
+   :param robot: Robot whose worldmodel to use
+   :param place_location_designator: Designator resolving to an Entity, e.g. EntityByIdDesignator
+   :param arm_designator: Designator resolving to an arm robot part, e.g. OccupiedArmDesignator
+   :param area: (optional) area where the item should be placed
+   :param name: name for introspection purposes
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: place_location_designator
+
+
+   .. py:attribute:: arm_designator
+
+
+   .. py:attribute:: _edge_distance
+      :value: 0.05
+
+
+
+   .. py:attribute:: _spacing
+      :value: 0.15
+
+
+
+   .. py:attribute:: _area
+      :value: None
+
+
+
+   .. py:attribute:: _nav_threshold
+      :value: 0.3
+
+
+
+   .. py:attribute:: marker_pub
+
+
+   .. py:attribute:: marker_array
+
+
+   .. py:method:: _resolve()
+
+      :return: Where can an object be placed
+      :returns: FrameStamped
+
+
+
+   .. py:method:: _is_poi_unoccupied(frame_stamped, surface_entity, volume_id = None)
+
+
+   .. py:method:: _distance_to_poi_area_heuristic(frame_stamped, base_pose, arm)
+
+      :return: direct distance between a point and the place offset of the arm
+      :rtype: double [meters]
+
+
+
+   .. py:method:: _distance_to_poi_area(frame_stamped, arm)
+
+      :return: length of the path the robot would need to drive to place at the given point
+      :rtype: int [plan steps]
+
+
+
+   .. py:method:: _create_marker(x, y, z)
+
+
+   .. py:method:: _create_selection_marker(selected_pose)
+
+
+   .. py:method:: _determine_points_of_interest_with_area(entity, area)
+
+      Determines the points of interest using an area
+      :type entity: Entity
+      :param area: str indicating which volume of the entity to look at
+      :rtype: [FrameStamped]
+
+
+
+   .. py:method:: _determine_points_of_interest(center_frame, z_max, convex_hull)
+
+      Determine candidates for place poses
+      :param center_frame: kdl.Frame, center of the Entity to place on top of
+      :param z_max: float, height of the entity to place on, w.r.t. the entity
+      :param convex_hull: [kdl.Vector], convex hull of the entity
+      :return: [Candidate] of candidates for placing
+
+
+
+   .. py:method:: __repr__()
+
+

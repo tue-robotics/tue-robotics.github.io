@@ -1,0 +1,105 @@
+ed.world_model
+==============
+
+.. py:module:: ed.world_model
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   ed.world_model.WM
+
+
+Module Contents
+---------------
+
+.. py:class:: WM(tf_buffer=None, ns = None)
+
+   .. py:attribute:: _ed_simple_query_srv
+
+
+   .. py:attribute:: _ed_update_srv
+
+
+   .. py:attribute:: _ed_configure_srv
+
+
+   .. py:attribute:: _ed_reset_srv
+
+
+   .. py:method:: create_service_client(name, srv_type)
+      :staticmethod:
+
+
+      Creates a service client
+
+      :param name: string with the name of the service in the correct namespace
+      :param srv_type: service type
+      :return: the service client
+
+
+
+   .. py:method:: get_entities(center_point, etype = '', radius = float('inf'), uuid = '', ignore_z = False)
+
+      Get entities via Simple Query interface
+
+      :param etype: Type of entity
+      :param center_point: Point from which radius is measured
+      :param radius: Distance between center_point and entity
+      :param uuid: uuid of entity
+      :param ignore_z: Consider only the distance in the X,Y plane for the radius from center_point
+
+
+
+   .. py:method:: get_closest_entity(center_point, etype = '', radius = float('inf'))
+
+
+   .. py:method:: get_closest_room(center_point, radius = float('inf'))
+
+
+   .. py:method:: get_entity(uuid)
+
+
+   .. py:method:: update_entity(uuid, etype = None, frame_stamped = None, flags=None, add_flags = None, remove_flags = None, action = None)
+
+      Updates entity
+
+      :param uuid: entity uuid
+      :param etype: entity type
+      :param frame_stamped: If specified, the entity is updated to be at this FrameStamped
+      :param flags: (OBSOLETE, use add_flags and remove_flags): (list of) dict(s) containing key "add" or "remove" and value of the flag to set,  e.g., "perception"
+      :param add_flags: list of flags which will be added to the specified entity
+      :param remove_flags: list of flags which will removed from the specified entity
+      :param action: update_action, e.g. remove
+
+
+
+   .. py:method:: remove_entity(uuid)
+
+      Removes entity with the provided uuid to the world model
+
+      :param uuid: string with the uuid of the entity to remove
+
+
+
+   .. py:method:: lock_entities(lock_ids, unlock_ids)
+
+
+   .. py:method:: get_closest_possible_person_entity(center_point, radius = float('inf'))
+
+      Returns the "possible_human" entity closest to a certain center point.
+
+      :param center_point: Point indicating where the human should be close to; frame_id should be map
+      :param radius: (float) radius to look for possible humans
+      :return: (Entity) entity (if found), None otherwise
+
+
+
+   .. py:method:: get_full_uuid(short_uuid)
+
+      Get an entity"s full uuid based on the first characters of its uuid like you can do with git hashes
+
+
+

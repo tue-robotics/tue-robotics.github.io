@@ -1,0 +1,180 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robot_skills.arm.force_sensor &mdash; robot_skills 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            robot_skills
+              <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_skills</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robot_skills.arm.force_sensor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robot_skills.arm.force_sensor</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">geometry_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">WrenchStamped</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">array</span> <span class="k">as</span> <span class="n">np_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span> <span class="k">as</span> <span class="n">np_norm</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">robot_skills.robot_part</span><span class="w"> </span><span class="kn">import</span> <span class="n">RobotPart</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">robot_skills.util.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeOutException</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ForceSensor</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">force_norm_threshold</span><span class="o">=</span><span class="mf">2.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class for conveniently using a force sensor</span>
+
+<span class="sd">        :param robot_name: Which robot is this part of?</span>
+<span class="sd">        :param tf_buffer: tf2_ros.Buffer for use in RobotPart</span>
+<span class="sd">        :param topic: Topic to use for WrenchStamped measurement</span>
+<span class="sd">        :param force_norm_threshold: Edge up if norm exceeds this value [N] (defaults to 2.5N)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ForceSensor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="o">=</span><span class="n">tf_buffer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_topic</span> <span class="o">=</span> <span class="n">topic</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calibrated_msg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_up</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_force_norm_threshold</span> <span class="o">=</span> <span class="n">force_norm_threshold</span>
+
+<div class="viewcode-block" id="ForceSensor._wrench_callback"><a class="viewcode-back" href="../../../api/robot_skills/arm/force_sensor/index.html#robot_skills.arm.force_sensor.ForceSensor._wrench_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_wrench_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="c1"># type: (WrenchStamped) -&gt; None</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process a WrenchStamped-message to determine if the norm(force) goes over the limit</span>
+
+<span class="sd">        :param msg: WrenchStamped to see if it goes over self.force_norm_threshold</span>
+<span class="sd">        :return: None but sets self.edge_up</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_detect_edge_up</span><span class="p">(</span><span class="n">calibrated_msg</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Determine if the difference between calibrated_msg and msg is larger than self._force_norm_threshold</span>
+
+<span class="sd">            :param calibrated_msg: Reference message</span>
+<span class="sd">            :param msg: Comparision message, to be compared with the reference message</span>
+<span class="sd">            :return: bool if the difference is larger than the threshold.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_norm</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">np_norm</span><span class="p">(</span><span class="n">np_array</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">z</span><span class="p">]))</span>
+
+            <span class="n">calibrated_force_norm</span> <span class="o">=</span> <span class="n">_norm</span><span class="p">(</span><span class="n">calibrated_msg</span><span class="o">.</span><span class="n">wrench</span><span class="o">.</span><span class="n">force</span><span class="p">)</span>
+            <span class="n">force_norm</span> <span class="o">=</span> <span class="n">_norm</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">wrench</span><span class="o">.</span><span class="n">force</span><span class="p">)</span>
+
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Force norm: </span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">force_norm</span> <span class="o">-</span> <span class="n">calibrated_force_norm</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">force_norm</span> <span class="o">-</span> <span class="n">calibrated_force_norm</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_force_norm_threshold</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calibrated_msg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_calibrated_msg</span> <span class="o">=</span> <span class="n">msg</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_up</span> <span class="o">=</span> <span class="n">_detect_edge_up</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_calibrated_msg</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ForceSensor.wait_for_edge_up"><a class="viewcode-back" href="../../../api/robot_skills/arm/force_sensor/index.html#robot_skills.arm.force_sensor.ForceSensor.wait_for_edge_up">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_edge_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns if an edge up event is detected. Will raise a TimeOutException if no edge up is detected within timeout.</span>
+
+<span class="sd">        :param timeout: Edge up wait patience</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_up</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calibrated_msg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">subscriber</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_topic</span><span class="p">,</span> <span class="n">WrenchStamped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrench_callback</span><span class="p">,</span> <span class="n">queue_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="o">.</span><span class="n">from_sec</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_up</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">end_time</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">TimeOutException</span><span class="p">(</span><span class="s2">&quot;Force sensor edge up detection timeout of </span><span class="si">{}</span><span class="s2"> exceeded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
+        <span class="n">subscriber</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Edge up detected!&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

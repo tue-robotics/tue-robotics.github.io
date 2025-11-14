@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['chrono_3321',['chrono',['https://en.cppreference.com/w/namespacestd_1_1chrono.html',1,'std']]],
+  ['chrono_5fliterals_3322',['chrono_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1chrono__literals.html',1,'std::literals']]],
+  ['complex_5fliterals_3323',['complex_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1complex__literals.html',1,'std::literals']]],
+  ['erase_28std_3324',['erase(std',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1erase_07std.html',1,'std::experimental']]],
+  ['erase_5fif_28std_3325',['erase_if(std',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1erase__if_07std.html',1,'std::experimental']]],
+  ['execution_3326',['execution',['https://en.cppreference.com/w/namespacestd_1_1execution.html',1,'std']]],
+  ['experimental_3327',['experimental',['https://en.cppreference.com/w/namespacestd_1_1experimental.html',1,'std']]],
+  ['filesystem_3328',['filesystem',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1filesystem.html',1,'std::experimental::filesystem'],['https://en.cppreference.com/w/namespacestd_1_1filesystem.html',1,'std::filesystem']]],
+  ['literals_3329',['literals',['https://en.cppreference.com/w/namespacestd_1_1literals.html',1,'std']]],
+  ['parallel_3330',['parallel',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1parallel.html',1,'std::experimental']]],
+  ['pmr_3331',['pmr',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1pmr.html',1,'std::experimental::pmr'],['https://en.cppreference.com/w/namespacestd_1_1pmr.html',1,'std::pmr']]],
+  ['ranges_3332',['ranges',['https://en.cppreference.com/w/namespacestd_1_1ranges.html',1,'std']]],
+  ['regex_5fconstants_3333',['regex_constants',['https://en.cppreference.com/w/namespacestd_1_1regex__constants.html',1,'std']]],
+  ['rel_5fops_3334',['rel_ops',['https://en.cppreference.com/w/namespacestd_1_1rel__ops.html',1,'std']]],
+  ['sing_3335',['sing',['../namespacesing.html',1,'']]],
+  ['std_3336',['std',['https://en.cppreference.com/w/namespacestd.html',1,'']]],
+  ['string_5fliterals_3337',['string_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1string__literals.html',1,'std::literals']]],
+  ['string_5fview_5fliterals_3338',['string_view_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1string__view__literals.html',1,'std::literals']]],
+  ['this_5fthread_3339',['this_thread',['https://en.cppreference.com/w/namespacestd_1_1this__thread.html',1,'std']]]
+];

@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="test__empty__shelf__designator_8py" kind="file" language="Python">
+    <compoundname>test_empty_shelf_designator.py</compoundname>
+    <innernamespace refid="namespacetest__empty__shelf__designator">test_empty_shelf_designator</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacetest__empty__shelf__designator" refkind="compound"><highlight class="comment">#!/usr/bin/env<sp/>python</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>rospy</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>robocup_knowledge<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>load_knowledge</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>robot_smach_states.util.startup<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>startup</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>robot_smach_states.util.designators<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>EntityByIdDesignator</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>empty_shelf_designator<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>EmptyShelfDesignator</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9" refid="namespacetest__empty__shelf__designator_1aac4808e0b131681770451992f9388816" refkind="member"><highlight class="normal">challenge_knowledge<sp/>=<sp/>load_knowledge(</highlight><highlight class="stringliteral">&apos;challenge_manipulation&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11" refid="namespacetest__empty__shelf__designator_1a4d8bc812c8aec3266fc7e8fea22f36db" refkind="member"><highlight class="normal">USE_SLAM<sp/>=<sp/></highlight><highlight class="keyword">True</highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">#<sp/>Indicates<sp/>whether<sp/>or<sp/>not<sp/>to<sp/>use<sp/>SLAM<sp/>for<sp/>localization</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>USE_SLAM:</highlight></codeline>
+<codeline lineno="13" refid="namespacetest__empty__shelf__designator_1a9c3137f1dcbb0ffa46cd671558048942" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>CABINET<sp/>=<sp/>challenge_knowledge.cabinet_slam</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>CABINET<sp/>=<sp/>challenge_knowledge.cabinet_amcl</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17" refid="namespacetest__empty__shelf__designator_1aaf670cb5fb4127d167b38a1068d617d5" refkind="member"><highlight class="normal">PLACE_SHELF<sp/>=<sp/>challenge_knowledge.place_shelf</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="stringliteral">&apos;&apos;&apos;</highlight></codeline>
+<codeline lineno="20"><highlight class="stringliteral">def<sp/>main(robot):</highlight></codeline>
+<codeline lineno="21"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>place_position<sp/>=<sp/>LockingDesignator(</highlight></codeline>
+<codeline lineno="22"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>EmptyShelfDesignator(robot,<sp/>self.cabinet,<sp/>name=&quot;placement&quot;,<sp/>area=PLACE_SHELF),<sp/>name=&quot;place_position&quot;)</highlight></codeline>
+<codeline lineno="23"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="24"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>@smach.cb_interface(outcomes=[&apos;done&apos;])</highlight></codeline>
+<codeline lineno="25"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>def<sp/>lock_pp(ud,<sp/>x,<sp/>y,<sp/>z):</highlight></codeline>
+<codeline lineno="26"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>place_position.lock()</highlight></codeline>
+<codeline lineno="27"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>&apos;success&apos;</highlight></codeline>
+<codeline lineno="28"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="29"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>@smach.cb_interface(outcomes=[&apos;done&apos;])</highlight></codeline>
+<codeline lineno="30"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>def<sp/>unlock_pp(ud,<sp/>x,<sp/>y,<sp/>z):</highlight></codeline>
+<codeline lineno="31"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>place_position.unlock()</highlight></codeline>
+<codeline lineno="32"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>&apos;done&apos;</highlight></codeline>
+<codeline lineno="33"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="34"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="35"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>sm<sp/>=<sp/>smach.StateMachine(outcomes=[&apos;done&apos;])</highlight></codeline>
+<codeline lineno="36"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>with<sp/>sm:</highlight></codeline>
+<codeline lineno="37"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smach.StateMachine.add(&apos;LOCK_PLACE&apos;,<sp/>CBState(lock_pp),</highlight></codeline>
+<codeline lineno="38"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>transitions={&apos;done&apos;:<sp/>&apos;PLACE_ITEM&apos;})</highlight></codeline>
+<codeline lineno="39"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="40"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smach.StateMachine.add(&quot;PLACE_ITEM&quot;,</highlight></codeline>
+<codeline lineno="41"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Place(robot,<sp/>current_item,<sp/>place_position,<sp/>arm_with_item_designator),</highlight></codeline>
+<codeline lineno="42"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>transitions={&apos;done&apos;:<sp/>&apos;RESET_HEAD_PLACE&apos;,</highlight></codeline>
+<codeline lineno="43"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&apos;failed&apos;:<sp/>&apos;RESET_HEAD_HUMAN&apos;})</highlight></codeline>
+<codeline lineno="44"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="45"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>smach.StateMachine.add(&apos;UNLOCK_PLACE&apos;,<sp/>CBState(unlock_pp),</highlight></codeline>
+<codeline lineno="46"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>transitions={&apos;done&apos;:<sp/>&apos;done&apos;})</highlight></codeline>
+<codeline lineno="47"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="48"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>Execute<sp/>SMACH<sp/>plan</highlight></codeline>
+<codeline lineno="49"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>outcome<sp/>=<sp/>sm.execute()</highlight></codeline>
+<codeline lineno="50"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="51"><highlight class="stringliteral">if<sp/>__name__<sp/>==<sp/>&apos;__main__&apos;:</highlight></codeline>
+<codeline lineno="52"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>rospy.init_node(&apos;test_empty_shelf_designator&apos;)</highlight></codeline>
+<codeline lineno="53"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>startup(main)</highlight></codeline>
+<codeline lineno="54"><highlight class="stringliteral">&apos;&apos;&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="namespacetest__empty__shelf__designator_1a4b1ad86b6cd58b32f73c6744254e2702" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacetest__empty__shelf__designator_1a4b1ad86b6cd58b32f73c6744254e2702" kindref="member">setup_statemachine</ref>(robot):</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>cabinet<sp/>=<sp/>EntityByIdDesignator(robot,<sp/>uuid=</highlight><highlight class="stringliteral">&quot;bookcase&quot;</highlight><highlight class="normal">,<sp/>name=</highlight><highlight class="stringliteral">&quot;pick_shelf&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>ds<sp/>=<sp/><ref refid="classempty__shelf__designator_1_1EmptyShelfDesignator" kindref="compound">EmptyShelfDesignator</ref>(robot,<sp/>cabinet,<sp/>name=</highlight><highlight class="stringliteral">&quot;placement&quot;</highlight><highlight class="normal">,<sp/>area=PLACE_SHELF)</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>i<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>range(5):</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ds.resolve()</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>ipdb;ipdb.set_trace()</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&apos;__main__&apos;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.init_node(</highlight><highlight class="stringliteral">&apos;test_empty_shelf_designator&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>startup(setup_statemachine)</highlight></codeline>
+    </programlisting>
+    <location file="src/test_empty_shelf_designator.py"/>
+  </compounddef>
+</doxygen>

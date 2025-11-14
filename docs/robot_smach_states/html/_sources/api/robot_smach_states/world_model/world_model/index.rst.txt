@@ -1,0 +1,179 @@
+robot_smach_states.world_model.world_model
+==========================================
+
+.. py:module:: robot_smach_states.world_model.world_model
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_smach_states.world_model.world_model.common
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.world_model.world_model.UpdateEntityPose
+   robot_smach_states.world_model.world_model.UpdateDestEntityPoseWithSrcEntity
+   robot_smach_states.world_model.world_model.SegmentObjects
+   robot_smach_states.world_model.world_model.Inspect
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.world_model.world_model._color_info
+   robot_smach_states.world_model.world_model.look_at_segmentation_area
+
+
+Module Contents
+---------------
+
+.. py:function:: _color_info(string)
+
+.. py:function:: look_at_segmentation_area(robot, entity, volume=None)
+
+   Has a robot look at a certain object and possibly a volume
+
+   :param robot: robot object
+   :param entity: entity to look at
+   :param volume: string indicating the specific volume to look at (e.g., 'on_top_on' or 'shelf3')
+
+
+.. py:class:: UpdateEntityPose(robot, entity_designator)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Look at an entity and updates its pose. This assumes the robot is already in front of the object
+
+   Constructor
+
+   :param robot: robot object
+   :param entity_designator: EdEntityDesignator indicating the object for which the pose should be updated
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _entity_designator
+
+
+   .. py:method:: execute(userdata=None)
+
+      Looks at the entity and updates its pose using the update kinect service
+
+
+
+.. py:class:: UpdateDestEntityPoseWithSrcEntity(robot, src_entity_designator, dst_entity_designator, dst_entity_type='waypoint')
+
+   Bases: :py:obj:`smach.State`
+
+
+   Update the pose of an entity from another entity
+
+   Constructor
+
+   :param robot: robot object
+   :param src_entity_designator: (EdEntityDesignator) indicating the object from which the pose should be selected
+   :param dst_entity_designator: (EdEntityDesignator) indicating the object of which the pose must be updated
+   :param dst_entity_type: (str) Destination entity type
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _src_entity_designator
+
+
+   .. py:attribute:: _dst_entity_designator
+
+
+   .. py:attribute:: _dst_entity_type
+      :value: 'waypoint'
+
+
+
+   .. py:method:: execute(userdata=None)
+
+      Looks at the entity and updates its pose using the update kinect service
+
+
+
+.. py:class:: SegmentObjects(robot, segmented_entity_ids_designator, entity_to_inspect_designator, segmentation_area='on_top_of', unknown_threshold=0.0, filter_threshold=0.0, fit_supporting_entity=True)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Look at an entity and segment objects within the area desired.
+
+   Constructor
+
+   :param robot: robot object
+   :param segmented_entity_ids_designator: designator that is used to store the segmented objects
+   :param entity_to_inspect_designator: EdEntityDesignator indicating the (furniture) object to inspect
+   :param segmentation_area: string defining where the objects are w.r.t. the entity, default = on_top_of
+   :param unknown_threshold: Entities whose classification score is lower than this float are not marked with a type
+   :param filter_threshold: Entities whose classification score is lower than this float are ignored
+       (i.e. are not added to the segmented_entity_ids_designator)
+   :param fit_supporting_entity: Fit or not fit the supporting entity
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: unknown_threshold
+      :value: 0.0
+
+
+
+   .. py:attribute:: filter_threshold
+      :value: 0.0
+
+
+
+   .. py:attribute:: fit_supporting_entity
+      :value: True
+
+
+
+   .. py:attribute:: entity_to_inspect_designator
+
+
+   .. py:attribute:: segmented_entity_ids_designator
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: Inspect(robot, entityDes, objectIDsDes=None, searchArea='on_top_of', navigation_area='', unknown_threshold=0.0, filter_threshold=0.0, fit_supporting_entity=True, room=None)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   Class to navigate to a(n) (furniture) object and segment the objects on top of it.
+   Note that when inspecting a high entity the robot will end the Inspect in a high position.
+
+   Constructor
+
+   :param robot: robot object
+   :param entityDes: EdEntityDesignator indicating the (furniture) object to inspect
+   :param objectIDsDes: designator that is used to store the segmented objects
+   :param searchArea: string defining where the objects are w.r.t. the entity, default = on_top_of
+   :param navigation_area: string identifying the inspection area. If provided, NavigateToSymbolic is used.
+       If left empty, NavigateToObserve is used.
+   :param unknown_threshold: Entities whose classification score is lower than this float are not marked with a type
+   :param filter_threshold: Entities whose classification score is lower than this float are ignored
+       (i.e. are not added to the segmented_entity_ids_designator)
+   :param fit_supporting_entity: Fit or not fit the supporting entity
+   :param room: EdEntityDesignator indicating the room in which the robot has to stay in
+
+
+.. py:data:: common
+

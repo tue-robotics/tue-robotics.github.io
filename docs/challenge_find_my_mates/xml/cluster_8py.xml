@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="cluster_8py" kind="file" language="Python">
+    <compoundname>cluster.py</compoundname>
+    <innernamespace refid="namespacechallenge__find__my__mates_1_1cluster">challenge_find_my_mates::cluster</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacechallenge__find__my__mates_1_1cluster" refkind="compound"><highlight class="keyword">import</highlight><highlight class="normal"><sp/>pickle</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>collections<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>defaultdict</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>numpy<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>np</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>matplotlib.pyplot<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>plt</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>sklearn.cluster<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>KMeans</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10" refid="namespacechallenge__find__my__mates_1_1cluster_1ab520ea31e27f6f82592d42285fad28c5" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacechallenge__find__my__mates_1_1cluster_1ab520ea31e27f6f82592d42285fad28c5" kindref="member">cluster_people</ref>(people_dicts,<sp/>room_center,<sp/>n_clusters=4,<sp/>plot=False):</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>xs<sp/>=<sp/>[person[</highlight><highlight class="stringliteral">&apos;map_vs&apos;</highlight><highlight class="normal">].vector.x()<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>people_dicts]</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/>ys<sp/>=<sp/>[person[</highlight><highlight class="stringliteral">&apos;map_vs&apos;</highlight><highlight class="normal">].vector.y()<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>people_dicts]</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>plot:</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plt.scatter(xs,<sp/>ys,<sp/>c=</highlight><highlight class="stringliteral">&apos;r&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>people_pos<sp/>=<sp/>np.array([xs,<sp/>ys]).T<sp/><sp/></highlight><highlight class="comment">#<sp/>people_pos<sp/>is<sp/>a<sp/>np.array<sp/>of<sp/>[(x,<sp/>y)]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>kmeans<sp/>=<sp/>KMeans(n_clusters=n_clusters,<sp/>random_state=0)</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>kmeans.fit(people_pos)</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/>label2detection<sp/>=<sp/>defaultdict(list)</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>label,<sp/>detection<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>zip(kmeans.labels_,<sp/>people_dicts):</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>label2detection[label].append(detection)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Now<sp/>we<sp/>need<sp/>to<sp/>select<sp/>which<sp/>element<sp/>of<sp/>the<sp/>cluster<sp/>is<sp/>closest<sp/>to<sp/>the<sp/>room_center</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/>persons_closest_to_room_center<sp/>=<sp/>{}</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>import<sp/>pdb;<sp/>pdb.set_trace()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>label,<sp/>persons<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>label2detection.items():</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>For<sp/>each<sp/>cluster,<sp/>we<sp/>want<sp/>the<sp/>detection<sp/>that<sp/>is<sp/>closest<sp/>to<sp/>the<sp/>cluster<sp/>centroid/<sp/>kmeans.cluster_centers</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>closest<sp/>=<sp/>sorted(persons,<sp/>key=</highlight><highlight class="keyword">lambda</highlight><highlight class="normal"><sp/>person:<sp/>np.hypot(*(np.array([person[</highlight><highlight class="stringliteral">&apos;map_vs&apos;</highlight><highlight class="normal">].vector.x(),</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>person[</highlight><highlight class="stringliteral">&apos;map_vs&apos;</highlight><highlight class="normal">].vector.y()])<sp/>-<sp/>kmeans.cluster_centers_[label])))</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>persons_closest_to_room_center[label]<sp/>=<sp/>closest[0]</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>persons_closest_to_room_center<sp/>is<sp/>a<sp/>map<sp/>of<sp/>label<sp/>to<sp/>a<sp/>{&apos;rgb&apos;:...,<sp/>&apos;person_detection&apos;:...,<sp/>&apos;map_vs&apos;:...}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>import<sp/>pdb;<sp/>pdb.set_trace()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>xs2<sp/>=<sp/>[person[</highlight><highlight class="stringliteral">&apos;map_vs&apos;</highlight><highlight class="normal">].vector.x()<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>persons_closest_to_room_center.values()]</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>ys2<sp/>=<sp/>[person[</highlight><highlight class="stringliteral">&apos;map_vs&apos;</highlight><highlight class="normal">].vector.y()<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>persons_closest_to_room_center.values()]</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>plot:</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plt.scatter(xs2,<sp/>ys2,<sp/>c=</highlight><highlight class="stringliteral">&apos;b&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>plt.show()</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>persons_closest_to_room_center.values()</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;__main__&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>os.path</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>pprint</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>sys</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55" refid="namespacechallenge__find__my__mates_1_1cluster_1a53f2e154740f2c020494603331f14488" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>filename<sp/>=<sp/>os.path.expanduser(sys.argv[1])</highlight></codeline>
+<codeline lineno="56" refid="namespacechallenge__find__my__mates_1_1cluster_1a6acedf7c88b989a4db664a6ec811eec7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>filename_base<sp/>=<sp/>os.path.splitext(filename)[0]</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">with</highlight><highlight class="normal"><sp/>open(filename,<sp/></highlight><highlight class="stringliteral">&apos;br&apos;</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>f:</highlight></codeline>
+<codeline lineno="59" refid="namespacechallenge__find__my__mates_1_1cluster_1a3a6198a735858d9e2c6416fe06597a99" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ppl_dicts<sp/>=<sp/>pickle.load(f)</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>ppl_dicts<sp/>is<sp/>a<sp/>list<sp/>of<sp/>dicts<sp/>{&apos;rgb&apos;:...,<sp/>&apos;person_detection&apos;:...,<sp/>&apos;map_vs&apos;:...}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="namespacechallenge__find__my__mates_1_1cluster_1a228419f830708a98069860de94f8990a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>clustered_ppl<sp/>=<sp/><ref refid="namespacechallenge__find__my__mates_1_1cluster_1ab520ea31e27f6f82592d42285fad28c5" kindref="member">cluster_people</ref>(ppl_dicts,<sp/>room_center=np.array([6,<sp/>0]),<sp/>plot=</highlight><highlight class="keyword">True</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="namespacechallenge__find__my__mates_1_1cluster_1ad995c048d6629de687e0d12d5d98a981" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>people_x<sp/>=<sp/>[person[</highlight><highlight class="stringliteral">&apos;map_vs&apos;</highlight><highlight class="normal">].vector.x()<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>clustered_ppl]</highlight></codeline>
+<codeline lineno="65" refid="namespacechallenge__find__my__mates_1_1cluster_1a26b095d6ba731a54f7f082ea32806c8a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>people_y<sp/>=<sp/>[person[</highlight><highlight class="stringliteral">&apos;map_vs&apos;</highlight><highlight class="normal">].vector.y()<sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>person<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>clustered_ppl]</highlight></codeline>
+<codeline lineno="66" refid="namespacechallenge__find__my__mates_1_1cluster_1a6abfbd9b543c31675257e8c6519e0ba1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>locations<sp/>=<sp/>zip(people_x,<sp/>people_y)</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/>pprint.pprint(list(locations))</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">with</highlight><highlight class="normal"><sp/>open(filename_base<sp/>+<sp/></highlight><highlight class="stringliteral">&apos;_kmeans_output.pickle&apos;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&apos;wb&apos;</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>f:</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pickle.dump(list(clustered_ppl),<sp/>f)</highlight></codeline>
+    </programlisting>
+    <location file="src/challenge_find_my_mates/cluster.py"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,267 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="rwc2017_2challenge__gpsr_8py" kind="file" language="Python">
+    <compoundname>rwc2017/challenge_gpsr.py</compoundname>
+    <innernamespace refid="namespacechallenge__gpsr">challenge_gpsr</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="keyword">from</highlight><highlight class="normal"><sp/>__future__<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>print_function</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>robocup_knowledge<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>knowledge_loader</highlight></codeline>
+<codeline lineno="4"><highlight class="normal">common<sp/>=<sp/>knowledge_loader.load_knowledge(</highlight><highlight class="stringliteral">&quot;common&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal">not_understood_sentences<sp/>=<sp/>[</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;I&apos;m<sp/>so<sp/>sorry!<sp/>Can<sp/>you<sp/>please<sp/>speak<sp/>louder<sp/>and<sp/>slower?<sp/>And<sp/>wait<sp/>for<sp/>the<sp/>ping!&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;I<sp/>am<sp/>deeply<sp/>sorry.<sp/>Please<sp/>try<sp/>again,<sp/>but<sp/>wait<sp/>for<sp/>the<sp/>ping!&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;You<sp/>and<sp/>I<sp/>have<sp/>communication<sp/>issues.<sp/>Speak<sp/>up!&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;All<sp/>this<sp/>noise<sp/>is<sp/>messing<sp/>with<sp/>my<sp/>audio.<sp/>Try<sp/>again&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/>]</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal">initial_pose<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;initial_pose&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal">starting_pose<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;gpsr_meeting_point&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal">exit_waypoint<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;gpsr_exit_door&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal">grammar_target<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;T&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal">grammar<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="26"><highlight class="stringliteral">T[{actions<sp/>:<sp/>&lt;A1&gt;}]<sp/>-&gt;<sp/>C[A1]</highlight></codeline>
+<codeline lineno="27"><highlight class="stringliteral">T[{actions<sp/>:<sp/>&lt;A1,<sp/>A2&gt;}]<sp/>-&gt;<sp/>C[A1]<sp/>and<sp/>C[A2]</highlight></codeline>
+<codeline lineno="28"><highlight class="stringliteral">T[{actions<sp/>:<sp/>&lt;A1,<sp/>A2,<sp/>A3&gt;}]<sp/>-&gt;<sp/>C[A1]<sp/>C[A2]<sp/>and<sp/>C[A3]</highlight></codeline>
+<codeline lineno="29"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="30"><highlight class="stringliteral">C[{A}]<sp/>-&gt;<sp/>VP[A]</highlight></codeline>
+<codeline lineno="31"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="40"><highlight class="stringliteral">PPN_OBJECT[reference]<sp/>-&gt;<sp/>it<sp/>|<sp/>them</highlight></codeline>
+<codeline lineno="41"><highlight class="stringliteral">PPN_PERSON<sp/>-&gt;<sp/>him<sp/>|<sp/>her<sp/>|<sp/>them</highlight></codeline>
+<codeline lineno="42"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="43"><highlight class="stringliteral">DET<sp/>-&gt;<sp/>the<sp/>|<sp/>a<sp/>|<sp/>an<sp/>|<sp/>some</highlight></codeline>
+<codeline lineno="44"><highlight class="stringliteral">NUMBER<sp/>-&gt;<sp/>one<sp/>|<sp/>two<sp/>|<sp/>three</highlight></codeline>
+<codeline lineno="45"><highlight class="stringliteral">MANIPULATION_AREA_DESCRIPTION<sp/>-&gt;<sp/>on<sp/>top<sp/>of<sp/>|<sp/>at<sp/>|<sp/>in<sp/>|<sp/>on<sp/>|<sp/>from</highlight></codeline>
+<codeline lineno="46"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>room<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>common.location_rooms:</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nROOM[%s]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(room,<sp/>room)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>loc<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/><ref refid="namespacecommon_1aeb59616e67621c3aff3927cae5359591" kindref="member">common.get_locations</ref>():</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nLOCATION[%s]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(loc,<sp/>loc)</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\n<sp/>ROOM_OR_LOCATION[X]<sp/>-&gt;<sp/>ROOM[X]<sp/>|<sp/>LOCATION[X]&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>obj<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>common.object_names:</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nNAMED_OBJECT[%s]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(obj,<sp/>obj)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>loc<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/><ref refid="namespacecommon_1aeb59616e67621c3aff3927cae5359591" kindref="member">common.get_locations</ref>(pick_location=</highlight><highlight class="keyword">True</highlight><highlight class="normal">,<sp/>place_location=</highlight><highlight class="keyword">True</highlight><highlight class="normal">):</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nMANIPULATION_AREA_LOCATION[%s]<sp/>-&gt;<sp/>MANIPULATION_AREA_DESCRIPTION<sp/>the<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(loc,<sp/>loc)</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>cat<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>common.object_categories:</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nOBJECT_CATEGORY[%s]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(cat,<sp/>cat)</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>name<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>common.names:</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nNAMED_PERSON[%s]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(name,<sp/>name)</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="75"><highlight class="stringliteral">V_FIND<sp/>-&gt;<sp/>find<sp/>|<sp/>locate<sp/>|<sp/>look<sp/>for<sp/>|<sp/>meet</highlight></codeline>
+<codeline lineno="76"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="77"><highlight class="stringliteral">OBJECT_TO_BE_FOUND<sp/>-&gt;<sp/>NAMED_OBJECT<sp/>|<sp/>OBJECT_CATEGORY</highlight></codeline>
+<codeline lineno="78"><highlight class="stringliteral">PERSON_TO_BE_FOUND<sp/>-&gt;<sp/>DET<sp/>person<sp/>|<sp/>DET<sp/>woman<sp/>|<sp/>DET<sp/>man<sp/>|<sp/>NAMED_PERSON<sp/>|<sp/>someone</highlight></codeline>
+<codeline lineno="79"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="80"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;find&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>X},<sp/>&quot;location&quot;:<sp/>{&quot;id&quot;:<sp/>Y}]<sp/>-&gt;<sp/>V_FIND<sp/>DET<sp/>OBJECT_TO_BE_FOUND[X]<sp/>in<sp/>the<sp/>ROOM[Y]</highlight></codeline>
+<codeline lineno="81"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;find&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>X},<sp/>&quot;location&quot;:<sp/>{&quot;id&quot;:<sp/>Y}]<sp/>-&gt;<sp/>V_FIND<sp/>DET<sp/>OBJECT_TO_BE_FOUND[X]<sp/>MANIPULATION_AREA_LOCATION[Y]</highlight></codeline>
+<codeline lineno="82"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="83"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;find&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>&quot;person&quot;,<sp/>&quot;id&quot;:<sp/>X},<sp/>&quot;location&quot;:<sp/>{&quot;id&quot;:<sp/>Y}]<sp/>-&gt;<sp/>V_FIND<sp/>PERSON_TO_BE_FOUND[X]<sp/>in<sp/>the<sp/>ROOM[Y]</highlight></codeline>
+<codeline lineno="84"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;find&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>&quot;person&quot;,<sp/>&quot;id&quot;:<sp/>X},<sp/>&quot;location&quot;:<sp/>{&quot;id&quot;:<sp/>Y}]<sp/>-&gt;<sp/>V_FIND<sp/>PERSON_TO_BE_FOUND[X]<sp/>near<sp/>the<sp/>LOCATION[Y]</highlight></codeline>
+<codeline lineno="85"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="86"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;find&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>X}]<sp/>-&gt;<sp/>V_FIND<sp/>DET<sp/>OBJECT_TO_BE_FOUND[X]</highlight></codeline>
+<codeline lineno="87"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;find&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>person,<sp/>&quot;id&quot;:<sp/>X}]<sp/>-&gt;<sp/>V_FIND<sp/>DET<sp/>PERSON_TO_BE_FOUND[X]</highlight></codeline>
+<codeline lineno="88"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="97"><highlight class="stringliteral">V_GOPL<sp/>-&gt;<sp/>go<sp/>to<sp/>|<sp/>navigate<sp/>to</highlight></codeline>
+<codeline lineno="98"><highlight class="stringliteral">V_GOR<sp/>-&gt;<sp/>V_GOPL<sp/>|<sp/>enter</highlight></codeline>
+<codeline lineno="99"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="100"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;navigate-to&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;id&quot;:<sp/>X}]<sp/>-&gt;<sp/>V_GOR<sp/>the<sp/>ROOM[X]</highlight></codeline>
+<codeline lineno="101"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;navigate-to&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;id&quot;:<sp/>X}]<sp/>-&gt;<sp/>V_GOPL<sp/>the<sp/>LOCATION[X]</highlight></codeline>
+<codeline lineno="102"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="111"><highlight class="stringliteral">V_PICKUP<sp/>-&gt;<sp/>get<sp/>|<sp/>grasp<sp/>|<sp/>take<sp/>|<sp/>pick<sp/>up<sp/>|<sp/>grab</highlight></codeline>
+<codeline lineno="112"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="113"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;pick-up&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>X},<sp/>&quot;location&quot;:<sp/>{&quot;id&quot;:<sp/>Y}]<sp/>-&gt;<sp/>V_PICKUP<sp/>DET<sp/>NAMED_OBJECT[X]<sp/>MANIPULATION_AREA_LOCATION[Y]</highlight></codeline>
+<codeline lineno="114"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="123"><highlight class="stringliteral">V_PLACE<sp/>-&gt;<sp/>put<sp/>|<sp/>place</highlight></codeline>
+<codeline lineno="124"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="125"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;place&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>&quot;reference&quot;},<sp/>&quot;location&quot;:<sp/>{&quot;id&quot;:<sp/>Y}]<sp/>-&gt;<sp/>V_PLACE<sp/>PPN_OBJECT<sp/>MANIPULATION_AREA_LOCATION[Y]</highlight></codeline>
+<codeline lineno="126"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>room<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>common.location_rooms:</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nBRING_ROOM[{&quot;type&quot;:<sp/>room,<sp/>&quot;id&quot;:<sp/>%s}]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(room,<sp/>room)</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>loc<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/><ref refid="namespacecommon_1aeb59616e67621c3aff3927cae5359591" kindref="member">common.get_locations</ref>():</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nBRING_LOCATION[{&quot;type&quot;:<sp/>furniture,<sp/>&quot;id&quot;:<sp/>%s}]<sp/>-&gt;<sp/>%s&apos;</highlight><highlight class="normal"><sp/>%<sp/>(loc,<sp/>loc)</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\n<sp/>BRING_ROOM_OR_LOCATION[X]<sp/>-&gt;<sp/>BRING_ROOM[X]<sp/>|<sp/>BRING_LOCATION[X]&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="143"><highlight class="stringliteral">INAT<sp/>-&gt;<sp/>in<sp/>|<sp/>at</highlight></codeline>
+<codeline lineno="144"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="145"><highlight class="stringliteral">BRING_PERSON_AT_LOCATION[{&quot;type&quot;:<sp/>person,<sp/>&quot;id&quot;:<sp/>X,<sp/>&quot;loc&quot;:<sp/>Y}]<sp/>-&gt;<sp/>NAMED_PERSON[X]<sp/>INAT<sp/>the<sp/>ROOM_OR_LOCATION[Y]</highlight></codeline>
+<codeline lineno="146"><highlight class="stringliteral">BRING_OPERATOR[{&quot;type&quot;:<sp/>person,<sp/>&quot;id&quot;:<sp/>operator}]<sp/>-&gt;<sp/>me</highlight></codeline>
+<codeline lineno="147"><highlight class="stringliteral">BRING_PERSON<sp/>-&gt;<sp/>BRING_OPERATOR<sp/>|<sp/>BRING_PERSON_AT_LOCATION</highlight></codeline>
+<codeline lineno="148"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="149"><highlight class="stringliteral">BRING_TARGET[X]<sp/>-&gt;<sp/>BRING_PERSON[X]<sp/>|<sp/>the<sp/>BRING_LOCATION[X]</highlight></codeline>
+<codeline lineno="150"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="151"><highlight class="stringliteral">OBJECT_TO_BE_BROUGHT<sp/>-&gt;<sp/>NAMED_OBJECT<sp/>|<sp/>DET<sp/>NAMED_OBJECT<sp/>|<sp/>PPN_OBJECT</highlight></codeline>
+<codeline lineno="152"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="153"><highlight class="stringliteral">V_BRING<sp/>-&gt;<sp/>bring<sp/>|<sp/>deliver<sp/>|<sp/>take<sp/>|<sp/>give<sp/>|<sp/>get</highlight></codeline>
+<codeline lineno="154"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Bring<sp/>&lt;object&gt;<sp/>from<sp/>the<sp/>&lt;location&gt;<sp/>to<sp/>the<sp/>&lt;location&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Bring<sp/>&lt;object&gt;<sp/>to<sp/>the<sp/>&lt;location&gt;<sp/>from<sp/>the<sp/>&lt;location&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="159"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;bring&quot;,<sp/>&quot;source-location&quot;:<sp/>X,<sp/>&quot;target-location&quot;:<sp/>Y,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>Z}]<sp/>-&gt;<sp/>V_BRING<sp/>OBJECT_TO_BE_BROUGHT[Z]<sp/>from<sp/>the<sp/>ROOM_OR_LOCATION[X]<sp/>to<sp/>BRING_TARGET[Y]<sp/>|<sp/>V_BRING<sp/>OBJECT_TO_BE_BROUGHT[Z]<sp/>to<sp/>BRING_TARGET[Y]<sp/>from<sp/>the<sp/>ROOM_OR_LOCATION[X]</highlight></codeline>
+<codeline lineno="160"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Bring<sp/>to<sp/>&lt;person&gt;<sp/>the<sp/>&lt;object&gt;<sp/>|<sp/>Bring<sp/>&lt;object&gt;<sp/>to<sp/>&lt;person&gt;<sp/>|<sp/>bring<sp/>&lt;person&gt;<sp/>the<sp/>&lt;object&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="164"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;bring&quot;,<sp/>&quot;target-location&quot;:<sp/>Y,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>Z}]<sp/>-&gt;<sp/>V_BRING<sp/>to<sp/>BRING_TARGET[Y]<sp/>OBJECT_TO_BE_BROUGHT[Z]<sp/>|<sp/>V_BRING<sp/>OBJECT_TO_BE_BROUGHT[Z]<sp/>to<sp/>BRING_TARGET[Y]<sp/>|<sp/>V_BRING<sp/>BRING_PERSON[Y]<sp/>OBJECT_TO_BE_BROUGHT[Z]</highlight></codeline>
+<codeline lineno="165"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Bring<sp/>to<sp/>&lt;person&gt;<sp/>the<sp/>&lt;object&gt;<sp/>from<sp/>the<sp/>&lt;location&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="169"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;bring&quot;,<sp/>&quot;source-location&quot;:<sp/>X,<sp/>&quot;target-location&quot;:<sp/>Y,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>Z}]<sp/>-&gt;<sp/>V_BRING<sp/>to<sp/>BRING_TARGET[Y]<sp/>OBJECT_TO_BE_BROUGHT[Z]<sp/>from<sp/>the<sp/>ROOM_OR_LOCATION[X]<sp/>|<sp/>V_BRING<sp/>BRING_TARGET[Y]<sp/>OBJECT_TO_BE_BROUGHT[Z]<sp/>from<sp/>the<sp/>ROOM_OR_LOCATION[X]</highlight></codeline>
+<codeline lineno="170"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Place<sp/>the<sp/>&lt;object&gt;<sp/>on<sp/>the<sp/>&lt;location&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="174"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;bring&quot;,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>Z},<sp/>&quot;target-location&quot;:<sp/>Y]<sp/>-&gt;<sp/>V_PLACE<sp/>OBJECT_TO_BE_BROUGHT[Z]<sp/>MANIPULATION_AREA_DESCRIPTION<sp/>the<sp/>BRING_LOCATION[Y]</highlight></codeline>
+<codeline lineno="175"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="185"><highlight class="stringliteral">V_SAY<sp/>-&gt;<sp/>tell<sp/>|<sp/>say<sp/>|<sp/>speak</highlight></codeline>
+<codeline lineno="186"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="187"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;say&quot;,<sp/>&quot;sentence&quot;:<sp/>X]<sp/>-&gt;<sp/>V_SAY<sp/>SAY_SENTENCE[X]</highlight></codeline>
+<codeline lineno="188"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;say&quot;,<sp/>&quot;sentence&quot;:<sp/>X,<sp/>&quot;target-person&quot;:<sp/>Y]<sp/>-&gt;<sp/>V_SAY<sp/>SAY_SENTENCE[X]<sp/>to<sp/>BRING_PERSON_AT_LOCATION[Y]</highlight></codeline>
+<codeline lineno="189"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nSAY_SENTENCE[&quot;ROBOT_NAME&quot;]<sp/>-&gt;<sp/>your<sp/>name&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nSAY_SENTENCE[&quot;TIME&quot;]<sp/>-&gt;<sp/>the<sp/>time<sp/>|<sp/>what<sp/>time<sp/>it<sp/>is<sp/>|<sp/>what<sp/>time<sp/>is<sp/>it&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nSAY_SENTENCE[&quot;my<sp/>team<sp/>is<sp/>tech<sp/>united&quot;]<sp/>-&gt;<sp/>the<sp/>name<sp/>of<sp/>your<sp/>team&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nSAY_SENTENCE[&quot;DAY_OF_MONTH&quot;]<sp/>-&gt;<sp/>the<sp/>day<sp/>of<sp/>the<sp/>month&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="195"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nSAY_SENTENCE[&quot;DAY_OF_WEEK&quot;]<sp/>-&gt;<sp/>the<sp/>day<sp/>of<sp/>the<sp/>week&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nSAY_SENTENCE[&quot;TODAY&quot;]<sp/>-&gt;<sp/>what<sp/>day<sp/>is<sp/>today<sp/>|<sp/>me<sp/>what<sp/>day<sp/>it<sp/>is<sp/>|<sp/>the<sp/>date&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nSAY_SENTENCE[&quot;TOMORROW&quot;]<sp/>-&gt;<sp/>what<sp/>day<sp/>is<sp/>tomorrow&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nSAY_SENTENCE[&quot;JOKE&quot;]<sp/>-&gt;<sp/>a<sp/>joke&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;\nSAY_SENTENCE[&quot;SOMETHING_ABOUT_SELF&quot;]<sp/>-&gt;<sp/>something<sp/>about<sp/>yourself&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal">follow_action<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;follow&quot;</highlight><highlight class="normal">,<sp/>{</highlight><highlight class="stringliteral">&quot;location-from&quot;</highlight><highlight class="normal">:<sp/>{</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">},<sp/></highlight><highlight class="stringliteral">&quot;location-to&quot;</highlight><highlight class="normal">:<sp/>{},<sp/></highlight><highlight class="stringliteral">&quot;target&quot;</highlight><highlight class="normal">:<sp/>{}}</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight></codeline>
+<codeline lineno="210"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="211"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;answer-question&quot;]<sp/>-&gt;<sp/>answer<sp/>a<sp/>question</highlight></codeline>
+<codeline lineno="212"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;answer-question&quot;,<sp/>&quot;target-person&quot;:<sp/>X]<sp/>-&gt;<sp/>answer<sp/>a<sp/>question<sp/>to<sp/>BRING_PERSON_AT_LOCATION[X]</highlight></codeline>
+<codeline lineno="213"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight></codeline>
+<codeline lineno="221"><highlight class="normal">grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="222"><highlight class="stringliteral">PROPERTY[&quot;number&quot;]<sp/>-&gt;<sp/>number</highlight></codeline>
+<codeline lineno="223"><highlight class="stringliteral">PROPERTY[&quot;name&quot;]<sp/>-&gt;<sp/>name</highlight></codeline>
+<codeline lineno="224"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="225"><highlight class="stringliteral">INVESTIGATION_LOCATION[X]<sp/>-&gt;<sp/>MANIPULATION_AREA_LOCATION[X]<sp/>|<sp/>in<sp/>the<sp/>ROOM</highlight></codeline>
+<codeline lineno="226"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="227"><highlight class="stringliteral">VP[&quot;action&quot;:<sp/>&quot;find-out-and-report&quot;,<sp/>&quot;property&quot;:<sp/>X,<sp/>&quot;object&quot;:<sp/>{&quot;type&quot;:<sp/>Y}]<sp/>-&gt;<sp/>tell<sp/>me<sp/>the<sp/>PROPERTY[X]<sp/>of<sp/>OBJECT_TO_BE_FOUND[Y]<sp/>INVESTIGATION_LOCATION[Z]</highlight></codeline>
+<codeline lineno="228"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;__main__&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;GPSR<sp/>Grammar:\n\n{}\n\n&quot;</highlight><highlight class="normal">.format(grammar))</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>grammar_parser.cfgparser<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>CFGParser</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"></highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>sys</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>sys.argv[1]<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;object&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>grammar_parser<sp/>=<sp/>CFGParser.fromstring(obj_grammar)</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">elif</highlight><highlight class="normal"><sp/>sys.argv[1]<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;location&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>grammar_parser<sp/>=<sp/>CFGParser.fromstring(loc_grammar)</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">elif</highlight><highlight class="normal"><sp/>sys.argv[1]<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;full&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>grammar_parser<sp/>=<sp/>CFGParser.fromstring(grammar)</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"></highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>len(sys.argv)<sp/>&gt;<sp/>2:</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sentence<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal">.join(sys.argv[2:])</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sentence<sp/>=<sp/>grammar_parser.get_random_sentence(</highlight><highlight class="stringliteral">&quot;T&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"></highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Parsing<sp/>sentence:\n\n{}\n\n&quot;</highlight><highlight class="normal">.format(sentence))</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"></highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>=<sp/>grammar_parser.parse(</highlight><highlight class="stringliteral">&quot;T&quot;</highlight><highlight class="normal">,<sp/>sentence)</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Result:\n\n{}&quot;</highlight><highlight class="normal">.format(result))</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"></highlight></codeline>
+<codeline lineno="255"><highlight class="normal"></highlight></codeline>
+<codeline lineno="260"><highlight class="normal"></highlight></codeline>
+<codeline lineno="261" refid="namespacechallenge__gpsr_1a026ba7533f17b3950edb2e5125c1333a" refkind="member"><highlight class="normal">question_grammar_target<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;T&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="262"><highlight class="normal"></highlight></codeline>
+<codeline lineno="263" refid="namespacechallenge__gpsr_1a42c36a48aefd24b824be8ba34fbb7f13" refkind="member"><highlight class="normal">question_grammar<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="264"><highlight class="stringliteral">T[{actions<sp/>:<sp/>&lt;A1&gt;}]<sp/>-&gt;<sp/>C[A1]</highlight></codeline>
+<codeline lineno="265"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="266"><highlight class="stringliteral">C[{A}]<sp/>-&gt;<sp/>Q[A]</highlight></codeline>
+<codeline lineno="267"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="268"><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Predefined<sp/>questions</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal">question_grammar<sp/>+=<sp/></highlight><highlight class="stringliteral">&apos;&apos;&apos;</highlight></codeline>
+<codeline lineno="271"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="272"><highlight class="stringliteral">WHATWHICH<sp/>-&gt;<sp/>what<sp/>|<sp/>which</highlight></codeline>
+<codeline lineno="273"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="274"><highlight class="stringliteral">BIGGEST_ADJ<sp/>-&gt;<sp/>biggest<sp/>|<sp/>heaviest</highlight></codeline>
+<codeline lineno="275"><highlight class="stringliteral">SMALLEST_ADJ<sp/>-&gt;<sp/>smallest<sp/>|<sp/>lightest</highlight></codeline>
+<codeline lineno="276"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="277"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;bread&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>BIGGEST_ADJ<sp/>object</highlight></codeline>
+<codeline lineno="278"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;chopsticks&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>SMALLEST_ADJ<sp/>object</highlight></codeline>
+<codeline lineno="279"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;bread&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>BIGGEST_ADJ<sp/>food</highlight></codeline>
+<codeline lineno="280"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;onion&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>SMALLEST_ADJ<sp/>food</highlight></codeline>
+<codeline lineno="281"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;plate&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>BIGGEST_ADJ<sp/>container</highlight></codeline>
+<codeline lineno="282"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;soup_container&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>SMALLEST_ADJ<sp/>container</highlight></codeline>
+<codeline lineno="283"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;green_tea&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>BIGGEST_ADJ<sp/>drink</highlight></codeline>
+<codeline lineno="284"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;coke&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>SMALLEST_ADJ<sp/>drink</highlight></codeline>
+<codeline lineno="285"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;hair_spray&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>BIGGEST_ADJ<sp/>cleaning<sp/>stuff</highlight></codeline>
+<codeline lineno="286"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;moisturizer&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>SMALLEST_ADJ<sp/>cleaning<sp/>stuff</highlight></codeline>
+<codeline lineno="287"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;spoon&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>BIGGEST_ADJ<sp/>cutlery</highlight></codeline>
+<codeline lineno="288"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;chopsticks&quot;]<sp/>-&gt;<sp/>WHATWHICH<sp/>is<sp/>the<sp/>SMALLEST_ADJ<sp/>cutlery</highlight></codeline>
+<codeline lineno="289"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="290"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/><sp/>&quot;the<sp/>bedroom<sp/>has<sp/>one<sp/>door&quot;]<sp/>-&gt;<sp/>how<sp/>many<sp/>doors<sp/>has<sp/>the<sp/>bedroom</highlight></codeline>
+<codeline lineno="291"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;the<sp/>entrance<sp/>has<sp/>one<sp/>door&quot;]<sp/>-&gt;<sp/>how<sp/>many<sp/>doors<sp/>has<sp/>the<sp/>entrance</highlight></codeline>
+<codeline lineno="292"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;the<sp/>living<sp/>room<sp/>has<sp/>one<sp/>door&quot;]<sp/>-&gt;<sp/>how<sp/>many<sp/>doors<sp/>has<sp/>the<sp/>living_room</highlight></codeline>
+<codeline lineno="293"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;the<sp/>kitchen<sp/>has<sp/>one<sp/>door&quot;]<sp/>-&gt;<sp/>how<sp/>many<sp/>doors<sp/>has<sp/>the<sp/>kitchen</highlight></codeline>
+<codeline lineno="294"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;the<sp/>corridor<sp/>has<sp/>zero<sp/>doors&quot;]<sp/>-&gt;<sp/>how<sp/>many<sp/>doors<sp/>has<sp/>the<sp/>corridor</highlight></codeline>
+<codeline lineno="295"><highlight class="stringliteral">Q[&quot;action&quot;<sp/>:<sp/>&quot;answer&quot;,<sp/>&quot;solution&quot;:<sp/>&quot;the<sp/>balcony<sp/>has<sp/>zero<sp/>doors&quot;]<sp/>-&gt;<sp/>how<sp/>many<sp/>doors<sp/>has<sp/>the<sp/>balcony</highlight></codeline>
+<codeline lineno="296"><highlight class="stringliteral">&apos;&apos;&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="297"><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/robocup_knowledge/environments/rwc2017/challenge_gpsr.py"/>
+  </compounddef>
+</doxygen>

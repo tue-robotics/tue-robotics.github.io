@@ -1,0 +1,92 @@
+robot_smach_states.navigation.topological_navigation
+====================================================
+
+.. py:module:: robot_smach_states.navigation.topological_navigation
+
+
+Exceptions
+----------
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.topological_navigation.TopologicalPlannerException
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.topological_navigation.TopologicalNavigateTo
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.topological_navigation.convert_msgs_to_actions
+   robot_smach_states.navigation.topological_navigation.convert_drive_msg_to_action
+   robot_smach_states.navigation.topological_navigation.convert_open_door_msg_to_action
+   robot_smach_states.navigation.topological_navigation.get_topological_action_plan
+   robot_smach_states.navigation.topological_navigation.execute_topological_plan
+
+
+Module Contents
+---------------
+
+.. py:exception:: TopologicalPlannerException
+
+   Bases: :py:obj:`Exception`
+
+
+   Common base class for all non-exit exceptions.
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. py:function:: convert_msgs_to_actions(robot, msgs)
+
+   Converts a list of 'Edge' messages (typically the result of a call to the planner to a list of smach states to
+   execute.
+
+   :param robot: robot API object
+   :param msgs:
+   :return:
+
+
+.. py:function:: convert_drive_msg_to_action(robot, msg)
+
+.. py:function:: convert_open_door_msg_to_action(robot, msg)
+
+.. py:function:: get_topological_action_plan(userdata, robot, entity_designator, area_designator = None)
+
+   Gets an action plan from the topological action server
+
+   :param userdata: smach userdata
+   :param robot: robot API object
+   :param entity_designator: designator resolving to the entity to navigate to
+   :param area_designator: designator resolving to a string describing the area to navigate to
+
+
+.. py:function:: execute_topological_plan(userdata)
+
+   Sequentially executes all actions in the action plan provided through UserData
+
+   :param userdata: smach userdata
+   :return: outcome
+
+
+.. py:class:: TopologicalNavigateTo(robot, entity_designator, area_designator = None)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   
+   Move the robot to a specified location.
+
+   :param robot: Robot object
+   :param entity_designator: designator resolving to the entity to navigate to
+   :param area_designator: designator resolving to a string describing the area to navigate to
+
+

@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="md_test_README" kind="page">
+    <compoundname>md_test_README</compoundname>
+    <title>Test</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>This file contains information about the test nodes and a correct procedure to test the communication.</para>
+<sect1 id="md_test_README_1autotoc_md8">
+<title>Test Nodes</title>
+<para>The nodes are split into two types, server and client nodes.</para>
+<para>The server nodes generate an artificial image and distribute it via their specific way of communication. The client nodes use their specific way of communication to receive an image and show it on a gui. The server and client nodes with matching names should always communicate with each other.</para>
+<para>Server nodes:</para>
+<para><itemizedlist>
+<listitem><para><computeroutput>rgbd_test_server_ros</computeroutput>: Publishes an image via default <ref refid="classROS" kindref="compound">ROS</ref> image message with the use of the <computeroutput>ServerROS</computeroutput> class.</para>
+</listitem><listitem><para><computeroutput>rgbd_test_server_rgbd</computeroutput>: Publishes an image via the custom <ref refid="classRGBD" kindref="compound">RGBD</ref> message on a <ref refid="classROS" kindref="compound">ROS</ref> topic with the use of the <computeroutput>ServerRGBD</computeroutput> class. This also provides the <ref refid="classRGBD" kindref="compound">RGBD</ref> service.</para>
+</listitem><listitem><para><computeroutput>rgbd_test_server_shm</computeroutput>: Publishes an image via shared memory communication with the use of the <computeroutput>ServerSHM</computeroutput> class.</para>
+</listitem><listitem><para><computeroutput>rgbd_test_server</computeroutput>: Provides the interfaces of the <computeroutput>Server</computeroutput> class. This includes the interface of <computeroutput>ServerRGBD</computeroutput> and <computeroutput>ServrSHM</computeroutput> combined with a hostname topic.</para>
+</listitem></itemizedlist>
+</para>
+<para>Client nodes:</para>
+<para><itemizedlist>
+<listitem><para><computeroutput>rgbd_test_client_ros</computeroutput>: Subsribes to the default <ref refid="classROS" kindref="compound">ROS</ref> image topics to receive an image with the use of the <computeroutput>ClientROS</computeroutput> class.</para>
+</listitem><listitem><para><computeroutput>rgbd_test_client_rgbd</computeroutput>: Subsribes to the custom <ref refid="classRGBD" kindref="compound">RGBD</ref> topic with the use of the <computeroutput>ClientRGBD</computeroutput> class.</para>
+</listitem><listitem><para><computeroutput>rgbd_test_client_shm</computeroutput>: Receives an image via shared memory communication with the use of the <computeroutput>ClientSHM</computeroutput> class. <bold>Note</bold>: This node has an initialization timeout. The shared memory needs needs to be created before this timeout ends. So start the server node providing the shared memory either before or directly after starting this node.</para>
+</listitem><listitem><para><computeroutput>rgbd_test_client</computeroutput>: Receives images via either the <ref refid="classRGBD" kindref="compound">RGBD</ref> topic or shared memory communication with the use of the <computeroutput>Client</computeroutput> class. It switched between these two based on a hostname topic to determine the availability of shared memory communication, but uses <ref refid="classRGBD" kindref="compound">RGBD</ref> as a fallback.</para>
+</listitem></itemizedlist>
+</para>
+</sect1>
+<sect1 id="md_test_README_1autotoc_md9">
+<title>Test procedure</title>
+<para>As mentioned earlier, the server and client nodes with matching names should always communicate with each other.</para>
+<para>The nodes communicating via <ref refid="classROS" kindref="compound">ROS</ref> topics, <computeroutput>*_ros</computeroutput> and <computeroutput>*_rgbd</computeroutput>, can be started, closed and restarted in any order. The nodes should always reconnect automatically and the client node should show new images. Test this by opening the server before the client and vice-versa. Test the reconnection by closing the first node and restart it again. Try mutltiple time intervals.</para>
+<para>The bare shared memory nodes, <computeroutput>rgbd_test_server_shm</computeroutput> and <computeroutput>rgbd_test_client_shm</computeroutput>, are not that robust by themselves. These don&apos;t reconnect and the shared memory needs to be opened before the timoeut of the client nodes has ended. Otherwise no communication will be established. Test this by opening the server before the client or just directly after.</para>
+<para>The robust <computeroutput>rgbd_test_server</computeroutput> and <computeroutput>rgbd_test_client</computeroutput> should always reconnect. Apply the same test procedure as the nodes using <ref refid="classROS" kindref="compound">ROS</ref> topics. When both are running on the same machine, communication should be happening via the shared memory. This can be checked by either <computeroutput>rostopic info</computeroutput> or <computeroutput>rosnode info</computeroutput>.</para>
+<sect2 id="md_test_README_1autotoc_md10">
+<title>Cross testing</title>
+<para>To verify the robust behaviour of the classes perform the following tests:</para>
+<para><orderedlist>
+<listitem><para>Combine the <computeroutput>rgbd_test_client</computeroutput> with <computeroutput>rgbd_test_server_rgbd</computeroutput>. This should always reconnect.</para>
+</listitem><listitem><para>Extend the first test by starting a <computeroutput>rgbd_to_shm</computeroutput> node. (<bold>Note</bold>: This node should be run on the same machine as the client node. This might require some remapping of the <ref refid="classRGBD" kindref="compound">RGBD</ref> topic.) The client node should switch from <ref refid="classRGBD" kindref="compound">RGBD</ref> communication to shared memory communication. By closing the <computeroutput>rgbd_to_shm</computeroutput> node, the client node should switch back to the <ref refid="classRGBD" kindref="compound">RGBD</ref> topic. After both opening and closing of the <computeroutput>rgbd_to_shm</computeroutput> node, check the way of communication again via either <computeroutput>rostopic info</computeroutput> or <computeroutput>rosnode info</computeroutput>.</para>
+</listitem><listitem><para>Start the <computeroutput>rgbd_test_server</computeroutput> followed by the <computeroutput>rgbd_test_client_shm</computeroutput>. Apply the same test as used by the <computeroutput>rgbd_test_server_shm</computeroutput>. As <computeroutput>rgbd_test_server</computeroutput> provides the same shared memory communication and extra <ref refid="classRGBD" kindref="compound">RGBD</ref> topic and service.</para>
+</listitem><listitem><para>In any test, the <computeroutput>rgbd_test_server</computeroutput> can be replaced by the combination of the <computeroutput>rgbd_test_server_ros</computeroutput> with the <computeroutput>ros_to_rgbd</computeroutput> nodes.</para>
+</listitem><listitem><para>In any test, the <computeroutput>rgbd_test_client</computeroutput> can be replaced by the combination of the <computeroutput>rgbd_to_ros</computeroutput> and the <computeroutput>rgbd_test_client_ros</computeroutput> nodes. </para>
+</listitem></orderedlist>
+</para>
+</sect2>
+</sect1>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

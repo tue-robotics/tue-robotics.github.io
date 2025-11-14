@@ -1,0 +1,72 @@
+action_server.test_tools
+========================
+
+.. py:module:: action_server.test_tools
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   action_server.test_tools.TMTestResult
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   action_server.test_tools.test_grammar
+   action_server.test_tools._resolve_conjunct
+   action_server.test_tools._find_actions_rule
+
+
+Module Contents
+---------------
+
+.. py:class:: TMTestResult
+
+   Bases: :py:obj:`tuple`
+
+
+   .. py:attribute:: recipe
+
+
+   .. py:attribute:: config_result
+
+
+.. py:function:: test_grammar(robot, grammar, grammar_target)
+
+   Tests grammars against the capabilities of the action server, to be used in unit tests of challenges.
+
+   Based on the actions rule, it recursively determines a viable option (e.g., 'go to the couch_table'), parses
+   this using the CFGParser and tries to configure the task manager based on the parse result. All results (even
+   if the configuration step with the task manager raises an exception) are stored in a result dict. Eventually,
+   all positive results are printed and if negative results have occurred, an AssertionError is raised with a
+   message containing all failed options.
+
+   :param robot: Robot object. N.B.: robot.ed should contain the relevant entities
+   :param grammar: grammar that is used
+   :param grammar_target: top level grammar_target of the grammar
+   :raises: AssertionError if the test has failed
+
+
+.. py:function:: _resolve_conjunct(parser, target)
+
+   Recursive method that tries to resolve a conjunct, i.e., to find an option
+
+   :param parser: CFGParser containing the grammar
+   :param target: grammar_target to look for
+   :return: option string
+
+
+.. py:function:: _find_actions_rule(parser, grammar_target)
+
+   Finds the 'rule' in the grammar defining the actions
+
+   :param parser: CFGParser containing the grammar
+   :param grammar_target: top level target of the grammar
+   :return: 'Rule' (part of the grammar) containing all actions
+
+

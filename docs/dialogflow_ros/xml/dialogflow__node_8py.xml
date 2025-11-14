@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dialogflow__node_8py" kind="file" language="Python">
+    <compoundname>dialogflow_node.py</compoundname>
+    <innerclass refid="classdialogflow__node_1_1DialogflowNode" prot="public">dialogflow_node::DialogflowNode</innerclass>
+    <innernamespace refid="namespacedialogflow__node">dialogflow_node</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacedialogflow__node" refkind="compound"><highlight class="comment">#!/usr/bin/env<sp/>python</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>rospy</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>apiai</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>std_msgs.msg<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>String</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Authentication</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8" refid="namespacedialogflow__node_1ae053628de178de975181974737212159" refkind="member"><highlight class="normal">SESSION_ID<sp/>=<sp/></highlight><highlight class="stringliteral">&apos;&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11" refid="classdialogflow__node_1_1DialogflowNode" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdialogflow__node_1_1DialogflowNode" kindref="compound">DialogflowNode</ref>(object):</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="13"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>ROS<sp/>node<sp/>for<sp/>the<sp/>Dialogflow<sp/>natural<sp/>language<sp/>understanding.</highlight></codeline>
+<codeline lineno="14"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="15"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>Dialogflow<sp/>(previously<sp/>API.ai)<sp/>parses<sp/>natural<sp/>language<sp/>into<sp/>a<sp/>json<sp/>string<sp/>containing<sp/>the<sp/>semantics<sp/>of<sp/>the<sp/>text.<sp/>This</highlight></codeline>
+<codeline lineno="16"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>nose<sp/>wraps<sp/>that<sp/>into<sp/>a<sp/>ROS<sp/>actionlib<sp/>interface.</highlight></codeline>
+<codeline lineno="17"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="classdialogflow__node_1_1DialogflowNode_1a8f66fd4f6665c43e4005749108de8f6b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdialogflow__node_1_1DialogflowNode_1a8f66fd4f6665c43e4005749108de8f6b" kindref="member">__init__</ref>(self):</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.init_node(</highlight><highlight class="stringliteral">&apos;dialogflow_node&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.Subscriber(</highlight><highlight class="stringliteral">&quot;speech&quot;</highlight><highlight class="normal">,<sp/>String,<sp/>self.<ref refid="classdialogflow__node_1_1DialogflowNode_1a2a5163fdc6db57bde931cbfd4547959b" kindref="member">speech_callback</ref>,<sp/>queue_size=10)</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="22" refid="classdialogflow__node_1_1DialogflowNode_1ac77cf7f3bc3ba4882800ba3114803ae6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdialogflow__node_1_1DialogflowNode_1ac77cf7f3bc3ba4882800ba3114803ae6" kindref="member">_client_access_token</ref><sp/>=<sp/>rospy.get_param(</highlight><highlight class="stringliteral">&quot;~client_access_token&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">except</highlight><highlight class="normal"><sp/>rospy.ROSException:</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logfatal(</highlight><highlight class="stringliteral">&quot;Missing<sp/>required<sp/>ROS<sp/>parameter<sp/>client_access_token&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>exit(1)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27" refid="classdialogflow__node_1_1DialogflowNode_1a4dfbff07f098537ebb65a9024df63eac" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdialogflow__node_1_1DialogflowNode_1a4dfbff07f098537ebb65a9024df63eac" kindref="member">ai</ref><sp/>=<sp/>apiai.ApiAI(self.<ref refid="classdialogflow__node_1_1DialogflowNode_1ac77cf7f3bc3ba4882800ba3114803ae6" kindref="member">_client_access_token</ref>)</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="classdialogflow__node_1_1DialogflowNode_1afcbccddc420b1cd8cb7ca54d0ddf6613" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdialogflow__node_1_1DialogflowNode_1afcbccddc420b1cd8cb7ca54d0ddf6613" kindref="member">result_pub</ref><sp/>=<sp/>rospy.Publisher(</highlight><highlight class="stringliteral">&quot;command&quot;</highlight><highlight class="normal">,<sp/>String,<sp/>queue_size=10)</highlight></codeline>
+<codeline lineno="30" refid="classdialogflow__node_1_1DialogflowNode_1abd4dd2936b4a088dfa9dc8ccb8391f17" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdialogflow__node_1_1DialogflowNode_1abd4dd2936b4a088dfa9dc8ccb8391f17" kindref="member">request</ref><sp/>=<sp/></highlight><highlight class="keywordtype">None</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="classdialogflow__node_1_1DialogflowNode_1a2a5163fdc6db57bde931cbfd4547959b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdialogflow__node_1_1DialogflowNode_1a2a5163fdc6db57bde931cbfd4547959b" kindref="member">speech_callback</ref>(self,<sp/>msg):</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdialogflow__node_1_1DialogflowNode_1abd4dd2936b4a088dfa9dc8ccb8391f17" kindref="member">request</ref><sp/>=<sp/>self.<ref refid="classdialogflow__node_1_1DialogflowNode_1a4dfbff07f098537ebb65a9024df63eac" kindref="member">ai</ref>.text_request()</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdialogflow__node_1_1DialogflowNode_1abd4dd2936b4a088dfa9dc8ccb8391f17" kindref="member">request</ref>.query<sp/>=<sp/>msg.data</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logdebug(</highlight><highlight class="stringliteral">&quot;Waiting<sp/>for<sp/>response...&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>response<sp/>=<sp/>self.<ref refid="classdialogflow__node_1_1DialogflowNode_1abd4dd2936b4a088dfa9dc8ccb8391f17" kindref="member">request</ref>.getresponse()</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logdebug(</highlight><highlight class="stringliteral">&quot;Got<sp/>response,<sp/>and<sp/>publishing<sp/>it.&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result_msg<sp/>=<sp/>String()</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result_msg.data<sp/>=<sp/>response.read()</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdialogflow__node_1_1DialogflowNode_1afcbccddc420b1cd8cb7ca54d0ddf6613" kindref="member">result_pub</ref>.publish(result_msg)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;__main__&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="46" refid="namespacedialogflow__node_1a06266aaba71589944d8f8563aa78b0c1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>dialogflow_node<sp/>=<sp/><ref refid="classdialogflow__node_1_1DialogflowNode" kindref="compound">DialogflowNode</ref>()</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.spin()</highlight></codeline>
+    </programlisting>
+    <location file="src/dialogflow_ros/dialogflow_node.py"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,341 @@
+robot_skills.base
+=================
+
+.. py:module:: robot_skills.base
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.base.LocalPlanner
+   robot_skills.base.GlobalPlanner
+   robot_skills.base.Base
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_skills.base._abs_max
+   robot_skills.base.get_location
+   robot_skills.base.computePathLength
+
+
+Module Contents
+---------------
+
+.. py:function:: _abs_max(value, max_value)
+
+   Robust max function, which ignores the sign of the max_value. And can handle inf/NaN as max_value.
+
+   >>> _abs_max(1.0, 2.0)
+   1.0
+   >>> _abs_max(1.0, -2.0)
+   1.0
+   >>> _abs_max(1.0, 1.0)
+   1.0
+   >>> _abs_max(1.0, -1.0)
+   1.0
+   >>> _abs_max(1.0, 0.5)
+   0.5
+   >>> _abs_max(1.0, -0.5)
+   0.5
+   >>> _abs_max(1.0, 0.0)
+   0.0
+   >>> _abs_max(1.0, -0.0)
+   0.0
+   >>> _abs_max(-1.0, 2.0)
+   -1.0
+   >>> _abs_max(-1.0, -2.0)
+   -1.0
+   >>> _abs_max(-1.0, 1.0)
+   -1.0
+   >>> _abs_max(-1.0, -1.0)
+   -1.0
+   >>> _abs_max(-1.0, 0.5)
+   -0.5
+   >>> _abs_max(-1.0, -0.5)
+   -0.5
+   >>> _abs_max(-1.0, 0.0)
+   -0.0
+   >>> _abs_max(-1.0, -0.0)
+   -0.0
+
+   >>> _abs_max(0.0, 1.0)
+   0.0
+   >>> _abs_max(0.0, -1.0)
+   0.0
+   >>> _abs_max(0.0, 0.0)
+   0.0
+   >>> _abs_max(0.0, -0.0)
+   0.0
+
+   >>> _abs_max(-0.0, 1.0)
+   0.0
+   >>> _abs_max(-0.0, -1.0)
+   0.0
+   >>> _abs_max(-0.0, 0.0)
+   0.0
+   >>> _abs_max(-0.0, -0.0)
+   0.0
+
+   >>> _abs_max(1.0, float("inf"))
+   1.0
+   >>> _abs_max(-1.0, float("inf"))
+   -1.0
+   >>> _abs_max(1.0, float("-inf"))
+   1.0
+   >>> _abs_max(-1.0, float("-inf"))
+   -1.0
+   >>> _abs_max(1.0, float("NaN"))
+   1.0
+   >>> _abs_max(-1.0, float("NaN"))
+   -1.0
+   >>> _abs_max(1.0, float("-NaN"))
+   1.0
+   >>> _abs_max(-1.0, float("-NaN"))
+   -1.0
+
+
+.. py:class:: LocalPlanner(robot_name, tf_buffer, analyzer)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   Base class for robot parts
+
+   Constructor
+
+   :param robot_name: string with robot name
+   :param tf_buffer: tf buffer object
+
+
+   .. py:attribute:: analyzer
+
+
+   .. py:attribute:: _action_client
+
+
+   .. py:attribute:: _position_constraint
+      :value: None
+
+
+
+   .. py:attribute:: _orientation_constraint
+      :value: None
+
+
+
+   .. py:attribute:: _status
+      :value: 'idle'
+
+
+
+   .. py:attribute:: _obstacle_point
+      :value: None
+
+
+
+   .. py:attribute:: _dtg
+      :value: None
+
+
+
+   .. py:attribute:: _plan
+      :value: None
+
+
+
+   .. py:attribute:: _goal_handle
+      :value: None
+
+
+
+   .. py:method:: setPlan(plan, position_constraint, orientation_constraint)
+
+
+   .. py:method:: cancelCurrentPlan()
+
+
+   .. py:method:: selfreset()
+
+      Reset of the body part itself. This function may be overwritten.
+      Returns: bool
+
+
+
+   .. py:method:: getGoalHandle()
+
+
+   .. py:method:: getStatus()
+
+
+   .. py:method:: getDistanceToGoal()
+
+
+   .. py:method:: getObstaclePoint()
+
+
+   .. py:method:: getCurrentOrientationConstraint()
+
+
+   .. py:method:: __feedbackCallback(feedback)
+
+
+   .. py:method:: __doneCallback(terminal_state, result)
+
+
+   .. py:method:: __setState(status, obstacle_point=None, dtg=None, plan=None)
+
+
+.. py:class:: GlobalPlanner(robot_name, tf_buffer, analyzer)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   Base class for robot parts
+
+   Constructor
+
+   :param robot_name: string with robot name
+   :param tf_buffer: tf buffer object
+
+
+   .. py:attribute:: analyzer
+
+
+   .. py:attribute:: _position_constraint
+      :value: None
+
+
+
+   .. py:attribute:: _get_plan_client
+
+
+   .. py:attribute:: _check_plan_client
+
+
+   .. py:method:: getPlan(position_constraint, start_pose = None)
+
+      Get a global plan from start(optional) to a goal constrained by position_constraint
+
+      :param position_constraint: Goal position constraints
+      :param start_pose: optional start pose. If this is not provided, the current position is used.
+      :return: If No path was found, this list is empty. If the planner service fails,
+          'None' is returned.
+
+
+
+   .. py:method:: checkPlan(plan)
+
+
+   .. py:method:: getCurrentPositionConstraint()
+
+
+.. py:class:: Base(robot_name, tf_buffer, cmd_vel_topic=None, initial_pose_topic=None)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   Base class for robot parts
+
+   Constructor
+
+   :param robot_name: string with robot name
+   :param tf_buffer: tf buffer object
+
+
+   .. py:attribute:: _cmd_vel
+
+
+   .. py:attribute:: _initial_pose_publisher
+
+
+   .. py:attribute:: analyzer
+
+
+   .. py:attribute:: global_planner
+
+
+   .. py:attribute:: local_planner
+
+
+   .. py:method:: wait_for_connections(timeout, log_failing_connections=True)
+
+      Waits for the connections until they are connected
+
+      :param timeout: timeout in seconds
+      :param log_failing_connections: (bool) whether to log errors if not connected. This is useful when checking
+          multiple robot parts in a loop
+      :return: bool indicating whether all connections are connected
+
+
+
+   .. py:method:: move(position_constraint_string, frame)
+
+
+   .. py:method:: turn_towards(x, y, frame, offset=0.0)
+
+
+   .. py:method:: force_drive(vx, vy, vth, timeout, loop_rate=10, stop=True, ax=float('inf'), ay=float('inf'), ath=float('inf'))
+
+      Forces the robot to drive by sending a command velocity directly to the base controller. N.B.: all collision
+      avoidance is bypassed.
+
+      :param vx: forward velocity [m/s]
+      :param vy: sideways velocity [m/s]
+      :param vth: rotational velocity in [rad/s]
+      :param timeout: duration for this motion [s]
+      :param loop_rate: Rate of sending twist messages [Hz]
+      :param stop: send stop message afterwards
+      :param ax: forward acceleration [m/s^2]
+      :param ay: sideways acceleration [m/s^2]
+      :param ath: rotational acceleration [rad/s^2]
+
+
+
+   .. py:method:: get_location()
+
+      Returns a FrameStamped with the robot pose
+
+      :return: FrameStamped with robot pose
+
+
+
+   .. py:method:: set_initial_pose(x, y, phi)
+
+
+   .. py:method:: wait_for_motion_done(timeout=10.0, cancel=False)
+
+      Waits until local planner is done
+
+      :param timeout: timeout in seconds; in case 0.0, no sensible output is provided, just False
+      :param cancel: bool specifying whether goals should be cancelled
+          if timeout is exceeded
+      :return: bool indicates whether motion was done (True if reached, False otherwise)
+
+
+
+   .. py:method:: selfreset()
+
+      Reset of the body part itself. This function may be overwritten.
+      Returns: bool
+
+
+
+   .. py:method:: go(x, y, phi, frame='map', timeout=0)
+
+
+   .. py:method:: reset_costmap()
+
+
+   .. py:method:: cancel_goal()
+
+
+.. py:function:: get_location(robot_name, tf_buffer)
+
+.. py:function:: computePathLength(path)
+

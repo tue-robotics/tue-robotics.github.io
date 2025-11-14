@@ -1,0 +1,119 @@
+action_server.actions.example_action
+====================================
+
+.. py:module:: action_server.actions.example_action
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   action_server.actions.example_action.ExampleAction
+   action_server.actions.example_action.DummyStateMachine
+
+
+Module Contents
+---------------
+
+.. py:class:: ExampleAction
+
+   Bases: :py:obj:`action_server.actions.action.Action`
+
+
+   The ExampleAction class explains how Actions, as handled by the TaskManager, work.
+
+   As by example, it takes passed context of a color passed by a previous Action, passes an Entity to the next
+   Action and uses a dict mapping from object types to colors from the common knowledge. A practical use would be the
+   following:
+
+   Task: "Ask for a color, select an item of that color and grab it." (Completely made up task BTW)
+
+   This Action would perform the middle part of the task: "select an item of that color". It takes the color from the
+   Action asking for a color, and passes the selected item (Entity) to the Action for grabbing an entity. Typically,
+   one would wrap higher level behavior in an Action than this, but this is just for illustration purposes.
+
+
+   .. py:attribute:: _required_skills
+      :value: ['ed']
+
+
+      Similarly, you can set the required keys in the context. Their availability is also checked in the configure
+      step.
+
+
+   .. py:attribute:: _required_passed_knowledge
+      :value: ['color']
+
+
+      Similarly, you can set the required keys in the semantics. Their availability is also checked in the configure
+      step. However, a missing field means that the client may want to add this information by posing a follow-up
+      question. Therefore, this is a dict mapping from the required fields to the prompts requesting the user for
+      the specific missing information.
+
+      If information is missing, the json path to the missing field is returned to the client, so the client knows
+      which field to add.
+
+      Actually, we don't require any fields in the configuration in this case, but this would be the way to do that.
+
+
+   .. py:method:: _configure(robot, config)
+
+      :param robot: The robot to use for this action
+      :param config: The configuration of the action, containing fields semantics and context
+      :return: ConfigurationResult
+
+      The configure step is typically done just after the command is given. It is intended to check if the task makes
+      any sense. For example, a task 'Take it to the bridge.', does not make sense as 'it' should refer to something.
+      In another example, 'Find Ava', we may want to search differently than when the task is to find an object. All
+      such checking can be done in the configure step.
+
+      If a command is composed out of multiple actions (go to the kitchen and find the coffee), all actions in the
+      command are first configured before the first is started. This is done to make sure the complete command makes
+      sense, and the robot will not find out it doesn't make sense halfway through the execution.
+
+      This does mean that any resulting information from earlier actions in the command is not available in the world
+      model yet, in this stage.
+
+
+
+   .. py:method:: _start()
+
+      Here, the action is actually performed.
+
+
+
+   .. py:method:: _cancel()
+
+      The _cancel method is called when the Action Server's goal is canceled and this action is still running
+
+
+
+.. py:class:: DummyStateMachine(robot, color_designator, entity_designator, object_colors)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Select an entity with the given color.
+   :param robot: robot to execute state with
+   :param color_designator: A color that the resulting entity should have.
+   :param entity_designator: The resulting entity with the specified color
+   :param object_colors: Dict mapping from object type to color
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: _color_designator
+
+
+   .. py:attribute:: _entity_designator
+
+
+   .. py:attribute:: _object_colors
+
+
+   .. py:method:: execute(userdata=None)
+
+

@@ -1,0 +1,210 @@
+robot_smach_states.navigation.navigation
+========================================
+
+.. py:module:: robot_smach_states.navigation.navigation
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.navigation.StartAnalyzer
+   robot_smach_states.navigation.navigation.StopAnalyzer
+   robot_smach_states.navigation.navigation.AbortAnalyzer
+   robot_smach_states.navigation.navigation.getPlan
+   robot_smach_states.navigation.navigation.executePlan
+   robot_smach_states.navigation.navigation.planBlocked
+   robot_smach_states.navigation.navigation.NavigateTo
+   robot_smach_states.navigation.navigation.ForceDrive
+
+
+Module Contents
+---------------
+
+.. py:class:: StartAnalyzer(robot)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: robot
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: StopAnalyzer(robot, result)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: result
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: AbortAnalyzer(robot)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: robot
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: getPlan(robot, constraint_function, speak=True)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: constraint_function
+
+
+   .. py:attribute:: speak
+      :value: True
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: executePlan(robot, breakout_function, blocked_timeout=4, reset_head=True, reset_pose=True)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: t_last_free
+      :value: None
+
+
+
+   .. py:attribute:: blocked_timeout
+      :value: 4
+
+
+
+   .. py:attribute:: breakout_function
+
+
+   .. py:attribute:: reset_head
+      :value: True
+
+
+
+   .. py:attribute:: reset_pose
+      :value: True
+
+
+
+   .. py:method:: execute(userdata=None)
+
+      Possible outcomes (when overloading)
+      - 'breakout': when a condition has been met and navigation should stop because the goal has succeeded
+      - 'checking': the condition has not been met. Upon arrival at a goal, the statemachine will return to 'GetPlan' to get the next goal_not_defined
+      - 'passed'  : checking a condition is not necessary. Upon arrival at the current goal, the state machine will return 'succeeded'
+
+
+
+   .. py:method:: checkBetterPlan()
+
+
+.. py:class:: planBlocked(robot)
+
+   Bases: :py:obj:`smach.State`
+
+
+   .. py:attribute:: robot
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: NavigateTo(robot, constraint_function, reset_head=True, speak=True, reset_pose=True)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   Move the robot to a specified location.
+
+   :param robot: Robot object
+   :param constraint_function: function resolving to a tuple(PositionConstraint, OrientationConstraint)
+       telling the robot where to drive to.
+   :param reset_head: Whether or not the head should be used for obstacle avoidance during navigation.
+   :param speak: Whether or not the robot should speak during navigation
+   :param reset_pose: Whether or not the robot is allowed to change its pose for navigation.
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: speak
+      :value: True
+
+
+
+   .. py:method:: generateConstraint()
+      :abstractmethod:
+
+
+
+   .. py:method:: breakOut()
+
+      Default breakout function: makes sure things go to 'succeeded' if robot arrives at goal
+      DO NOT OVERLOAD THIS IF NOT NECESSARY
+
+      Possible outcomes (when overloading)
+      - 'breakout': when a condition has been met and navigation should stop because the goal has succeeded
+      - 'checking': the condition has not been met. Upon arrival at a goal, the statemachine will return to 'GetPlan' to get the next goal_not_defined
+      - 'passed'  : checking a condition is not necessary. Upon arrival at the current goal, the state machine will return 'succeeded'
+
+
+
+.. py:class:: ForceDrive(robot, vx, vy, vth, duration)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Force drives...
+
+   Constructor
+
+   :param robot: robot object
+   :param vx: velocity in x-direction (m/s)
+   :param vy: velocity in y-direction (m/s)
+   :param vth: yaw-velocity (rad/s)
+   :param duration: float indicating how long to drive (seconds)
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _vx
+
+
+   .. py:attribute:: _vy
+
+
+   .. py:attribute:: _vth
+
+
+   .. py:attribute:: _duration
+
+
+   .. py:method:: execute(userdata=None)
+
+      Executes the state
+
+
+

@@ -1,0 +1,422 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robot_smach_states.util.designators.core &mdash; robot_smach_states 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            robot_smach_states
+              <img src="../../../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">robot_smach_states</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robot_smach_states.util.designators.core</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robot_smach_states.util.designators.core</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;loy&#39;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.deprecation_warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_caller_info</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Designator"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.Designator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Designator</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Designator defines a goal, which can be defined at runtime or at write-</span>
+<span class="sd">    time. Its value cannot be set, it can only be get.  This allows to later</span>
+<span class="sd">    define Designators that take a goal specification, like a query to a world</span>
+<span class="sd">    model.</span>
+
+<span class="sd">    &gt;&gt;&gt; d = Designator(&quot;Initial value&quot;, name=&quot;tester&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; d.resolve()</span>
+<span class="sd">    &#39;Initial value&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; assert(issubclass(d.resolve_type, str))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">instances</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakSet</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolve_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialization method</span>
+
+<span class="sd">        :param initial_value: Initial value, should match the given resolve_type.</span>
+<span class="sd">                              None is allowed if a resolve_type is provided.</span>
+<span class="sd">        :param resolve_type: Type to which this designator should resolve.</span>
+<span class="sd">                             If None, use the type of the initial value. Value</span>
+<span class="sd">                             must be not None in that case.</span>
+<span class="sd">        :vartype resolve_type: Type or a list with a single type (the element type).</span>
+<span class="sd">                               The latter represents list of values where each</span>
+<span class="sd">                               value has the element type.</span>
+
+<span class="sd">        :param name: name used for debugging purposes</span>
+<span class="sd">        :vartype name: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Designator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__initial_value</span> <span class="o">=</span> <span class="n">initial_value</span>
+        <span class="k">if</span> <span class="n">resolve_type</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resolve_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="c1"># Value is a list of items with each item of type resolve_type[0] .</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">resolve_type</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The resolve_type must be a single-item list, found </span><span class="si">{}</span><span class="s2">.&quot;</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resolve_type</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">resolve_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The resolve_type may not be [None]&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_type</span> <span class="o">=</span> <span class="n">resolve_type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No resolve type provided, use the inital value to derive a type.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__initial_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;No resolve_type provided and type could not be inferred &quot;</span>
+                                <span class="s2">&quot;from the initial_value (found &#39;None&#39;).&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__initial_value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__initial_value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_type</span> <span class="o">=</span> <span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__initial_value</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;No resolve_type provided and type could not be inferred &quot;</span>
+                                    <span class="s2">&quot;from the initial_value (found empty list).&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__initial_value</span><span class="p">)</span>
+
+        <span class="n">Designator</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Designator.resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.Designator.resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects a new goal and sets it as the current value.</span>
+
+<span class="sd">        Don&#39;t override this method, override self._resolve() instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">()</span>
+        <span class="n">result_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">resolve_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_type</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># No data available for checking the type.</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># Not None, list expected instead.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fail_with_type_error</span><span class="p">(</span><span class="n">result_type</span><span class="p">,</span> <span class="n">resolve_type</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># Empty list, cannot check element type.</span>
+                <span class="k">return</span> <span class="n">result</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">resolve_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span> <span class="c1"># Element type check.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fail_with_type_error</span><span class="p">(</span><span class="n">result_type</span><span class="p">,</span> <span class="n">resolve_type</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="c1"># Normal type.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">result_type</span><span class="p">,</span> <span class="n">resolve_type</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fail_with_type_error</span><span class="p">(</span><span class="n">result_type</span><span class="p">,</span> <span class="n">resolve_type</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Designator.fail_with_type_error"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.Designator.fail_with_type_error">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fail_with_type_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_type</span><span class="p">,</span> <span class="n">resolve_type</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> resolved to a &#39;</span><span class="si">{}</span><span class="s2">&#39; instead of expected &#39;</span><span class="si">{}</span><span class="s2">&#39;.&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_type</span><span class="p">,</span> <span class="n">resolve_type</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Designator._resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.Designator._resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__initial_value</span></div>
+
+<div class="viewcode-block" id="Designator._get_resolve_type"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.Designator._get_resolve_type">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_get_resolve_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The currently selected goal&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_type</span></div>
+
+<div class="viewcode-block" id="Designator._get_name"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.Designator._get_name">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The currently selected goal&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span></div>
+
+    <span class="n">resolve_type</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_resolve_type</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Designator.__repr__"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.Designator.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Designator(resolve_type=</span><span class="si">{}</span><span class="s2">, name=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Designator.lockable"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.Designator.lockable">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">lockable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Designators can be lockable. This means their value does not change between calls to .lock and .unlock().</span>
+<span class="sd">        What this means exactly is different for different subclasses.</span>
+
+<span class="sd">        For example, an EdEntityDesignator must lock only the Entity&#39;s ID and not the Python object itself.</span>
+<span class="sd">        In the latter case, ED can update the Entity&#39;s info but the designator will not update that because its</span>
+<span class="sd">        locked to a Python-object.</span>
+<span class="sd">        For Arms, it makes sense to lock to the actual Python-object with the current implementation.</span>
+
+<span class="sd">        For a lot of Designators, .lockable() will yield the Error below, but in those cases it will make sense,</span>
+<span class="sd">        because locking them has no meaning.</span>
+<span class="sd">        Then, calling .lock will fail as well. States that want a .lock method should check for it.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Core Designator is not lockable. Override .lockable() in subclasses and &quot;</span>
+                                  <span class="s2">&quot;make it so that there&#39;s only *one* locker instead of a new one every call.&quot;</span>
+                                  <span class="s2">&quot; For locking to the exact same Python-object, use the LockingDesignator&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Designator._get_current"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.Designator._get_current">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_get_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">caller_info</span> <span class="o">=</span> <span class="n">get_caller_info</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;Using designator.current (as in </span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">) is deprecated.&quot;</span>
+            <span class="s2">&quot;Use designator.resolve() instead&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller_info</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">],</span>
+                                                      <span class="n">caller_info</span><span class="p">[</span><span class="s2">&quot;line_number&quot;</span><span class="p">]))</span></div>
+
+    <span class="n">current</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_current</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariableDesignator"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableDesignator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">VariableDesignator</span><span class="p">(</span><span class="n">Designator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A VariableDesignator simply contains a variable that can be set if you have a writer for it.</span>
+
+<span class="sd">    &gt;&gt;&gt; #Create a VariableDesignator with a string</span>
+<span class="sd">    &gt;&gt;&gt; v = VariableDesignator(&#39;Hello&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; v.resolve() #No surprise, it resolves to the given string!</span>
+<span class="sd">    &#39;Hello&#39;</span>
+
+<span class="sd">    You cannot directly set a VariableDesignator though, you must obtain a VariableWriter through the</span>
+<span class="sd">    .writeable-attribute</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolve_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">resolve_type</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">initial_value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;VariableDesignator requires to set either initial_value or resolve_type to ensure user &quot;</span>
+                            <span class="s2">&quot;can use it&quot;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">VariableDesignator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">initial_value</span><span class="p">,</span> <span class="n">resolve_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="n">initial_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeable</span> <span class="o">=</span> <span class="n">VariableWriter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VariableDesignator._set_current_protected"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableDesignator._set_current_protected">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_set_current_protected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">resolve_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_type</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">resolve_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Assigned value does not match resolve_type for </span><span class="si">{0}</span><span class="s2">. &quot;</span>
+                    <span class="s2">&quot;Expected a (subclass of) </span><span class="si">{1}</span><span class="s2"> but got a </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">resolve_type</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Assigned value does not match resolve_type for </span><span class="si">{0}</span><span class="s2">. &quot;</span>
+                    <span class="s2">&quot;Expected a (subclass of) </span><span class="si">{1}</span><span class="s2"> but got a </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="VariableDesignator._resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableDesignator._resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span></div>
+
+<div class="viewcode-block" id="VariableDesignator._set_current"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableDesignator._set_current">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_set_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;Cannot directly write to a VariableDesignator, use a VariableWriter instead. &quot;</span>
+            <span class="s2">&quot;E.g. XxxState(robot, someVariableDes.writable)&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VariableDesignator._get_current"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableDesignator._get_current">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_get_current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">caller_info</span> <span class="o">=</span> <span class="n">get_caller_info</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;Using designator.current (as in </span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2"> is deprecated. &quot;</span>
+            <span class="s2">&quot;Use designator.resolve() instead&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller_info</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">],</span>
+                                                      <span class="n">caller_info</span><span class="p">[</span><span class="s2">&quot;line_number&quot;</span><span class="p">]))</span></div>
+
+    <span class="c1"># ToDo: Once all state machines use the VariableWriter, the _set_current can be removed</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_current</span><span class="p">,</span> <span class="n">_set_current</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VariableWriter"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableWriter">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">VariableWriter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;When writing to a VariableDesignator you must use a writer,</span>
+<span class="sd">        to make it explicit who changes designators so you can directly spot the changer.</span>
+<span class="sd">    This way, the dataflow can be more accurately visualized and understood.</span>
+
+<span class="sd">    &gt;&gt;&gt; #Create a VariableDesignator with a string</span>
+<span class="sd">    &gt;&gt;&gt; v = VariableDesignator(&#39;Hello&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; v.resolve() #No surprise, it resolves to the given string!</span>
+<span class="sd">    &#39;Hello&#39;</span>
+<span class="sd">    &gt;&gt;&gt; #Writing to the designator directly will fail.</span>
+<span class="sd">    &gt;&gt;&gt; v.current = &#39;World&#39;   # doctest: +IGNORE_EXCEPTION_DETAIL</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    DeprecationWarning: ...</span>
+
+<span class="sd">    &gt;&gt;&gt; v.resolve() #Still unchanged</span>
+<span class="sd">    &#39;Hello&#39;</span>
+<span class="sd">    &gt;&gt;&gt; #Instead, use a writer to assign to a VariableDesignator</span>
+<span class="sd">    &gt;&gt;&gt; w = writeable(v)</span>
+<span class="sd">    &gt;&gt;&gt; w.write(&#39;World&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; v.resolve() #Now it works!</span>
+<span class="sd">    &#39;World&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; v2 = VariableDesignator([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;], resolve_type=[str])</span>
+<span class="sd">    &gt;&gt;&gt; v2.resolve()</span>
+<span class="sd">    [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; v2w = v2.writeable</span>
+<span class="sd">    &gt;&gt;&gt; v2w.write(v2.resolve() + [&#39;d&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; v2.resolve()</span>
+<span class="sd">    [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;]</span>
+
+<span class="sd">    &gt;&gt;&gt; v2w.write(&#39;a&#39;)  # doctest: +ELLIPSIS</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">    TypeError: Cannot assign a &lt;class &#39;str&#39;&gt; to Designator(...) which has a list resolve_type: ...</span>
+<span class="sd">    &gt;&gt;&gt; v2w.write(None)  # doctest: +ELLIPSIS</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">    TypeError: Cannot assign a &lt;class &#39;NoneType&#39;&gt; to Designator(...) which has a list resolve_type: ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">instances</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakSet</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable_designator</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span> <span class="o">=</span> <span class="n">variable_designator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;writeable(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">VariableWriter</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VariableWriter.write"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableWriter.write">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write a value to the designator this writer is associated with.</span>
+
+<span class="sd">        :param value: the value to be written</span>
+<span class="sd">        :return: None</span>
+
+<span class="sd">        Value can be either a singular object or a list, which may be empty or not.</span>
+<span class="sd">        The singular object&#39;s type has to fit the resolve_type.</span>
+<span class="sd">        If the value is a list, then resolve_type must also be a list,</span>
+<span class="sd">            which the only element being the type each value-element must have.</span>
+<span class="sd">        In case the value-list has an element,</span>
+<span class="sd">            this element must be of the type specified by the only element in the resolve_type-list</span>
+<span class="sd">        In case the value-list is empty, we simply assign that empty list without any type checking.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">_set_current_protected</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">_set_current_protected</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot assign </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> which has resolve_type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Cannot assign a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="si">}</span><span class="s2"> which has a list resolve_type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">_set_current_protected</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot assign </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2"> which has resolve_type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VariableWriter._set_current"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableWriter._set_current">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_set_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;writable(VariableDesignator).current = ...  is deprecated, &quot;</span> \
+              <span class="s2">&quot;use writable(VariableDesignator).write(...) instead&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">_set_current_protected</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+    <span class="n">current</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">VariableDesignator</span><span class="o">.</span><span class="n">_get_current</span><span class="p">,</span> <span class="n">_set_current</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VariableWriter._get_resolve_type"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableWriter._get_resolve_type">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_get_resolve_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">resolve_type</span></div>
+
+    <span class="n">resolve_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_resolve_type</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VariableWriter.resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableWriter.resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VariableWriter.__repr__"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/core/index.html#robot_smach_states.util.designators.core.VariableWriter.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;VariableWriter(</span><span class="si">{}</span><span class="s2">(..., name=</span><span class="si">{}</span><span class="s2">))&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_designator</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div></div>
+
+
+<span class="n">writeable</span> <span class="o">=</span> <span class="n">VariableWriter</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

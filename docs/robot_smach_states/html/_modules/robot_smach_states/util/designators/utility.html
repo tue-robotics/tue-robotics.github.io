@@ -1,0 +1,366 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robot_smach_states.util.designators.utility &mdash; robot_smach_states 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            robot_smach_states
+              <img src="../../../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">robot_smach_states</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robot_smach_states.util.designators.utility</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robot_smach_states.util.designators.utility</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="c1"># ROS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="c1"># TU/e Robotics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">robot_smach_states.util.designators.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Designator</span><span class="p">,</span> <span class="n">VariableDesignator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">robot_smach_states.util.designators.checks</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_type</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;loy&#39;</span>
+
+<span class="n">R</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="value_or_resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.value_or_resolve">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">value_or_resolve</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">R</span><span class="p">,</span> <span class="n">Designator</span><span class="p">[</span><span class="n">R</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If value is a designator, resolve it, otherwise return value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;resolve&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="LockingDesignator"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.LockingDesignator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LockingDesignator</span><span class="p">(</span><span class="n">Designator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A designator&#39;s resolve() method may return a different object everytime.</span>
+<span class="sd">    For some cases, this may be unwanted because a process has to be done with the same object.</span>
+<span class="sd">    In that case, a designator resolving to a different object every time is not usable.</span>
+<span class="sd">    A LockingDesignator will resolve to the same object after a call to .lock() and</span>
+<span class="sd">    will only resolve to a different value after an unlock() call.</span>
+
+<span class="sd">    &gt;&gt;&gt; varying = VariableDesignator(0, int).writeable #To be able to write to a designator, it must be writeable!</span>
+<span class="sd">    &gt;&gt;&gt; locking = LockingDesignator(varying)</span>
+<span class="sd">    &gt;&gt;&gt; assert(varying.resolve() == 0)</span>
+<span class="sd">    &gt;&gt;&gt; assert(locking.resolve() == 0)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; locking.lock()</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; varying.write(1)</span>
+<span class="sd">    &gt;&gt;&gt; assert(varying.resolve() == 1)  # The value changed</span>
+<span class="sd">    &gt;&gt;&gt; assert(locking.resolve() == 0)  # This one sticks to the value it had when locked</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; varying.write(2)</span>
+<span class="sd">    &gt;&gt;&gt; assert(varying.resolve() == 2)  # The value changed</span>
+<span class="sd">    &gt;&gt;&gt; assert(locking.resolve() == 0)  # This one sticks to the value it had when locked</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; locking.unlock()</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; varying.write(3)</span>
+<span class="sd">    &gt;&gt;&gt; assert(varying.resolve() == 3)  # The value changed</span>
+<span class="sd">    &gt;&gt;&gt; assert(locking.resolve() == 3)  # This one sticks to the value it had when locked</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; locking.lock()</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; varying.write(4)</span>
+<span class="sd">    &gt;&gt;&gt; assert(varying.resolve() == 4)  # The value changed</span>
+<span class="sd">    &gt;&gt;&gt; assert(locking.resolve() == 3)  # This one sticks to the value it had when locked</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; varying.write(5)</span>
+<span class="sd">    &gt;&gt;&gt; assert(varying.resolve() == 5)  # The value changed</span>
+<span class="sd">    &gt;&gt;&gt; assert(locking.resolve() == 3)  # This one sticks to the value it had when locked</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; locking.unlock()</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; varying.write(6)</span>
+<span class="sd">    &gt;&gt;&gt; assert(varying.resolve() == 6)  # The value changed</span>
+<span class="sd">    &gt;&gt;&gt; assert(locking.resolve() == 6)  # This one sticks to the value it had when locked</span>
+
+<span class="sd">    &gt;&gt;&gt; assert(varying.resolve_type == int)</span>
+<span class="sd">    &gt;&gt;&gt; assert(locking.resolve_type == int)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_be_locked</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LockingDesignator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">to_be_locked</span><span class="o">.</span><span class="n">resolve_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_be_locked</span> <span class="o">=</span> <span class="n">to_be_locked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_locked</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="LockingDesignator.lock"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.LockingDesignator.lock">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_locked</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="LockingDesignator.unlock"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.LockingDesignator.unlock">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_locked</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="LockingDesignator.current"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.LockingDesignator.current">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">current</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span></div>
+
+<div class="viewcode-block" id="LockingDesignator._resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.LockingDesignator._resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_locked</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_be_locked</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+                <span class="c1"># rospy.loginfo(&quot;{0} locked to {1}&quot;.format(self, str(self._current)[:10]))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_be_locked</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;LockingDesignator &#39;</span><span class="si">{0}</span><span class="s2">&#39; resolved to </span><span class="si">{1}</span><span class="s2">, but is *not locked* to it&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current</span><span class="p">)[:</span><span class="mi">30</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current</span></div>
+
+<div class="viewcode-block" id="LockingDesignator.__repr__"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.LockingDesignator.__repr__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;LockingDesignator(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_be_locked</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="LockingDesignator._get_name"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.LockingDesignator._get_name">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;lockable(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_be_locked</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AttrDesignator"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.AttrDesignator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AttrDesignator</span><span class="p">(</span><span class="n">Designator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get some attribute of the object a wrapped designator resolves to.</span>
+<span class="sd">    This can be recursive, so you can specify a chain of nested attributes like &lt;resolved_object&gt;.foo.bar</span>
+
+<span class="sd">    For example:</span>
+<span class="sd">    &gt;&gt;&gt; d = Designator(bool, resolve_type=object)</span>
+<span class="sd">    &gt;&gt;&gt; #Get the __doc__ attribute of the object that d resolves to. d is an object and d.__doc__ is &#39;The most base type&#39;</span>
+<span class="sd">    &gt;&gt;&gt; wrapped = AttrDesignator(d, &#39;__doc__&#39;, resolve_type=str)</span>
+<span class="sd">    &gt;&gt;&gt; print(wrapped.resolve())</span>
+<span class="sd">    bool(x) -&gt; bool</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    Returns True when the argument x is true, False otherwise.</span>
+<span class="sd">    The builtins True and False are the only two instances of the class bool.</span>
+<span class="sd">    The class bool is a subclass of the class int, and cannot be subclassed.</span>
+
+<span class="sd">    &gt;&gt;&gt; assert(issubclass(wrapped.resolve_type, str))</span>
+
+<span class="sd">    &gt;&gt;&gt; d2 = Designator(&quot;banana&quot;, resolve_type=str)</span>
+<span class="sd">    &gt;&gt;&gt; wrapped2 = AttrDesignator(d2, &#39;endswith.__doc__&#39;, resolve_type=str)</span>
+<span class="sd">    &gt;&gt;&gt; print(wrapped2.resolve())</span>
+<span class="sd">    S.endswith(suffix[, start[, end]]) -&gt; bool</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    Return True if S ends with the specified suffix, False otherwise.</span>
+<span class="sd">    With optional start, test S beginning at that position.</span>
+<span class="sd">    With optional end, stop comparing S at that position.</span>
+<span class="sd">    suffix can also be a tuple of strings to try.</span>
+
+<span class="sd">    &gt;&gt;&gt; from collections import namedtuple</span>
+<span class="sd">    &gt;&gt;&gt; A = namedtuple(&quot;A&quot;, [&#39;foo&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; B = namedtuple(&quot;B&quot;, [&#39;bar&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; a = A(foo=B(bar=&#39;banana&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; d3 = Designator(a, resolve_type=A)</span>
+<span class="sd">    &gt;&gt;&gt; wrapped3 = AttrDesignator(d3, &#39;foo.bar&#39;, resolve_type=str)</span>
+<span class="sd">    &gt;&gt;&gt; wrapped3.resolve()</span>
+<span class="sd">    &#39;banana&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; wrapped3 = AttrDesignator(d3, &#39;foo.not_bar&#39;, resolve_type=str)</span>
+<span class="sd">    &gt;&gt;&gt; wrapped3.resolve() is None  # Will not resolve and return None</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">resolve_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AttrDesignator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">resolve_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig</span> <span class="o">=</span> <span class="n">orig</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_attr</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">attrgetter</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>  <span class="c1"># Generate a function that gives you &#39;.your.attr.path&#39; etc.</span>
+
+<div class="viewcode-block" id="AttrDesignator._resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.AttrDesignator._resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">orig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">orig</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">attr_err</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="n">attr_err</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="ValueByKeyDesignator"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.ValueByKeyDesignator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ValueByKeyDesignator</span><span class="p">(</span><span class="n">Designator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">container</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">resolve_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a value from a dictionary by it&#39;s key</span>
+
+<span class="sd">        :param container: any object with a __getitem__ method or a designator that resolves to it</span>
+<span class="sd">        :param name: Name of the designator for introspection purposes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ValueByKeyDesignator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">resolve_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># TODO: Add type checks to make sure that we can do container[key]</span>
+        <span class="c1"># OR container.resolve[key]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_container</span> <span class="o">=</span> <span class="n">container</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key</span> <span class="o">=</span> <span class="n">key</span>
+
+<div class="viewcode-block" id="ValueByKeyDesignator._resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.ValueByKeyDesignator._resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ToDo: possible cases: container=None, Missing key</span>
+        <span class="n">container</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">container</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">value_or_resolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">container</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="FuncDesignator"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.FuncDesignator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FuncDesignator</span><span class="p">(</span><span class="n">Designator</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply a function to the object a wrapped designator resolves to</span>
+<span class="sd">    For example:</span>
+<span class="sd">    &gt;&gt;&gt; d = Designator(&quot;Hello&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; wrapped = FuncDesignator(d, len, resolve_type=int) #Determine the len of whatever d resolves to</span>
+<span class="sd">    &gt;&gt;&gt; wrapped.resolve()</span>
+<span class="sd">    5</span>
+
+<span class="sd">    &gt;&gt;&gt; assert(issubclass(wrapped.resolve_type, int))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">resolve_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FuncDesignator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">resolve_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig</span> <span class="o">=</span> <span class="n">orig</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+
+<div class="viewcode-block" id="FuncDesignator._resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.FuncDesignator._resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">orig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">orig</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Cannot apply function </span><span class="si">{0}</span><span class="s2"> on </span><span class="si">{1}</span><span class="s2">: </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="DeferToRuntime"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.DeferToRuntime">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DeferToRuntime</span><span class="p">(</span><span class="n">Designator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the given function at runtime. Using Python closures, you can use any variable in scope in this function.</span>
+<span class="sd">    For example:</span>
+<span class="sd">    &gt;&gt;&gt; d1 = Designator(&quot;world&quot;) #Create a designator and assign it to a variable</span>
+<span class="sd">    &gt;&gt;&gt; prefix = &quot;Hello&quot; #Create a string variable</span>
+<span class="sd">    &gt;&gt;&gt; def prepend(): return prefix + &quot; &quot; + d1.resolve() #This function takes prefix and d1 as variables from the outer scope!</span>
+<span class="sd">    &gt;&gt;&gt; d = DeferToRuntime(prepend, resolve_type=str) #A designator to execute the prepend-function</span>
+<span class="sd">    &gt;&gt;&gt; d.resolve()</span>
+<span class="sd">    &#39;Hello world&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">resolve_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DeferToRuntime</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">resolve_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+
+<div class="viewcode-block" id="DeferToRuntime._resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.DeferToRuntime._resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="RandomDesignator"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.RandomDesignator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RandomDesignator</span><span class="p">(</span><span class="n">Designator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a random value from a given iterable</span>
+
+<span class="sd">    For example:</span>
+<span class="sd">    &gt;&gt;&gt; d = RandomDesignator([1,2,3], resolve_type=int)</span>
+<span class="sd">    &gt;&gt;&gt; d.resolve() in [1,2,3]</span>
+<span class="sd">    True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orig</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">resolve_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RandomDesignator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">resolve_type</span><span class="o">=</span><span class="n">resolve_type</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">check_type</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="p">[</span><span class="n">resolve_type</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig</span> <span class="o">=</span> <span class="n">orig</span>
+
+<div class="viewcode-block" id="RandomDesignator._resolve"><a class="viewcode-back" href="../../../../api/robot_smach_states/util/designators/utility/index.html#robot_smach_states.util.designators.utility.RandomDesignator._resolve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">orig</span> <span class="o">=</span> <span class="n">value_or_resolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orig</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

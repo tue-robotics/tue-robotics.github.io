@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="grammar_2recobs_8py" kind="file" language="Python">
+    <compoundname>grammar/recobs.py</compoundname>
+    <innerclass refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory" prot="public">dragonfly::grammar::recobs::PlaybackHistory</innerclass>
+    <innerclass refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory" prot="public">dragonfly::grammar::recobs::RecognitionHistory</innerclass>
+    <innerclass refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver" prot="public">dragonfly::grammar::recobs::RecognitionObserver</innerclass>
+    <innernamespace refid="namespacedragonfly_1_1grammar_1_1recobs">dragonfly::grammar::recobs</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacedragonfly_1_1grammar_1_1recobs" refkind="compound"><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">#<sp/>This<sp/>file<sp/>is<sp/>part<sp/>of<sp/>Dragonfly.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">#<sp/>(c)<sp/>Copyright<sp/>2007,<sp/>2008<sp/>by<sp/>Christo<sp/>Butcher</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Licensed<sp/>under<sp/>the<sp/>LGPL.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Dragonfly<sp/>is<sp/>free<sp/>software:<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or<sp/>modify<sp/>it</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>as<sp/>published</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>by<sp/>the<sp/>Free<sp/>Software<sp/>Foundation,<sp/>either<sp/>version<sp/>3<sp/>of<sp/>the<sp/>License,<sp/>or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Dragonfly<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,<sp/>but</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>License<sp/>along<sp/>with<sp/>Dragonfly.<sp/><sp/>If<sp/>not,<sp/>see</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>&lt;http://www.gnu.org/licenses/&gt;.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="22"><highlight class="stringliteral">Recognition<sp/>observer<sp/>classes</highlight></codeline>
+<codeline lineno="23"><highlight class="stringliteral">============================================================================</highlight></codeline>
+<codeline lineno="24"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="25"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>logging</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>time</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>six<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>integer_types</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1actions_1_1actions" kindref="compound">dragonfly.actions.actions</ref><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Playback</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1engines" kindref="compound">dragonfly.engines</ref><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>get_engine</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="comment">#---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver" kindref="compound">RecognitionObserver</ref>(object):</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="40"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>Recognition<sp/>observer<sp/>base<sp/>class.</highlight></codeline>
+<codeline lineno="41"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="42"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>Sub-classes<sp/>should<sp/>override<sp/>one<sp/>or<sp/>more<sp/>of<sp/>the<sp/>event<sp/>methods.</highlight></codeline>
+<codeline lineno="43"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a3d9c93576eda14bcd6c21bf98a66a6f1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>_log<sp/>=<sp/>logging.getLogger(</highlight><highlight class="stringliteral">&quot;grammar&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a8ae66481486c9ed38e0aca5177f8ad33" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a8ae66481486c9ed38e0aca5177f8ad33" kindref="member">__init__</ref>(self):</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">pass</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a14faa497df88d5f57e8dd2b487e145d2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a14faa497df88d5f57e8dd2b487e145d2" kindref="member">__del__</ref>(self):</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.unregister()</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">except</highlight><highlight class="normal"><sp/>Exception:</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">pass</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1af93bd67b35f9e677a04926d513d2f037" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1af93bd67b35f9e677a04926d513d2f037" kindref="member">register</ref>(self):</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="58"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Register<sp/>the<sp/>observer<sp/>for<sp/>recognition<sp/>state<sp/>events.</highlight></codeline>
+<codeline lineno="59"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>engine<sp/>=<sp/><ref refid="namespacedragonfly_1_1engines_1a54a7132d79612abdb29fac07276b5681" kindref="member">get_engine</ref>()</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>engine.register_recognition_observer(self)</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a0dfb5e314c19144dc3722fc0ebf35007" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a0dfb5e314c19144dc3722fc0ebf35007" kindref="member">unregister</ref>(self):</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="65"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Unregister<sp/>the<sp/>observer<sp/>for<sp/>recognition<sp/>state<sp/>events.</highlight></codeline>
+<codeline lineno="66"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>engine<sp/>=<sp/><ref refid="namespacedragonfly_1_1engines_1a54a7132d79612abdb29fac07276b5681" kindref="member">get_engine</ref>()</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>engine.unregister_recognition_observer(self)</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1aa54fd07ab2d8abab46c63482550bfb0c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1aa54fd07ab2d8abab46c63482550bfb0c" kindref="member">on_begin</ref>(self):</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="72"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Method<sp/>called<sp/>when<sp/>the<sp/>observer<sp/>is<sp/>registered<sp/>and<sp/>speech<sp/>start<sp/>is</highlight></codeline>
+<codeline lineno="73"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>detected.</highlight></codeline>
+<codeline lineno="74"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a5a1756d1eae4c0e1eff01a3301838742" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a5a1756d1eae4c0e1eff01a3301838742" kindref="member">on_recognition</ref>(self,<sp/>words,<sp/>rule,<sp/>node,<sp/>results):</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="78"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Method<sp/>called<sp/>when<sp/>speech<sp/>successfully<sp/>decoded<sp/>to<sp/>a<sp/>grammar<sp/>rule<sp/>or</highlight></codeline>
+<codeline lineno="79"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>to<sp/>dictation.</highlight></codeline>
+<codeline lineno="80"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="81"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>This<sp/>is<sp/>called<sp/>*before*<sp/>grammar<sp/>rule<sp/>processing<sp/>(i.e.</highlight></codeline>
+<codeline lineno="82"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>``Rule.process_recognition()``).</highlight></codeline>
+<codeline lineno="83"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="84"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>words:<sp/>recognized<sp/>words</highlight></codeline>
+<codeline lineno="85"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>words:<sp/>tuple</highlight></codeline>
+<codeline lineno="86"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>rule:<sp/>*optional*<sp/>recognized<sp/>rule</highlight></codeline>
+<codeline lineno="87"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>rule:<sp/>Rule</highlight></codeline>
+<codeline lineno="88"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>node:<sp/>*optional*<sp/>parse<sp/>tree<sp/>node</highlight></codeline>
+<codeline lineno="89"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>node:<sp/>Node</highlight></codeline>
+<codeline lineno="90"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>results:<sp/>*optional*<sp/>engine<sp/>recognition<sp/>results<sp/>object</highlight></codeline>
+<codeline lineno="91"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>results:<sp/>:ref:`engine-specific<sp/>type&lt;RefGrammarCallbackResultsTypes&gt;`</highlight></codeline>
+<codeline lineno="92"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a01c1908efc599d9f98e0510a10066545" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a01c1908efc599d9f98e0510a10066545" kindref="member">on_failure</ref>(self,<sp/>results):</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="96"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Method<sp/>called<sp/>when<sp/>speech<sp/>failed<sp/>to<sp/>decode<sp/>to<sp/>a<sp/>grammar<sp/>rule<sp/>or<sp/>to</highlight></codeline>
+<codeline lineno="97"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dictation.</highlight></codeline>
+<codeline lineno="98"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="99"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>results:<sp/>*optional*<sp/>engine<sp/>recognition<sp/>results<sp/>object</highlight></codeline>
+<codeline lineno="100"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>results:<sp/>:ref:`engine-specific<sp/>type&lt;RefGrammarCallbackResultsTypes&gt;`</highlight></codeline>
+<codeline lineno="101"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a1ed40f7503d6135e20f2358e56739ef7" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1a1ed40f7503d6135e20f2358e56739ef7" kindref="member">on_end</ref>(self,<sp/>results):</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="105"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Method<sp/>called<sp/>when<sp/>speech<sp/>ends,<sp/>either<sp/>with<sp/>a<sp/>successful</highlight></codeline>
+<codeline lineno="106"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>recognition<sp/>(after<sp/>``on_recognition``)<sp/>or<sp/>in<sp/>failure<sp/>(after</highlight></codeline>
+<codeline lineno="107"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>``on_failure``).</highlight></codeline>
+<codeline lineno="108"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="109"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>results:<sp/>*optional*<sp/>engine<sp/>recognition<sp/>results<sp/>object</highlight></codeline>
+<codeline lineno="110"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>results:<sp/>:ref:`engine-specific<sp/>type&lt;RefGrammarCallbackResultsTypes&gt;`</highlight></codeline>
+<codeline lineno="111"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1ae5d0780b32f92394f8e7b08378b428a9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver_1ae5d0780b32f92394f8e7b08378b428a9" kindref="member">on_post_recognition</ref>(self,<sp/>words,<sp/>rule,<sp/>node,<sp/>results):</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="115"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Method<sp/>called<sp/>when<sp/>speech<sp/>successfully<sp/>decoded<sp/>to<sp/>a<sp/>grammar<sp/>rule<sp/>or</highlight></codeline>
+<codeline lineno="116"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>to<sp/>dictation.</highlight></codeline>
+<codeline lineno="117"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="118"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>This<sp/>is<sp/>called<sp/>*after*<sp/>grammar<sp/>rule<sp/>processing<sp/>(i.e.</highlight></codeline>
+<codeline lineno="119"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>``Rule.process_recognition()``).</highlight></codeline>
+<codeline lineno="120"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="121"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>words:<sp/>recognized<sp/>words</highlight></codeline>
+<codeline lineno="122"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>words:<sp/>tuple</highlight></codeline>
+<codeline lineno="123"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>rule:<sp/>*optional*<sp/>recognized<sp/>rule</highlight></codeline>
+<codeline lineno="124"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>rule:<sp/>Rule</highlight></codeline>
+<codeline lineno="125"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>node:<sp/>*optional*<sp/>parse<sp/>tree<sp/>node</highlight></codeline>
+<codeline lineno="126"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>node:<sp/>Node</highlight></codeline>
+<codeline lineno="127"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>results:<sp/>*optional*<sp/>engine<sp/>recognition<sp/>results<sp/>object</highlight></codeline>
+<codeline lineno="128"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>results:<sp/>:ref:`engine-specific<sp/>type&lt;RefGrammarCallbackResultsTypes&gt;`</highlight></codeline>
+<codeline lineno="129"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight><highlight class="comment">#---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory" kindref="compound">RecognitionHistory</ref>(list,<sp/><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionObserver" kindref="compound">RecognitionObserver</ref>):</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="136"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Storage<sp/>class<sp/>for<sp/>recent<sp/>recognitions.</highlight></codeline>
+<codeline lineno="137"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="138"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Instances<sp/>of<sp/>this<sp/>class<sp/>monitor<sp/>recognitions<sp/>and<sp/>store<sp/>them</highlight></codeline>
+<codeline lineno="139"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>internally.<sp/><sp/>This<sp/>class<sp/>derives<sp/>from<sp/>the<sp/>built<sp/>in<sp/>*list*<sp/>type</highlight></codeline>
+<codeline lineno="140"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>and<sp/>can<sp/>be<sp/>accessed<sp/>as<sp/>if<sp/>it<sp/>were<sp/>a<sp/>normal<sp/>*list*<sp/>containing</highlight></codeline>
+<codeline lineno="141"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>recent<sp/>recognitions.<sp/><sp/>Note<sp/>that<sp/>an<sp/>instance&apos;s<sp/>contents<sp/>are</highlight></codeline>
+<codeline lineno="142"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>updated<sp/>automatically<sp/>as<sp/>recognitions<sp/>are<sp/>received.</highlight></codeline>
+<codeline lineno="143"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="144"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a3fe61d41cbd3e59d3e547a18462f9849" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a3fe61d41cbd3e59d3e547a18462f9849" kindref="member">__init__</ref>(self,<sp/>length=10):</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>list.__init__(self)</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RecognitionObserver.__init__(self)</highlight></codeline>
+<codeline lineno="149" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a2158239dfd66d723d0a28961d097d2d5" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a2158239dfd66d723d0a28961d097d2d5" kindref="member">_complete</ref><sp/>=<sp/></highlight><highlight class="keyword">True</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(length<sp/></highlight><highlight class="keywordflow">is</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">None</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">or</highlight><highlight class="normal"><sp/>(isinstance(length,<sp/>integer_types)<sp/></highlight><highlight class="keywordflow">and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>length<sp/>&gt;=<sp/>1)):</highlight></codeline>
+<codeline lineno="153" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a9e0b300efceb96a2a2bda8d5b3fdc257" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a9e0b300efceb96a2a2bda8d5b3fdc257" kindref="member">_length</ref><sp/>=<sp/>length</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">raise</highlight><highlight class="normal"><sp/>ValueError(</highlight><highlight class="stringliteral">&quot;length<sp/>must<sp/>be<sp/>a<sp/>positive<sp/>int<sp/>or<sp/>None,&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;<sp/>received<sp/>%r.&quot;</highlight><highlight class="normal"><sp/>%<sp/>length)</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/>@property</highlight></codeline>
+<codeline lineno="159" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1ad87fabe78f7bd27dea1f3d9ee33f7b84" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1ad87fabe78f7bd27dea1f3d9ee33f7b84" kindref="member">complete</ref>(self):</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;<sp/>*False*<sp/>if<sp/>phrase-start<sp/>detected<sp/>but<sp/>no<sp/>recognition<sp/>yet.<sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a2158239dfd66d723d0a28961d097d2d5" kindref="member">_complete</ref></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight></codeline>
+<codeline lineno="163" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1aea387736b90d6bb5faff0b7c8274420b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1aea387736b90d6bb5faff0b7c8274420b" kindref="member">on_begin</ref>(self):</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a2158239dfd66d723d0a28961d097d2d5" kindref="member">_complete</ref><sp/>=<sp/></highlight><highlight class="keyword">False</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight></codeline>
+<codeline lineno="167" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a6371cf4f885cc9675a28971747ec3b84" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a6371cf4f885cc9675a28971747ec3b84" kindref="member">on_recognition</ref>(self,<sp/>words):</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a2158239dfd66d723d0a28961d097d2d5" kindref="member">_complete</ref><sp/>=<sp/></highlight><highlight class="keyword">True</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.append(self.<ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a57d4f9bfa0b89ea234c7b1a33fd55a98" kindref="member">_recognition_to_item</ref>(words))</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a9e0b300efceb96a2a2bda8d5b3fdc257" kindref="member">_length</ref>:</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>len(self)<sp/>&gt;<sp/>self.<ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a9e0b300efceb96a2a2bda8d5b3fdc257" kindref="member">_length</ref>:</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.pop(0)</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight></codeline>
+<codeline lineno="175" refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a57d4f9bfa0b89ea234c7b1a33fd55a98" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory_1a57d4f9bfa0b89ea234c7b1a33fd55a98" kindref="member">_recognition_to_item</ref>(self,<sp/>words):</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>pylint:<sp/>disable=no-self-use</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>words</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight><highlight class="comment">#---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="183" refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory" kindref="compound">PlaybackHistory</ref>(<ref refid="classdragonfly_1_1grammar_1_1recobs_1_1RecognitionHistory" kindref="compound">RecognitionHistory</ref>):</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="185"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Storage<sp/>class<sp/>for<sp/>playing<sp/>back<sp/>recent<sp/>recognitions<sp/>via<sp/>the</highlight></codeline>
+<codeline lineno="186"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:class:`Playback`<sp/>action.</highlight></codeline>
+<codeline lineno="187"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="188"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Instances<sp/>of<sp/>this<sp/>class<sp/>monitor<sp/>recognitions<sp/>and<sp/>store<sp/>them</highlight></codeline>
+<codeline lineno="189"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>internally.<sp/><sp/>This<sp/>class<sp/>derives<sp/>from<sp/>the<sp/>built<sp/>in<sp/>*list*<sp/>type</highlight></codeline>
+<codeline lineno="190"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>and<sp/>can<sp/>be<sp/>accessed<sp/>as<sp/>if<sp/>it<sp/>were<sp/>a<sp/>normal<sp/>*list*<sp/>containing</highlight></codeline>
+<codeline lineno="191"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:class:`Playback`<sp/>actions<sp/>for<sp/>recent<sp/>recognitions.<sp/><sp/>Note<sp/>that<sp/>an</highlight></codeline>
+<codeline lineno="192"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>instance&apos;s<sp/>contents<sp/>are<sp/>updated<sp/>automatically<sp/>as<sp/>recognitions<sp/>are</highlight></codeline>
+<codeline lineno="193"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>received.</highlight></codeline>
+<codeline lineno="194"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="195"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197" refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory_1a8a11662769d08ff4ce92b721c68e5ae1" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory_1a8a11662769d08ff4ce92b721c68e5ae1" kindref="member">__init__</ref>(self,<sp/>length=10):</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RecognitionHistory.__init__(self,<sp/>length)</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight></codeline>
+<codeline lineno="200" refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory_1a50210526d8c660dbabce9d68332c83db" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory_1a50210526d8c660dbabce9d68332c83db" kindref="member">_recognition_to_item</ref>(self,<sp/>words):</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(words,<sp/>time.time())</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight></codeline>
+<codeline lineno="203" refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory_1a20aa2f4291fc6933b7d1f03f69b19f24" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory_1a20aa2f4291fc6933b7d1f03f69b19f24" kindref="member">__getitem__</ref>(self,<sp/>key):</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/>RecognitionHistory.__getitem__(self,<sp/>key)</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>len(result)<sp/>==<sp/>1:</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classdragonfly_1_1actions_1_1action__playback_1_1Playback" kindref="compound">Playback</ref>([(result[0][0],<sp/>0)])</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">elif</highlight><highlight class="normal"><sp/>len(result)<sp/>==<sp/>2<sp/></highlight><highlight class="keywordflow">and</highlight><highlight class="normal"><sp/>isinstance(result[1],<sp/>float):</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classdragonfly_1_1actions_1_1action__playback_1_1Playback" kindref="compound">Playback</ref>([(result[0],<sp/>0)])</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">elif</highlight><highlight class="normal"><sp/>len(result)<sp/>==<sp/>0:</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classdragonfly_1_1actions_1_1action__playback_1_1Playback" kindref="compound">Playback</ref>(())</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pairs<sp/>=<sp/>[(w1,<sp/>t2<sp/>-<sp/>t1)</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>((w1,<sp/>t1),<sp/>(w2,<sp/>t2))</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>zip(result[:-1],<sp/>result[1:])]</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pairs.append((result[-1][0],<sp/>0))</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classdragonfly_1_1actions_1_1action__playback_1_1Playback" kindref="compound">Playback</ref>(pairs)</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"></highlight></codeline>
+<codeline lineno="218" refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory_1acd2df756f858c4b463c4fac7d306945b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory_1acd2df756f858c4b463c4fac7d306945b" kindref="member">__getslice__</ref>(self,<sp/>i,<sp/>j):</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1grammar_1_1recobs_1_1PlaybackHistory_1a20aa2f4291fc6933b7d1f03f69b19f24" kindref="member">__getitem__</ref>(slice(i,<sp/>j))</highlight></codeline>
+    </programlisting>
+    <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/grammar/recobs.py"/>
+  </compounddef>
+</doxygen>

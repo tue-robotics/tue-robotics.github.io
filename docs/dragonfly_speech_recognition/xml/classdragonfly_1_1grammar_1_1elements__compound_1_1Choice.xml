@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classdragonfly_1_1grammar_1_1elements__compound_1_1Choice" kind="class" language="Python" prot="public">
+    <compoundname>dragonfly::grammar::elements_compound::Choice</compoundname>
+    <basecompoundref refid="classdragonfly_1_1grammar_1_1elements__basic_1_1Alternative" prot="public" virt="non-virtual">dragonfly.grammar.elements_basic.Alternative</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classdragonfly_1_1grammar_1_1elements__compound_1_1Choice_1acdad2ad8675b6fa2011bd86b17f70d26" prot="private" static="no" mutable="no">
+        <type></type>
+        <definition>dragonfly.grammar.elements_compound.Choice::_choices</definition>
+        <argsstring></argsstring>
+        <name>_choices</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/grammar/elements_compound.py" line="290" column="1" bodyfile="src/dragonfly_speech_recognition/dragonfly/dragonfly/grammar/elements_compound.py" bodystart="290" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classdragonfly_1_1grammar_1_1elements__compound_1_1Choice_1a03b39aa808d3eea7145534547cd16b68" prot="private" static="no" mutable="no">
+        <type></type>
+        <definition>dragonfly.grammar.elements_compound.Choice::_extras</definition>
+        <argsstring></argsstring>
+        <name>_extras</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/grammar/elements_compound.py" line="291" column="1" bodyfile="src/dragonfly_speech_recognition/dragonfly/dragonfly/grammar/elements_compound.py" bodystart="291" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classdragonfly_1_1grammar_1_1elements__compound_1_1Choice_1a79a04135dd819e52efcc6c67085745cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>def</type>
+        <definition>def dragonfly.grammar.elements_compound.Choice.__init__</definition>
+        <argsstring>(self, name, choices, extras=None, default=None)</argsstring>
+        <name>__init__</name>
+        <param>
+          <type>self</type>
+          <defname>self</defname>
+        </param>
+        <param>
+          <type><ref refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1a5bd1a9be70f09c0e74b86a888b813aad" kindref="member">name</ref></type>
+          <defname>name</defname>
+        </param>
+        <param>
+          <type>choices</type>
+          <defname>choices</defname>
+        </param>
+        <param>
+          <type>extras</type>
+          <defname>extras</defname>
+          <defval>None</defval>
+        </param>
+        <param>
+          <type><ref refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1adcd1378c9523c840349e97a6a775edad" kindref="member">default</ref></type>
+          <defname>default</defname>
+          <defval>None</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/grammar/elements_compound.py" line="278" column="1" bodyfile="src/dragonfly_speech_recognition/dragonfly/dragonfly/grammar/elements_compound.py" bodystart="278" bodyend="300"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><verbatim>    Element allowing a dictionary of phrases (compound specs) to be
+    recognized to be mapped to objects to be used in an action.
+
+    A list or tuple of phrases to be recognized may also be used.  In
+    this case the strings are also interpreted as :class:`Compound`
+    string specifications.  However, the values returned when compound
+    specs are successfully decoded during the recognition process are
+    the recognized words.  **Note**: these values will be matching
+    part(s) of the compound specs.
+
+    Constructor arguments:
+        - *name* (*str*) -- the name of this element
+        - *choices* (*dict*, *list* or *tuple*) -- dictionary mapping
+          recognized phrases to returned values **or** a list/tuple of
+          recognized phrases
+        - *extras* (*list*, default: *None*) -- a list of included
+          extras
+        - *default* (default: *None*) -- the default value of this
+          element
+
+    Example using a dictionary:
+
+    .. code:: python
+
+        # Tab switching command, e.g. &apos;third tab&apos;.
+        mapping = {
+            &quot;&lt;nth&gt; tab&quot;: Key(&quot;c-%(nth)s&quot;),
+        }
+        extras = [
+            Choice(&quot;nth&quot;, {
+                &quot;first&quot;         : &quot;1&quot;,
+                &quot;second&quot;        : &quot;2&quot;,
+                &quot;third&quot;         : &quot;3&quot;,
+                &quot;fourth&quot;        : &quot;4&quot;,
+                &quot;fifth&quot;         : &quot;5&quot;,
+                &quot;sixth&quot;         : &quot;6&quot;,
+                &quot;seventh&quot;       : &quot;7&quot;,
+                &quot;eighth&quot;        : &quot;8&quot;,
+                &quot;(last | ninth)&quot;: &quot;9&quot;,
+                &quot;next&quot;          : &quot;pgdown&quot;,
+                &quot;previous&quot;      : &quot;pgup&quot;,
+            }),
+        ]
+
+    Example using a list:
+
+    .. code:: python
+
+        # Command for recognizing and typing nth words, e.g.
+        # &apos;type third&apos;.
+        mapping = {
+            &quot;type &lt;nth&gt;&quot;: Text(&quot;%(nth)s&quot;),
+        }
+        extras = [
+            Choice(&quot;nth&quot;, [
+                &quot;first&quot;,
+                &quot;second&quot;,
+                &quot;third&quot;,
+                &quot;fourth&quot;,
+                &quot;fifth&quot;,
+                &quot;sixth&quot;,
+                &quot;seventh&quot;,
+                &quot;eighth&quot;,
+
+                # Note that the decoded value for a compound spec like
+                #  this one, when used in a list/tuple of choices,
+                #  rather than a dictionary, is the recognized word:
+                #  &quot;last&quot; or &quot;ninth&quot;.
+                &quot;(last | ninth)&quot;,
+
+                &quot;next&quot;,
+                &quot;previous&quot;,
+            ]),
+        ]
+</verbatim> </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>dragonfly.grammar.elements_compound.Choice</label>
+        <link refid="classdragonfly_1_1grammar_1_1elements__compound_1_1Choice"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>object</label>
+      </node>
+      <node id="3">
+        <label>dragonfly.grammar.elements_basic.ElementBase</label>
+        <link refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>dragonfly.grammar.elements_basic.Alternative</label>
+        <link refid="classdragonfly_1_1grammar_1_1elements__basic_1_1Alternative"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>dragonfly.grammar.elements_compound.Choice</label>
+        <link refid="classdragonfly_1_1grammar_1_1elements__compound_1_1Choice"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>string</label>
+      </node>
+      <node id="4">
+        <label>object</label>
+      </node>
+      <node id="3">
+        <label>dragonfly.grammar.elements_basic.ElementBase</label>
+        <link refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>dragonfly.grammar.elements_basic.Alternative</label>
+        <link refid="classdragonfly_1_1grammar_1_1elements__basic_1_1Alternative"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/grammar/elements_compound.py" line="201" column="1" bodyfile="src/dragonfly_speech_recognition/dragonfly/dragonfly/grammar/elements_compound.py" bodystart="201" bodyend="300"/>
+    <listofallmembers>
+      <member refid="classdragonfly_1_1grammar_1_1elements__compound_1_1Choice_1a79a04135dd819e52efcc6c67085745cb" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>__init__</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1Alternative_1a9e25bbe284f390caccca1ae9aaef4f9f" prot="public" virt="non-virtual" ambiguityscope="dragonfly::grammar::elements_basic::Alternative."><scope>dragonfly::grammar::elements_compound::Choice</scope><name>__init__</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1a2333eeef7b754f9989301817c7a51901" prot="public" virt="non-virtual" ambiguityscope="dragonfly::grammar::elements_basic::ElementBase."><scope>dragonfly::grammar::elements_compound::Choice</scope><name>__init__</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1a5c249a5f0b4fcfd312693aa2693646f4" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>__repr__</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1Alternative_1a437c38560300c589522540ba22e3f8bb" prot="private" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>_children</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__compound_1_1Choice_1acdad2ad8675b6fa2011bd86b17f70d26" prot="private" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>_choices</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1ac9000520c1ed2cc45e750aa4f58c33e0" prot="private" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>_copy_sequence</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1aa0bbb9c347cc144dc8ec9089b752d1fd" prot="private" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>_default</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__compound_1_1Choice_1a03b39aa808d3eea7145534547cd16b68" prot="private" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>_extras</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1Alternative_1a39ccda58f04793a62168180b757a7d52" prot="private" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>_get_children</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1a8b2ae3b4948ab028d4977f19db6ecd01" prot="private" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>_id</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1a3bd1a9e8cccf7ad0e8639ad6ea25e569" prot="private" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>_log_decode</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1a2a400cba074f562db1cce30ac537ca52" prot="private" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>_log_eval</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1a474483e51e223868deafb59b6cc9f226" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>children</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1Alternative_1a2726d9e6a2f228b3d6624f02cc15a7af" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>decode</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1adcd1378c9523c840349e97a6a775edad" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>default</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1Alternative_1a6d76e5368b8c08b50bde508936f66cf6" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>dependencies</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1aa407bc864e150bd0f0c124ae71168e31" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>element_tree_string</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1Alternative_1a872ec6512f38a67cadc97aee1690e3e2" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>gstring</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1acca1fd7cd9fc4bff2d96cdc0855b0ea8" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>has_default</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1a5bd1a9be70f09c0e74b86a888b813aad" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>name</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1ElementBase_1aa84e3c0d7a310f6503836439a83409ab" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>name</name></member>
+      <member refid="classdragonfly_1_1grammar_1_1elements__basic_1_1Alternative_1a73c4989dc996948804dfcb8401bb0664" prot="public" virt="non-virtual"><scope>dragonfly::grammar::elements_compound::Choice</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

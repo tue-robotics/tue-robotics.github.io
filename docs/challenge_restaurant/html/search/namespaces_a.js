@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['chrono_5524',['chrono',['https://en.cppreference.com/w/namespacestd_1_1chrono.html',1,'std']]],
+  ['chrono_5fliterals_5525',['chrono_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1chrono__literals.html',1,'std::literals']]],
+  ['complex_5fliterals_5526',['complex_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1complex__literals.html',1,'std::literals']]],
+  ['erase_28std_5527',['erase(std',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1erase_07std.html',1,'std::experimental']]],
+  ['erase_5fif_28std_5528',['erase_if(std',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1erase__if_07std.html',1,'std::experimental']]],
+  ['execution_5529',['execution',['https://en.cppreference.com/w/namespacestd_1_1execution.html',1,'std']]],
+  ['experimental_5530',['experimental',['https://en.cppreference.com/w/namespacestd_1_1experimental.html',1,'std']]],
+  ['filesystem_5531',['filesystem',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1filesystem.html',1,'std::experimental::filesystem'],['https://en.cppreference.com/w/namespacestd_1_1filesystem.html',1,'std::filesystem']]],
+  ['literals_5532',['literals',['https://en.cppreference.com/w/namespacestd_1_1literals.html',1,'std']]],
+  ['parallel_5533',['parallel',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1parallel.html',1,'std::experimental']]],
+  ['pmr_5534',['pmr',['https://en.cppreference.com/w/namespacestd_1_1experimental_1_1pmr.html',1,'std::experimental::pmr'],['https://en.cppreference.com/w/namespacestd_1_1pmr.html',1,'std::pmr']]],
+  ['ranges_5535',['ranges',['https://en.cppreference.com/w/namespacestd_1_1ranges.html',1,'std']]],
+  ['regex_5fconstants_5536',['regex_constants',['https://en.cppreference.com/w/namespacestd_1_1regex__constants.html',1,'std']]],
+  ['rel_5fops_5537',['rel_ops',['https://en.cppreference.com/w/namespacestd_1_1rel__ops.html',1,'std']]],
+  ['setup_5538',['setup',['../namespacesetup.html',1,'']]],
+  ['sing_5539',['sing',['../../../text_to_speech/html/namespacesing.html',1,'']]],
+  ['siza_5fdemo_5540',['siza_demo',['../../../robocup_knowledge/html/namespacesiza__demo.html',1,'']]],
+  ['std_5541',['std',['https://en.cppreference.com/w/namespacestd.html',1,'']]],
+  ['string_5fliterals_5542',['string_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1string__literals.html',1,'std::literals']]],
+  ['string_5fview_5fliterals_5543',['string_view_literals',['https://en.cppreference.com/w/namespacestd_1_1literals_1_1string__view__literals.html',1,'std::literals']]],
+  ['this_5fthread_5544',['this_thread',['https://en.cppreference.com/w/namespacestd_1_1this__thread.html',1,'std']]]
+];

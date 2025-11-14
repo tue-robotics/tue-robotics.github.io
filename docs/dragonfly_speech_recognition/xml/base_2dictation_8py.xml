@@ -1,0 +1,291 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="base_2dictation_8py" kind="file" language="Python">
+    <compoundname>base/dictation.py</compoundname>
+    <innerclass refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase" prot="public">dragonfly::engines::base::dictation::DictationContainerBase</innerclass>
+    <innernamespace refid="namespacedragonfly_1_1engines_1_1base_1_1dictation">dragonfly::engines::base::dictation</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacedragonfly_1_1engines_1_1base_1_1dictation" refkind="compound"><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">#<sp/>This<sp/>file<sp/>is<sp/>part<sp/>of<sp/>Dragonfly.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">#<sp/>(c)<sp/>Copyright<sp/>2007,<sp/>2008<sp/>by<sp/>Christo<sp/>Butcher</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Licensed<sp/>under<sp/>the<sp/>LGPL.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Dragonfly<sp/>is<sp/>free<sp/>software:<sp/>you<sp/>can<sp/>redistribute<sp/>it<sp/>and/or<sp/>modify<sp/>it</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>under<sp/>the<sp/>terms<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>as<sp/>published</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>by<sp/>the<sp/>Free<sp/>Software<sp/>Foundation,<sp/>either<sp/>version<sp/>3<sp/>of<sp/>the<sp/>License,<sp/>or</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>(at<sp/>your<sp/>option)<sp/>any<sp/>later<sp/>version.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Dragonfly<sp/>is<sp/>distributed<sp/>in<sp/>the<sp/>hope<sp/>that<sp/>it<sp/>will<sp/>be<sp/>useful,<sp/>but</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>WITHOUT<sp/>ANY<sp/>WARRANTY;<sp/>without<sp/>even<sp/>the<sp/>implied<sp/>warranty<sp/>of</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>MERCHANTABILITY<sp/>or<sp/>FITNESS<sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE.<sp/><sp/>See<sp/>the<sp/>GNU</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>Lesser<sp/>General<sp/>Public<sp/>License<sp/>for<sp/>more<sp/>details.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>You<sp/>should<sp/>have<sp/>received<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>GNU<sp/>Lesser<sp/>General<sp/>Public</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>License<sp/>along<sp/>with<sp/>Dragonfly.<sp/><sp/>If<sp/>not,<sp/>see</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/><sp/>&lt;http://www.gnu.org/licenses/&gt;.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">#</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="22"><highlight class="stringliteral">Dictation<sp/>container<sp/>base<sp/>class</highlight></codeline>
+<codeline lineno="23"><highlight class="stringliteral">============================================================================</highlight></codeline>
+<codeline lineno="24"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="25"><highlight class="stringliteral">This<sp/>class<sp/>is<sp/>used<sp/>to<sp/>store<sp/>the<sp/>recognized<sp/>results<sp/>of<sp/>dictation<sp/>elements</highlight></codeline>
+<codeline lineno="26"><highlight class="stringliteral">within<sp/>voice-commands.<sp/><sp/>It<sp/>offers<sp/>access<sp/>to<sp/>both<sp/>the<sp/>raw<sp/>spoken-form<sp/>words</highlight></codeline>
+<codeline lineno="27"><highlight class="stringliteral">and<sp/>be<sp/>formatted<sp/>written-form<sp/>text.</highlight></codeline>
+<codeline lineno="28"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="29"><highlight class="stringliteral">The<sp/>object<sp/>can<sp/>be<sp/>expected<sp/>to<sp/>behave<sp/>like<sp/>a<sp/>string,</highlight></codeline>
+<codeline lineno="30"><highlight class="stringliteral">responding<sp/>as<sp/>you<sp/>would<sp/>expect<sp/>to<sp/>string<sp/>methods<sp/>like<sp/>:meth:`replace`.</highlight></codeline>
+<codeline lineno="31"><highlight class="stringliteral">The<sp/>formatted<sp/>text<sp/>can<sp/>be<sp/>retrieved<sp/>using</highlight></codeline>
+<codeline lineno="32"><highlight class="stringliteral">:meth:`~DictationContainerBase.format`<sp/>or<sp/>simply<sp/>by<sp/><sp/>calling<sp/>``str(...)``</highlight></codeline>
+<codeline lineno="33"><highlight class="stringliteral">on<sp/>a<sp/>dictation<sp/>container<sp/>object.</highlight></codeline>
+<codeline lineno="34"><highlight class="stringliteral">By<sp/>default,<sp/>formatting<sp/>returns<sp/>the<sp/>words<sp/>joined<sp/>with</highlight></codeline>
+<codeline lineno="35"><highlight class="stringliteral">spaces,<sp/>but<sp/>custom<sp/>formatting<sp/>can<sp/>be<sp/>applied<sp/>by<sp/>calling</highlight></codeline>
+<codeline lineno="36"><highlight class="stringliteral">string<sp/>methods<sp/>on<sp/>the<sp/>:class:`Dictation`<sp/>object.</highlight></codeline>
+<codeline lineno="37"><highlight class="stringliteral">A<sp/>tuple<sp/>of<sp/>the<sp/>raw<sp/><sp/>spoken<sp/>words<sp/>can<sp/>be</highlight></codeline>
+<codeline lineno="38"><highlight class="stringliteral">retrieved<sp/>using<sp/>:attr:`~DictationContainerBase.words`.</highlight></codeline>
+<codeline lineno="39"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="40"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="41"><highlight class="stringliteral">String<sp/>Formatting<sp/>Examples</highlight></codeline>
+<codeline lineno="42"><highlight class="stringliteral">----------------------------------------------------------------------------</highlight></codeline>
+<codeline lineno="43"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="44"><highlight class="stringliteral">The<sp/>following<sp/>examples<sp/>demonstrate<sp/>dictation<sp/>input<sp/>can<sp/>be<sp/>formatted<sp/>by</highlight></codeline>
+<codeline lineno="45"><highlight class="stringliteral">calling<sp/>string<sp/>methods<sp/>on<sp/>:class:`Dictation`<sp/>elements.</highlight></codeline>
+<codeline lineno="46"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="47"><highlight class="stringliteral">Python<sp/>example:</highlight></codeline>
+<codeline lineno="48"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="49"><highlight class="stringliteral">..<sp/><sp/>code::<sp/>python</highlight></codeline>
+<codeline lineno="50"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="51"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>mapping<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>Define<sp/>commands<sp/>for<sp/>writing<sp/>Python<sp/>methods,<sp/>functions<sp/>and<sp/>classes.</highlight></codeline>
+<codeline lineno="53"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;method<sp/>[&lt;under&gt;]<sp/>&lt;snaketext&gt;&quot;:</highlight></codeline>
+<codeline lineno="54"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Text(&quot;def<sp/>%(under)s%(snaketext)s(self):&quot;)<sp/>+<sp/>Key(&quot;left:2&quot;),</highlight></codeline>
+<codeline lineno="55"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;function<sp/>&lt;snaketext&gt;&quot;:</highlight></codeline>
+<codeline lineno="56"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Text(&quot;def<sp/>%(snaketext)s():&quot;)<sp/>+<sp/>Key(&quot;left:2&quot;),</highlight></codeline>
+<codeline lineno="57"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;classy<sp/>[&lt;classtext&gt;]&quot;:</highlight></codeline>
+<codeline lineno="58"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Text(&quot;class<sp/>%(classtext)s:&quot;)<sp/>+<sp/>Key(&quot;left&quot;),</highlight></codeline>
+<codeline lineno="59"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="60"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>Define<sp/>a<sp/>command<sp/>for<sp/>accessing<sp/>object<sp/>members.</highlight></codeline>
+<codeline lineno="61"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;selfie<sp/>[&lt;under&gt;]<sp/>[&lt;snaketext&gt;]&quot;:</highlight></codeline>
+<codeline lineno="62"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Text(&quot;self.%(under)s%(snaketext)s&quot;),</highlight></codeline>
+<codeline lineno="63"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="64"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="65"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>extras<sp/>=<sp/>[</highlight></codeline>
+<codeline lineno="66"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>Define<sp/>a<sp/>Dictation<sp/>element<sp/>that<sp/>produces<sp/>snake<sp/>case<sp/>text,</highlight></codeline>
+<codeline lineno="67"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>e.g.<sp/>hello_world.</highlight></codeline>
+<codeline lineno="68"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dictation(&quot;snaketext&quot;,<sp/>default=&quot;&quot;).lower().replace(&quot;<sp/>&quot;,<sp/>&quot;_&quot;),</highlight></codeline>
+<codeline lineno="69"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="70"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>Define<sp/>a<sp/>Dictation<sp/>element<sp/>that<sp/>produces<sp/>text<sp/>matching<sp/>Python&apos;s</highlight></codeline>
+<codeline lineno="71"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>class<sp/>casing,<sp/>e.g.<sp/>DictationContainer.</highlight></codeline>
+<codeline lineno="72"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dictation(&quot;classtext&quot;,<sp/>default=&quot;&quot;).title().replace(&quot;<sp/>&quot;,<sp/>&quot;&quot;),</highlight></codeline>
+<codeline lineno="73"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="74"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>Allow<sp/>adding<sp/>underscores<sp/>before<sp/>cased<sp/>text.</highlight></codeline>
+<codeline lineno="75"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Choice(&quot;under&quot;,<sp/>{&quot;under&quot;:<sp/>&quot;_&quot;},<sp/>default=&quot;&quot;),</highlight></codeline>
+<codeline lineno="76"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>]</highlight></codeline>
+<codeline lineno="77"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="78"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>rule<sp/>=<sp/>MappingRule(name=&quot;PythonExample&quot;,<sp/>mapping=mapping,<sp/>extras=extras)</highlight></codeline>
+<codeline lineno="79"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="80"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="81"><highlight class="stringliteral">Markdown<sp/>example:</highlight></codeline>
+<codeline lineno="82"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="83"><highlight class="stringliteral">..<sp/><sp/>code::<sp/>python</highlight></codeline>
+<codeline lineno="84"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="85"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>mapping<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>Define<sp/>a<sp/>command<sp/>for<sp/>typing<sp/>Markdown<sp/>headings<sp/>1<sp/>to<sp/>7<sp/>with<sp/>optional</highlight></codeline>
+<codeline lineno="87"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>capitalized<sp/>text.</highlight></codeline>
+<codeline lineno="88"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;heading<sp/>[&lt;num&gt;]<sp/>[&lt;capitalised_text&gt;]&quot;:</highlight></codeline>
+<codeline lineno="89"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Text(&quot;#&quot;)*Repeat(&quot;num&quot;)<sp/>+<sp/>Text(&quot;<sp/>%(capitalised_text)s&quot;),</highlight></codeline>
+<codeline lineno="90"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="91"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="92"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>extras<sp/>=<sp/>[</highlight></codeline>
+<codeline lineno="93"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dictation(&quot;capitalised_text&quot;,<sp/>default=&quot;&quot;).capitalize(),</highlight></codeline>
+<codeline lineno="94"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IntegerRef(&quot;num&quot;,<sp/>1,<sp/>7,<sp/>1),</highlight></codeline>
+<codeline lineno="95"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>]</highlight></codeline>
+<codeline lineno="96"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="97"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>rule<sp/>=<sp/>MappingRule(name=&quot;MdExample&quot;,<sp/>mapping=mapping,<sp/>extras=extras)</highlight></codeline>
+<codeline lineno="98"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="99"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="100"><highlight class="stringliteral">Camel-case<sp/>example<sp/>using<sp/>the<sp/>:meth:`Dictation.camel`<sp/>method:</highlight></codeline>
+<codeline lineno="101"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="102"><highlight class="stringliteral">..<sp/><sp/>code::<sp/>python</highlight></codeline>
+<codeline lineno="103"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="104"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>mapping<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>Define<sp/>a<sp/>command<sp/>for<sp/>typing<sp/>camel-case<sp/>text,<sp/>e.g.<sp/>helloWorld.</highlight></codeline>
+<codeline lineno="106"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;camel<sp/>&lt;camel_text&gt;&quot;:<sp/>Text(&quot;<sp/>%(camel_text)s&quot;),</highlight></codeline>
+<codeline lineno="107"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="108"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="109"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>extras<sp/>=<sp/>[</highlight></codeline>
+<codeline lineno="110"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dictation(&quot;camel_text&quot;,<sp/>default=&quot;&quot;).camel(),</highlight></codeline>
+<codeline lineno="111"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>]</highlight></codeline>
+<codeline lineno="112"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="113"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>rule<sp/>=<sp/>MappingRule(name=&quot;CamelExample&quot;,<sp/>mapping=mapping,<sp/>extras=extras)</highlight></codeline>
+<codeline lineno="114"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="115"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="116"><highlight class="stringliteral">Example<sp/>using<sp/>the<sp/>:meth:`Dictation.apply`<sp/>method<sp/>for<sp/>random<sp/>casing:</highlight></codeline>
+<codeline lineno="117"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="118"><highlight class="stringliteral">..<sp/><sp/>code::<sp/>python</highlight></codeline>
+<codeline lineno="119"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="120"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>from<sp/>random<sp/>import<sp/>random</highlight></codeline>
+<codeline lineno="121"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="122"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>def<sp/>random_text(text):</highlight></codeline>
+<codeline lineno="123"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>#<sp/>Randomize<sp/>the<sp/>case<sp/>of<sp/>each<sp/>character.</highlight></codeline>
+<codeline lineno="124"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/>&quot;&quot;</highlight></codeline>
+<codeline lineno="125"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>c<sp/>in<sp/>text:</highlight></codeline>
+<codeline lineno="126"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>r<sp/>=<sp/>random()</highlight></codeline>
+<codeline lineno="127"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if<sp/>r<sp/>&lt;<sp/>0.5:</highlight></codeline>
+<codeline lineno="128"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>+=<sp/>c.lower()</highlight></codeline>
+<codeline lineno="129"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>else:</highlight></codeline>
+<codeline lineno="130"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>+=<sp/>c.upper()</highlight></codeline>
+<codeline lineno="131"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>result</highlight></codeline>
+<codeline lineno="132"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="133"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>mapping<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="134"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;random<sp/>&lt;random_text&gt;&quot;:<sp/>Text(&quot;%(random_text)s&quot;),</highlight></codeline>
+<codeline lineno="135"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="136"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="137"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>extras<sp/>=<sp/>[</highlight></codeline>
+<codeline lineno="138"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Dictation(&quot;random_text&quot;,<sp/>default=&quot;&quot;).apply(random_text),</highlight></codeline>
+<codeline lineno="139"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>]</highlight></codeline>
+<codeline lineno="140"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="141"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>rule<sp/>=<sp/>MappingRule(name=&quot;RandomExample&quot;,<sp/>mapping=mapping,<sp/>extras=extras)</highlight></codeline>
+<codeline lineno="142"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="143"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="144"><highlight class="stringliteral">Class<sp/>reference</highlight></codeline>
+<codeline lineno="145"><highlight class="stringliteral">----------------------------------------------------------------------------</highlight></codeline>
+<codeline lineno="146"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="147"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight><highlight class="comment">#---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Dictation<sp/>base<sp/>class<sp/>--<sp/>base<sp/>class<sp/>for<sp/>SR<sp/>engine-specific<sp/>containers</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="comment">#<sp/><sp/>of<sp/>dictated<sp/>words.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>locale</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>six<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>PY2</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight></codeline>
+<codeline lineno="158" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase" kindref="compound">DictationContainerBase</ref>(object):</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="160"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Container<sp/>class<sp/>for<sp/>dictated<sp/>words<sp/>as<sp/>recognized<sp/>by<sp/>the</highlight></codeline>
+<codeline lineno="161"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:class:`Dictation`<sp/>element.</highlight></codeline>
+<codeline lineno="162"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="163"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>This<sp/>base<sp/>class<sp/>implements<sp/>the<sp/>general<sp/>functionality<sp/>of<sp/>dictation</highlight></codeline>
+<codeline lineno="164"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>container<sp/>classes.<sp/><sp/>Each<sp/>supported<sp/>engine<sp/>should<sp/>have<sp/>a<sp/>derived</highlight></codeline>
+<codeline lineno="165"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dictation<sp/>container<sp/>class<sp/>which<sp/>performs<sp/>the<sp/>actual<sp/>engine-</highlight></codeline>
+<codeline lineno="166"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>specific<sp/>formatting<sp/>of<sp/>dictated<sp/>text.</highlight></codeline>
+<codeline lineno="167"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="168"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="170" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a970f33121ff3ea25dbf07653e35da483" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a970f33121ff3ea25dbf07653e35da483" kindref="member">__init__</ref>(self,<sp/>words,<sp/>methods=None):</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="172"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>A<sp/>dictation<sp/>container<sp/>is<sp/>created<sp/>by<sp/>passing<sp/>it<sp/>a<sp/>sequence</highlight></codeline>
+<codeline lineno="173"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>of<sp/>words<sp/>as<sp/>recognized<sp/>by<sp/>the<sp/>backend<sp/>SR<sp/>engine.</highlight></codeline>
+<codeline lineno="174"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Each<sp/>word<sp/>must<sp/>be<sp/>a<sp/>Unicode<sp/>string.</highlight></codeline>
+<codeline lineno="175"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="176"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>words:<sp/>A<sp/>sequence<sp/>of<sp/>Unicode<sp/>strings.</highlight></codeline>
+<codeline lineno="177"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>words:<sp/>sequence-of-unicode</highlight></codeline>
+<codeline lineno="178"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="179"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:param<sp/>methods:<sp/>Tuples<sp/>describing<sp/>string<sp/>methods<sp/>to<sp/>call<sp/>on<sp/>the<sp/>output.</highlight></codeline>
+<codeline lineno="180"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>:type<sp/>methods:<sp/>list-of-triples</highlight></codeline>
+<codeline lineno="181"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="182"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="183" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a31a13a623ae2f1533b58ef3b8b709319" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a31a13a623ae2f1533b58ef3b8b709319" kindref="member">_words</ref><sp/>=<sp/>tuple(words)</highlight></codeline>
+<codeline lineno="184" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a1be372e9ef9b8d1a36c1b7141353b07a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a1be372e9ef9b8d1a36c1b7141353b07a" kindref="member">_formatted</ref><sp/>=<sp/></highlight><highlight class="keywordtype">None</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="185" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a916a9f2d8bfbe41e721964a5cbd0f990" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a916a9f2d8bfbe41e721964a5cbd0f990" kindref="member">_methods</ref><sp/>=<sp/>methods</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" kindref="member">__str__</ref>(self):</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>PY2:</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a4f3c6f966ba84c8f946dbe16454b3231" kindref="member">__unicode__</ref>().encode(locale.getpreferredencoding())</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a4f3c6f966ba84c8f946dbe16454b3231" kindref="member">__unicode__</ref>()</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a4f3c6f966ba84c8f946dbe16454b3231" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a4f3c6f966ba84c8f946dbe16454b3231" kindref="member">__unicode__</ref>(self):</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a1be372e9ef9b8d1a36c1b7141353b07a" kindref="member">_formatted</ref><sp/></highlight><highlight class="keywordflow">is</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">None</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a1be372e9ef9b8d1a36c1b7141353b07a" kindref="member">_formatted</ref><sp/>=<sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a11138dc3928fb41fb1b764724238e620" kindref="member">format</ref>()</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a1be372e9ef9b8d1a36c1b7141353b07a" kindref="member">_formatted</ref></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a74d25cbf5c59f384957b60c0667fc424" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a74d25cbf5c59f384957b60c0667fc424" kindref="member">__repr__</ref>(self):</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message<sp/>=<sp/></highlight><highlight class="stringliteral">u&quot;%s(%s)&quot;</highlight><highlight class="normal"><sp/>%<sp/>(self.__class__.__name__,</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">u&quot;,<sp/>&quot;</highlight><highlight class="normal">.join(self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a31a13a623ae2f1533b58ef3b8b709319" kindref="member">_words</ref>))</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>PY2:</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>message.encode(locale.getpreferredencoding())</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>message</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight></codeline>
+<codeline lineno="206" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ac342b3669c41f24d09df25f4f2a7ab1d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ac342b3669c41f24d09df25f4f2a7ab1d" kindref="member">__getattr__</ref>(self,<sp/>name):</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>getattr(self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" kindref="member">__str__</ref>(),<sp/>name)</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ade8c1144f4e857f0cf297acf9a5b2822" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ade8c1144f4e857f0cf297acf9a5b2822" kindref="member">__add__</ref>(self,<sp/>other):</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" kindref="member">__str__</ref>()<sp/>+<sp/>other</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight></codeline>
+<codeline lineno="212" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a6d1ae198bf8446d2d13f47a5392ad2dc" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a6d1ae198bf8446d2d13f47a5392ad2dc" kindref="member">__radd__</ref>(self,<sp/>other):</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>other<sp/>+<sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" kindref="member">__str__</ref>()</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="215" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a1dd0d902689eb8551bbdfc4831dd2e63" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a1dd0d902689eb8551bbdfc4831dd2e63" kindref="member">__mul__</ref>(self,<sp/>other):</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" kindref="member">__str__</ref>()<sp/>*<sp/>other</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"></highlight></codeline>
+<codeline lineno="218" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a9c707140275dd60c54a563f5737a3cb4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a9c707140275dd60c54a563f5737a3cb4" kindref="member">__rmul__</ref>(self,<sp/>other):</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" kindref="member">__str__</ref>()<sp/>*<sp/>other</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight></codeline>
+<codeline lineno="221" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1acd97735f345d1d3d74efea288af334f6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1acd97735f345d1d3d74efea288af334f6" kindref="member">__getitem__</ref>(self,<sp/>key):</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" kindref="member">__str__</ref>()[key]</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight></codeline>
+<codeline lineno="224" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ac88171629ff26a64cb2b81a646c36671" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ac88171629ff26a64cb2b81a646c36671" kindref="member">__bool__</ref>(self):</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>bool(self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" kindref="member">__str__</ref>())</highlight></codeline>
+<codeline lineno="226" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a311e2908c56ad8acd6f85d0824fe5982" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>__nonzero__<sp/>=<sp/>__bool__<sp/><sp/></highlight><highlight class="comment">#<sp/>PY2<sp/>compatibility</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight></codeline>
+<codeline lineno="228" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1afc620bf791ceb98afd11270041c98417" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1afc620bf791ceb98afd11270041c98417" kindref="member">__len__</ref>(self):</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>len(self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" kindref="member">__str__</ref>())</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight></codeline>
+<codeline lineno="231" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ab0a451806da356bff956f344e2d68ed8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ab0a451806da356bff956f344e2d68ed8" kindref="member">__contains__</ref>(self,<sp/>item):</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ae53c818b7fe211a044827761e40d3f2d" kindref="member">__str__</ref>()</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/>@property</highlight></codeline>
+<codeline lineno="235" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ac2031167722b5408ace6d24575374a3a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1ac2031167722b5408ace6d24575374a3a" kindref="member">words</ref>(self):</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;<sp/>Sequence<sp/>of<sp/>the<sp/>words<sp/>forming<sp/>this<sp/>dictation.<sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a31a13a623ae2f1533b58ef3b8b709319" kindref="member">_words</ref></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight></codeline>
+<codeline lineno="239" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a11138dc3928fb41fb1b764724238e620" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a11138dc3928fb41fb1b764724238e620" kindref="member">format</ref>(self):</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;<sp/>Format<sp/>and<sp/>return<sp/>this<sp/>dictation<sp/>as<sp/>a<sp/>Unicode<sp/>object.<sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a39e349b8f9b7ae74fe06785abdf52c5c" kindref="member">apply_methods</ref>(</highlight><highlight class="stringliteral">u&quot;<sp/>&quot;</highlight><highlight class="normal">.join(self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a31a13a623ae2f1533b58ef3b8b709319" kindref="member">_words</ref>))</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"></highlight></codeline>
+<codeline lineno="243" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a39e349b8f9b7ae74fe06785abdf52c5c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a39e349b8f9b7ae74fe06785abdf52c5c" kindref="member">apply_methods</ref>(self,<sp/>joined_words):</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="245"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Apply<sp/>any<sp/>string<sp/>methods<sp/>called<sp/>on<sp/>the<sp/>:class:`Dictation`<sp/>object<sp/>to</highlight></codeline>
+<codeline lineno="246"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a<sp/>given<sp/>string.</highlight></codeline>
+<codeline lineno="247"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="248"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Called<sp/>during<sp/>:meth:`format`.</highlight></codeline>
+<codeline lineno="249"><highlight class="stringliteral"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/>joined_words</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>result:<sp/></highlight><highlight class="comment">#<sp/>Do<sp/>nothing<sp/>for<sp/>empty<sp/>string</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>method<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a916a9f2d8bfbe41e721964a5cbd0f990" kindref="member">_methods</ref>:</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>hasattr(result,<sp/>method[0]):</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>function<sp/>=<sp/>getattr(result,<sp/>method[0])</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/>function(*method[1],<sp/>**method[2])</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">elif</highlight><highlight class="normal"><sp/>hasattr(self,<sp/>method[0]):</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>function<sp/>=<sp/>getattr(self,<sp/>method[0])</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/>function(result,<sp/>*method[1],<sp/>**method[2])</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">raise</highlight><highlight class="normal"><sp/>AttributeError(</highlight><highlight class="stringliteral">&quot;&apos;%s&apos;<sp/>is<sp/>not<sp/>a<sp/>valid<sp/>dictation<sp/>or<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;string<sp/>method&quot;</highlight><highlight class="normal"><sp/>%<sp/>method[0])</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"></highlight></codeline>
+<codeline lineno="264" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a69dad6cc04cb31d413ab92d7833ac84e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a69dad6cc04cb31d413ab92d7833ac84e" kindref="member">apply</ref>(self,<sp/>str_input,<sp/>format_func):</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>callable(format_func):</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>format_func(str_input)</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">raise</highlight><highlight class="normal"><sp/>TypeError(</highlight><highlight class="stringliteral">&quot;Argument<sp/>passed<sp/>to<sp/>&apos;Dictation.apply&apos;<sp/>method<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;must<sp/>be<sp/>callable,<sp/>taking<sp/>and<sp/>returning<sp/>a<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;string.&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272" refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1aa1bd33eeae34d99ede366e6e511f2654" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1aa1bd33eeae34d99ede366e6e511f2654" kindref="member">camel</ref>(self,<sp/>str_input):</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal">f(s):</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>s[0]<sp/>+<sp/>(s.title().replace(</highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">)[1:]</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>len(s)&gt;1<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>self.<ref refid="classdragonfly_1_1engines_1_1base_1_1dictation_1_1DictationContainerBase_1a69dad6cc04cb31d413ab92d7833ac84e" kindref="member">apply</ref>(str_input,<sp/>f)</highlight></codeline>
+    </programlisting>
+    <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/engines/base/dictation.py"/>
+  </compounddef>
+</doxygen>

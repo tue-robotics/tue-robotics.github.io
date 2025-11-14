@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="get__dragonfly__grammar_8py" kind="file" language="Python">
+    <compoundname>get_dragonfly_grammar.py</compoundname>
+    <innernamespace refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar">dragonfly_speech_recognition::get_dragonfly_grammar</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar" refkind="compound"><highlight class="keyword">import</highlight><highlight class="normal"><sp/>logging</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>sys</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>os</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>dragonfly<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Alternative,<sp/>Sequence,<sp/>Literal,<sp/>Grammar,<sp/>Rule</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>os.name<sp/>==<sp/></highlight><highlight class="stringliteral">&apos;nt&apos;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"><sp/><sp/><sp/><sp/>sys.path.append(os.path.dirname(os.path.realpath(__file__))<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;/grammar_parser/src/&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacegrammar__parser_1_1cfgparser" kindref="compound">grammar_parser.cfgparser</ref><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>CFGParser</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10" refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1a2d38df946349be425bdfd17dd0119a1f" refkind="member"><highlight class="normal">FORMAT<sp/>=<sp/></highlight><highlight class="stringliteral">&apos;%(asctime)s<sp/>%(module)s<sp/>[%(levelname)s]<sp/>%(message)s&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11" refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1abbd954729748a722a81dbaba3e945bd7" refkind="member"><highlight class="normal">logging.basicConfig(format=FORMAT)</highlight></codeline>
+<codeline lineno="12"><highlight class="normal">logging.getLogger().setLevel(logging.INFO)</highlight></codeline>
+<codeline lineno="13" refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1a69182e1742e8018e522d6ead21716840" refkind="member"><highlight class="normal">logger<sp/>=<sp/>logging.getLogger(__name__)</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15" refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1a3b469be121b8ead229ad28e8815a05ef" refkind="member"><highlight class="normal">RULES<sp/>=<sp/>{}</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1a0e0c735068d2ee60f3e49437b7e6c4ef" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1a0e0c735068d2ee60f3e49437b7e6c4ef" kindref="member">flatten</ref>(seq):</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>l<sp/>=<sp/>[]</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>elt<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>seq:</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/><ref refid="namespacetest__grammar_1a2d627203d6cca5b11d2cc4fa9c3e00cd" kindref="member">type</ref>(elt)<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>[tuple,<sp/>list]:</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>elt2<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1a0e0c735068d2ee60f3e49437b7e6c4ef" kindref="member">flatten</ref>(elt):</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>l.append(elt2)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>l.append(elt)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>l</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29" refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1adbcf08be5af9bd6abdd4b13079c2bf5d" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1adbcf08be5af9bd6abdd4b13079c2bf5d" kindref="member">_get_dragonfly_rule_element</ref>(target,<sp/>parser,<sp/>depth=0):</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">global</highlight><highlight class="normal"><sp/>RULES</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>target<sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>parser.rules:</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">raise</highlight><highlight class="normal"><sp/>Exception(</highlight><highlight class="stringliteral">&quot;Target<sp/>{}<sp/>not<sp/>in<sp/>parser<sp/>rules&quot;</highlight><highlight class="normal">.<ref refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1abbd954729748a722a81dbaba3e945bd7" kindref="member">format</ref>(target))</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>If<sp/>already<sp/>present<sp/>in<sp/>RULES,<sp/>return<sp/>it</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>target<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>RULES:</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>RULES[target]</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Get<sp/>the<sp/>rule</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>rule<sp/>=<sp/>parser.rules[target]</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Iterate<sp/>over<sp/>all<sp/>options</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>option_alternative_list<sp/>=<sp/>[]</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>opt<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>rule.options:</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Iterate<sp/>over<sp/>all<sp/>conjunctions</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>conjunctions_list<sp/>=<sp/>[]</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>conj<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>opt.conjuncts:</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>If<sp/>the<sp/>conjunction<sp/>is<sp/>already<sp/>present</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>conj.name<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>RULES:</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>conjunctions_list.append(RULES[conj.name])</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>If<sp/>variable:<sp/>go<sp/>one<sp/>level<sp/>deeper</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>conj.is_variable:</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/><ref refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1adbcf08be5af9bd6abdd4b13079c2bf5d" kindref="member">_get_dragonfly_rule_element</ref>(conj.name,<sp/>parser,<sp/>depth<sp/>+<sp/>1)</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>result:</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>conjunctions_list.append(result)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Add<sp/>a<sp/>new<sp/>literal<sp/>to<sp/>the<sp/>list</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RULES[conj.name]<sp/>=<sp/><ref refid="namespacedragonfly_1_1grammar_1_1elements_1a012cfe2ca8a31508c1262048051c398c" kindref="member">Literal</ref>(conj.name)</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>conjunctions_list.append(RULES[conj.name])</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>logger.debug(</highlight><highlight class="stringliteral">&quot;Adding<sp/>literal<sp/>rule:<sp/>%s&quot;</highlight><highlight class="normal">,<sp/><sp/>conj.name)</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>ToDo:<sp/>apply<sp/>caching?</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>len(conjunctions_list)<sp/>==<sp/>1:</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>option_alternative_list.append(conjunctions_list[0])</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>option_alternative_list.append(<ref refid="namespacedragonfly_1_1grammar_1_1elements_1afd0c0c3012ffdebee3500092a27713e7" kindref="member">Sequence</ref>(conjunctions_list))</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>len(option_alternative_list)<sp/>==<sp/>1:</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RULES[target]<sp/>=<sp/>option_alternative_list[0]</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>RULES[target]<sp/>=<sp/><ref refid="namespacedragonfly_1_1grammar_1_1elements_1a5fae346809679996270fdc08704d01e0" kindref="member">Alternative</ref>(option_alternative_list)</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>logger.debug(</highlight><highlight class="stringliteral">&quot;Adding<sp/>alternative<sp/>rule:<sp/>%s&quot;</highlight><highlight class="normal">,<sp/>target)</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>RULES[target]</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79" refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1af807582ea0ff80d5d3441805b5f68ba2" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1af807582ea0ff80d5d3441805b5f68ba2" kindref="member">get_dragonfly_grammar</ref>(engine,<sp/>grammar,<sp/>target,<sp/>result_queue):</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">global</highlight><highlight class="normal"><sp/>RULES</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>RULES<sp/>=<sp/>{}</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>parser<sp/>=<sp/>CFGParser.fromstring(grammar)</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>dragonfly_rule_element<sp/>=<sp/><ref refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1adbcf08be5af9bd6abdd4b13079c2bf5d" kindref="member">_get_dragonfly_rule_element</ref>(target,<sp/>parser)</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>dragonfly_grammar<sp/>=<sp/><ref refid="classdragonfly_1_1grammar_1_1grammar__base_1_1Grammar" kindref="compound">Grammar</ref>(</highlight><highlight class="stringliteral">&quot;G&quot;</highlight><highlight class="normal">,<sp/>engine=engine)</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">with</highlight><highlight class="normal"><sp/>result_queue.mutex:</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result_queue.queue.clear()</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">GrammarRule(<ref refid="classdragonfly_1_1grammar_1_1rule__base_1_1Rule" kindref="compound">Rule</ref>):</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal">process_recognition(self,<sp/>node):</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>logger.info(</highlight><highlight class="stringliteral">&apos;Dragonfly<sp/>node:<sp/>%s&apos;</highlight><highlight class="normal">,<sp/>str(node))</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/>node.value()</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>logger.info(</highlight><highlight class="stringliteral">&apos;Dragonfly<sp/>result:<sp/>%s&apos;</highlight><highlight class="normal">,<sp/>str(result))</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>flattened_string<sp/>=<sp/>result</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>isinstance(result,<sp/>list):</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>flattened_string<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal">.join(<ref refid="namespacedragonfly__speech__recognition_1_1get__dragonfly__grammar_1a0e0c735068d2ee60f3e49437b7e6c4ef" kindref="member">flatten</ref>(result))</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>logger.info(</highlight><highlight class="stringliteral">&apos;Dragonfly<sp/>flattened<sp/>result:<sp/>%s&apos;</highlight><highlight class="normal">,<sp/>str(flattened_string))</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>result_queue.empty():</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>logger.warning(</highlight><highlight class="stringliteral">&apos;There<sp/>is<sp/>already<sp/>a<sp/>message<sp/>in<sp/>the<sp/>queue!<sp/>%s&apos;</highlight><highlight class="normal">,<sp/>result_queue)</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result_queue.put_nowait(flattened_string)</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>logger.debug(</highlight><highlight class="stringliteral">&quot;Dragonfly<sp/>thread<sp/>recognition<sp/>Q<sp/>[id=%s,<sp/>qsize=%d]&quot;</highlight><highlight class="normal">,<sp/>id(result_queue),<sp/>result_queue.qsize())</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>rule<sp/>=<sp/>GrammarRule(element=dragonfly_rule_element,<sp/>exported=</highlight><highlight class="keyword">True</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>dragonfly_grammar.add_rule(rule)</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>dragonfly_grammar</highlight></codeline>
+    </programlisting>
+    <location file="src/dragonfly_speech_recognition/get_dragonfly_grammar.py"/>
+  </compounddef>
+</doxygen>

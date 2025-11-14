@@ -1,0 +1,280 @@
+robot_smach_states.navigation.guidance
+======================================
+
+.. py:module:: robot_smach_states.navigation.guidance
+
+.. autoapi-nested-parse::
+
+   Module contains states to guide an operator to a designated location.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.guidance.TourGuide
+   robot_smach_states.navigation.guidance.ExecutePlanGuidance
+   robot_smach_states.navigation.guidance.WaitForOperator
+   robot_smach_states.navigation.guidance.Guide
+   robot_smach_states.navigation.guidance.GuideToSymbolic
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.guidance._detect_operator_behind_robot
+
+
+Module Contents
+---------------
+
+.. py:function:: _detect_operator_behind_robot(robot, distance = 1.0, radius = 0.5)
+
+   Checks if a person is within <radius> of the position <distance> behind the <robot>
+
+   :param robot: (Robot) api object
+   :param distance: (float) follow distance
+   :param radius: (float) radius around the position at <distance> behind the robot
+   :return: (bool) whether an operator was detected
+
+
+.. py:class:: TourGuide(robot, x_threshold = 0.75, y_threshold = 1.5)
+
+   Bases: :py:obj:`object`
+
+
+   
+   # Class to describe furniture near the robot.
+
+   :param robot: (Robot) api object
+   :param x_threshold: (float) threshold determining when a piece of furniture is close enough to be described [m]
+   :param y_threshold: (float) threshold determining when a piece of furniture is close enough to be described [m]
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _x_threshold
+      :value: 0.75
+
+
+
+   .. py:attribute:: _y_threshold
+      :value: 1.5
+
+
+
+   .. py:attribute:: _furniture_entities
+      :value: []
+
+
+
+   .. py:attribute:: _room_entities
+      :value: []
+
+
+
+   .. py:attribute:: _furniture_entities_room
+
+
+   .. py:attribute:: _passed_room_ids
+      :value: []
+
+
+
+   .. py:attribute:: _passed_furniture_ids
+      :value: []
+
+
+
+   .. py:method:: describe_near_objects()
+
+      Describes near objects based on the robots current position
+      :return: A description of the robots surroundings
+      :rtype: string
+
+
+
+   .. py:method:: initialize()
+
+
+   .. py:method:: reset()
+
+      Resets the passed room ids and the passed furniture ids
+
+
+
+   .. py:method:: get_room(position)
+
+      Checks if the given position is in one of the provided rooms
+
+      :param position: position to check. N.B.: it is assumed this is w.r.t. the same frame as the room entities
+      :type position: kdl.Vector
+      :return: room entity
+      :rtype: Entity
+      :raises: (RuntimeError)
+
+
+
+.. py:class:: ExecutePlanGuidance(robot, operator_distance = 1.0, operator_radius = 0.5, describe_near_objects = True)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Similar to the "executePlan" smach state. The only difference is that after driving for x meters, "check for
+   operator" is returned.
+
+   :param robot: (Robot) robot api object
+   :param operator_distance: (float) check for the operator to be within this range of the robot
+   :param operator_radius: (float) from the point behind the robot defined by `distance`, the person must be within
+       this radius
+   :param describe_near_objects: (bool) If true robot will describe near objects while guiding
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: _distance_threshold
+      :value: 1.0
+
+
+
+   .. py:attribute:: _operator_distance
+      :value: 1.0
+
+
+
+   .. py:attribute:: _operator_radius
+      :value: 0.5
+
+
+
+   .. py:attribute:: describe_near_objects
+      :value: True
+
+
+
+   .. py:attribute:: _tourguide
+
+
+   .. py:method:: execute(userdata=None)
+
+
+   .. py:method:: reset_tourguide()
+
+      Resets the internal state of the tourguide so that all operators get complete information if this guide state
+      is used more than once.
+
+
+
+   .. py:method:: _check_operator()
+
+      Checks if the operator is still sufficiently close
+
+      :return: (bool)
+
+
+
+   .. py:method:: _get_base_position()
+
+      Gets the base position as a kdl Vector
+
+      :return: (kdl Vector) with current base position
+
+
+
+.. py:class:: WaitForOperator(robot, timeout = 10.0, distance = 1.0, radius = 0.5)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Smach state to check if the operator is still following the robot.
+
+   :param robot: (Robot) robot api object
+   :param timeout: (float) if the operator has not been detected for this period, "is_lost" will be returned
+   :param distance: (float) check for the operator to be within this range of the robot [m]
+   :param radius: (float) from the point behind the robot defined by `distance`, the person must be within this
+       radius [m]
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _timeout
+      :value: 10.0
+
+
+
+   .. py:attribute:: _distance
+      :value: 1.0
+
+
+
+   .. py:attribute:: _radius
+      :value: 0.5
+
+
+
+   .. py:method:: execute(ud)
+
+
+.. py:class:: Guide(robot, constraint_function, operator_distance = 1.0, operator_radius = 0.5, describe_near_objects = True)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   
+   Base Smach state to guide an operator to a designated position
+
+   :param robot: (Robot) robot api object
+   :param operator_distance: (float) check for the operator to be within this range of the robot
+   :param operator_radius: (float) from the point behind the robot defined by `distance`, the person must be within this radius
+   :param describe_near_objects: (bool) If true robot will describe near objects while guiding
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: operator_distance
+      :value: 1.0
+
+
+
+   .. py:attribute:: operator_radius
+      :value: 0.5
+
+
+
+   .. py:attribute:: describe_near_objects
+      :value: True
+
+
+
+   .. py:attribute:: execute_plan
+
+
+.. py:class:: GuideToSymbolic(robot, entity_designator_area_name_map, entity_lookat_designator, operator_distance = 1.0, operator_radius = 0.5, describe_near_objects = True)
+
+   Bases: :py:obj:`Guide`
+
+
+   Guidance class to navigate to a semantically annotated goal, e.g., in front of the dinner table.
+
+   Constructor
+
+   :param robot: robot object
+   :param entity_designator_area_name_map: dictionary mapping EdEntityDesignators to a string or designator
+       resolving to a string, representing the area, e.g., entity_designator_area_name_map[<EdEntity>] = 'in_front_of'.
+   :param entity_lookat_designator: EdEntityDesignator defining the entity the robot should look at. This is used
+       to compute the orientation constraint.
+   :param operator_distance: (float) check for the operator to be within this range of the robot [m]
+   :param operator_radius: (float) from the point behind the robot defined by `distance`, the person must be within
+       this radius [m]
+   :param describe_near_objects: (bool) If true robot will describe near objects while guiding
+
+

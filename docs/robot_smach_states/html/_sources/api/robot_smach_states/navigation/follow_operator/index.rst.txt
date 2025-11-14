@@ -1,0 +1,344 @@
+robot_smach_states.navigation.follow_operator
+=============================================
+
+.. py:module:: robot_smach_states.navigation.follow_operator
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.follow_operator.robot_name
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.follow_operator.FollowOperator
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.follow_operator.vector_stampeds_to_point_stampeds
+   robot_smach_states.navigation.follow_operator.frame_stampeds_to_pose_stampeds
+   robot_smach_states.navigation.follow_operator.setup_statemachine
+
+
+Module Contents
+---------------
+
+.. py:function:: vector_stampeds_to_point_stampeds(vector_stampeds)
+
+.. py:function:: frame_stampeds_to_pose_stampeds(frame_stampeds)
+
+.. py:class:: FollowOperator(robot, ask_follow=True, learn_face=True, operator_radius=1, lookat_radius=1.2, start_timeout=10, operator_timeout=20, lost_timeout=60, lost_distance=0.8, operator_id_des=VariableDesignator(resolve_type=str), standing_still_timeout=20, operator_standing_still_timeout=3.0, replan=False, update_period=0.5)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Constructor
+
+   :param robot: robot object
+   :param ask_follow:
+   :param learn_face:
+   :param operator_radius:
+   :param lookat_radius:
+   :param start_timeout:
+   :param operator_timeout: Timeout for finding an operator
+   :param lost_timeout: How long to look for the operator when we lost him/her?
+   :param lost_distance:
+   :param operator_id_des: Designator that resolves to the operator id to start following
+   :param standing_still_timeout:
+   :param operator_standing_still_timeout:
+   :param replan:
+   :param update_period: Time period for tracking updates in seconds
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _time_started
+      :type:  Optional[genpy.Time]
+      :value: None
+
+
+
+   .. py:attribute:: _operator
+      :type:  Optional[ed.entity.Entity]
+      :value: None
+
+
+
+   .. py:attribute:: _operator_id
+      :type:  Optional[str]
+      :value: None
+
+
+
+   .. py:attribute:: _operator_name
+      :type:  str
+      :value: 'operator'
+
+
+
+   .. py:attribute:: _operator_radius
+      :type:  float
+      :value: 1
+
+
+
+   .. py:attribute:: _lookat_radius
+      :type:  float
+      :value: 1.2
+
+
+
+   .. py:attribute:: _start_timeout
+      :type:  float
+      :value: 10
+
+
+
+   .. py:attribute:: _breadcrumbs
+      :type:  List[ed.entity.Entity]
+      :value: []
+
+
+
+   .. py:attribute:: _breadcrumb_distance
+      :type:  float
+      :value: 0.1
+
+
+
+   .. py:attribute:: _operator_timeout
+      :type:  float
+      :value: 20
+
+
+
+   .. py:attribute:: _ask_follow
+      :type:  bool
+      :value: True
+
+
+
+   .. py:attribute:: _learn_face
+      :type:  bool
+      :value: True
+
+
+
+   .. py:attribute:: _lost_timeout
+      :type:  float
+      :value: 60
+
+
+
+   .. py:attribute:: _lost_distance
+      :type:  float
+      :value: 0.8
+
+
+
+   .. py:attribute:: _standing_still_timeout
+      :type:  float
+      :value: 20
+
+
+
+   .. py:attribute:: _operator_standing_still_timeout
+      :type:  float
+      :value: 3.0
+
+
+
+   .. py:attribute:: _operator_id_des
+
+
+   .. py:attribute:: _operator_distance
+      :type:  Optional[float]
+      :value: None
+
+
+
+   .. py:attribute:: _operator_pub
+
+
+   .. py:attribute:: _plan_marker_pub
+
+
+   .. py:attribute:: _breadcrumb_pub
+
+
+   .. py:attribute:: _face_pos_pub
+
+
+   .. py:attribute:: _last_robot_fs
+      :type:  Optional[pykdl_ros.FrameStamped]
+      :value: None
+
+
+
+   .. py:attribute:: _last_pose_stamped_time
+      :value: None
+
+
+
+   .. py:attribute:: _last_operator_fs
+      :type:  Optional[pykdl_ros.FrameStamped]
+      :value: None
+
+
+
+   .. py:attribute:: _replan_active
+      :type:  bool
+      :value: False
+
+
+
+   .. py:attribute:: _replan_done_limit
+      :type:  int
+      :value: 10
+
+
+
+   .. py:attribute:: _last_operator
+      :type:  Optional[ed.entity.Entity]
+      :value: None
+
+
+
+   .. py:attribute:: _replan_allowed
+      :value: False
+
+
+
+   .. py:attribute:: _replan_timeout
+      :value: 10
+
+
+
+   .. py:attribute:: _replan_time
+      :type:  Optional[genpy.Time]
+      :value: None
+
+
+
+   .. py:attribute:: _replan_attempts
+      :type:  int
+      :value: 0
+
+
+
+   .. py:attribute:: _max_replan_attempts
+      :type:  int
+      :value: 3
+
+
+
+   .. py:attribute:: _update_period
+      :type:  float
+      :value: 0.5
+
+
+
+   .. py:method:: _operator_standing_still_for_x_seconds(timeout, cartesian_limit = 0.15)
+
+      Check whether the operator is standing still for X seconds
+
+      :param timeout: how many seconds must the operator be standing still before returning True
+      :type timeout: float
+      :return: bool indicating whether the operator has been standing still for longer than timeout seconds
+
+
+
+   .. py:method:: _standing_still_for_x_seconds(timeout, cartesian_limit = 0.05, angular_limit = 0.3)
+
+      Check whether the robot is standing still for X seconds
+
+      :param timeout: how many seconds must the robot be standing still before returning True
+      :return: bool indicating whether the robot has been standing still for longer than timeout seconds
+
+
+
+   .. py:method:: _register_operator()
+
+      Robots looks at the operator and asks whether the operator should follow.
+      If he says yes, then set self._operator.
+      Also adds the operator to the breadcrumb list
+
+
+
+   .. py:method:: _update_breadcrumb_path()
+
+      If the last breadcrumb is less than a threshold away, replace
+      the last breadcrumb with the latest operator position; otherwise
+      just add it.
+      In case a breadcrumb is 'reached', remove all breadcrumbs up to that point
+
+
+
+   .. py:method:: _backup_register()
+
+      This only happens when the operator was just registered, and never tracked
+
+
+
+   .. py:method:: _track_operator()
+
+      Sets self._operator_distance if we have an operator and otherwise set self._operator_distance to the
+      distance to the last operator
+
+
+
+   .. py:method:: _visualize_breadcrumbs(breadcrumbs)
+
+
+   .. py:method:: _visualize_plan(path)
+
+
+   .. py:method:: _look_at_operator()
+
+      Let the robot look at the operator
+
+
+
+   .. py:method:: _update_navigation()
+
+      Set the navigation plan to match the breadcrumbs collected into self._breadcrumbs.
+      This list has all the Entity's of where the operator has been
+
+
+
+   .. py:method:: _recover_operator(look_distance = 2.0)
+
+
+   .. py:method:: _turn_towards_operator()
+
+
+   .. py:method:: _replan()
+
+
+   .. py:method:: _check_end_criteria()
+
+      Check we have met any end criteria to stop following the operator
+
+      :return: None if no end criteria met, otherwise a string describing the end criteria
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:function:: setup_statemachine(robot)
+
+.. py:data:: robot_name
+

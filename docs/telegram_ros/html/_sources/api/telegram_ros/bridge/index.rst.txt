@@ -1,0 +1,187 @@
+telegram_ros.bridge
+===================
+
+.. py:module:: telegram_ros.bridge
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   telegram_ros.bridge.WHITELIST
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   telegram_ros.bridge.TelegramROSBridge
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   telegram_ros.bridge.telegram_callback
+   telegram_ros.bridge.ros_callback
+
+
+Module Contents
+---------------
+
+.. py:data:: WHITELIST
+   :value: '~whitelist'
+
+
+.. py:function:: telegram_callback(callback_function)
+
+   Decorator to restrict telegram methods only to the active chat or tell to /start one if needed
+
+   :param callback_function: A callback function taking a telegram.Bot and a telegram.Update
+   :return: Wrapped callback function
+
+
+.. py:function:: ros_callback(callback_function)
+
+   Decorator that verifies whether we have an active chat id and handles possible exceptions
+
+   :param callback_function: A callback function taking a ros msg
+   :return: Wrapped callback function
+
+
+.. py:class:: TelegramROSBridge(api_token, caption_as_frame_id)
+
+   
+   Telegram ROS bridge that bridges between a Telegram chat conversation and ROS
+
+   :param api_token: The Telegram API token
+
+
+   .. py:attribute:: _caption_as_frame_id
+
+
+   .. py:attribute:: _from_telegram_string_publisher
+
+
+   .. py:attribute:: _from_telegram_image_publisher
+
+
+   .. py:attribute:: _from_telegram_location_publisher
+
+
+   .. py:attribute:: _to_telegram_string_subscriber
+
+
+   .. py:attribute:: _to_telegram_image_subscriber
+
+
+   .. py:attribute:: _to_telegram_location_subscriber
+
+
+   .. py:attribute:: _to_telegram_options_subscriber
+
+
+   .. py:attribute:: _cv_bridge
+
+
+   .. py:attribute:: _telegram_chat_id
+      :value: None
+
+
+
+   .. py:attribute:: _telegram_updater
+
+
+   .. py:method:: _shutdown(reason)
+
+      Sending a message to the current chat id on destruction.
+
+
+
+   .. py:method:: spin()
+
+      Starts the Telegram update thread and spins until a SIGINT is received
+
+
+
+   .. py:method:: _telegram_start_callback(update, _)
+
+      Called when a Telegram user sends the '/start' event to the bot, using this event, the bridge can be connected
+      to a specific conversation.
+      This checks whether the user is on the whitelist if the whitelist is a list and allows any user if whitelist is empty
+
+      :param update: Received update event that holds the chat_id and message data
+
+
+
+   .. py:method:: _telegram_stop_callback(update, _)
+
+      Called when a Telegram user sends the '/stop' event to the bot. Then, the user is disconnected from the bot and
+      will no longer receive messages.
+
+      :param update: Received update event that holds the chat_id and message data
+
+
+
+   .. py:method:: _telegram_message_callback(update, _)
+
+      Called when a new Telegram message has been received. The method will verify whether the incoming message is
+      from the bridges Telegram conversation by comparing the chat_id.
+
+      :param update: Received update that holds the chat_id and message data
+
+
+
+   .. py:method:: _ros_string_callback(msg)
+
+      Called when a new ROS String message is coming in that should be sent to the Telegram conversation
+
+      :param msg: String message
+
+
+
+   .. py:method:: _telegram_photo_callback(update, _)
+
+      Called when a new Telegram photo has been received. The method will verify whether the incoming message is
+      from the bridges Telegram conversation by comparing the chat_id.
+
+      :param update: Received update that holds the chat_id and message data
+
+
+
+   .. py:method:: _ros_image_callback(msg)
+
+      Called when a new ROS Image message is coming in that should be sent to the Telegram conversation
+
+      :param msg: Image message
+
+
+
+   .. py:method:: _telegram_location_callback(update, _)
+
+      Called when a new Telegram Location is received. The method will verify whether the incoming Location is
+      from the bridged Telegram conversation by comparing the chat_id.
+
+      :param update: Received update that holds the chat_id and message data
+
+
+
+   .. py:method:: _ros_location_callback(msg)
+
+      Called when a new ROS NavSatFix message is coming in that should be sent to the Telegram conversation
+
+      :param msg: NavSatFix that the robot wants to share
+
+
+
+   .. py:method:: _ros_options_callback(msg)
+
+      Called when a new ROS Options message is coming in that should be sent to the Telegram conversation
+
+      :param msg: Options that the robot wants to share
+
+
+

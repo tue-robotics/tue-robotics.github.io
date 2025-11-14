@@ -1,0 +1,149 @@
+people_recognition_2d.people_recognizer_2d
+==========================================
+
+.. py:module:: people_recognition_2d.people_recognizer_2d
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   people_recognition_2d.people_recognizer_2d._get_and_wait_for_service
+   people_recognition_2d.people_recognizer_2d._get_service_response
+
+
+Module Contents
+---------------
+
+.. py:function:: _get_and_wait_for_service(srv_name, srv_class)
+
+   Function to start and wait for dependent service
+
+   :param: srv_name: Service name
+   :param: srv_class: Service class
+   :return: started ServiceProxy object
+
+
+.. py:function:: _get_service_response(srv, args)
+
+   Method to get service response with checks
+
+   :param: srv: service
+   :param: args: Input arguments of the service request
+   :return: response
+
+
+.. py:class:: PeopleRecognizer2D(pose_estimation_srv_name, face_recognition_srv_name, face_properties_srv_name, color_extractor_srv_name, enable_age_gender_detection, enable_shirt_color_extraction)
+
+   Bases: :py:obj:`object`
+
+
+   .. py:attribute:: _pose_estimation_srv
+
+
+   .. py:attribute:: _face_recognition_srv
+
+
+   .. py:attribute:: _enable_age_gender_detection
+
+
+   .. py:attribute:: _enable_shirt_color_extraction
+
+
+   .. py:attribute:: _bridge
+
+
+   .. py:method:: _get_recognitions_with_label(label, recognitions)
+      :staticmethod:
+
+
+
+   .. py:method:: _get_face_rois_ids_pose_estimation(recognitions)
+      :staticmethod:
+
+
+      Get ROIs of faces from pose estimation using the nose, left ear
+      and right ear
+
+      :param: recognitions from pose estimation
+
+
+
+   .. py:method:: _get_body_parts_pose_estimation(group_id, recognitions)
+      :staticmethod:
+
+
+      Get a list of all bodyparts associated with a particular group ID
+
+      :param: group_id: The group ID of the bodyparts to be fetched
+      :param: recognitions: All bodyparts received from pose estimation
+      :return: List of body_parts
+
+
+
+   .. py:method:: _get_container_recognition(roi, recognitions, padding_factor=0.1)
+      :staticmethod:
+
+
+      Associate pose estimation ROI with best pose estimation face ROI
+
+      :param: roi: pose estimation face roi
+      :param: recognitions: face recognitions
+
+
+
+   .. py:method:: _get_best_label_from_categorical_distribution(c)
+      :staticmethod:
+
+
+
+   .. py:method:: _image_from_roi(image, roi)
+      :staticmethod:
+
+
+
+   .. py:method:: _get_best_label(recognition)
+      :staticmethod:
+
+
+
+   .. py:method:: _face_properties_to_label(face_properties)
+      :staticmethod:
+
+
+
+   .. py:method:: _shirt_colors_to_label(shirt_colors)
+      :staticmethod:
+
+
+      Convert shirt colors array to label string
+
+      :param: shirt_colors: Array to colors
+      :return: string label
+
+
+
+   .. py:method:: _shirt_roi_from_face_roi(face_roi, image_shape)
+      :staticmethod:
+
+
+      Given a ROI for a face, shift the ROI to the person's shirt. Assuming the person is upright :/
+
+      :param face_roi: RegionOfInterest
+      :param image_shape: tuple of the image shape
+      :return: RegionOfInterest
+
+
+
+   .. py:method:: recognize(image_msg)
+
+

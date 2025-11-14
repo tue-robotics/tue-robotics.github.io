@@ -1,0 +1,129 @@
+robot_smach_states.human_interaction.give_directions
+====================================================
+
+.. py:module:: robot_smach_states.human_interaction.give_directions
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.human_interaction.give_directions.GiveDirections
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.human_interaction.give_directions.create_frame_from_points
+   robot_smach_states.human_interaction.give_directions.in_room
+   robot_smach_states.human_interaction.give_directions.get_room
+   robot_smach_states.human_interaction.give_directions._test_rooms
+
+
+Module Contents
+---------------
+
+.. py:class:: GiveDirections(robot, entity_designator, x_threshold = 0.75, y_threshold = 1.5)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Robot tells the operator how to get to a certain entity
+
+   Init
+
+   :param robot: API object
+   :type robot: Robot
+   :param entity_designator: resolving to the entity the operator wants to go to
+   :type entity_designator: Designator
+   :param x_threshold: if the entity is closer than this distance in x-direction w.r.t. the path frame
+       it is considered 'passed'
+   :type x_threshold: float
+   :param y_threshold: if the entity is closer than this distance in y-direction w.r.t. the path frame
+       it is considered 'passed'
+   :type y_threshold: float
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _entity_designator
+
+
+   .. py:attribute:: _x_threshold
+      :value: 0.75
+
+
+
+   .. py:attribute:: _y_threshold
+      :value: 1.5
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+   .. py:method:: get_entity_pose_in_path(point, next_point, entity_pose)
+      :staticmethod:
+
+
+      Computes the entity pose w.r.t. the virtual frame that is spanned by the two points
+
+      :param point: First point in fixed frame
+      :type point: kdl.Vector
+      :param next_point: Next point in fixed frame
+      :type next_point: kdl.Vector
+      :param entity_pose: (kdl.Frame) Entity pose in fixed frame
+      :type entity_pose: kdl.Frame
+      :return: Entity pose in virtual 'path' frame
+      :rtype: kdl.Frame
+
+
+
+.. py:function:: create_frame_from_points(p0, p1)
+
+   Creates a frame from two points. The origin of the frame is the first point. The x-direction points into the
+   direction of the next point
+
+   :param p0: Origin of the frame
+   :type p0: kdl.Vector
+   :param p1: x-direction of the frame will point to this vector
+   :type p1: kdl.Vector
+   :return: Created frame
+   :rtype: kdl.Frame
+
+
+.. py:function:: in_room(room, position)
+
+   Checks if the given position is in the given room
+
+   :param room: Room entity
+   :type room: Entity
+   :param position: position to check. N.B.: it is assumed this is w.r.t. the same frame as the room
+       entities
+   :type position: kdl.Vector
+   :return: whether or not the position is in the room
+   :rtype: bool
+
+
+.. py:function:: get_room(rooms, position)
+
+   Checks if the given position is in one of the provided rooms
+
+   :param rooms: list(Entity) containing all room entities
+   :type rooms: list[Entity]
+   :param position: position to check. N.B.: it is assumed this is w.r.t. the same frame as the room entities
+   :type position: kdl.Vector
+   :return: room entity
+   :rtype: Entity
+   :raises: (RuntimeError)
+
+
+.. py:function:: _test_rooms(robot)
+
+   Tests the 'get room' method
+
+

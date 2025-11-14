@@ -1,0 +1,94 @@
+robot_skills.util.msg_constructors
+==================================
+
+.. py:module:: robot_skills.util.msg_constructors
+
+.. autoapi-nested-parse::
+
+   Construct complicated ROS messages as easy as possible
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_skills.util.msg_constructors.number
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_skills.util.msg_constructors.Point
+   robot_skills.util.msg_constructors.Header
+   robot_skills.util.msg_constructors.PointStamped
+   robot_skills.util.msg_constructors.Quaternion
+   robot_skills.util.msg_constructors.Pose
+   robot_skills.util.msg_constructors.PoseStamped
+
+
+Module Contents
+---------------
+
+.. py:data:: number
+
+.. py:function:: Point(x=0, y=0, z=0)
+
+   Make a Point
+   >>> Point(1.1, 2.2, 3.3)
+   x: 1.1
+   y: 2.2
+   z: 3.3
+
+
+.. py:function:: Header(frame_id='map', stamp=None)
+
+   Make a Header
+   >>> h = Header("base_link")  # doctest: +SKIP
+   >>> assert h.stamp.secs > 0  # doctest: +SKIP
+   >>> assert h.stamp.nsecs > 0  # doctest: +SKIP
+
+
+.. py:function:: PointStamped(x=0, y=0, z=0, frame_id='map', stamp=None, point=None)
+
+.. py:function:: Quaternion(x=0, y=0, z=0, w=0, roll=0, pitch=0, yaw=0)
+
+   Supply either at least one of x, y, z, w
+   or at least one of roll, pitch, yaw.
+
+
+.. py:function:: Pose(x=0, y=0, z=0, phi=0, roll=0, pitch=0, yaw=0)
+
+   >>> pose = Pose(yaw=0.5)
+   >>> pose  # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+   position:
+     x: 0
+     y: 0
+     z: 0
+   orientation:
+     x: 0.0
+     y: 0.0
+     z: 0.24740395925...
+     w: 0.96891242171...
+
+
+.. py:function:: PoseStamped(x=0, y=0, z=0, phi=0, roll=0, pitch=0, yaw=0, frame_id='map', stamp=None, pointstamped=None)
+
+   Build a geometry_msgs.msgs.PoseStamped from any number of arguments.
+   Each value defaults to 0
+   >>> ps = PoseStamped(yaw=0.5)  # doctest: +SKIP
+   >>> ps.pose  # doctest: +ELLIPSIS, +SKIP
+   position:
+     x: 0
+     y: 0
+     z: 0
+   orientation:
+     x: 0.0
+     y: 0.0
+     z: 0.24740395925...
+     w: 0.96891242171...
+
+

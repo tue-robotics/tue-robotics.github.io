@@ -1,0 +1,67 @@
+robot_skills.arm.force_sensor
+=============================
+
+.. py:module:: robot_skills.arm.force_sensor
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.arm.force_sensor.ForceSensor
+
+
+Module Contents
+---------------
+
+.. py:class:: ForceSensor(robot_name, tf_buffer, topic, force_norm_threshold=2.5)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   Base class for robot parts
+
+   Class for conveniently using a force sensor
+
+   :param robot_name: Which robot is this part of?
+   :param tf_buffer: tf2_ros.Buffer for use in RobotPart
+   :param topic: Topic to use for WrenchStamped measurement
+   :param force_norm_threshold: Edge up if norm exceeds this value [N] (defaults to 2.5N)
+
+
+   .. py:attribute:: _topic
+
+
+   .. py:attribute:: _calibrated_msg
+      :value: None
+
+
+
+   .. py:attribute:: _edge_up
+      :value: False
+
+
+
+   .. py:attribute:: _force_norm_threshold
+      :value: 2.5
+
+
+
+   .. py:method:: _wrench_callback(msg)
+
+      Process a WrenchStamped-message to determine if the norm(force) goes over the limit
+
+      :param msg: WrenchStamped to see if it goes over self.force_norm_threshold
+      :return: None but sets self.edge_up
+
+
+
+   .. py:method:: wait_for_edge_up(timeout=10.0)
+
+      Returns if an edge up event is detected. Will raise a TimeOutException if no edge up is detected within timeout.
+
+      :param timeout: Edge up wait patience
+
+
+

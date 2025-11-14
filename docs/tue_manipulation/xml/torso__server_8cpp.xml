@@ -1,0 +1,339 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="torso__server_8cpp" kind="file" language="C++">
+    <compoundname>torso_server.cpp</compoundname>
+    <includes local="no">ros/ros.h</includes>
+    <includes local="no">actionlib/server/simple_action_server.h</includes>
+    <includes local="no">sensor_msgs/JointState.h</includes>
+    <includes local="no">control_msgs/FollowJointTrajectoryAction.h</includes>
+    <incdepgraph>
+      <node id="5">
+        <label>control_msgs/FollowJointTrajectoryAction.h</label>
+      </node>
+      <node id="3">
+        <label>actionlib/server/simple_action_server.h</label>
+      </node>
+      <node id="4">
+        <label>sensor_msgs/JointState.h</label>
+      </node>
+      <node id="1">
+        <label>torso_server.cpp</label>
+        <link refid="torso__server_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>ros/ros.h</label>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" prot="public" static="no" mutable="no">
+        <type>actionlib::SimpleActionServer&lt; control_msgs::FollowJointTrajectoryAction &gt; *</type>
+        <definition>actionlib::SimpleActionServer&lt;control_msgs::FollowJointTrajectoryAction&gt;* as_</definition>
+        <argsstring></argsstring>
+        <name>as_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/torso_server.cpp" line="17" column="31" bodyfile="src/torso_server.cpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="torso__server_8cpp_1a3644fc584736c1c2e36037a085c416b9" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double EPSILON</definition>
+        <argsstring></argsstring>
+        <name>EPSILON</name>
+        <initializer>= 0.005</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/torso_server.cpp" line="15" column="8" bodyfile="src/torso_server.cpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="torso__server_8cpp_1a21e5a04820efa0206a5bc234435d58a1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool meas_received</definition>
+        <argsstring></argsstring>
+        <name>meas_received</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/torso_server.cpp" line="22" column="6" bodyfile="src/torso_server.cpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="torso__server_8cpp_1a6956c47050c0c3e193f66db43bf79e3b" prot="public" static="no" mutable="no">
+        <type>sensor_msgs::JointState</type>
+        <definition>sensor_msgs::JointState torso_meas_</definition>
+        <argsstring></argsstring>
+        <name>torso_meas_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/torso_server.cpp" line="23" column="25" bodyfile="src/torso_server.cpp" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="torso__server_8cpp_1a553cd2420340e2b8fea3bfa77abef139" prot="public" static="no" mutable="no">
+        <type>ros::Publisher</type>
+        <definition>ros::Publisher torso_pub_</definition>
+        <argsstring></argsstring>
+        <name>torso_pub_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/torso_server.cpp" line="19" column="16" bodyfile="src/torso_server.cpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="torso__server_8cpp_1a4d75cc9b8b075105bd4348b511e63b25" prot="public" static="no" mutable="no">
+        <type>ros::Subscriber</type>
+        <definition>ros::Subscriber torso_sub_</definition>
+        <argsstring></argsstring>
+        <name>torso_sub_</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/torso_server.cpp" line="20" column="17" bodyfile="src/torso_server.cpp" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="torso__server_8cpp_1aed54865c804e3c25176c55c913a3c138" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void goalCb</definition>
+        <argsstring>(const control_msgs::FollowJointTrajectoryGoalConstPtr &amp;torso_goal)</argsstring>
+        <name>goalCb</name>
+        <param>
+          <type>const control_msgs::FollowJointTrajectoryGoalConstPtr &amp;</type>
+          <declname>torso_goal</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/torso_server.cpp" line="42" column="6" bodyfile="src/torso_server.cpp" bodystart="42" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="torso__server_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int main</definition>
+        <argsstring>(int argc, char **argv)</argsstring>
+        <name>main</name>
+        <param>
+          <type>int</type>
+          <declname>argc</declname>
+        </param>
+        <param>
+          <type>char **</type>
+          <declname>argv</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/torso_server.cpp" line="118" column="5" bodyfile="src/torso_server.cpp" bodystart="118" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="torso__server_8cpp_1a7511ee4c349575f342def0e9c0d13a7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void setGoalTolerance</definition>
+        <argsstring>(const control_msgs::FollowJointTrajectoryGoalConstPtr goal, std::vector&lt; double &gt; &amp;goal_tolerance)</argsstring>
+        <name>setGoalTolerance</name>
+        <param>
+          <type>const control_msgs::FollowJointTrajectoryGoalConstPtr</type>
+          <declname>goal</declname>
+        </param>
+        <param>
+          <type><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector</ref>&lt; double &gt; &amp;</type>
+          <declname>goal_tolerance</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/torso_server.cpp" line="30" column="6" bodyfile="src/torso_server.cpp" bodystart="30" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="torso__server_8cpp_1aad813ad3064df4922d370f8e07cc8ede" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void torsoMeasurementCb</definition>
+        <argsstring>(const sensor_msgs::JointStateConstPtr &amp;meas)</argsstring>
+        <name>torsoMeasurementCb</name>
+        <param>
+          <type>const sensor_msgs::JointStateConstPtr &amp;</type>
+          <declname>meas</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/torso_server.cpp" line="25" column="6" bodyfile="src/torso_server.cpp" bodystart="25" bodyend="28"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>torso_server.cpp</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/><sp/>Created<sp/>on:<sp/>Oct<sp/>23,<sp/>2014</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/><sp/>Author:<sp/>Janno<sp/>Lunenburg</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ros/ros.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;actionlib/server/simple_action_server.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;sensor_msgs/JointState.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;control_msgs/FollowJointTrajectoryAction.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15" refid="torso__server_8cpp_1a3644fc584736c1c2e36037a085c416b9" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="torso__server_8cpp_1a3644fc584736c1c2e36037a085c416b9" kindref="member">EPSILON</ref><sp/>=<sp/>0.005;<sp/></highlight><highlight class="comment">//<sp/>tolerance<sp/>for<sp/>determining<sp/>whether<sp/>goal<sp/>is<sp/>reached<sp/>(in<sp/>meters)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17" refid="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" refkind="member"><highlight class="normal">actionlib::SimpleActionServer&lt;control_msgs::FollowJointTrajectoryAction&gt;*<sp/><ref refid="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" kindref="member">as_</ref>;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19" refid="torso__server_8cpp_1a553cd2420340e2b8fea3bfa77abef139" refkind="member"><highlight class="normal">ros::Publisher<sp/><ref refid="torso__server_8cpp_1a553cd2420340e2b8fea3bfa77abef139" kindref="member">torso_pub_</ref>;</highlight></codeline>
+<codeline lineno="20" refid="torso__server_8cpp_1a4d75cc9b8b075105bd4348b511e63b25" refkind="member"><highlight class="normal">ros::Subscriber<sp/><ref refid="torso__server_8cpp_1a4d75cc9b8b075105bd4348b511e63b25" kindref="member">torso_sub_</ref>;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="torso__server_8cpp_1a21e5a04820efa0206a5bc234435d58a1" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="torso__server_8cpp_1a21e5a04820efa0206a5bc234435d58a1" kindref="member">meas_received</ref>;</highlight></codeline>
+<codeline lineno="23" refid="torso__server_8cpp_1a6956c47050c0c3e193f66db43bf79e3b" refkind="member"><highlight class="normal">sensor_msgs::JointState<sp/><ref refid="torso__server_8cpp_1a6956c47050c0c3e193f66db43bf79e3b" kindref="member">torso_meas_</ref>;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25" refid="torso__server_8cpp_1aad813ad3064df4922d370f8e07cc8ede" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="torso__server_8cpp_1aad813ad3064df4922d370f8e07cc8ede" kindref="member">torsoMeasurementCb</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>sensor_msgs::JointStateConstPtr&amp;<sp/>meas)<sp/>{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a6956c47050c0c3e193f66db43bf79e3b" kindref="member">torso_meas_</ref><sp/>=<sp/>*meas;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a21e5a04820efa0206a5bc234435d58a1" kindref="member">meas_received</ref><sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30" refid="torso__server_8cpp_1a7511ee4c349575f342def0e9c0d13a7f" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="torso__server_8cpp_1a7511ee4c349575f342def0e9c0d13a7f" kindref="member">setGoalTolerance</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>control_msgs::FollowJointTrajectoryGoalConstPtr<sp/>goal,<sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;double&gt;</ref>&amp;<sp/>goal_tolerance)<sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>uint<sp/>n_joints<sp/>=<sp/>goal-&gt;trajectory.joint_names.size();</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>goal_tolerance.<ref refid="cpp/container/vector/resize" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">resize</ref>(n_joints,<sp/><ref refid="torso__server_8cpp_1a3644fc584736c1c2e36037a085c416b9" kindref="member">EPSILON</ref>);</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n_joints;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>j<sp/>=<sp/>0;<sp/>j<sp/>&lt;<sp/>goal-&gt;goal_tolerance.size();<sp/>j++)<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(goal-&gt;trajectory.joint_names[i]<sp/>==<sp/>goal-&gt;goal_tolerance[j].name)<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>goal_tolerance[i]<sp/>=<sp/>goal-&gt;goal_tolerance[j].position;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="40"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="torso__server_8cpp_1aed54865c804e3c25176c55c913a3c138" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="torso__server_8cpp_1aed54865c804e3c25176c55c913a3c138" kindref="member">goalCb</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>control_msgs::FollowJointTrajectoryGoalConstPtr&amp;<sp/>torso_goal)<sp/>{</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>ros::Rate<sp/>r(10);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>ros::NodeHandle<sp/>n;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>control_msgs::FollowJointTrajectoryGoalConstPtr<sp/>goal<sp/>=<sp/>torso_goal;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>control_msgs::FollowJointTrajectoryFeedback<sp/>feedback;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>sensor_msgs::JointState<sp/>torso_ref;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>uint<sp/>goal_index<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>uint<sp/>n_joints<sp/>=<sp/>goal-&gt;trajectory.joint_names.size();</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>torso_ref.name<sp/>=<sp/>goal-&gt;trajectory.joint_names;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>feedback.joint_names<sp/>=<sp/>goal-&gt;trajectory.joint_names;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;double&gt;</ref><sp/>goal_tolerance;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a7511ee4c349575f342def0e9c0d13a7f" kindref="member">setGoalTolerance</ref>(goal,<sp/>goal_tolerance);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal">(n.ok()<sp/>&amp;&amp;<sp/><ref refid="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" kindref="member">as_</ref>-&gt;isActive())<sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="torso__server_8cpp_1a21e5a04820efa0206a5bc234435d58a1" kindref="member">meas_received</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ROS_WARN(</highlight><highlight class="stringliteral">&quot;Torso<sp/>server<sp/>has<sp/>not<sp/>received<sp/>any<sp/>measurements<sp/>yet,<sp/>aborting&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" kindref="member">as_</ref>-&gt;setAborted();</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>torso_ref.header.stamp<sp/>=<sp/>ros::Time::now();</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ToDo:<sp/>check<sp/>time?</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ToDo:<sp/>assumes<sp/>measurements<sp/>and<sp/>references<sp/>in<sp/>the<sp/>same<sp/>order</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Check<sp/>if<sp/>new<sp/>goal<sp/>is<sp/>available</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" kindref="member">as_</ref>-&gt;isNewGoalAvailable())<sp/>{</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ROS_INFO(</highlight><highlight class="stringliteral">&quot;New<sp/>goal<sp/>received.&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>goal<sp/>=<sp/><ref refid="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" kindref="member">as_</ref>-&gt;acceptNewGoal();</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>goal_index<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>n_joints<sp/>=<sp/>goal-&gt;trajectory.joint_names.size();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>torso_ref.name<sp/>=<sp/>goal-&gt;trajectory.joint_names;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>feedback.joint_names<sp/>=<sp/>goal-&gt;trajectory.joint_names;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a7511ee4c349575f342def0e9c0d13a7f" kindref="member">setGoalTolerance</ref>(goal,<sp/>goal_tolerance);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(goal_index<sp/>==<sp/>goal-&gt;trajectory.points.size())<sp/>{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>control_msgs::FollowJointTrajectoryResult<sp/>result;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.error_code<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" kindref="member">as_</ref>-&gt;setSucceeded(result,<sp/></highlight><highlight class="stringliteral">&quot;Torso<sp/>goal<sp/>succeeded!&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Publish<sp/>reference</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>torso_ref.position<sp/>=<sp/>goal-&gt;trajectory.points[goal_index].positions;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>torso_ref.velocity<sp/>=<sp/>goal-&gt;trajectory.points[goal_index].velocities;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>torso_ref.effort<sp/>=<sp/>goal-&gt;trajectory.points[goal_index].effort;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a553cd2420340e2b8fea3bfa77abef139" kindref="member">torso_pub_</ref>.publish(torso_ref);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Publish<sp/>feedback</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>feedback.header.stamp<sp/>=<sp/>ros::Time::now();</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>feedback.actual.positions<sp/>=<sp/><ref refid="torso__server_8cpp_1a6956c47050c0c3e193f66db43bf79e3b" kindref="member">torso_meas_</ref>.position;</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>feedback.desired<sp/>=<sp/>goal-&gt;trajectory.points[goal_index];</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>ToDo:<sp/>error?</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" kindref="member">as_</ref>-&gt;publishFeedback(feedback);</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Count<sp/>number<sp/>of<sp/>converged<sp/>joints</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>uint<sp/>n_converged<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(uint<sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>n_joints;<sp/>i++)<sp/>{</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(fabs(torso_ref.position[i]<sp/>-<sp/><ref refid="torso__server_8cpp_1a6956c47050c0c3e193f66db43bf79e3b" kindref="member">torso_meas_</ref>.position[i])<sp/>&lt;<sp/>goal_tolerance[i])<sp/>{</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++n_converged;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(n_converged<sp/>==<sp/>n_joints)<sp/>{</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>++goal_index;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>r.sleep();</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118" refid="torso__server_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="torso__server_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627" kindref="member">main</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>argc,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">**<sp/>argv)<sp/>{</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a21e5a04820efa0206a5bc234435d58a1" kindref="member">meas_received</ref><sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/>ros::init(argc,<sp/>argv,<sp/></highlight><highlight class="stringliteral">&quot;torso_server&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ros::NodeHandle<sp/>nh(</highlight><highlight class="stringliteral">&quot;~&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a553cd2420340e2b8fea3bfa77abef139" kindref="member">torso_pub_</ref><sp/>=<sp/>nh.advertise&lt;sensor_msgs::JointState&gt;(</highlight><highlight class="stringliteral">&quot;references&quot;</highlight><highlight class="normal">,<sp/>1);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a4d75cc9b8b075105bd4348b511e63b25" kindref="member">torso_sub_</ref><sp/>=<sp/>nh.subscribe(</highlight><highlight class="stringliteral">&quot;measurements&quot;</highlight><highlight class="normal">,<sp/>10,<sp/>&amp;<ref refid="torso__server_8cpp_1aad813ad3064df4922d370f8e07cc8ede" kindref="member">torsoMeasurementCb</ref>);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" kindref="member">as_</ref><sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>actionlib::SimpleActionServer&lt;control_msgs::FollowJointTrajectoryAction&gt;(nh,<sp/>nh.getNamespace(),<sp/>&amp;<ref refid="torso__server_8cpp_1aed54865c804e3c25176c55c913a3c138" kindref="member">goalCb</ref>,<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="torso__server_8cpp_1a267ffc5e3e75049a3a5abb0face10c6a" kindref="member">as_</ref>-&gt;start();</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ROS_INFO(</highlight><highlight class="stringliteral">&quot;Action<sp/>server<sp/>is<sp/>active<sp/>and<sp/>spinning...&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ros::spin();</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="136"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/torso_server.cpp"/>
+  </compounddef>
+</doxygen>

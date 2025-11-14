@@ -1,0 +1,114 @@
+robot_skills.arm.gripper
+========================
+
+.. py:module:: robot_skills.arm.gripper
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.arm.gripper.GripperState
+   robot_skills.arm.gripper.Gripper
+   robot_skills.arm.gripper.ParrallelGripper
+
+
+Module Contents
+---------------
+
+.. py:class:: GripperState
+
+   Bases: :py:obj:`object`
+
+
+   Specifies a State either OPEN or CLOSE
+
+
+   .. py:attribute:: OPEN
+      :value: 'open'
+
+
+
+   .. py:attribute:: CLOSE
+      :value: 'close'
+
+
+
+.. py:class:: Gripper(robot_name, tf_buffer)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   A gripper used for manipulating objects in the environment.
+
+   constructor
+
+   :param robot_name: robot_name
+   :param tf_buffer: tf2_ros.Buffer
+
+
+   .. py:attribute:: offset
+      :value: None
+
+
+
+   .. py:attribute:: _occupied_by
+      :value: None
+
+
+
+   .. py:method:: send_goal(state)
+
+
+   .. py:property:: occupied_by
+      :type: ed.entity.Entity
+
+
+      The 'occupied_by' property will return the current entity that is in the gripper of this arm.
+
+      :return: robot_skills.util.entity, ED entity
+
+
+.. py:class:: ParrallelGripper(robot_name, tf_buffer, gripper_name)
+
+   Bases: :py:obj:`Gripper`
+
+
+   A gripper with two fingers which closes by pressing the fingers together
+
+   constructor
+
+   :param robot_name: robot_name
+   :param tf_buffer: tf2_ros.Buffer
+   :param gripper_name: string to identify the gripper
+
+
+   .. py:attribute:: gripper_name
+
+
+   .. py:attribute:: offset
+
+
+   .. py:attribute:: _ac_gripper
+
+
+   .. py:method:: send_goal(state, timeout = 5.0, max_torque = 0.1)
+
+      Send a GripperCommand to the gripper of this arm and wait for finishing
+
+      :param state: open or close (GripperState)
+      :type state: str (GripperState)
+      :param timeout: timeout in seconds; timeout of 0.0 is not allowed
+      :param max_torque: How much torque [Nm] to apply, only applied when closing the gripper
+      :return: True of False
+
+
+
+   .. py:method:: selfreset()
+
+      Reset of the body part itself. This function may be overwritten.
+      Returns: bool
+
+
+

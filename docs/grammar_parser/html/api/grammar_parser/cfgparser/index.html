@@ -1,0 +1,1001 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grammar_parser.cfgparser &mdash; grammar_parser 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=f6245a2f"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="prev" title="grammar_parser" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            grammar_parser
+              <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">grammar_parser</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">grammar_parser.cfgparser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">grammar_parser</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">grammar_parser</a></li>
+      <li class="breadcrumb-item active">grammar_parser.cfgparser</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/api/grammar_parser/cfgparser/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-grammar_parser.cfgparser">
+<span id="grammar-parser-cfgparser"></span><h1>grammar_parser.cfgparser<a class="headerlink" href="#module-grammar_parser.cfgparser" title="Permalink to this heading"></a></h1>
+<p>Grammars for the ContextFreeGrammarParser are built from production rules, corresponding to the Rule-class below.
+This means that sentences can be generated (and auto-completed), according to this grammar.
+Moreover, sentences can be parsed according to the same rules.</p>
+<p>See <a class="reference external" href="https://www.tutorialspoint.com/automata_theory/context_free_grammar_introduction.htm">https://www.tutorialspoint.com/automata_theory/context_free_grammar_introduction.htm</a> and <a class="reference external" href="https://en.wikipedia.org/wiki/Context-free_grammar">https://en.wikipedia.org/wiki/Context-free_grammar</a> for an introduction to context free grammars.</p>
+<p>If there is a rule “A -&gt; one”, then that means that to generate something according to rule A, the generated sentence is “one”
+In this example “A” is the lname. lname stands for left name, as it’s on the left of the arrow.
+Sentences are produced and parsed from left to right.</p>
+<p>There can be multiple lines in the grammar definition file with the same lname, which simply add ways to produce/parse sentences for that lname.</p>
+<p>Rules can refer to each other via their lname.
+If a rule A defines a way to start a sentence and refers to B, that means the completion of rule A is one via rule B.
+For example, the grammar:
+A -&gt; go B
+B -&gt; forward
+B -&gt; backward
+can generate the sentences “go forward” and “go backward”. And thus parse these sentences as well.</p>
+<p>Rules can also have variables that will be assigned to when a sentence is parsed.
+For example, the line:</p>
+<blockquote>
+<div><p>VP[“action”: A] -&gt; V_PLACE[A]</p>
+</div></blockquote>
+<p>adds a rule for the lname VP, with a field called “action”, which will be set to A.
+The value for A is determined by a rule with lname V_PLACE, which will determine the value of A.</p>
+<p>The rule</p>
+<blockquote>
+<div><p>V_PLACE[“place”] -&gt; place | put</p>
+</div></blockquote>
+<p>applies when the text is “place” or “put”.
+When that is the case, the rule applies and the text “place” is filled in for A.
+That means when the text “put” is typed, the variable “action” will be assigned the value “place”.</p>
+<p>The whole grammar has an entry point, or root rule, from which all the other rules are referred.
+Each rule forms branch upon branch, together building a Tree.</p>
+<p>When a sentence is parsed, a Tree is built. While this happens, the variables are collected.
+When the Tree is completely parsed, the collected variables and their assignments are fetched from the Tree with the get_semantics-method.
+This returns a string. However, this string represents a (nested) dictionary that maps a variable to a value.</p>
+<p>Semantics describe what a sentence means. In this case, it describes what action to perform and with what to perform it.</p>
+<p>The semantics are returned to whomever called CFGParser.parse(…), usually the REPL on console.py.
+The REPL sends the semantics to the action_server, which grounds the semantics by implementing the actions.</p>
+<section id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#grammar_parser.cfgparser.GrammarError" title="grammar_parser.cfgparser.GrammarError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GrammarError</span></code></a></p></td>
+<td><p>Exception indicating a problem in the grammar rules.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#grammar_parser.cfgparser.ParseError" title="grammar_parser.cfgparser.ParseError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParseError</span></code></a></p></td>
+<td><p>Exception indicating that the given sentence does not match on the grammar.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#grammar_parser.cfgparser.bcolors" title="grammar_parser.cfgparser.bcolors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bcolors</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#grammar_parser.cfgparser.Option" title="grammar_parser.cfgparser.Option"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Option</span></code></a></p></td>
+<td><p>An option is a continuation of a sentence of where there are multiple ways to continue the sentence.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#grammar_parser.cfgparser.Conjunct" title="grammar_parser.cfgparser.Conjunct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Conjunct</span></code></a></p></td>
+<td><p>A Conjunct is a placeholder in the parse-tree, which can be filled in by an Option or a word</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#grammar_parser.cfgparser.Rule" title="grammar_parser.cfgparser.Rule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rule</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#grammar_parser.cfgparser.Tree" title="grammar_parser.cfgparser.Tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tree</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#grammar_parser.cfgparser.CFGParser" title="grammar_parser.cfgparser.CFGParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CFGParser</span></code></a></p></td>
+<td><p>Parser for parsing the heard sentence, and converting it to information for</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#grammar_parser.cfgparser.parse_next_atom" title="grammar_parser.cfgparser.parse_next_atom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_next_atom</span></code></a>(s)</p></td>
+<td><p>Returns (name, semantics, remaining_str)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.GrammarError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">grammar_parser.cfgparser.</span></span><span class="sig-name descname"><span class="pre">GrammarError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#GrammarError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.GrammarError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.8/library/exceptions.html#Exception" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Exception indicating a problem in the grammar rules.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.ParseError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">grammar_parser.cfgparser.</span></span><span class="sig-name descname"><span class="pre">ParseError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">words</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#ParseError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.ParseError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.8/library/exceptions.html#Exception" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Exception indicating that the given sentence does not match on the grammar.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>words</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>word_index</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.bcolors">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">grammar_parser.cfgparser.</span></span><span class="sig-name descname"><span class="pre">bcolors</span></span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#bcolors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.bcolors" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.bcolors.HEADER">
+<span class="sig-name descname"><span class="pre">HEADER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[95m'</span></em><a class="headerlink" href="#grammar_parser.cfgparser.bcolors.HEADER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.bcolors.OKBLUE">
+<span class="sig-name descname"><span class="pre">OKBLUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[94m'</span></em><a class="headerlink" href="#grammar_parser.cfgparser.bcolors.OKBLUE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.bcolors.OKGREEN">
+<span class="sig-name descname"><span class="pre">OKGREEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[92m'</span></em><a class="headerlink" href="#grammar_parser.cfgparser.bcolors.OKGREEN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.bcolors.WARNING">
+<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[93m'</span></em><a class="headerlink" href="#grammar_parser.cfgparser.bcolors.WARNING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.bcolors.FAIL">
+<span class="sig-name descname"><span class="pre">FAIL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[91m'</span></em><a class="headerlink" href="#grammar_parser.cfgparser.bcolors.FAIL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.bcolors.ENDC">
+<span class="sig-name descname"><span class="pre">ENDC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[0m'</span></em><a class="headerlink" href="#grammar_parser.cfgparser.bcolors.ENDC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.bcolors.BOLD">
+<span class="sig-name descname"><span class="pre">BOLD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[1m'</span></em><a class="headerlink" href="#grammar_parser.cfgparser.bcolors.BOLD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.bcolors.UNDERLINE">
+<span class="sig-name descname"><span class="pre">UNDERLINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[4m'</span></em><a class="headerlink" href="#grammar_parser.cfgparser.bcolors.UNDERLINE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Option">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">grammar_parser.cfgparser.</span></span><span class="sig-name descname"><span class="pre">Option</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lsemantic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conjs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Option"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Option" title="Permalink to this definition"></a></dt>
+<dd><p>An option is a continuation of a sentence of where there are multiple ways to continue the sentence.
+These choices in an Option are called conjuncts.</p>
+<p>Constructor of an Option
+:param lsemantic the name of the semantics that the option is the continuation of. E.g. if the lsemantic is some action, this option might be the object to perform that action with.
+:param conjs the choices in this option</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lsemantic</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>conjs</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="#grammar_parser.cfgparser.Conjunct" title="grammar_parser.cfgparser.Conjunct"><em>Conjunct</em></a><em>]</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Option.lsemantic">
+<span class="sig-name descname"><span class="pre">lsemantic</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#grammar_parser.cfgparser.Option.lsemantic" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Option.conjuncts">
+<span class="sig-name descname"><span class="pre">conjuncts</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#grammar_parser.cfgparser.Conjunct" title="grammar_parser.cfgparser.Conjunct"><span class="pre">Conjunct</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#grammar_parser.cfgparser.Option.conjuncts" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Option.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Option.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Option.__repr__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Option.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Option.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Option.__eq__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#grammar_parser.cfgparser.Option" title="grammar_parser.cfgparser.Option"><em>Option</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Option.from_cfg_def">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cfg_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_definition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_semantics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Option.from_cfg_def"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Option.from_cfg_def" title="Permalink to this definition"></a></dt>
+<dd><p>Parse text from the CFG definition into an Option and the choices it is composed of.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>option_definition</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>left_semantics</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#grammar_parser.cfgparser.Option" title="grammar_parser.cfgparser.Option">Option</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Option.pretty_print">
+<span class="sig-name descname"><span class="pre">pretty_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span>&#160;&#160;&#160; <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Option.pretty_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Option.pretty_print" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>indent</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Option.graphviz_id">
+<span class="sig-name descname"><span class="pre">graphviz_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Option.graphviz_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Option.graphviz_id" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Option.to_graphviz">
+<span class="sig-name descname"><span class="pre">to_graphviz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Option.to_graphviz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Option.to_graphviz" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>graph</strong> (<em>graphviz.Digraph</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Conjunct">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">grammar_parser.cfgparser.</span></span><span class="sig-name descname"><span class="pre">Conjunct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rsemantic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Conjunct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Conjunct" title="Permalink to this definition"></a></dt>
+<dd><p>A Conjunct is a placeholder in the parse-tree, which can be filled in by an Option or a word</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – the word or variable</p></li>
+<li><p><strong>rsemantic</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – what option is the Conjunct part of</p></li>
+<li><p><strong>is_variable</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – is the conjunct variable or terminal?</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Conjunct.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></em><a class="headerlink" href="#grammar_parser.cfgparser.Conjunct.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Conjunct.rsemantic">
+<span class="sig-name descname"><span class="pre">rsemantic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#grammar_parser.cfgparser.Conjunct.rsemantic" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Conjunct.is_variable">
+<span class="sig-name descname"><span class="pre">is_variable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#grammar_parser.cfgparser.Conjunct.is_variable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Conjunct.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Conjunct.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Conjunct.__repr__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Conjunct.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Conjunct.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Conjunct.__eq__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#grammar_parser.cfgparser.Conjunct" title="grammar_parser.cfgparser.Conjunct"><em>Conjunct</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Conjunct.pretty_print">
+<span class="sig-name descname"><span class="pre">pretty_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Conjunct.pretty_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Conjunct.pretty_print" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Conjunct.graphviz_id">
+<span class="sig-name descname"><span class="pre">graphviz_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Conjunct.graphviz_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Conjunct.graphviz_id" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Conjunct.to_graphviz">
+<span class="sig-name descname"><span class="pre">to_graphviz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Conjunct.to_graphviz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Conjunct.to_graphviz" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Rule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">grammar_parser.cfgparser.</span></span><span class="sig-name descname"><span class="pre">Rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Rule" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lname</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>options</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="#grammar_parser.cfgparser.Option" title="grammar_parser.cfgparser.Option"><em>Option</em></a><em>]</em><em>]</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Rule.lname">
+<span class="sig-name descname"><span class="pre">lname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a></em><a class="headerlink" href="#grammar_parser.cfgparser.Rule.lname" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Rule.options">
+<span class="sig-name descname"><span class="pre">options</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#grammar_parser.cfgparser.Option" title="grammar_parser.cfgparser.Option"><span class="pre">Option</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#grammar_parser.cfgparser.Rule.options" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Rule.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Rule.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Rule.__repr__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Rule.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Rule.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Rule.__eq__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#grammar_parser.cfgparser.Rule" title="grammar_parser.cfgparser.Rule"><em>Rule</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Rule.from_cfg_def">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cfg_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Rule.from_cfg_def"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Rule.from_cfg_def" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#grammar_parser.cfgparser.Rule" title="grammar_parser.cfgparser.Rule">Rule</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Rule.pretty_print">
+<span class="sig-name descname"><span class="pre">pretty_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span>&#160;&#160;&#160; <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Rule.pretty_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Rule.pretty_print" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>indent</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Rule.graphviz_id">
+<span class="sig-name descname"><span class="pre">graphviz_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Rule.graphviz_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Rule.graphviz_id" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Rule.to_graphviz">
+<span class="sig-name descname"><span class="pre">to_graphviz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Rule.to_graphviz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Rule.to_graphviz" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>graph</strong> (<em>graphviz.Digraph</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Tree">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">grammar_parser.cfgparser.</span></span><span class="sig-name descname"><span class="pre">Tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Tree" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>option</strong> (<a class="reference internal" href="#grammar_parser.cfgparser.Option" title="grammar_parser.cfgparser.Option"><em>Option</em></a>) – </p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Tree.option">
+<span class="sig-name descname"><span class="pre">option</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#grammar_parser.cfgparser.Option" title="grammar_parser.cfgparser.Option"><span class="pre">Option</span></a></em><a class="headerlink" href="#grammar_parser.cfgparser.Tree.option" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Tree.subtrees">
+<span class="sig-name descname"><span class="pre">subtrees</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#grammar_parser.cfgparser.Tree" title="grammar_parser.cfgparser.Tree"><span class="pre">Tree</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/constants.html#None" title="(in Python v3.8)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#grammar_parser.cfgparser.Tree.subtrees" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Tree.parent">
+<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#grammar_parser.cfgparser.Tree" title="grammar_parser.cfgparser.Tree"><span class="pre">Tree</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/constants.html#None" title="(in Python v3.8)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#grammar_parser.cfgparser.Tree.parent" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Tree.parent_tree_idx">
+<span class="sig-name descname"><span class="pre">parent_tree_idx</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#grammar_parser.cfgparser.Tree.parent_tree_idx" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Tree.next">
+<span class="sig-name descname"><span class="pre">next</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Tree.next"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Tree.next" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple[Optional[<a class="reference internal" href="#grammar_parser.cfgparser.Tree" title="grammar_parser.cfgparser.Tree">Tree</a>], <a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)">int</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Tree.add_subtree">
+<span class="sig-name descname"><span class="pre">add_subtree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Tree.add_subtree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Tree.add_subtree" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>tree</strong> (<a class="reference internal" href="#grammar_parser.cfgparser.Tree" title="grammar_parser.cfgparser.Tree"><em>Tree</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#grammar_parser.cfgparser.Tree" title="grammar_parser.cfgparser.Tree">Tree</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Tree.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Tree.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Tree.__repr__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.Tree.pretty_print">
+<span class="sig-name descname"><span class="pre">pretty_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span>&#160;&#160;&#160; <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#Tree.pretty_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.Tree.pretty_print" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+<li><p><strong>indent</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.parse_next_atom">
+<span class="sig-prename descclassname"><span class="pre">grammar_parser.cfgparser.</span></span><span class="sig-name descname"><span class="pre">parse_next_atom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#parse_next_atom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.parse_next_atom" title="Permalink to this definition"></a></dt>
+<dd><p>Returns (name, semantics, remaining_str)
+For example, for “VP[X, Y] foo bar” it returns:</p>
+<blockquote>
+<div><p>(“VP”, “X, Y”, “foo bar”)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple with the rule’s lname, the variables involved and the remaining text: (“VP”, “X, Y”, “foo bar”)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a>, <a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a>, <a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">grammar_parser.cfgparser.</span></span><span class="sig-name descname"><span class="pre">CFGParser</span></span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser" title="Permalink to this definition"></a></dt>
+<dd><p>Parser for parsing the heard sentence, and converting it to information for
+the action that should be performed.</p>
+<p>Usage:
+- For loading a grammar from a file use fromfile().
+- For loading a grammar from a text string use fromstring().</p>
+<ul class="simple">
+<li><p>For loading a grammar with functions, construct a CFGParser object, add
+the functions using CFGParser.set_function(), and finally load the
+grammar using fromfile or fromstring, passing in the CFGParser object
+as well.</p></li>
+</ul>
+<p>The parser performs a few basic checks on the grammar, such as missing
+sub-rules and missing functions while loading. The CFGParser.verify function
+goes a step further by expanding all alternatives.</p>
+<p>To parse a sentence, use parse_raw() at a CFGParser instance to get maximum information, or
+use parse() at a CFGParser instance to avoid getting exceptions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.rules">
+<span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#grammar_parser.cfgparser.Rule" title="grammar_parser.cfgparser.Rule"><span class="pre">Rule</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.rules" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.functions">
+<span class="sig-name descname"><span class="pre">functions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.functions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.fromfile">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.fromfile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.fromfile" title="Permalink to this definition"></a></dt>
+<dd><p>Load the grammar from the provided file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Path to the text file containing the grammar</p></li>
+<li><p><strong>parser</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#grammar_parser.cfgparser.CFGParser" title="grammar_parser.cfgparser.CFGParser"><em>CFGParser</em></a><em>]</em>) – If not None, the parser to use (else a new parser is created).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The parser contains the grammar.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#grammar_parser.cfgparser.CFGParser" title="grammar_parser.cfgparser.CFGParser">CFGParser</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.fromstring">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromstring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.fromstring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.fromstring" title="Permalink to this definition"></a></dt>
+<dd><p>Load the grammar from the provided text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Text containing the grammar</p></li>
+<li><p><strong>parser</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#grammar_parser.cfgparser.CFGParser" title="grammar_parser.cfgparser.CFGParser"><em>CFGParser</em></a><em>]</em>) – If not None, the parser to use (else a new parser is created).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The parser contains the grammar.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#grammar_parser.cfgparser.CFGParser" title="grammar_parser.cfgparser.CFGParser">CFGParser</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.check_rules">
+<span class="sig-name descname"><span class="pre">check_rules</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.check_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.check_rules" title="Permalink to this definition"></a></dt>
+<dd><p>Verify the completeness of the loaded grammar, no rules that refer to missing
+subrules and no functions that don’t exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.verify">
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.verify" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.add_rule">
+<span class="sig-name descname"><span class="pre">add_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.add_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.add_rule" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.set_function">
+<span class="sig-name descname"><span class="pre">set_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.set_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.set_function" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new function to the parser. Must be done before loading the grammar.</p>
+<p>TODO #11: Ensure the function expansion result does not refer to missing sub-rules or functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>func</strong> (<em>Callable</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.get_semantics">
+<span class="sig-name descname"><span class="pre">get_semantics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.get_semantics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.get_semantics" title="Permalink to this definition"></a></dt>
+<dd><p>Get the semantics of a tree.
+This means that variables are unified with their values, which may be recursively gotten from the tree’s subtrees.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tree</strong> (<a class="reference internal" href="#grammar_parser.cfgparser.Tree" title="grammar_parser.cfgparser.Tree"><em>Tree</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">words</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.parse" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the given sentence against the grammar loaded in the class. This
+method hides all errors (and returns False in that case). Use the
+self.parse_raw function if the difference between a successful and
+failed parse is relevant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>str.</em>) – Target rule in the grammar to start parsing the sentence.</p></li>
+<li><p><strong>words</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, or </em><em>a list</em><em> of </em><em>str.</em>) – Sentence to parse, either as a single string or a list of words.</p></li>
+<li><p><strong>debug</strong> (<em>Boolean</em><em>, </em><em>by default False.</em>) – If True, output the matched sequence in the tree.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The captured data value collected during parsing if parsing
+succeeds, else False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.parse_raw">
+<span class="sig-name descname"><span class="pre">parse_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">words</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.parse_raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.parse_raw" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the given sentence against the grammar loaded in the class. This
+method throws exceptions on failures, the self.parse function returns
+False in such a case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>str.</em>) – Target rule in the grammar to start parsing the sentence.</p></li>
+<li><p><strong>words</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, or </em><em>a list</em><em> of </em><em>str.</em>) – Sentence to parse, either as a single string or a list of words.</p></li>
+<li><p><strong>debug</strong> (<em>Boolean</em><em>, </em><em>by default False.</em>) – If True, output the matched sequence in the tree.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The captured data value collected during parsing if parsing
+succeeds, a GrammarError exception if the grammar is found to
+be incorrect, or a ParseError exception if the sentence fails
+to match the grammar.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser._parse">
+<span class="sig-name descname"><span class="pre">_parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">words</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser._parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser._parse" title="Permalink to this definition"></a></dt>
+<dd><p>Try to match the provided words on the given grammar rule option.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tree_idx</strong> (<em>Tuple</em>) – Tuple of grammar Rule, and rule alternative index.</p></li>
+<li><p><strong>words</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – Words to match on the alternative.</p></li>
+<li><p><strong>word_index</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – First word in words to match on the alternative.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>On successful match None is returned, else an index in words
+pointing at the position that failed to match. Note that the
+index may be equal to the number of words (indicating that
+words are missing).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)">int</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.next_word">
+<span class="sig-name descname"><span class="pre">next_word</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">words</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.next_word"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.next_word" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>words</strong> (<em>List</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser._next_word">
+<span class="sig-name descname"><span class="pre">_next_word</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">words</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser._next_word"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser._next_word" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tree_idx</strong> (<em>Tuple</em><em>[</em><a class="reference internal" href="#grammar_parser.cfgparser.Tree" title="grammar_parser.cfgparser.Tree"><em>Tree</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>]</em>) – </p></li>
+<li><p><strong>words</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.has_completion_function">
+<span class="sig-name descname"><span class="pre">has_completion_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.has_completion_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.has_completion_function" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func_name</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.get_completion_function">
+<span class="sig-name descname"><span class="pre">get_completion_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.get_completion_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.get_completion_function" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func_name</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.graphviz_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graphviz_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.graphviz_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.graphviz_id" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.to_graphviz">
+<span class="sig-name descname"><span class="pre">to_graphviz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.to_graphviz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.to_graphviz" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.visualize_options">
+<span class="sig-name descname"><span class="pre">visualize_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_rule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_words</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.visualize_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.visualize_options" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<em>graphviz.Digraph</em>) – </p></li>
+<li><p><strong>target_rule</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p></li>
+<li><p><strong>previous_words</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>depth</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.get_unwrapped">
+<span class="sig-name descname"><span class="pre">get_unwrapped</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.get_unwrapped"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.get_unwrapped" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lname</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="grammar_parser.cfgparser.CFGParser.get_random_sentence">
+<span class="sig-name descname"><span class="pre">get_random_sentence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/grammar_parser/cfgparser.html#CFGParser.get_random_sentence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#grammar_parser.cfgparser.CFGParser.get_random_sentence" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lname</strong> (<a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.8/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="grammar_parser" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

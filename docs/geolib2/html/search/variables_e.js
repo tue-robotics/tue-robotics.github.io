@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['r_6268',['R',['../classgeo_1_1Transform2T.html#ace6ce78db401a84c1dfbe0ec83f4dee5',1,'geo::Transform2T::R()'],['../classgeo_1_1Transform3T.html#ae4c3d14cc73485f238264bd4520a2821',1,'geo::Transform3T::R()']]],
+  ['r_5f_6269',['r_',['../classgeo_1_1Transform.html#a56a0b5829d53f2793a46c869d3d19a85',1,'geo::Transform']]],
+  ['range_5fmax_6270',['range_max',['../classTestLRF.html#a8ccfeb527bde1472c81aad2e7a744664',1,'TestLRF']]],
+  ['range_5fmax_5f_6271',['range_max_',['../classgeo_1_1LaserRangeFinder.html#ad788a0f413a07d31d128e555866c2161',1,'geo::LaserRangeFinder']]],
+  ['range_5fmin_6272',['range_min',['../classTestLRF.html#a420d3afbf90f7c8b308de3ed94c84930',1,'TestLRF']]],
+  ['range_5fmin_5f_6273',['range_min_',['../classgeo_1_1LaserRangeFinder.html#aea35bc0427eaaa558bda0f21c2d535d9',1,'geo::LaserRangeFinder']]],
+  ['ranges_6274',['ranges',['../classgeo_1_1LaserRangeFinder_1_1RenderResult.html#aa6772406b99c592a14ba5485884bed27',1,'geo::LaserRangeFinder::RenderResult::ranges()'],['../classTestLRF.html#a188083c08bc55840aeb2dc4957519b76',1,'TestLRF::ranges()']]],
+  ['rank_5fv_6275',['rank_v',['https://en.cppreference.com/w/cpp/types/rank.html',1,'std::rank_v()'],['https://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::rank_v()']]],
+  ['ratio_5fequal_5fv_6276',['ratio_equal_v',['https://en.cppreference.com/w/cpp/numeric/ratio/ratio_equal.html',1,'std::ratio_equal_v()'],['https://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_equal_v()']]],
+  ['ratio_5fgreater_5fequal_5fv_6277',['ratio_greater_equal_v',['https://en.cppreference.com/w/cpp/numeric/ratio/ratio_greater_equal.html',1,'std::ratio_greater_equal_v()'],['https://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_greater_equal_v()']]],
+  ['ratio_5fgreater_5fv_6278',['ratio_greater_v',['https://en.cppreference.com/w/cpp/numeric/ratio/ratio_greater.html',1,'std::ratio_greater_v()'],['https://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_greater_v()']]],
+  ['ratio_5fless_5fequal_5fv_6279',['ratio_less_equal_v',['https://en.cppreference.com/w/cpp/numeric/ratio/ratio_less_equal.html',1,'std::ratio_less_equal_v()'],['https://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_less_equal_v()']]],
+  ['ratio_5fless_5fv_6280',['ratio_less_v',['https://en.cppreference.com/w/cpp/numeric/ratio/ratio_less.html',1,'std::ratio_less_v()'],['https://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_less_v()']]],
+  ['ratio_5fnot_5fequal_5fv_6281',['ratio_not_equal_v',['https://en.cppreference.com/w/cpp/numeric/ratio/ratio_not_equal.html',1,'std::ratio_not_equal_v()'],['https://en.cppreference.com/w/cpp/experimental/type_trait_variable_templates.html',1,'std::experimental::ratio_not_equal_v()']]],
+  ['ray_5fdirs_5f_6282',['ray_dirs_',['../classgeo_1_1LaserRangeFinder.html#a641c391ec5741c43ea78a8366559722b',1,'geo::LaserRangeFinder']]],
+  ['rem_6283',['rem',['https://en.cppreference.com/w/cpp/numeric/math/div.html',1,'std::div_t::rem()'],['https://en.cppreference.com/w/cpp/numeric/math/div.html',1,'std::imaxdiv_t::rem()'],['https://en.cppreference.com/w/cpp/numeric/math/div.html',1,'std::ldiv_t::rem()'],['https://en.cppreference.com/w/cpp/numeric/math/div.html',1,'std::lldiv_t::rem()']]],
+  ['resolution_5f_6284',['resolution_',['../classgeo_1_1Octree.html#a69cf5993f4f8dd569bc12e64fc0a299d',1,'geo::Octree']]],
+  ['root_5f_6285',['root_',['../classgeo_1_1HeightMap.html#a1d99d66da6b59acf53e4d0d0cd3dcbfe',1,'geo::HeightMap::root_()'],['../classgeo_1_1Octree.html#ae9f1b5333ad6c7d171fca4ab973102eb',1,'geo::Octree::root_()']]],
+  ['running_5f_6286',['running_',['../../../code_profiler/html/cpp/classtue_1_1Timer.html#a1ecfd269b95f4938e62d8025c8379a60',1,'tue::Timer']]]
+];

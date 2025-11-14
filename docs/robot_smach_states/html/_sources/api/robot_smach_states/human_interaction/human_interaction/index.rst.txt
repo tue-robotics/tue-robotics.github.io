@@ -1,0 +1,463 @@
+robot_smach_states.human_interaction.human_interaction
+======================================================
+
+.. py:module:: robot_smach_states.human_interaction.human_interaction
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.human_interaction.human_interaction.Say
+   robot_smach_states.human_interaction.human_interaction.HearOptions
+   robot_smach_states.human_interaction.human_interaction.HearOptionsExtra
+   robot_smach_states.human_interaction.human_interaction.HearOptionsExtraPicoVoice
+   robot_smach_states.human_interaction.human_interaction.AskContinue
+   robot_smach_states.human_interaction.human_interaction.AskYesNo
+   robot_smach_states.human_interaction.human_interaction.AskYesNoPicoVoice
+   robot_smach_states.human_interaction.human_interaction.WaitForPersonInFront
+   robot_smach_states.human_interaction.human_interaction.LearnPerson
+   robot_smach_states.human_interaction.human_interaction.AskPersonName
+   robot_smach_states.human_interaction.human_interaction.AskPersonNamePicoVoice
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_smach_states.human_interaction.human_interaction.learn_person_procedure
+   robot_smach_states.human_interaction.human_interaction.process_answer
+
+
+Module Contents
+---------------
+
+.. py:class:: Say(robot, sentence=None, language=None, personality=None, voice=None, mood=None, block=True, look_at_standing_person=False, **place_holders)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Say a sentence or pick a random one from a list, which then is formatted with designators which are resolved on
+   runtime. The main sentence can be a str, [str] or a Designator to str or [str]
+
+   >>> from robot_skills.mockbot import Mockbot
+   >>> with redirect_stdout(None): robot = Mockbot()
+   >>>
+   >>> say = Say(robot, ["a", "b", "c"])
+   >>> say.execute()
+   'spoken'
+   >>>
+   >>> say1 = Say(robot, ["Hey {a}", "He {a}", "Hoi {a}"], a=ds.VariableDesignator("hero"))
+   >>> #Repeat command 50 times, every time it should succeed and return "spoken"
+   >>> outcomes1 = [say.execute() for i in range(50)]
+   >>> assert all(outcome == "spoken" for outcome in outcomes1)
+   >>>
+   >>> say2 = Say(robot, ds.VariableDesignator('aap'))
+   >>> say2.execute()
+   'spoken'
+   >>> robot.speech.speak.assert_called_with('aap', None, None, None, None, True)
+   >>>
+   >>> des = ds.VariableDesignator(["Hey {a}", "He {a}", "Hoi {a}"], resolve_type=[str])
+   >>> say3 = Say(robot, des, a=ds.VariableDesignator("hero"))
+   >>> #Repeat command 50 times, every time it should succeed and return "spoken"
+   >>> outcomes3 = [say3.execute() for i in range(50)]
+   >>> assert all(outcome == "spoken" for outcome in outcomes3)
+   >>>
+   >>> des2 = ds.VariableDesignator(["Hey", "He", "Hoi"])
+   >>> say4 = Say(robot, des2, a=ds.VariableDesignator("hero"))
+   >>> #Repeat command 50 times, every time it should succeed and return "spoken"
+   >>> outcomes4 = [say4.execute() for i in range(50)]
+   >>> assert all(outcome == "spoken" for outcome in outcomes4)
+   >>>
+   >>> say5 = Say(robot, des2)
+   >>> #Repeat command 50 times, every time it should succeed and return "spoken"
+   >>> outcomes5 = [say5.execute() for i in range(50)]
+   >>> assert all(outcome == "spoken" for outcome in outcomes5)
+   >>>
+   >>> say6 = Say(robot, des, b=ds.VariableDesignator("hero"))
+   >>> say6.execute()  # doctest: +IGNORE_EXCEPTION_DETAIL
+   Traceback (most recent call last):
+     ...
+   RuntimeError: ...
+   >>>
+   >>> des3 = ds.VariableDesignator(resolve_type=str).writeable
+   >>> des3.write('banana')
+   >>> say6 = Say(robot, des3)
+   >>> say6.execute()
+   'spoken'
+   >>> robot.speech.speak.assert_called_with('banana', None, None, None, None, True)
+
+   Constructor
+
+   State exits with 'spoken'.
+
+   :param robot: robot object
+   :type robot: Robot
+   :param sentence: Sentence to be spoken, can contain place holders to  be filled in at runtime
+   :type sentence: str, [str], designator to str or [str]
+   :param language: Language of speech module
+   :type language: str
+   :param personality: Personality of speech module
+   :type personality: str
+   :param voice: Voice of speech module
+   :type voice: str
+   :param mood: Mood of speech module
+   :type mood: str
+   :param block: Wait for talking to be completed before returning, if true
+   :type block: bool
+   :param look_at_standing_person: Look at standing person if true, otherwise keep current head pose
+   :type look_at_standing_person: bool
+   :param place_holders: place holders to be filled in at runtime
+   :type place_holders: designator to str
+
+
+   .. py:attribute:: ph_designators
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: sentence
+      :value: None
+
+
+
+   .. py:attribute:: language
+      :value: None
+
+
+
+   .. py:attribute:: personality
+      :value: None
+
+
+
+   .. py:attribute:: voice
+      :value: None
+
+
+
+   .. py:attribute:: mood
+      :value: None
+
+
+
+   .. py:attribute:: block
+      :value: True
+
+
+
+   .. py:attribute:: look_at_standing_person
+      :value: False
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+   .. py:method:: _check_place_holders(sentence)
+
+
+.. py:class:: HearOptions(robot, options, timeout = 10, look_at_standing_person = True)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Hear one of the options
+
+   :param robot: (Robot) robot api object
+   :param options: List of strings with the options the robot can hear
+   :param timeout: (float, int) indicating when the robot has to timeout
+   :param look_at_standing_person: bool indicating whether the robot should look at the person giving the command
+
+
+   .. py:attribute:: _options
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _timeout
+      :value: 10
+
+
+
+   .. py:attribute:: look_at_standing_person
+      :value: True
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: HearOptionsExtra(robot, spec_designator, speech_result_designator, timeout=10, look_at_standing_person=True)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Listen to what the user said, based on a pre-constructed sentence
+
+   Keyword arguments:
+   spec_designator -- sentence that is supposed to be heard
+   choices_designator -- list of choices for words in the sentence
+   speech_result_designator -- variable where the result is stored
+   time_out -- timeout in case nothing is heard
+
+   Example of usage:
+       from hmi import HMIResult
+       spec = ds.Designator("T --> <name>)|<name>)")
+       choices = ds.Designator({"name"  : names_list,
+                             "prefix": ["My name is", "I'm called"]})
+       answer = ds.VariableDesignator(resolve_type=HMIResult)
+       state = HearOptionsExtra(self.robot, spec, choices, answer.writeable)
+       outcome = state.execute()
+
+       if outcome == "heard":
+           name = answer.resolve().choices["name"]
+
+   >>> from robot_skills.mockbot import Mockbot
+   >>> from hmi import HMIResult
+   >>> with redirect_stdout(None): robot = Mockbot()
+   >>> import robot_smach_states.util.designators as ds
+   >>> import os
+   >>> spec = "T[O] -> OPTIONS[O]"+os.linesep  # Newlines are needed, doctests doesn't accept 'slash-n"
+   >>> spec += "OPTIONS['foo'] -> foo"+os.linesep
+   >>> spec += "OPTIONS['bar'] -> bar"+os.linesep
+   >>> spec = ds.Designator(spec)
+   >>> answer = ds.VariableDesignator(resolve_type=HMIResult)
+   >>> state = HearOptionsExtra(robot, spec, answer.writeable)
+   >>> outcome = state.execute()
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: spec_designator
+
+
+   .. py:attribute:: speech_result_designator
+
+
+   .. py:attribute:: timeout
+      :value: 10
+
+
+
+   .. py:attribute:: look_at_standing_person
+      :value: True
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: HearOptionsExtraPicoVoice(robot, context, speech_result_designator, intents = None, require_endpoint = True, timeout = 10.0, look_at_standing_person = True)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Listen to what the user said using the PicoVoice backend
+
+   Constructor
+
+   :param robot: robot object
+   :param context: designator or value for the picovoice context to be used
+   :param speech_result_designator: result is stored in this designator
+   :param intents: designator or value whether only a limited set of intents are allowed
+   :param require_endpoint: designator or value whether the picovoice context requires an endpoint
+   :param timeout: timeout for the goal
+   :param look_at_standing_person: the robot should look at a standing person in front of the robot
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: context
+
+
+   .. py:attribute:: speech_result_designator
+
+
+   .. py:attribute:: intents
+      :value: None
+
+
+
+   .. py:attribute:: require_endpoint
+      :value: True
+
+
+
+   .. py:attribute:: timeout
+      :value: 10.0
+
+
+
+   .. py:attribute:: look_at_standing_person
+      :value: True
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: AskContinue(robot, timeout=10, look_at_standing_person=True)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+.. py:class:: AskYesNo(robot, timeout=10, look_at_standing_person=True)
+
+   Bases: :py:obj:`HearOptions`
+
+
+   Hear one of the options
+
+   :param robot: (Robot) robot api object
+   :param options: List of strings with the options the robot can hear
+   :param timeout: (float, int) indicating when the robot has to timeout
+   :param look_at_standing_person: bool indicating whether the robot should look at the person giving the command
+
+
+.. py:class:: AskYesNoPicoVoice(robot, timeout=10, look_at_standing_person=True)
+
+   Bases: :py:obj:`HearOptionsExtraPicoVoice`
+
+
+   Listen to what the user said using the PicoVoice backend
+
+   Constructor
+
+   :param robot: robot object
+   :param context: designator or value for the picovoice context to be used
+   :param speech_result_designator: result is stored in this designator
+   :param intents: designator or value whether only a limited set of intents are allowed
+   :param require_endpoint: designator or value whether the picovoice context requires an endpoint
+   :param timeout: timeout for the goal
+   :param look_at_standing_person: the robot should look at a standing person in front of the robot
+
+
+   .. py:attribute:: speech_result_designator
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: WaitForPersonInFront(robot, attempts=1, sleep_interval=1.0)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Waits for a person to be found in front of the robot. Attempts to wait a number of times with a sleep interval
+
+   :param robot: (Robot) robot api object
+   :param attempts: (int) number of attempts the robot will take
+   :param sleep_interval: (float) time the robot waits between checking for an operator
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: attempts
+      :value: 1
+
+
+
+   .. py:attribute:: sleep_interval
+      :value: 1.0
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: LearnPerson(robot, person_name='', name_designator=None, nr_tries=5)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Smach state to learn a person
+
+
+
+   Constructor
+
+   :param robot: robot object
+   :param person_name: string indicating the name that will be given
+   :param name_designator: designator returning a string with the name of the person. This will be used if no
+       person name is provided
+   :param nr_tries: maximum number of tries
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: _person_name
+      :value: ''
+
+
+
+   .. py:attribute:: _name_designator
+      :value: None
+
+
+
+   .. py:attribute:: _nr_tries
+      :value: 5
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:function:: learn_person_procedure(robot, person_name='', n_samples=5, timeout=5.0)
+
+   Starts the learning process that will save n_samples of the closest person's face.
+   It ends when the number of snapshots is reached or when a timeout occurs
+
+   Returns: number of samples saved. If smaller than what was requested, then a timeout occured
+
+
+.. py:class:: AskPersonName(robot, person_name_des, name_options, default_name='operator', nr_tries=2)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Ask the person's name, and try to hear one of the given names
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: person_name_des
+
+
+   .. py:attribute:: default_name
+      :value: 'operator'
+
+
+
+   .. py:attribute:: name_options
+
+
+   .. py:attribute:: _nr_tries
+      :value: 2
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:function:: process_answer(_, context, answer_des, output_des)
+
+.. py:class:: AskPersonNamePicoVoice(robot, person_name_des, default_name='operator', nr_tries=2)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   Ask the person's name, and try to hear one of the given names
+
+

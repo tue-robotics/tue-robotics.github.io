@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="kaldi__module__loader__plus_8py" kind="file" language="Python">
+    <compoundname>kaldi_module_loader_plus.py</compoundname>
+    <innernamespace refid="namespacekaldi__module__loader__plus">kaldi_module_loader_plus</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacekaldi__module__loader__plus" refkind="compound"><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="2"><highlight class="stringliteral">Command-module<sp/>loader<sp/>for<sp/>Kaldi.</highlight></codeline>
+<codeline lineno="3"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="4"><highlight class="stringliteral">This<sp/>script<sp/>is<sp/>based<sp/>on<sp/>&apos;dfly-loader-wsr.py&apos;<sp/>written<sp/>by<sp/>Christo<sp/>Butcher<sp/>and</highlight></codeline>
+<codeline lineno="5"><highlight class="stringliteral">has<sp/>been<sp/>adapted<sp/>to<sp/>work<sp/>with<sp/>the<sp/>Kaldi<sp/>engine<sp/>instead.</highlight></codeline>
+<codeline lineno="6"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="7"><highlight class="stringliteral">This<sp/>script<sp/>can<sp/>be<sp/>used<sp/>to<sp/>look<sp/>for<sp/>Dragonfly<sp/>command-modules<sp/>for<sp/>use<sp/>with</highlight></codeline>
+<codeline lineno="8"><highlight class="stringliteral">the<sp/>Kaldi<sp/>engine.<sp/>It<sp/>scans<sp/>the<sp/>directory<sp/>it&apos;s<sp/>in<sp/>and<sp/>loads<sp/>any<sp/>``_*.py``<sp/>it</highlight></codeline>
+<codeline lineno="9"><highlight class="stringliteral">finds.</highlight></codeline>
+<codeline lineno="10"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">#<sp/>TODO<sp/>Have<sp/>a<sp/>simple<sp/>GUI<sp/>for<sp/>pausing,<sp/>resuming,<sp/>cancelling<sp/>and<sp/>stopping</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">#<sp/>recognition,<sp/>etc</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>__future__<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>print_function</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>logging</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>os.path</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>sys</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>six</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>dragonfly<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>get_engine</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>dragonfly<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Grammar,<sp/>MappingRule,<sp/>Function,<sp/>Dictation,<sp/>FuncContext</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1loader" kindref="compound">dragonfly.loader</ref><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>CommandModuleDirectory</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1log" kindref="compound">dragonfly.log</ref><sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>setup_log</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">#<sp/>--------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Set<sp/>up<sp/>basic<sp/>logging.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">False</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Debugging<sp/>logging<sp/>for<sp/>reporting<sp/>trouble</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="namespacekaldi__module__loader__plus_1a5400f0b89971a2cf0ea2306765c85f21" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>logging.basicConfig(level=10)</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>logging.getLogger(</highlight><highlight class="stringliteral">&apos;grammar.decode&apos;</highlight><highlight class="normal">).setLevel(20)</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>logging.getLogger(</highlight><highlight class="stringliteral">&apos;grammar.begin&apos;</highlight><highlight class="normal">).setLevel(20)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>logging.getLogger(</highlight><highlight class="stringliteral">&apos;compound&apos;</highlight><highlight class="normal">).setLevel(20)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/>logging.getLogger(</highlight><highlight class="stringliteral">&apos;kaldi.compiler&apos;</highlight><highlight class="normal">).setLevel(10)</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacedragonfly_1_1log_1a63ebb656a7eac0e092eaf67bebccd865" kindref="member">setup_log</ref>()</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment">#<sp/>--------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment">#<sp/>User<sp/>notification<sp/>/<sp/>rudimentary<sp/>UI.<sp/>MODIFY<sp/>AS<sp/>DESIRED</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="comment">#<sp/>For<sp/>message<sp/>in<sp/>(&apos;sleep&apos;,<sp/>&apos;wake&apos;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="namespacekaldi__module__loader__plus_1a5e1a3f25ad41ae3431f1b5a2b4806a12" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacekaldi__module__loader__plus_1a5e1a3f25ad41ae3431f1b5a2b4806a12" kindref="member">notify</ref>(message):</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>message<sp/>==<sp/></highlight><highlight class="stringliteral">&apos;sleep&apos;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Sleeping...&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>get_engine().speak(&quot;Sleeping&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">elif</highlight><highlight class="normal"><sp/>message<sp/>==<sp/></highlight><highlight class="stringliteral">&apos;wake&apos;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Awake...&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>get_engine().speak(&quot;Awake&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment">#<sp/>--------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Sleep/wake<sp/>grammar.<sp/>(This<sp/>can<sp/>be<sp/>unused<sp/>or<sp/>removed<sp/>if<sp/>you<sp/>don&apos;t<sp/>want<sp/>it.)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60" refid="namespacekaldi__module__loader__plus_1a57df80ebab79982d4ac60debd3fd1cc3" refkind="member"><highlight class="normal">sleeping<sp/>=<sp/></highlight><highlight class="keyword">False</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="namespacekaldi__module__loader__plus_1a1ae83fda0f4ed2add61b11f511b32f3c" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacekaldi__module__loader__plus_1a1ae83fda0f4ed2add61b11f511b32f3c" kindref="member">load_sleep_wake_grammar</ref>(initial_awake):</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>sleep_grammar<sp/>=<sp/><ref refid="classdragonfly_1_1grammar_1_1grammar__base_1_1Grammar" kindref="compound">Grammar</ref>(</highlight><highlight class="stringliteral">&quot;sleep&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal">sleep(force=False):</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">global</highlight><highlight class="normal"><sp/>sleeping</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>sleeping<sp/></highlight><highlight class="keywordflow">or</highlight><highlight class="normal"><sp/>force:</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sleeping<sp/>=<sp/></highlight><highlight class="keyword">True</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sleep_grammar.set_exclusiveness(</highlight><highlight class="keyword">True</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacekaldi__module__loader__plus_1a5e1a3f25ad41ae3431f1b5a2b4806a12" kindref="member">notify</ref>(</highlight><highlight class="stringliteral">&apos;sleep&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal">wake(force=False):</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">global</highlight><highlight class="normal"><sp/>sleeping</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>sleeping<sp/></highlight><highlight class="keywordflow">or</highlight><highlight class="normal"><sp/>force:</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sleeping<sp/>=<sp/></highlight><highlight class="keyword">False</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sleep_grammar.set_exclusiveness(</highlight><highlight class="keyword">False</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacekaldi__module__loader__plus_1a5e1a3f25ad41ae3431f1b5a2b4806a12" kindref="member">notify</ref>(</highlight><highlight class="stringliteral">&apos;wake&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">SleepRule(<ref refid="classdragonfly_1_1grammar_1_1rule__mapping_1_1MappingRule" kindref="compound">MappingRule</ref>):</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mapping<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;start<sp/>listening&quot;</highlight><highlight class="normal">:<sp/><sp/>Function(wake)<sp/>+<sp/>Function(</highlight><highlight class="keyword">lambda</highlight><highlight class="normal">:<sp/><ref refid="namespacedragonfly_1_1engines_1a54a7132d79612abdb29fac07276b5681" kindref="member">get_engine</ref>().start_saving_adaptation_state()),</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;stop<sp/>listening&quot;</highlight><highlight class="normal">:<sp/><sp/><sp/>Function(</highlight><highlight class="keyword">lambda</highlight><highlight class="normal">:<sp/><ref refid="namespacedragonfly_1_1engines_1a54a7132d79612abdb29fac07276b5681" kindref="member">get_engine</ref>().stop_saving_adaptation_state())<sp/>+<sp/>Function(sleep),</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;halt<sp/>listening&quot;</highlight><highlight class="normal">:<sp/><sp/><sp/>Function(</highlight><highlight class="keyword">lambda</highlight><highlight class="normal">:<sp/><ref refid="namespacedragonfly_1_1engines_1a54a7132d79612abdb29fac07276b5681" kindref="member">get_engine</ref>().stop_saving_adaptation_state())<sp/>+<sp/>Function(sleep),</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>sleep_grammar.add_rule(SleepRule())</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>sleep_noise_rule<sp/>=<sp/><ref refid="classdragonfly_1_1grammar_1_1rule__mapping_1_1MappingRule" kindref="compound">MappingRule</ref>(</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>name<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;sleep_noise_rule&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mapping<sp/>=<sp/>{<sp/></highlight><highlight class="stringliteral">&quot;&lt;text&gt;&quot;</highlight><highlight class="normal">:<sp/>Function(</highlight><highlight class="keyword">lambda</highlight><highlight class="normal"><sp/>text:<sp/></highlight><highlight class="keyword">False</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">and</highlight><highlight class="normal"><sp/>print(text))<sp/>},</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>extras<sp/>=<sp/>[<sp/><ref refid="namespacedragonfly_1_1grammar_1_1elements_1a56a36e895956f6e50060b69fbdbdcee8" kindref="member">Dictation</ref>(</highlight><highlight class="stringliteral">&quot;text&quot;</highlight><highlight class="normal">)<sp/>],</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>context<sp/>=<sp/><ref refid="classdragonfly_1_1grammar_1_1context_1_1FuncContext" kindref="compound">FuncContext</ref>(</highlight><highlight class="keyword">lambda</highlight><highlight class="normal">:<sp/>sleeping),</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>sleep_grammar.add_rule(sleep_noise_rule)</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>sleep_grammar.load()</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>initial_awake:</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>wake(force=</highlight><highlight class="keyword">True</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sleep(force=</highlight><highlight class="keyword">True</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight><highlight class="comment">#<sp/>--------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Main<sp/>event<sp/>driving<sp/>loop.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106" refid="namespacekaldi__module__loader__plus_1aa1b40e6d74a201921817ebc00d9ff01e" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacekaldi__module__loader__plus_1aa1b40e6d74a201921817ebc00d9ff01e" kindref="member">main</ref>():</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/>logging.basicConfig(level=logging.INFO)</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>path<sp/>=<sp/>os.path.dirname(__file__)</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">except</highlight><highlight class="normal"><sp/>NameError:</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>The<sp/>&quot;__file__&quot;<sp/>name<sp/>is<sp/>not<sp/>always<sp/>available,<sp/>for<sp/>example</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>when<sp/>this<sp/>module<sp/>is<sp/>run<sp/>from<sp/>PythonWin.<sp/><sp/>In<sp/>this<sp/>case<sp/>we</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>simply<sp/>use<sp/>the<sp/>current<sp/>working<sp/>directory.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>path<sp/>=<sp/>os.getcwd()</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>__file__<sp/>=<sp/>os.path.join(path,<sp/></highlight><highlight class="stringliteral">&quot;kaldi_module_loader_plus.py&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Set<sp/>any<sp/>configuration<sp/>options<sp/>here<sp/>as<sp/>keyword<sp/>arguments.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>See<sp/>Kaldi<sp/>engine<sp/>documentation<sp/>for<sp/>all<sp/>available<sp/>options<sp/>and<sp/>more<sp/>info.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/>engine<sp/>=<sp/><ref refid="namespacedragonfly_1_1engines_1a54a7132d79612abdb29fac07276b5681" kindref="member">get_engine</ref>(</highlight><highlight class="stringliteral">&apos;kaldi&apos;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>model_dir=&apos;kaldi_model&apos;,<sp/><sp/>#<sp/>default<sp/>model<sp/>directory</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>vad_aggressiveness=3,<sp/><sp/>#<sp/>default<sp/>aggressiveness<sp/>of<sp/>VAD</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>vad_padding_start_ms=150,<sp/><sp/>#<sp/>default<sp/>ms<sp/>of<sp/>required<sp/>silence<sp/>before<sp/>VAD</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>vad_padding_end_ms=150,<sp/><sp/>#<sp/>default<sp/>ms<sp/>of<sp/>required<sp/>silence<sp/>after<sp/>VAD</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>vad_complex_padding_end_ms=500,<sp/><sp/>#<sp/>default<sp/>ms<sp/>of<sp/>required<sp/>silence<sp/>after<sp/>VAD<sp/>for<sp/>complex<sp/>utterances</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>input_device_index=None,<sp/><sp/>#<sp/>set<sp/>to<sp/>an<sp/>int<sp/>to<sp/>choose<sp/>a<sp/>non-default<sp/>microphone</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>lazy_compilation=True,<sp/><sp/>#<sp/>set<sp/>to<sp/>True<sp/>to<sp/>parallelize<sp/>&amp;<sp/>speed<sp/>up<sp/>loading</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>retain_dir=None,<sp/><sp/>#<sp/>set<sp/>to<sp/>a<sp/>writable<sp/>directory<sp/>path<sp/>to<sp/>retain<sp/>recognition<sp/>metadata<sp/>and/or<sp/>audio<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>retain_audio=None,<sp/><sp/>#<sp/>set<sp/>to<sp/>True<sp/>to<sp/>retain<sp/>speech<sp/>data<sp/>wave<sp/>files<sp/>in<sp/>the<sp/>retain_dir<sp/>(if<sp/>set)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/>)</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Call<sp/>connect()<sp/>now<sp/>that<sp/>the<sp/>engine<sp/>configuration<sp/>is<sp/>set.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/>engine.connect()</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Load<sp/>grammars.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacekaldi__module__loader__plus_1a1ae83fda0f4ed2add61b11f511b32f3c" kindref="member">load_sleep_wake_grammar</ref>(</highlight><highlight class="keyword">True</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>directory<sp/>=<sp/><ref refid="classdragonfly_1_1loader_1_1CommandModuleDirectory" kindref="compound">CommandModuleDirectory</ref>(path,<sp/>excludes=[__file__])</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>directory.load()</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Define<sp/>recognition<sp/>callback<sp/>functions.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal">on_begin():</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Speech<sp/>start<sp/>detected.&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal">on_recognition(words):</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message<sp/>=<sp/></highlight><highlight class="stringliteral">u&quot;Recognized:<sp/>%s&quot;</highlight><highlight class="normal"><sp/>%<sp/></highlight><highlight class="stringliteral">u&quot;<sp/>&quot;</highlight><highlight class="normal">.join(words)</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>This<sp/>only<sp/>seems<sp/>to<sp/>be<sp/>an<sp/>issue<sp/>with<sp/>Python<sp/>2.7<sp/>on<sp/>Windows.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>six.PY2:</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>encoding<sp/>=<sp/>sys.stdout.encoding<sp/></highlight><highlight class="keywordflow">or</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;ascii&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message<sp/>=<sp/>message.encode(encoding,<sp/>errors=</highlight><highlight class="stringliteral">&apos;replace&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>print(message)</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal">on_failure():</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Sorry,<sp/>what<sp/>was<sp/>that?&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Start<sp/>the<sp/>engine&apos;s<sp/>main<sp/>recognition<sp/>loop</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/>engine.prepare_for_recognition()</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Listening...&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>engine.do_recognition(on_begin,<sp/>on_recognition,<sp/>on_failure)</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">except</highlight><highlight class="normal"><sp/>KeyboardInterrupt:</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">pass</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;__main__&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacekaldi__module__loader__plus_1aa1b40e6d74a201921817ebc00d9ff01e" kindref="member">main</ref>()</highlight></codeline>
+    </programlisting>
+    <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/examples/kaldi_module_loader_plus.py"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,70 @@
+image_recognition_tensorflow.object_recognizer
+==============================================
+
+.. py:module:: image_recognition_tensorflow.object_recognizer
+
+.. autoapi-nested-parse::
+
+   Wrapper class around a TensorFlow neural net to classify an image
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   image_recognition_tensorflow.object_recognizer.ObjectRecognizer
+
+
+Module Contents
+---------------
+
+.. py:class:: ObjectRecognizer(graph_path, labels_path, input_tensor, output_tensor)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Recognize objects via a given TensorFlow pre-trained neural net.
+   The configuration oof the in/output tensor names are preset to those of a (retrained) Inception_v3 network
+
+   :param graph_path: path to a pre-trained TensorFlow graph.pb file, e.g. output_graph.pb
+   :param labels_path: path to a file containing labels. One label per line, order should match that of the graph
+   :param input_tensor: Which tensor to feed the numpy-formatted image in?
+   :param output_tensor: Which tensor to extract the result from?
+
+
+   .. py:attribute:: labels
+
+
+   .. py:attribute:: input_tensor_name
+
+
+   .. py:attribute:: output_tensor_name
+
+
+   .. py:attribute:: session
+
+
+   .. py:attribute:: _input_tensor
+
+
+   .. py:attribute:: _output_tensor
+
+
+   .. py:method:: classify(np_image)
+
+      Classify an image into one of the labels at the label_path
+
+      :param np_image a numpy array representing the image to be classified.
+          This is assumed to be segmented/cropped already!
+      :returns prediction scores for each label (ordered)
+
+
+
+   .. py:method:: _read_labels(labels_path)
+      :staticmethod:
+
+
+

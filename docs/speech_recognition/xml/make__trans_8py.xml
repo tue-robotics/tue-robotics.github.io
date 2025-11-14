@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="make__trans_8py" kind="file" language="Python">
+    <compoundname>make_trans.py</compoundname>
+    <innernamespace refid="namespacemake__trans">make_trans</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacemake__trans" refkind="compound"><highlight class="comment">#!/usr/bin/env<sp/>python</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Copyright<sp/>2012<sp/>Vassil<sp/>Panayotov</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Apache<sp/>2.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="7"><highlight class="stringliteral">Takes<sp/>a<sp/>&quot;PROMPTS&quot;<sp/>file<sp/>with<sp/>lines<sp/>like:</highlight></codeline>
+<codeline lineno="8"><highlight class="stringliteral">1snoke-20120412-hge/mfc/a0405<sp/>IT<sp/>SEEMED<sp/>THE<sp/>ORDAINED<sp/>ORDER<sp/>OF<sp/>THINGS<sp/>THAT<sp/>DOGS<sp/>SHOULD<sp/>WORK</highlight></codeline>
+<codeline lineno="9"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="10"><highlight class="stringliteral">,<sp/>an<sp/>ID<sp/>prefix<sp/>and<sp/>a<sp/>list<sp/>of<sp/>audio<sp/>file<sp/>names<sp/>(e.g.<sp/>for<sp/>above<sp/>example<sp/>the<sp/>list<sp/>will<sp/>contain<sp/>&quot;a0405&quot;).</highlight></codeline>
+<codeline lineno="11"><highlight class="stringliteral">It<sp/>checks<sp/>if<sp/>the<sp/>prompts<sp/>file<sp/>have<sp/>transcription<sp/>for<sp/>all<sp/>audio<sp/>files<sp/>in<sp/>the<sp/>list<sp/>and</highlight></codeline>
+<codeline lineno="12"><highlight class="stringliteral">if<sp/>this<sp/>is<sp/>the<sp/>case<sp/>produces<sp/>a<sp/>transcript<sp/>line<sp/>for<sp/>each<sp/>file<sp/>in<sp/>the<sp/>format:</highlight></codeline>
+<codeline lineno="13"><highlight class="stringliteral">prefix_a0405<sp/>IT<sp/>SEEMED<sp/>THE<sp/>ORDAINED<sp/>ORDER<sp/>OF<sp/>THINGS<sp/>THAT<sp/>DOGS<sp/>SHOULD<sp/>WORK</highlight></codeline>
+<codeline lineno="14"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>sys</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18" refid="namespacemake__trans_1a9d403ad188f1dc86cf203f61f7fc5b13" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacemake__trans_1a9d403ad188f1dc86cf203f61f7fc5b13" kindref="member">err</ref>(msg):</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">print</highlight><highlight class="normal"><sp/>&gt;&gt;<sp/>sys.stderr,<sp/>msg</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>len(sys.argv)<sp/>&lt;<sp/>3:</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacemake__trans_1a9d403ad188f1dc86cf203f61f7fc5b13" kindref="member">err</ref>(</highlight><highlight class="stringliteral">&quot;Usage:<sp/>%s<sp/>&lt;prompts-file&gt;<sp/>&lt;id-prefix&gt;<sp/>&lt;utt-id1&gt;<sp/>&lt;utt-id2&gt;<sp/>...<sp/>&quot;</highlight><highlight class="normal"><sp/>%<sp/>sys.argv[0])</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>sys.exit(1)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">#err(str(sys.argv))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26" refid="namespacemake__trans_1a35c711f11f52eb2b36c9ab83f0d81529" refkind="member"><highlight class="normal">id_prefix<sp/>=<sp/>sys.argv[2]</highlight></codeline>
+<codeline lineno="27" refid="namespacemake__trans_1ab5457663f70a5ecb3a109105b0d1f970" refkind="member"><highlight class="normal">utt_ids<sp/>=<sp/>sys.argv[3:]</highlight></codeline>
+<codeline lineno="28" refid="namespacemake__trans_1a4c967e42f0f3558521c750509cf5c0e4" refkind="member"><highlight class="normal">utt2trans<sp/>=<sp/>dict()</highlight></codeline>
+<codeline lineno="29" refid="namespacemake__trans_1a13eae8dba8da8c09029e46b2c4174f7d" refkind="member"><highlight class="normal">unnorm_utt<sp/>=<sp/>set()<sp/></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>l<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>file(sys.argv[1]):</highlight></codeline>
+<codeline lineno="31" refid="namespacemake__trans_1a96e7068bc00b416f11c3d4dc4e0447e9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>u,<sp/>trans<sp/>=<sp/>l.split(</highlight><highlight class="keywordtype">None</highlight><highlight class="normal">,<sp/>1)</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>u<sp/>=<sp/>u.strip().split(</highlight><highlight class="stringliteral">&apos;/&apos;</highlight><highlight class="normal">)[-1]</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>trans<sp/>=<sp/>trans.strip().replace(</highlight><highlight class="stringliteral">&quot;-&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;<sp/>&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>trans.isupper()<sp/></highlight><highlight class="keywordflow">or</highlight><highlight class="normal"><sp/>\</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>trans.strip().replace(</highlight><highlight class="stringliteral">&apos;<sp/>&apos;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&apos;&apos;</highlight><highlight class="normal">).replace(</highlight><highlight class="stringliteral">&quot;&apos;&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">).isalpha():</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacemake__trans_1a9d403ad188f1dc86cf203f61f7fc5b13" kindref="member">err</ref>(</highlight><highlight class="stringliteral">&quot;The<sp/>transcript<sp/>for<sp/>&apos;%s&apos;(user<sp/>&apos;%s&apos;)<sp/>is<sp/>not<sp/>properly<sp/>normalized<sp/>-<sp/>skipped!&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>%<sp/>(u,<sp/>id_prefix))</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacemake__trans_1a9d403ad188f1dc86cf203f61f7fc5b13" kindref="member">err</ref>(trans)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unnorm_utt.add(u)</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>utt2trans[u]<sp/>=<sp/>trans</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>uid<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>utt_ids:</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>uid<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>unnorm_utt:</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal"><sp/></highlight><highlight class="comment">#<sp/>avoid<sp/>double<sp/>reporting<sp/>the<sp/>same<sp/>problem</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>uid<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>utt2trans:</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacemake__trans_1a9d403ad188f1dc86cf203f61f7fc5b13" kindref="member">err</ref>(</highlight><highlight class="stringliteral">&quot;No<sp/>transcript<sp/>found<sp/>for<sp/>%s_%s&quot;</highlight><highlight class="normal"><sp/>%<sp/>(id_prefix,<sp/>uid))</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">print</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;%s-%s<sp/>%s&quot;</highlight><highlight class="normal"><sp/>%<sp/>(id_prefix,<sp/>uid,<sp/>utt2trans[uid])</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="egs/voxforge/local/make_trans.py"/>
+  </compounddef>
+</doxygen>

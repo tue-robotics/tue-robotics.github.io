@@ -1,0 +1,351 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="simple__trajectory__generator_8cpp" kind="file" language="C++">
+    <compoundname>simple_trajectory_generator.cpp</compoundname>
+    <includes refid="simple__trajectory__generator_8h" local="no">base_local_planner/simple_trajectory_generator.h</includes>
+    <includes local="no">cmath</includes>
+    <includes refid="velocity__iterator_8h" local="no">base_local_planner/velocity_iterator.h</includes>
+    <incdepgraph>
+      <node id="10">
+        <label>algorithm</label>
+        <link refid="cpp/header/algorithm" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="5">
+        <label>vector</label>
+        <link refid="cpp/header/vector" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="4">
+        <label>base_local_planner/trajectory.h</label>
+        <link refid="trajectory_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Eigen/Core</label>
+      </node>
+      <node id="1">
+        <label>simple_trajectory_generator.cpp</label>
+        <link refid="simple__trajectory__generator_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>base_local_planner/trajectory_sample_generator.h</label>
+        <link refid="trajectory__sample__generator_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>base_local_planner/simple_trajectory_generator.h</label>
+        <link refid="simple__trajectory__generator_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>base_local_planner/velocity_iterator.h</label>
+        <link refid="velocity__iterator_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>cmath</label>
+        <link refid="cpp/header/cmath" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml"/>
+      </node>
+      <node id="6">
+        <label>base_local_planner/local_planner_limits.h</label>
+        <link refid="local__planner__limits_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespacebase__local__planner">base_local_planner</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*********************************************************************</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>Software<sp/>License<sp/>Agreement<sp/>(BSD<sp/>License)</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/><sp/>Copyright<sp/>(c)<sp/>2008,<sp/>Willow<sp/>Garage,<sp/>Inc.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/><sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/><sp/>Redistribution<sp/>and<sp/>use<sp/>in<sp/>source<sp/>and<sp/>binary<sp/>forms,<sp/>with<sp/>or<sp/>without</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/><sp/>modification,<sp/>are<sp/>permitted<sp/>provided<sp/>that<sp/>the<sp/>following<sp/>conditions</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/>are<sp/>met:</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>of<sp/>source<sp/>code<sp/>must<sp/>retain<sp/>the<sp/>above<sp/>copyright</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following<sp/>disclaimer.</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Redistributions<sp/>in<sp/>binary<sp/>form<sp/>must<sp/>reproduce<sp/>the<sp/>above</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>copyright<sp/>notice,<sp/>this<sp/>list<sp/>of<sp/>conditions<sp/>and<sp/>the<sp/>following</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>disclaimer<sp/>in<sp/>the<sp/>documentation<sp/>and/or<sp/>other<sp/>materials<sp/>provided</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>with<sp/>the<sp/>distribution.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/><sp/><sp/>*<sp/>Neither<sp/>the<sp/>name<sp/>of<sp/>Willow<sp/>Garage,<sp/>Inc.<sp/>nor<sp/>the<sp/>names<sp/>of<sp/>its</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>contributors<sp/>may<sp/>be<sp/>used<sp/>to<sp/>endorse<sp/>or<sp/>promote<sp/>products<sp/>derived</highlight></codeline>
+<codeline lineno="20"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>from<sp/>this<sp/>software<sp/>without<sp/>specific<sp/>prior<sp/>written<sp/>permission.</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/>*<sp/><sp/>THIS<sp/>SOFTWARE<sp/>IS<sp/>PROVIDED<sp/>BY<sp/>THE<sp/>COPYRIGHT<sp/>HOLDERS<sp/>AND<sp/>CONTRIBUTORS</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/>*<sp/><sp/>&quot;AS<sp/>IS&quot;<sp/>AND<sp/>ANY<sp/>EXPRESS<sp/>OR<sp/>IMPLIED<sp/>WARRANTIES,<sp/>INCLUDING,<sp/>BUT<sp/>NOT</highlight></codeline>
+<codeline lineno="24"><highlight class="comment"><sp/>*<sp/><sp/>LIMITED<sp/>TO,<sp/>THE<sp/>IMPLIED<sp/>WARRANTIES<sp/>OF<sp/>MERCHANTABILITY<sp/>AND<sp/>FITNESS</highlight></codeline>
+<codeline lineno="25"><highlight class="comment"><sp/>*<sp/><sp/>FOR<sp/>A<sp/>PARTICULAR<sp/>PURPOSE<sp/>ARE<sp/>DISCLAIMED.<sp/>IN<sp/>NO<sp/>EVENT<sp/>SHALL<sp/>THE</highlight></codeline>
+<codeline lineno="26"><highlight class="comment"><sp/>*<sp/><sp/>COPYRIGHT<sp/>OWNER<sp/>OR<sp/>CONTRIBUTORS<sp/>BE<sp/>LIABLE<sp/>FOR<sp/>ANY<sp/>DIRECT,<sp/>INDIRECT,</highlight></codeline>
+<codeline lineno="27"><highlight class="comment"><sp/>*<sp/><sp/>INCIDENTAL,<sp/>SPECIAL,<sp/>EXEMPLARY,<sp/>OR<sp/>CONSEQUENTIAL<sp/>DAMAGES<sp/>(INCLUDING,</highlight></codeline>
+<codeline lineno="28"><highlight class="comment"><sp/>*<sp/><sp/>BUT<sp/>NOT<sp/>LIMITED<sp/>TO,<sp/>PROCUREMENT<sp/>OF<sp/>SUBSTITUTE<sp/>GOODS<sp/>OR<sp/>SERVICES;</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/>*<sp/><sp/>LOSS<sp/>OF<sp/>USE,<sp/>DATA,<sp/>OR<sp/>PROFITS;<sp/>OR<sp/>BUSINESS<sp/>INTERRUPTION)<sp/>HOWEVER</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/>*<sp/><sp/>CAUSED<sp/>AND<sp/>ON<sp/>ANY<sp/>THEORY<sp/>OF<sp/>LIABILITY,<sp/>WHETHER<sp/>IN<sp/>CONTRACT,<sp/>STRICT</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/>*<sp/><sp/>LIABILITY,<sp/>OR<sp/>TORT<sp/>(INCLUDING<sp/>NEGLIGENCE<sp/>OR<sp/>OTHERWISE)<sp/>ARISING<sp/>IN</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/>*<sp/><sp/>ANY<sp/>WAY<sp/>OUT<sp/>OF<sp/>THE<sp/>USE<sp/>OF<sp/>THIS<sp/>SOFTWARE,<sp/>EVEN<sp/>IF<sp/>ADVISED<sp/>OF<sp/>THE</highlight></codeline>
+<codeline lineno="33"><highlight class="comment"><sp/>*<sp/><sp/>POSSIBILITY<sp/>OF<sp/>SUCH<sp/>DAMAGE.</highlight></codeline>
+<codeline lineno="34"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="35"><highlight class="comment"><sp/>*<sp/>Author:<sp/>TKruse</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/>*********************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="simple__trajectory__generator_8h" kindref="compound">base_local_planner/simple_trajectory_generator.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="cpp/header/cmath" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">cmath</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;<ref refid="velocity__iterator_8h" kindref="compound">base_local_planner/velocity_iterator.h</ref>&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacebase__local__planner" kindref="compound">base_local_planner</ref><sp/>{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0810ac35a39d3d7ccc1c19a862e97fbf" kindref="member">SimpleTrajectoryGenerator::initialise</ref>(</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>pos,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>vel,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>goal,</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1LocalPlannerLimits" kindref="compound">base_local_planner::LocalPlannerLimits</ref>*<sp/>limits,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>vsamples,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="cpp/container/vector" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::vector&lt;Eigen::Vector3f&gt;</ref><sp/>additional_samples,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>discretize_by_time)<sp/>{</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0810ac35a39d3d7ccc1c19a862e97fbf" kindref="member">initialise</ref>(pos,<sp/>vel,<sp/>goal,<sp/>limits,<sp/>vsamples,<sp/>discretize_by_time);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>add<sp/>static<sp/>samples<sp/>if<sp/>any</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6084045fc45c79ded7ef6b75f60320e7" kindref="member">sample_params_</ref>.<ref refid="cpp/container/vector/insert" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">insert</ref>(<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6084045fc45c79ded7ef6b75f60320e7" kindref="member">sample_params_</ref>.<ref refid="cpp/container/vector/end" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">end</ref>(),<sp/>additional_samples.<ref refid="cpp/container/vector/begin" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">begin</ref>(),<sp/>additional_samples.<ref refid="cpp/container/vector/end" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">end</ref>());</highlight></codeline>
+<codeline lineno="57"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0810ac35a39d3d7ccc1c19a862e97fbf" kindref="member">SimpleTrajectoryGenerator::initialise</ref>(</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>pos,</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>vel,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>goal,</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1LocalPlannerLimits" kindref="compound">base_local_planner::LocalPlannerLimits</ref>*<sp/>limits,</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>vsamples,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>discretize_by_time)<sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="68"><highlight class="comment"><sp/><sp/><sp/>*<sp/>We<sp/>actually<sp/>generate<sp/>all<sp/>velocity<sp/>sample<sp/>vectors<sp/>here,<sp/>from<sp/>which<sp/>to<sp/>generate<sp/>trajectories<sp/>later<sp/>on</highlight></codeline>
+<codeline lineno="69"><highlight class="comment"><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>max_vel_th<sp/>=<sp/>limits-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1a673f702c2bdae2fbbd2d982ee7da4ecc" kindref="member">max_vel_theta</ref>;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>min_vel_th<sp/>=<sp/>-1.0<sp/>*<sp/>max_vel_th;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a719ba193671c3057ac1dace84aa01526" kindref="member">discretize_by_time_</ref><sp/>=<sp/>discretize_by_time;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/>Eigen::Vector3f<sp/>acc_lim<sp/>=<sp/>limits-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1a0402363ae18d44002834003a1b17f14b" kindref="member">getAccLimits</ref>();</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a1e308de90ce96375e50889bb75398830" kindref="member">pos_</ref><sp/>=<sp/>pos;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6d5012705423167541f096bedaa5152f" kindref="member">vel_</ref><sp/>=<sp/>vel;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0586ccaf8b6372830bd715d476889bb9" kindref="member">limits_</ref><sp/>=<sp/>limits;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1acc42f25461d9894845955e5d464e4a58" kindref="member">next_sample_index_</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6084045fc45c79ded7ef6b75f60320e7" kindref="member">sample_params_</ref>.<ref refid="cpp/container/vector/clear" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">clear</ref>();</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>min_vel_x<sp/>=<sp/>limits-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1a1f28e10f2b8d1cc946e0e9132f1ca675" kindref="member">min_vel_x</ref>;</highlight></codeline>
+<codeline lineno="81" refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0810ac35a39d3d7ccc1c19a862e97fbf" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>max_vel_x<sp/>=<sp/>limits-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1ae77b5cfd468d44cd14c30545f9f1ae88" kindref="member">max_vel_x</ref>;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>min_vel_y<sp/>=<sp/>limits-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1af84d70acfecc28ffa8d3a5f5e82e3b6c" kindref="member">min_vel_y</ref>;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>max_vel_y<sp/>=<sp/>limits-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1a087c58f4b6cc9c4dd65f18ff8e4fd449" kindref="member">max_vel_y</ref>;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>sampling<sp/>number<sp/>is<sp/>zero<sp/>in<sp/>any<sp/>dimension,<sp/>we<sp/>don&apos;t<sp/>generate<sp/>samples<sp/>generically</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(vsamples[0]<sp/>*<sp/>vsamples[1]<sp/>*<sp/>vsamples[2]<sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//compute<sp/>the<sp/>feasible<sp/>velocity<sp/>space<sp/>based<sp/>on<sp/>the<sp/>rate<sp/>at<sp/>which<sp/>we<sp/>run</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Vector3f<sp/>max_vel<sp/>=<sp/>Eigen::Vector3f::Zero();</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Vector3f<sp/>min_vel<sp/>=<sp/>Eigen::Vector3f::Zero();</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<sp/>!<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1ad388680d803d492b2565c7f3f4a508e6" kindref="member">use_dwa_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>there<sp/>is<sp/>no<sp/>point<sp/>in<sp/>overshooting<sp/>the<sp/>goal,<sp/>and<sp/>it<sp/>also<sp/>may<sp/>break<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>robot<sp/>behavior,<sp/>so<sp/>we<sp/>limit<sp/>the<sp/>velocities<sp/>to<sp/>those<sp/>that<sp/>do<sp/>not<sp/>overshoot<sp/>in<sp/>sim_time</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dist<sp/>=<sp/>hypot(goal[0]<sp/>-<sp/>pos[0],<sp/>goal[1]<sp/>-<sp/>pos[1]);</highlight></codeline>
+<codeline lineno="95" refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a56881a7d1e6cf7027eb2243a764dc0fa" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>max_vel_x<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(<ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(max_vel_x,<sp/>dist<sp/>/<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref>),<sp/>min_vel_x);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>max_vel_y<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(<ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(max_vel_y,<sp/>dist<sp/>/<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref>),<sp/>min_vel_y);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>if<sp/>we<sp/>use<sp/>continous<sp/>acceleration,<sp/>we<sp/>can<sp/>sample<sp/>the<sp/>max<sp/>velocity<sp/>we<sp/>can<sp/>reach<sp/>in<sp/>sim_time_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>max_vel[0]<sp/>=<sp/><ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(max_vel_x,<sp/>vel[0]<sp/>+<sp/>acc_lim[0]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref>);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>max_vel[1]<sp/>=<sp/><ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(max_vel_y,<sp/>vel[1]<sp/>+<sp/>acc_lim[1]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref>);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>max_vel[2]<sp/>=<sp/><ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(max_vel_th,<sp/>vel[2]<sp/>+<sp/>acc_lim[2]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref>);</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>min_vel[0]<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(min_vel_x,<sp/>vel[0]<sp/>-<sp/>acc_lim[0]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref>);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>min_vel[1]<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(min_vel_y,<sp/>vel[1]<sp/>-<sp/>acc_lim[1]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref>);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>min_vel[2]<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(min_vel_th,<sp/>vel[2]<sp/>-<sp/>acc_lim[2]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref>);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>with<sp/>dwa<sp/>do<sp/>not<sp/>accelerate<sp/>beyond<sp/>the<sp/>first<sp/>step,<sp/>we<sp/>only<sp/>sample<sp/>within<sp/>velocities<sp/>we<sp/>reach<sp/>in<sp/>sim_period</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>max_vel[0]<sp/>=<sp/><ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(max_vel_x,<sp/>vel[0]<sp/>+<sp/>acc_lim[0]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a5447b0d5c0fb3f642db474c86d0e33d8" kindref="member">sim_period_</ref>);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>max_vel[1]<sp/>=<sp/><ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(max_vel_y,<sp/>vel[1]<sp/>+<sp/>acc_lim[1]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a5447b0d5c0fb3f642db474c86d0e33d8" kindref="member">sim_period_</ref>);</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>max_vel[2]<sp/>=<sp/><ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(max_vel_th,<sp/>vel[2]<sp/>+<sp/>acc_lim[2]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a5447b0d5c0fb3f642db474c86d0e33d8" kindref="member">sim_period_</ref>);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>min_vel[0]<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(min_vel_x,<sp/>vel[0]<sp/>-<sp/>acc_lim[0]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a5447b0d5c0fb3f642db474c86d0e33d8" kindref="member">sim_period_</ref>);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>min_vel[1]<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(min_vel_y,<sp/>vel[1]<sp/>-<sp/>acc_lim[1]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a5447b0d5c0fb3f642db474c86d0e33d8" kindref="member">sim_period_</ref>);</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>min_vel[2]<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(min_vel_th,<sp/>vel[2]<sp/>-<sp/>acc_lim[2]<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a5447b0d5c0fb3f642db474c86d0e33d8" kindref="member">sim_period_</ref>);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/>Eigen::Vector3f<sp/>vel_samp<sp/>=<sp/>Eigen::Vector3f::Zero();</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/>VelocityIterator<sp/>x_it(min_vel[0],<sp/>max_vel[0],<sp/>vsamples[0]);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>VelocityIterator<sp/>y_it(min_vel[1],<sp/>max_vel[1],<sp/>vsamples[1]);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/>VelocityIterator<sp/>th_it(min_vel[2],<sp/>max_vel[2],<sp/>vsamples[2]);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(;<sp/>!x_it.isFinished();<sp/>x_it++)<sp/>{</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>vel_samp[0]<sp/>=<sp/>x_it.getVelocity();</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(;<sp/>!y_it.isFinished();<sp/>y_it++)<sp/>{</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vel_samp[1]<sp/>=<sp/>y_it.getVelocity();</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(;<sp/>!th_it.isFinished();<sp/>th_it++)<sp/>{</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vel_samp[2]<sp/>=<sp/>th_it.getVelocity();</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//ROS_DEBUG(&quot;Sample<sp/>%f,<sp/>%f,<sp/>%f&quot;,<sp/>vel_samp[0],<sp/>vel_samp[1],<sp/>vel_samp[2]);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6084045fc45c79ded7ef6b75f60320e7" kindref="member">sample_params_</ref>.<ref refid="cpp/container/vector/push_back" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">push_back</ref>(vel_samp);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>th_it.reset();</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>y_it.reset();</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="135"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a9ce8e2d22eafe3f2a2d2daf236e1ce83" kindref="member">SimpleTrajectoryGenerator::setParameters</ref>(</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sim_time,</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sim_granularity,</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>angular_sim_granularity,</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>use_dwa,</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sim_period)<sp/>{</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref><sp/>=<sp/>sim_time;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1ac8e05c3fe4516c7343621649722b1bae" kindref="member">sim_granularity_</ref><sp/>=<sp/>sim_granularity;</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1abe5c2bf96effe4753a884f5947044fb9" kindref="member">angular_sim_granularity_</ref><sp/>=<sp/>angular_sim_granularity;</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1ad388680d803d492b2565c7f3f4a508e6" kindref="member">use_dwa_</ref><sp/>=<sp/>use_dwa;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1aa811b5385f768045ec76638d431c4289" kindref="member">continued_acceleration_</ref><sp/>=<sp/>!<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1ad388680d803d492b2565c7f3f4a508e6" kindref="member">use_dwa_</ref>;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a5447b0d5c0fb3f642db474c86d0e33d8" kindref="member">sim_period_</ref><sp/>=<sp/>sim_period;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1ab2e9ca5e1468974af51acc17e5c7aec2" kindref="member">SimpleTrajectoryGenerator::hasMoreTrajectories</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1acc42f25461d9894845955e5d464e4a58" kindref="member">next_sample_index_</ref><sp/>&lt;<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6084045fc45c79ded7ef6b75f60320e7" kindref="member">sample_params_</ref>.<ref refid="cpp/container/vector/size" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">size</ref>();</highlight></codeline>
+<codeline lineno="156"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1adb064b57ea297fc3810e185861e444e8" kindref="member">SimpleTrajectoryGenerator::nextTrajectory</ref>(Trajectory<sp/>&amp;comp_traj)<sp/>{</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>result<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1ab2e9ca5e1468974af51acc17e5c7aec2" kindref="member">hasMoreTrajectories</ref>())<sp/>{</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a09675e3d736eaf9ff3b8c8bc3587b768" kindref="member">generateTrajectory</ref>(</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a1e308de90ce96375e50889bb75398830" kindref="member">pos_</ref>,</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6d5012705423167541f096bedaa5152f" kindref="member">vel_</ref>,</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6084045fc45c79ded7ef6b75f60320e7" kindref="member">sample_params_</ref>[<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1acc42f25461d9894845955e5d464e4a58" kindref="member">next_sample_index_</ref>],</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>comp_traj))<sp/>{</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="172" refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a9ce8e2d22eafe3f2a2d2daf236e1ce83" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1acc42f25461d9894845955e5d464e4a58" kindref="member">next_sample_index_</ref>++;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a09675e3d736eaf9ff3b8c8bc3587b768" kindref="member">SimpleTrajectoryGenerator::generateTrajectory</ref>(</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Vector3f<sp/>pos,</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Vector3f<sp/>vel,</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Eigen::Vector3f<sp/>sample_target_vel,</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classbase__local__planner_1_1Trajectory" kindref="compound">base_local_planner::Trajectory</ref>&amp;<sp/>traj)<sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>vmag<sp/>=<sp/>hypot(sample_target_vel[0],<sp/>sample_target_vel[1]);</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>eps<sp/>=<sp/>1e-4;</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/>traj.<ref refid="classbase__local__planner_1_1Trajectory_1ab4d255b7614df1a8f381d4e7eb44d385" kindref="member">cost_</ref><sp/><sp/><sp/>=<sp/>-1.0;<sp/></highlight><highlight class="comment">//<sp/>placed<sp/>here<sp/>in<sp/>case<sp/>we<sp/>return<sp/>early</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//trajectory<sp/>might<sp/>be<sp/>reused<sp/>so<sp/>we&apos;ll<sp/>make<sp/>sure<sp/>to<sp/>reset<sp/>it</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="189" refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1ab2e9ca5e1468974af51acc17e5c7aec2" refkind="member"><highlight class="normal"><sp/><sp/>traj.<ref refid="classbase__local__planner_1_1Trajectory_1a35c05c071ce0f8e54c18f0f8816315d3" kindref="member">resetPoints</ref>();</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>make<sp/>sure<sp/>that<sp/>the<sp/>robot<sp/>would<sp/>at<sp/>least<sp/>be<sp/>moving<sp/>with<sp/>one<sp/>of</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>required<sp/>minimum<sp/>velocities<sp/>for<sp/>translation<sp/>and<sp/>rotation<sp/>(if<sp/>set)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>((<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0586ccaf8b6372830bd715d476889bb9" kindref="member">limits_</ref>-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1a6b5bdf743e847d93fec659a2ca2c0865" kindref="member">min_vel_trans</ref><sp/>&gt;=<sp/>0<sp/>&amp;&amp;<sp/>vmag<sp/>+<sp/>eps<sp/>&lt;<sp/>limits_-&gt;min_vel_trans)<sp/>&amp;&amp;</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>(<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0586ccaf8b6372830bd715d476889bb9" kindref="member">limits_</ref>-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1a2ef2f58644811656adef6692720881b2" kindref="member">min_vel_theta</ref><sp/>&gt;=<sp/>0<sp/>&amp;&amp;<sp/>fabs(sample_target_vel[2])<sp/>+<sp/>eps<sp/>&lt;<sp/>limits_-&gt;min_vel_theta))<sp/>{</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="196" refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1adb064b57ea297fc3810e185861e444e8" refkind="member"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>make<sp/>sure<sp/>we<sp/>do<sp/>not<sp/>exceed<sp/>max<sp/>diagonal<sp/>(x+y)<sp/>translational<sp/>velocity<sp/>(if<sp/>set)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0586ccaf8b6372830bd715d476889bb9" kindref="member">limits_</ref>-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1a94d3e428ddd0fa6916c9f03bdf726b10" kindref="member">max_vel_trans</ref><sp/>&gt;=0<sp/>&amp;&amp;<sp/>vmag<sp/>-<sp/>eps<sp/>&gt;<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0586ccaf8b6372830bd715d476889bb9" kindref="member">limits_</ref>-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1a94d3e428ddd0fa6916c9f03bdf726b10" kindref="member">max_vel_trans</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>num_steps;</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a719ba193671c3057ac1dace84aa01526" kindref="member">discretize_by_time_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/>num_steps<sp/>=<sp/>ceil(<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref><sp/>/<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1ac8e05c3fe4516c7343621649722b1bae" kindref="member">sim_granularity_</ref>);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//compute<sp/>the<sp/>number<sp/>of<sp/>steps<sp/>we<sp/>must<sp/>take<sp/>along<sp/>this<sp/>trajectory<sp/>to<sp/>be<sp/>&quot;safe&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sim_time_distance<sp/>=<sp/>vmag<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref>;<sp/></highlight><highlight class="comment">//<sp/>the<sp/>distance<sp/>the<sp/>robot<sp/>would<sp/>travel<sp/>in<sp/>sim_time<sp/>if<sp/>it<sp/>did<sp/>not<sp/>change<sp/>velocity</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sim_time_angle<sp/>=<sp/><ref refid="cpp/numeric/math/fabs" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">fabs</ref>(sample_target_vel[2])<sp/>*<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref>;<sp/></highlight><highlight class="comment">//<sp/>the<sp/>angle<sp/>the<sp/>robot<sp/>would<sp/>rotate<sp/>in<sp/>sim_time</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/>num_steps<sp/>=</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="cpp/numeric/math/ceil" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">ceil</ref>(<ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(sim_time_distance<sp/>/<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1ac8e05c3fe4516c7343621649722b1bae" kindref="member">sim_granularity_</ref>,</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sim_time_angle<sp/><sp/><sp/><sp/>/<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1abe5c2bf96effe4753a884f5947044fb9" kindref="member">angular_sim_granularity_</ref>));</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(num_steps<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="215" refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a09675e3d736eaf9ff3b8c8bc3587b768" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//compute<sp/>a<sp/>timestep</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt<sp/>=<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a6e59c0e68ed11342bcad2d80db5f967d" kindref="member">sim_time_</ref><sp/>/<sp/>num_steps;</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/>traj.<ref refid="classbase__local__planner_1_1Trajectory_1a48b175bc769a70d1182a48996d068c25" kindref="member">time_delta_</ref><sp/>=<sp/>dt;</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"></highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/>Eigen::Vector3f<sp/>loop_vel;</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1aa811b5385f768045ec76638d431c4289" kindref="member">continued_acceleration_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>assuming<sp/>the<sp/>velocity<sp/>of<sp/>the<sp/>first<sp/>cycle<sp/>is<sp/>the<sp/>one<sp/>we<sp/>want<sp/>to<sp/>store<sp/>in<sp/>the<sp/>trajectory<sp/>object</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/>loop_vel<sp/>=<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1abeea221947f5062cdb481c9888c33075" kindref="member">computeNewVelocities</ref>(sample_target_vel,<sp/>vel,<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0586ccaf8b6372830bd715d476889bb9" kindref="member">limits_</ref>-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1a0402363ae18d44002834003a1b17f14b" kindref="member">getAccLimits</ref>(),<sp/>dt);</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/>traj.<ref refid="classbase__local__planner_1_1Trajectory_1a228fb59ff438692ebedddb6899c8d957" kindref="member">xv_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/>loop_vel[0];</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/>traj.<ref refid="classbase__local__planner_1_1Trajectory_1abb4fc9493587f61f888f2cdfec62b89a" kindref="member">yv_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/>loop_vel[1];</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/>traj.<ref refid="classbase__local__planner_1_1Trajectory_1a9a93bfe9bb3c3b1d65b3627ce7cbae33" kindref="member">thetav_</ref><sp/>=<sp/>loop_vel[2];</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>assuming<sp/>sample_vel<sp/>is<sp/>our<sp/>target<sp/>velocity<sp/>within<sp/>acc<sp/>limits<sp/>for<sp/>one<sp/>timestep</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/>loop_vel<sp/>=<sp/>sample_target_vel;</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/>traj.<ref refid="classbase__local__planner_1_1Trajectory_1a228fb59ff438692ebedddb6899c8d957" kindref="member">xv_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/>sample_target_vel[0];</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/>traj.<ref refid="classbase__local__planner_1_1Trajectory_1abb4fc9493587f61f888f2cdfec62b89a" kindref="member">yv_</ref><sp/><sp/><sp/><sp/><sp/>=<sp/>sample_target_vel[1];</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/>traj.<ref refid="classbase__local__planner_1_1Trajectory_1a9a93bfe9bb3c3b1d65b3627ce7cbae33" kindref="member">thetav_</ref><sp/>=<sp/>sample_target_vel[2];</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"></highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//simulate<sp/>the<sp/>trajectory<sp/>and<sp/>check<sp/>for<sp/>collisions,<sp/>updating<sp/>costs<sp/>along<sp/>the<sp/>way</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>num_steps;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"></highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//add<sp/>the<sp/>point<sp/>to<sp/>the<sp/>trajectory<sp/>so<sp/>we<sp/>can<sp/>draw<sp/>it<sp/>later<sp/>if<sp/>we<sp/>want</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/>traj.<ref refid="classbase__local__planner_1_1Trajectory_1a94ff45de82ae4417fdbb1158c5c2b204" kindref="member">addPoint</ref>(pos[0],<sp/>pos[1],<sp/>pos[2]);</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"></highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1aa811b5385f768045ec76638d431c4289" kindref="member">continued_acceleration_</ref>)<sp/>{</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//calculate<sp/>velocities</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>loop_vel<sp/>=<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1abeea221947f5062cdb481c9888c33075" kindref="member">computeNewVelocities</ref>(sample_target_vel,<sp/>loop_vel,<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a0586ccaf8b6372830bd715d476889bb9" kindref="member">limits_</ref>-&gt;<ref refid="classbase__local__planner_1_1LocalPlannerLimits_1a0402363ae18d44002834003a1b17f14b" kindref="member">getAccLimits</ref>(),<sp/>dt);</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//ROS_WARN_NAMED(&quot;Generator&quot;,<sp/>&quot;Flag:<sp/>%d,<sp/>Loop_Vel<sp/>%f,<sp/>%f,<sp/>%f&quot;,<sp/>continued_acceleration_,<sp/>loop_vel[0],<sp/>loop_vel[1],<sp/>loop_vel[2]);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"></highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//update<sp/>the<sp/>position<sp/>of<sp/>the<sp/>robot<sp/>using<sp/>the<sp/>velocities<sp/>passed<sp/>in</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/>pos<sp/>=<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a4762e662d557328a98abad8155501626" kindref="member">computeNewPositions</ref>(pos,<sp/>loop_vel,<sp/>dt);</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>for<sp/>simulation<sp/>steps</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>trajectory<sp/>has<sp/>at<sp/>least<sp/>one<sp/>point</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="255"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"></highlight></codeline>
+<codeline lineno="257"><highlight class="normal">Eigen::Vector3f<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1a4762e662d557328a98abad8155501626" kindref="member">SimpleTrajectoryGenerator::computeNewPositions</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>pos,</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>vel,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt)<sp/>{</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/>Eigen::Vector3f<sp/>new_pos<sp/>=<sp/>Eigen::Vector3f::Zero();</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/>new_pos[0]<sp/>=<sp/>pos[0]<sp/>+<sp/>(vel[0]<sp/>*<sp/><ref refid="cpp/numeric/math/cos" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">cos</ref>(pos[2])<sp/>+<sp/>vel[1]<sp/>*<sp/><ref refid="cpp/numeric/math/cos" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">cos</ref>(M_PI_2<sp/>+<sp/>pos[2]))<sp/>*<sp/>dt;</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/>new_pos[1]<sp/>=<sp/>pos[1]<sp/>+<sp/>(vel[0]<sp/>*<sp/><ref refid="cpp/numeric/math/sin" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">sin</ref>(pos[2])<sp/>+<sp/>vel[1]<sp/>*<sp/><ref refid="cpp/numeric/math/sin" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">sin</ref>(M_PI_2<sp/>+<sp/>pos[2]))<sp/>*<sp/>dt;</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/>new_pos[2]<sp/>=<sp/>pos[2]<sp/>+<sp/>vel[2]<sp/>*<sp/>dt;</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>new_pos;</highlight></codeline>
+<codeline lineno="264"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal">Eigen::Vector3f<sp/><ref refid="classbase__local__planner_1_1SimpleTrajectoryGenerator_1abeea221947f5062cdb481c9888c33075" kindref="member">SimpleTrajectoryGenerator::computeNewVelocities</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>sample_target_vel,</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Eigen::Vector3f&amp;<sp/>vel,<sp/>Eigen::Vector3f<sp/>acclimits,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt)<sp/>{</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/>Eigen::Vector3f<sp/>new_vel<sp/>=<sp/>Eigen::Vector3f::Zero();</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>3;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(vel[i]<sp/>&lt;<sp/>sample_target_vel[i])<sp/>{</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>new_vel[i]<sp/>=<sp/><ref refid="cpp/algorithm/min" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::min</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">(sample_target_vel[i]),<sp/>vel[i]<sp/>+<sp/>acclimits[i]<sp/>*<sp/>dt);</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>new_vel[i]<sp/>=<sp/><ref refid="cpp/algorithm/max" kindref="compound" external="/home/docker/.local/lib/python3.8/site-packages/catkin_tools_document/external/cppreference-doxygen-web.tag.xml">std::max</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">(sample_target_vel[i]),<sp/>vel[i]<sp/>-<sp/>acclimits[i]<sp/>*<sp/>dt);</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>new_vel;</highlight></codeline>
+<codeline lineno="280"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"></highlight></codeline>
+<codeline lineno="282"><highlight class="normal">}<sp/></highlight><highlight class="comment">/*<sp/>namespace<sp/>base_local_planner<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/simple_trajectory_generator.cpp"/>
+  </compounddef>
+</doxygen>

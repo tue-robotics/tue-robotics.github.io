@@ -1,0 +1,266 @@
+robot_skills.robot
+==================
+
+.. py:module:: robot_skills.robot
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_skills.robot.DEFAULT_CONNECTION_TIMEOUT
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.robot.Robot
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_skills.robot._collect_needs_desires
+   robot_skills.robot._collect_available
+
+
+Module Contents
+---------------
+
+.. py:data:: DEFAULT_CONNECTION_TIMEOUT
+   :value: 10.0
+
+
+.. py:class:: Robot(robot_name = '', tf_buffer = None, base_link_frame = None, connection_timeout = DEFAULT_CONNECTION_TIMEOUT)
+
+   Interface to all parts of the robot.
+
+   Constructor
+
+   :param robot_name: Name of the robot
+   :param tf_buffer: tf2_ros.Buffer object
+   :param base_link_frame: Frame id of the base_link (default: {robot_name}/base_link
+   :param connection_timeout: timeout to wait for ROS connections
+
+
+   .. py:attribute:: robot_name
+      :value: ''
+
+
+
+   .. py:attribute:: base_link_frame
+      :value: None
+
+
+
+   .. py:attribute:: _connection_timeout
+
+
+   .. py:attribute:: configured
+      :value: False
+
+
+
+   .. py:attribute:: parts
+
+
+   .. py:attribute:: _arms
+      :type:  collections.OrderedDict[robot_skills.arm.arms.Arm]
+
+
+   .. py:attribute:: _ignored_parts
+      :value: []
+
+
+
+   .. py:attribute:: pub_target
+
+
+   .. py:attribute:: image_pub
+
+
+   .. py:attribute:: message_pub
+
+
+   .. py:attribute:: _hardware_status_sub
+
+
+   .. py:attribute:: laser_topic
+      :value: '//base_laser/scan'
+
+
+
+   .. py:method:: get_joint_states()
+
+
+   .. py:method:: add_body_part(partname, bodypart)
+
+      Add a bodypart to the robot. This is added to the parts dict and set as an attribute
+
+      :param partname: name of the bodypart
+      :param bodypart: bodypart object
+
+
+
+   .. py:method:: add_arm_part(arm_name, arm_part)
+
+      Add an arm part to the robot. This is added to the parts dictionary as well.
+
+      :param arm_name: Name of the arm part.
+      :param arm_part: Arm part object
+
+
+
+   .. py:property:: arms
+
+
+   .. py:method:: configure()
+
+      This should be run at the end of the constructor of a child class.
+
+
+
+   .. py:method:: reset()
+
+
+   .. py:method:: reset_all_arms()
+
+      Reset all arms of the robot, including their parts.
+
+
+
+   .. py:method:: publish_target(x, y)
+
+
+   .. py:method:: get_arm(required_gripper_types=None, desired_gripper_types=None, required_goals=None, desired_goals=None, required_trajectories=None, desired_trajectories=None, required_arm_name=None, force_sensor_required=False, required_objects=None, desired_objects=None)
+
+      Find an arm that has the needed and hopefully the desired properties.
+      Does not give an arm if all needed properties cannot be satisfied. An
+      arm returned by the call will not be able to do anything you didn't ask
+      for, except for objects held by it.
+
+      :param required_gripper_types: Collection of gripper types that must all be
+              available. None means grippers are not needed.
+      :param desired_gripper_types: Collection of gripper types from GripperTypes,
+              where one or more may be selected. None means no grippers are desired.
+
+      :param required_goals: Collection of joint goals that must all be available.
+              None means no joint goals are needed.
+      :param desired_goals: Collection of joint goals where one or more may be
+              selected. None means no joint goals are desired.
+
+      :param required_trajectories: Collection of joint trajectories that must all
+              be available. None means no joint trajectories are needed.
+      :param desired_trajectories: Collection of joint trajectories where one or
+              more may be selected. None means no joint trajectories are desired.
+
+      :param required_arm_name: Name of the arm that is needed. If set, no
+              other arm will be considered. None means any arm will do.
+
+      :param force_sensor_required: Bool specifying whether a force_sensor is needed or not.
+
+      :param required_objects: Collection of objects that the arm must have. Special
+              pseudo-objects PseudoObjects.ANY and PseudoObjects.EMPTY may be used
+              too in the collection, although they do not make much sense when used
+              together with other objects. None means there are no required objects.
+      :param desired_objects: Collection of objects that the arm may have. None
+              means there are no desired objects.
+
+      :return: An Arm of the robot with the requested properties, or None.
+              Note that the arm will never do more than you requested.
+
+
+
+   .. py:method:: _check_required_obj(arm, obj_collection)
+      :staticmethod:
+
+
+      Check the object requirement.
+
+      :param arm: Arm to check.
+      :param obj_collection: Objects to find. None means the empty requirement
+              (arm may have anything, including nothng).
+      :return: Whether the requirement holds.
+
+
+
+   .. py:method:: close()
+
+
+   .. py:property:: operational
+
+      if all parts are operational
+
+      :type: return
+
+
+   .. py:method:: handle_hardware_status(diagnostic_array)
+
+      hardware_status callback to determine if the bodypart is operational
+
+      :param diagnostic_array: diagnostic_msgs.msg.DiagnosticArray
+      :return: no return
+
+
+
+   .. py:method:: move_to_inspect_pose(inspection_position)
+
+      This poses the robot for an inspect.
+
+      :param inspection_position: kdl.Frame with the pose of the entity to be inspected.
+      :return: boolean, false if something went wrong.
+
+
+
+   .. py:method:: move_to_pregrasp_pose(arm, grasp_position)
+
+      This poses the robot for an inspect.
+
+      :param arm: PublicArm to use for grasping the target
+      :param grasp_position: kdl.Frame with the pose of the entity to be grasp.
+      :return: boolean, false if something went wrong.
+
+
+
+   .. py:method:: move_to_hmi_pose()
+
+      This poses the robot for conversations.
+
+      :return: None
+
+
+
+   .. py:method:: go_to_driving_pose()
+
+      This poses the robot for driving.
+
+      :return: None
+
+
+
+   .. py:method:: __enter__()
+
+
+   .. py:method:: __exit__(exception_type, exception_val, trace)
+
+
+.. py:function:: _collect_needs_desires(needs, desires, test_func)
+
+   :param needs: Collection of needed values. None means nothing is needed.
+   :param desires: Collection of desired values, None means nothing is desired.
+   :param test_func: Function that takes a value and returns whether the value is available.
+   :return: Needed and subset of the desired values, or None if the needs can't be met.
+
+
+.. py:function:: _collect_available(values, test_func)
+
+   :param values: Collection of values that must be tested.
+   :param test_func: Function that takes a value and returns whether the value is available.
+   :return: Subset of values that is found to be available.
+
+

@@ -1,0 +1,239 @@
+robot_smach_states.navigation.door_opening
+==========================================
+
+.. py:module:: robot_smach_states.navigation.door_opening
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.navigation.door_opening.ForceDriveToTouchDoor
+   robot_smach_states.navigation.door_opening.PushPerpendicularToDoor
+   robot_smach_states.navigation.door_opening.PushSidewaysAndBack
+   robot_smach_states.navigation.door_opening.CheckDoorPassable
+   robot_smach_states.navigation.door_opening.WaypointOfDoorDesignator
+   robot_smach_states.navigation.door_opening.OpenDoorByPushing
+
+
+Module Contents
+---------------
+
+.. py:class:: ForceDriveToTouchDoor(robot, approach_speed=0.1)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Once a door is no longer locked, the lever is not latched into locking plate, it can be pushed open.
+   This can be done either with the arms or even with the base, if you push gently,
+       as a person would use his/her butt to bump open a door when you're holding something with both hands :-)
+
+   Assumptions: We are already in front of the door, e.g. on the door mat so to speak.
+
+   To do this, the following steps are needed:
+    - Move slowly to put the edge of the base against the door
+    - Now move forward, perpendicular to the wall the door is in.
+
+   Test in amigo-console with
+   do = state_machine.ForceDriveToTouchDoor(amigo, None); do.execute(); do.execute()
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: approach_speed
+      :value: 0.1
+
+
+
+   .. py:attribute:: debug_vizualizer
+
+
+   .. py:method:: execute(userdata=None)
+
+
+   .. py:method:: get_laserscan()
+
+      Subscribe to laserscans and unsubscribe when we get one.
+      This is realized through a threading.Event which is set when a message is received
+      :return: the most recent laser scan
+      :rtype LaserScan
+
+
+
+   .. py:method:: get_footprint()
+
+      Subscribe to footprint and unsubscribe when we get one.
+      This is realized through a threading.Event which is set when a message is received
+      :return:
+
+
+
+   .. py:method:: select_frontside_of_footprint(footprint_points)
+
+
+   .. py:method:: select_scanpoints_in_front_of_footprint(scan_points, footprint, tolerance=0.1)
+
+
+   .. py:method:: scan_to_base_link_points(scan)
+
+      Convert a sensor_msgs.msg.LaserScan message to a list of point in base_link frame
+      Returns a numpy.ndarray of shape (N, 2)
+
+      :param scan:
+      :type scan: LaserScan
+      :return:
+
+
+
+   .. py:method:: add_delta_to_points(points, delta)
+
+      Adds a distance to a list of points. Points should be an (N, 2)-shaped numpy.ndarray
+      and delta must be a (2)-shaped np.ndarray.
+
+      :param points:
+      :param delta:
+      :return:
+
+
+
+   .. py:method:: closest_other_point(point, points)
+
+
+   .. py:method:: distance_between_footprint_and_scan(footprint_points, scan_points)
+
+      Find the distance between the two closest points in the two sets of points and return those points as well.
+
+      :param footprint_points: Points (in base_link) that define the base's footprint
+      :param scan_points: Points (in base_link) that are scanned by the front laser
+      :return: tuple of (footprint_point, distance, scan_point)
+
+
+
+   .. py:method:: find_drive_distance_to_first_obstacle(footprint_points, scan_points, stepsize=0.025)
+
+      Samples the distance with which to shift the footprint_points forwards (through a delta in X)
+      and find the deltaX that makes for the smallest distance between these sets of points.
+
+      This value is returned with the footprint_point at which this happens.
+
+      :param footprint_points:
+      :param scan_points:
+      :return: A tuple giving the footprint point closest to the scan, distance to the scan and scan point closest to the footprint
+      :rtype tuple of (np.array([x, y]), distance, np.array([x, y]))
+
+
+
+   .. py:method:: publish_debug_info(footprint_point, distance, scan_point)
+
+
+.. py:class:: PushPerpendicularToDoor
+
+   Bases: :py:obj:`smach.State`
+
+
+   Get the angle of the door via the laser or world model and
+   force_drive to push with a force perpendicular to the door plane
+
+
+.. py:class:: PushSidewaysAndBack(robot, y_dist, speed=0.1)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Drive sideways for some distance (in base_link) and move back again
+
+   Test in amigo-console with state_machine.PushSidewaysAndBack(amigo, 0.2, 0.05).execute()
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: y_dist
+
+
+   .. py:attribute:: speed
+      :value: 0.1
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: CheckDoorPassable(robot, destination_designator, door_entity_designator=None)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Check whether a given door can be passed. The precondition is that the robot is in front of said door.
+
+   Test in amigo-console with
+   state_machine.CheckDoorPassable(amigo, ds.EdEntityDesignator(amigo, uuid='door_navigation')).execute()
+
+   :param robot: Robot on which to perform this state
+   :param destination_designator: The destination to reach through this door.
+   :param door_entity_designator: The door which to pass
+   :return:
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: door_entity_designator
+      :value: None
+
+
+
+   .. py:attribute:: destination_designator
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: WaypointOfDoorDesignator(robot, door_entity_designator, direction, name=None)
+
+   Bases: :py:obj:`robot_smach_states.util.designators.Designator`
+
+
+   Resolves to a waypoint associated with a door-entity
+
+   :param robot: The robot with which to query ED
+   :param door_entity_designator: Designator resolving to an entity of type door that has a push_start_waypoint and push_destination_waypoint data field
+   :param direction: 'start' or 'destination' to select one of the two data fields
+   :param name: Name for this designator to aid in debugging.
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: door_entity_designator
+
+
+   .. py:attribute:: data_field
+
+
+   .. py:method:: _resolve()
+
+
+.. py:class:: OpenDoorByPushing(robot, door_start_wp_designator, door_dest_wp_designator, approach_speed=0.1, push_speed=0.05, attempts=10)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   Test in amigo-console with
+   door = ds.EdEntityDesignator(amigo, uuid='door1'); do = state_machine.OpenDoorByPushing(amigo, door); print(do.execute());
+
+   Push against a door until its open
+
+   :param robot: Robot on which to execute this state machine
+   :param door_entity_designator: The door entity. Defaults to None, which implies the door its in front of
+       This entity must have 2 fields in its data: push_start_waypoint and push_destination_waypoint,
+       which must both contain an ID of a waypoint.
+       push_start_waypoint is from where the robot will start pushing
+       push_destination_waypoint simply needs to be reachable for the door the be considered 'open'
+   :param approach_speed: Speed with which to approach the door
+   :param push_speed: Speed with which to push against the door
+   :return:
+
+

@@ -1,0 +1,146 @@
+robot_smach_states.manipulation.grab
+====================================
+
+.. py:module:: robot_smach_states.manipulation.grab
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_smach_states.manipulation.grab.PrepareEdGrasp
+   robot_smach_states.manipulation.grab.PickUp
+   robot_smach_states.manipulation.grab.ResetOnFailure
+   robot_smach_states.manipulation.grab.Grab
+
+
+Module Contents
+---------------
+
+.. py:class:: PrepareEdGrasp(robot, arm, grab_entity)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Set the arm in the appropriate position before actually grabbing
+
+   :param robot: robot to execute state with
+   :param arm: Designator that resolves to the arm to grasp with
+   :param grab_entity: Designator that resolves to the entity to grab. e.g EntityByIdDesignator
+
+
+   .. py:attribute:: REQUIRED_ARM_PROPERTIES
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: arm_designator
+
+
+   .. py:attribute:: grab_entity_designator
+
+
+   .. py:method:: execute(userdata=None)
+
+
+.. py:class:: PickUp(robot, arm, grab_entity, check_occupancy = False)
+
+   Bases: :py:obj:`smach.State`
+
+
+   
+   Pick up an item given an arm and an entity to be picked up
+
+   :param robot: robot to execute this state with
+   :param arm: Designator that resolves to the arm to grasp with
+   :param grab_entity: Designator that resolves to the entity to grab. e.g EntityByIdDesignator
+   :param check_occupancy: Indicates whether to check if gripper is occupied
+
+
+   .. py:attribute:: REQUIRED_ARM_PROPERTIES
+
+
+   .. py:attribute:: robot
+
+
+   .. py:attribute:: arm_designator
+
+
+   .. py:attribute:: grab_entity_designator
+
+
+   .. py:attribute:: _gpd
+
+
+   .. py:attribute:: _check_occupancy
+      :value: False
+
+
+
+   .. py:method:: execute(userdata=None)
+
+
+   .. py:method:: associate(original_entity)
+
+      Tries to associate the original entity with one of the entities in the world model. This is useful if
+      after an update, the original entity is no longer present in the world model. If no good map can be found,
+      the original entity will be returned as the associated entity.
+
+      :param original_entity:
+      :return: associated entity
+
+
+
+   .. py:method:: distance(e1, e2)
+      :staticmethod:
+
+
+      Computes the distance between two entities
+
+
+
+.. py:class:: ResetOnFailure(robot, arm)
+
+   Bases: :py:obj:`smach.State`
+
+
+   Class to reset the robot after a grab has failed
+
+   Constructor
+
+   :param robot: robot object
+   :param arm: arm designator
+
+
+   .. py:attribute:: REQUIRED_ARM_PROPERTIES
+
+
+   .. py:attribute:: _robot
+
+
+   .. py:attribute:: arm_designator
+
+
+   .. py:method:: execute(userdata=None)
+
+      Execute hook
+
+
+
+.. py:class:: Grab(robot, item, arm, room = None)
+
+   Bases: :py:obj:`smach.StateMachine`
+
+
+   
+   Let the given robot move to an entity and grab that entity using some arm
+
+   :param robot: Robot to use
+   :param item: Designator that resolves to the item to grab. E.g. EntityByIdDesignator
+   :param arm: Designator that resolves to the arm to use for grabbing. E.g. UnoccupiedArmDesignator
+   :param room: Designator that resolves to the room where the robot has to stay in. E.g. EntityByIdDesignator
+
+

@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="dragonfly_2dragonfly_2accessibility_2____init_____8py" kind="file" language="Python">
+    <compoundname>dragonfly/dragonfly/accessibility/__init__.py</compoundname>
+    <innernamespace refid="namespacedragonfly_1_1accessibility">dragonfly::accessibility</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacedragonfly_1_1accessibility" refkind="compound"><highlight class="stringliteral">&quot;&quot;&quot;</highlight></codeline>
+<codeline lineno="2"><highlight class="stringliteral">This<sp/>module<sp/>initializes<sp/>the<sp/>accessibility<sp/>controller<sp/>for<sp/>the<sp/>current</highlight></codeline>
+<codeline lineno="3"><highlight class="stringliteral">platform.</highlight></codeline>
+<codeline lineno="4"><highlight class="stringliteral">&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>contextlib</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>os</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>sys</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>.<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>controller</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>.utils<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>(CursorPosition,<sp/>TextQuery)</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">#<sp/>Import<sp/>and<sp/>set<sp/>the<sp/>controller<sp/>class<sp/>based<sp/>on<sp/>the<sp/>current<sp/>platform.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>os.environ.get(</highlight><highlight class="stringliteral">&quot;DISPLAY&quot;</highlight><highlight class="normal">):</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Use<sp/>the<sp/>AT-SPI<sp/>controller<sp/>on<sp/>X11.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>.<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>atspi</highlight></codeline>
+<codeline lineno="18" refid="namespacedragonfly_1_1accessibility_1a94b915fb6783dd757bb53cd2e6bede09" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>os_controller_class<sp/>=<sp/><ref refid="classdragonfly_1_1accessibility_1_1atspi_1_1Controller" kindref="compound">atspi.Controller</ref></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keywordflow">elif</highlight><highlight class="normal"><sp/>sys.platform.startswith(</highlight><highlight class="stringliteral">&quot;win&quot;</highlight><highlight class="normal">):</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>Use<sp/>the<sp/>IAccessible2<sp/>controller<sp/>on<sp/>Windows.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>.<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>ia2</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>os_controller_class<sp/>=<sp/><ref refid="classdragonfly_1_1accessibility_1_1ia2_1_1Controller" kindref="compound">ia2.Controller</ref></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>os_controller_class<sp/>=<sp/></highlight><highlight class="keywordtype">None</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28" refid="namespacedragonfly_1_1accessibility_1a4198b1b3463a2c3e6c3e22e222b7466a" refkind="member"><highlight class="normal">controller_instance<sp/>=<sp/></highlight><highlight class="keywordtype">None</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30" refid="namespacedragonfly_1_1accessibility_1ad2238614bc87497c18a758c6f17dff57" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacedragonfly_1_1accessibility_1ad2238614bc87497c18a758c6f17dff57" kindref="member">get_accessibility_controller</ref>():</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;Get<sp/>the<sp/>OS-independent<sp/>accessibility<sp/>controller<sp/>which<sp/>is<sp/>the<sp/>gateway<sp/>to<sp/>all</highlight></codeline>
+<codeline lineno="32"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>accessibility<sp/>functionality.<sp/>Returns<sp/>None<sp/>if<sp/>OS<sp/>is<sp/>not<sp/>supported.&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">global</highlight><highlight class="normal"><sp/>controller_instance</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>os_controller_class<sp/></highlight><highlight class="keywordflow">and</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>controller_instance<sp/></highlight><highlight class="keywordflow">or</highlight><highlight class="normal"><sp/>controller_instance.stopped):</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>os_controller<sp/>=<sp/><ref refid="namespacedragonfly_1_1accessibility_1a94b915fb6783dd757bb53cd2e6bede09" kindref="member">os_controller_class</ref>()</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>controller_instance<sp/>=<sp/><ref refid="classdragonfly_1_1accessibility_1_1controller_1_1AccessibilityController" kindref="compound">controller.AccessibilityController</ref>(os_controller)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>controller_instance</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal">@contextlib.contextmanager</highlight></codeline>
+<codeline lineno="41" refid="namespacedragonfly_1_1accessibility_1aa56f654732dea1682b7681d8101b320b" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacedragonfly_1_1accessibility_1aa56f654732dea1682b7681d8101b320b" kindref="member">get_stopping_accessibility_controller</ref>():</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;&quot;&quot;Same<sp/>as<sp/>:func:`get_accessibility_controller`,<sp/>but<sp/>automatically<sp/>stops<sp/>when</highlight></codeline>
+<codeline lineno="43"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>used<sp/>in<sp/>a<sp/>`with`<sp/>context.&quot;&quot;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">yield</highlight><highlight class="normal"><sp/><ref refid="namespacedragonfly_1_1accessibility_1ad2238614bc87497c18a758c6f17dff57" kindref="member">get_accessibility_controller</ref>()</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>controller_instance:</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>controller_instance.stop()</highlight></codeline>
+    </programlisting>
+    <location file="src/dragonfly_speech_recognition/dragonfly/dragonfly/accessibility/__init__.py"/>
+  </compounddef>
+</doxygen>

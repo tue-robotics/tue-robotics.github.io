@@ -1,0 +1,178 @@
+action_server.actions.action
+============================
+
+.. py:module:: action_server.actions.action
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   action_server.actions.action.ConfigurationData
+   action_server.actions.action.ConfigurationResult
+   action_server.actions.action.ActionResult
+   action_server.actions.action.Action
+
+
+Module Contents
+---------------
+
+.. py:class:: ConfigurationData(semantics, context=None)
+
+   Bases: :py:obj:`object`
+
+
+   The ConfigurationData class defines the input data structure for configuration of an action.
+
+   :param semantics: Dictionary of the following structure: {'action': <action-name>, 'param1': <param-value>}.
+   :param context: Dictionary of parameter names to context provided by previous actions.
+
+
+   .. py:attribute:: semantics
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: ConfigurationResult(succeeded=False, context=None)
+
+   Bases: :py:obj:`object`
+
+
+   The ConfigurationResult class defines the data structure that is returned by the configure() methods of actions
+
+
+   .. py:attribute:: succeeded
+      :value: False
+
+
+
+   .. py:attribute:: context
+      :value: None
+
+
+
+   .. py:attribute:: required_context
+      :value: None
+
+
+
+   .. py:attribute:: missing_field
+      :value: ''
+
+
+
+   .. py:attribute:: missing_skill
+      :value: None
+
+
+
+   .. py:attribute:: message
+      :value: ''
+
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: ActionResult(succeeded=False, message='')
+
+   Bases: :py:obj:`object`
+
+
+   The ActionResult class defines the data structure that is returned by the run() methods of actions.
+
+
+   .. py:attribute:: succeeded
+      :value: False
+
+
+
+   .. py:attribute:: message
+      :value: ''
+
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: Action
+
+   Bases: :py:obj:`object`
+
+
+   The Action class defines the interface of actions that can be configured and started by the task_manager.
+
+
+   .. py:attribute:: _config_result
+
+
+   .. py:attribute:: _execute_result
+
+
+   .. py:attribute:: _required_field_prompts
+
+
+   .. py:attribute:: _required_passed_knowledge
+
+
+   .. py:attribute:: _required_skills
+      :value: []
+
+
+
+   .. py:attribute:: _knowledge
+
+
+   .. py:method:: _check_parameters(config)
+
+
+   .. py:method:: _check_skills(robot)
+
+
+   .. py:method:: configure(robot, config)
+
+      Configure the action with a robot and configuration data
+
+      :param robot: The robot to use for this action
+      :type robot: Robot
+      :param config: The configuration data. Contains semantics from input and implied context from previous tasks.
+      :type config: ConfigurationData
+      :return: The result of configuration
+      :rtype: ConfigurationResult
+
+
+
+   .. py:method:: _configure(robot, config)
+      :abstractmethod:
+
+
+
+   .. py:method:: start()
+
+      Runs the execution of the action. Blocks until the action is finished or canceled.
+
+      :return: ActionResult
+
+
+
+   .. py:method:: _start()
+      :abstractmethod:
+
+
+
+   .. py:method:: cancel()
+
+      Cancels the execution of the action.
+
+
+
+   .. py:method:: _cancel()
+      :abstractmethod:
+
+
+
+   .. py:method:: get_name()
+
+

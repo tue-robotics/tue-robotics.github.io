@@ -1,0 +1,824 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ed_object_models.conversion_sdf &mdash; ed_object_models 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            ed_object_models
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ed_object_models</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ed_object_models.conversion_sdf</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ed_object_models.conversion_sdf</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">os</span><span class="w"> </span><span class="kn">import</span> <span class="n">getenv</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">rename</span><span class="p">,</span> <span class="n">pathsep</span><span class="p">,</span> <span class="n">makedirs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">xml.dom.minidom</span><span class="w"> </span><span class="kn">import</span> <span class="n">parseString</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">subprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+
+
+<span class="n">ROUND_LEVEL</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># Level of rounding</span>
+<span class="n">LAST_MODEL_FILE</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="bcolors"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.bcolors">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">bcolors</span><span class="p">:</span>
+    <span class="n">HEADER</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[95m&quot;</span>
+    <span class="n">OKBLUE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[94m&quot;</span>
+    <span class="n">OKGREEN</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[92m&quot;</span>
+    <span class="n">WARNING</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[93m&quot;</span>
+    <span class="n">FAIL</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91m&quot;</span>
+    <span class="n">ENDC</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[0m&quot;</span>
+    <span class="n">BOLD</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[1m&quot;</span>
+    <span class="n">UNDERLINE</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[4m&quot;</span></div>
+
+
+<div class="viewcode-block" id="last_model_file"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.last_model_file">[docs]</a><span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">last_model_file</span><span class="p">(</span><span class="n">model_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">LAST_MODEL_FILE</span>
+    <span class="n">old_last_model_file</span> <span class="o">=</span> <span class="n">LAST_MODEL_FILE</span>
+    <span class="n">LAST_MODEL_FILE</span> <span class="o">=</span> <span class="n">model_file</span>
+    <span class="k">yield</span>
+    <span class="n">LAST_MODEL_FILE</span> <span class="o">=</span> <span class="n">old_last_model_file</span></div>
+
+
+<div class="viewcode-block" id="get_model_path"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.get_model_path">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_model_path</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ext</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;yaml&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks for model file in ED_MODEL_PATH</span>
+
+<span class="sd">    :param model_name: name of the model</span>
+<span class="sd">    :param ext: extension of the file: yaml/sdf</span>
+<span class="sd">    :return: absolute model path or empty string if not found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ed_model_paths</span> <span class="o">=</span> <span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ED_MODEL_PATH&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pathsep</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;sdf&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ed_model_path</span> <span class="ow">in</span> <span class="n">ed_model_paths</span><span class="p">:</span>
+            <span class="n">model_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ed_model_path</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;model*.</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">files</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ed_model_path</span> <span class="ow">in</span> <span class="n">ed_model_paths</span><span class="p">:</span>
+            <span class="n">model_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ed_model_path</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;model.</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">model_path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">model_path</span>
+
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="resolve_file"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.resolve_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">resolve_file</span><span class="p">(</span><span class="n">file_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resolve filepaths with possible &#39;$(file REL_FILE_PATH)&#39;. Relative paths are resolved to last opened yaml file</span>
+
+<span class="sd">    :param file_str: string to resolve</span>
+<span class="sd">    :return: Resolved file path</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_str</span> <span class="o">=</span> <span class="n">file_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">file_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;$(file&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">file_str</span>
+
+    <span class="n">rel_file</span> <span class="o">=</span> <span class="n">file_str</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;$(file&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">LAST_MODEL_FILE</span>
+    <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">LAST_MODEL_FILE</span><span class="p">),</span> <span class="n">rel_file</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="last_opened_model_name"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.last_opened_model_name">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">last_opened_model_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the model name based on the last opened file. This is useful for nested model definitions inside a single file.</span>
+
+<span class="sd">    :return: Resolved model name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">LAST_MODEL_FILE</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">LAST_MODEL_FILE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">ed_model_paths</span> <span class="o">=</span> <span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ED_MODEL_PATH&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pathsep</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ed_model_path</span> <span class="ow">in</span> <span class="n">ed_model_paths</span><span class="p">:</span>
+        <span class="n">shared_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">commonprefix</span><span class="p">([</span><span class="n">ed_model_path</span><span class="p">,</span> <span class="n">LAST_MODEL_FILE</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">shared_path</span> <span class="o">==</span> <span class="n">ed_model_path</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">LAST_MODEL_FILE</span><span class="p">,</span> <span class="n">shared_path</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="unique_name"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.unique_name">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">unique_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provide a unique name based on name. If name already in names, the name is changed.</span>
+<span class="sd">    If the name ends with digits, this number is increased. If the name doesn&#39;t end with a digit, the name is append</span>
+<span class="sd">    with &#39;1&#39;. This continues until a unique name is found.</span>
+
+<span class="sd">    :param name: name you want to be unique</span>
+<span class="sd">    :param names: list of names which are already used</span>
+<span class="sd">    :return: unique name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+        <span class="n">digits</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+$&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">and</span> <span class="n">digits</span><span class="p">:</span>
+            <span class="n">digits</span> <span class="o">=</span> <span class="n">digits</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
+            <span class="n">n_digits</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">digits</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="n">n_digits</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">digits</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="read_pose"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.read_pose">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_pose</span><span class="p">(</span><span class="n">yaml_data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    converts pose in yaml dict to string of 6 coordinates.</span>
+
+<span class="sd">    :param yaml_data: mapping with possible pose as key on first level</span>
+<span class="sd">    :return: string with 6 coordinates</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pose</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;pose&quot;</span> <span class="ow">in</span> <span class="n">yaml_data</span><span class="p">:</span>
+        <span class="c1"># Check if coordinates are in pose, if so overwrite default 0</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;rx&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;ry&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;rz&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">yaml_data</span><span class="p">[</span><span class="s2">&quot;pose&quot;</span><span class="p">]:</span>
+                <span class="n">pose</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">yaml_data</span><span class="p">[</span><span class="s2">&quot;pose&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">pose</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="create_heightmap"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.create_heightmap">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_heightmap</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">mesh_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">image_path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.stl&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">check_call</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;rosrun ed ed_heightmap_to_mesh </span><span class="si">{</span><span class="n">image_path</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">mesh_path</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">resolution</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">height</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">executable</span><span class="o">=</span><span class="s2">&quot;/bin/bash&quot;</span><span class="p">,</span>
+            <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">e</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span>
+
+    <span class="k">return</span> <span class="n">mesh_path</span></div>
+
+
+<div class="viewcode-block" id="read_geometry"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.read_geometry">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_geometry</span><span class="p">(</span><span class="n">shape_item</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Mapping</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a shape item to a SDF geometry. With a possible pose offset. Which should be added to</span>
+<span class="sd">    visual/collision/virtual_volume</span>
+
+<span class="sd">    :param shape_item: mapping with shape description</span>
+<span class="sd">    :param model_name: name of current model being converted</span>
+<span class="sd">    :return: tuple of geometry, link_pose and geometry_pose OR tuple of 3x None in case of error</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">geometry</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">link_pose</span> <span class="o">=</span> <span class="n">read_pose</span><span class="p">(</span><span class="n">shape_item</span><span class="p">)</span>
+    <span class="n">geometry_pose</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="s2">&quot;cylinder&quot;</span> <span class="ow">in</span> <span class="n">shape_item</span><span class="p">:</span>
+        <span class="n">yml_cylinder</span> <span class="o">=</span> <span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;cylinder&quot;</span><span class="p">]</span>
+        <span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;cylinder&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;radius&quot;</span><span class="p">:</span> <span class="n">yml_cylinder</span><span class="p">[</span><span class="s2">&quot;radius&quot;</span><span class="p">],</span> <span class="s2">&quot;length&quot;</span><span class="p">:</span> <span class="n">yml_cylinder</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">]}</span>
+        <span class="k">if</span> <span class="s2">&quot;pose&quot;</span> <span class="ow">in</span> <span class="n">yml_cylinder</span><span class="p">:</span>
+            <span class="n">link_pose</span> <span class="o">=</span> <span class="n">read_pose</span><span class="p">(</span><span class="n">yml_cylinder</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="s2">&quot;box&quot;</span> <span class="ow">in</span> <span class="n">shape_item</span><span class="p">:</span>
+        <span class="n">yml_box</span> <span class="o">=</span> <span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;box&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;size&quot;</span> <span class="ow">in</span> <span class="n">yml_box</span><span class="p">:</span>
+            <span class="n">yml_box_size</span> <span class="o">=</span> <span class="n">yml_box</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span>
+            <span class="n">box_size_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">yml_box_size</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">yml_box_size</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">yml_box_size</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]]</span>
+            <span class="n">box_size</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">box_size_list</span><span class="p">))</span>
+            <span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;box&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">box_size</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="s2">&quot;min&quot;</span> <span class="ow">in</span> <span class="n">yml_box</span><span class="p">:</span>
+            <span class="n">yml_box_min</span> <span class="o">=</span> <span class="n">yml_box</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span>
+            <span class="n">yml_box_max</span> <span class="o">=</span> <span class="n">yml_box</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span>
+            <span class="n">size_x</span> <span class="o">=</span> <span class="n">yml_box_max</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">yml_box_min</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
+            <span class="n">size_y</span> <span class="o">=</span> <span class="n">yml_box_max</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">yml_box_min</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+            <span class="n">size_z</span> <span class="o">=</span> <span class="n">yml_box_max</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">yml_box_min</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]</span>
+            <span class="n">box_size_list</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ROUND_LEVEL</span><span class="p">),</span> <span class="p">[</span><span class="n">size_x</span><span class="p">,</span> <span class="n">size_y</span><span class="p">,</span> <span class="n">size_z</span><span class="p">])</span>
+            <span class="n">box_size</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">box_size_list</span><span class="p">))</span>
+
+            <span class="n">pos_x</span> <span class="o">=</span> <span class="n">yml_box_min</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">size_x</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">pos_y</span> <span class="o">=</span> <span class="n">yml_box_min</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">size_y</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">pos_z</span> <span class="o">=</span> <span class="n">yml_box_min</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">size_z</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">box_pose_list</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ROUND_LEVEL</span><span class="p">),</span> <span class="p">[</span><span class="n">pos_x</span><span class="p">,</span> <span class="n">pos_y</span><span class="p">,</span> <span class="n">pos_z</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">geometry_pose</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">box_pose_list</span><span class="p">))</span>
+
+            <span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;box&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">box_size</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="s2">&quot;pose&quot;</span> <span class="ow">in</span> <span class="n">yml_box</span><span class="p">:</span>
+            <span class="n">link_pose</span> <span class="o">=</span> <span class="n">read_pose</span><span class="p">(</span><span class="n">yml_box</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="s2">&quot;polygon&quot;</span> <span class="ow">in</span> <span class="n">shape_item</span><span class="p">:</span>
+        <span class="n">yml_polygon</span> <span class="o">=</span> <span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;polygon&quot;</span><span class="p">]</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">yml_polygon</span><span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">]:</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">point</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+        <span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;polyline&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;point&quot;</span><span class="p">:</span> <span class="n">points</span><span class="p">,</span> <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">yml_polygon</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">]}</span>
+
+    <span class="k">elif</span> <span class="s2">&quot;heightmap&quot;</span> <span class="ow">in</span> <span class="n">shape_item</span><span class="p">:</span>
+        <span class="n">heightmap</span> <span class="o">=</span> <span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;heightmap&quot;</span><span class="p">]</span>
+        <span class="n">model_folder</span> <span class="o">=</span> <span class="n">resolve_file</span><span class="p">(</span><span class="s2">&quot;$(file .)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">model_folder</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_folder should be an absolute path: &#39;</span><span class="si">{</span><span class="n">model_folder</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">image_path</span> <span class="o">=</span> <span class="n">resolve_file</span><span class="p">(</span><span class="n">heightmap</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">image_path</span><span class="p">):</span>
+            <span class="n">image_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_folder</span><span class="p">,</span> <span class="n">image_path</span><span class="p">)</span>
+
+        <span class="n">mesh_path</span> <span class="o">=</span> <span class="n">create_heightmap</span><span class="p">(</span>
+            <span class="n">model_name</span><span class="p">,</span>
+            <span class="n">image_path</span><span class="p">,</span>
+            <span class="n">heightmap</span><span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">],</span>
+            <span class="n">heightmap</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">],</span>
+            <span class="n">heightmap</span><span class="p">[</span><span class="s2">&quot;pose&quot;</span><span class="p">][</span><span class="s2">&quot;x&quot;</span><span class="p">],</span>
+            <span class="n">heightmap</span><span class="p">[</span><span class="s2">&quot;pose&quot;</span><span class="p">][</span><span class="s2">&quot;y&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">sdf_mesh</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;model://</span><span class="si">{</span><span class="n">last_opened_model_name</span><span class="p">()</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">mesh_path</span><span class="p">,</span><span class="w"> </span><span class="n">model_folder</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+        <span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sdf_mesh</span>
+
+    <span class="k">elif</span> <span class="s2">&quot;path&quot;</span> <span class="ow">in</span> <span class="n">shape_item</span> <span class="ow">and</span> <span class="s2">&quot;blockheight&quot;</span> <span class="ow">in</span> <span class="n">shape_item</span><span class="p">:</span>
+        <span class="c1"># If there is a path and a blockheight in the shape_item, then there is a heightmap included in the yaml file</span>
+        <span class="n">model_folder</span> <span class="o">=</span> <span class="n">resolve_file</span><span class="p">(</span><span class="s2">&quot;$(file .)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">model_folder</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_folder should be an absolute path: &#39;</span><span class="si">{</span><span class="n">model_folder</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">image_path</span> <span class="o">=</span> <span class="n">resolve_file</span><span class="p">(</span><span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">image_path</span><span class="p">):</span>
+            <span class="n">image_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_folder</span><span class="p">,</span> <span class="n">image_path</span><span class="p">)</span>
+
+        <span class="n">mesh_path</span> <span class="o">=</span> <span class="n">create_heightmap</span><span class="p">(</span>
+            <span class="n">model_name</span><span class="p">,</span>
+            <span class="n">image_path</span><span class="p">,</span>
+            <span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">],</span>
+            <span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;blockheight&quot;</span><span class="p">],</span>
+            <span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;origin_x&quot;</span><span class="p">],</span>
+            <span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;origin_y&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">sdf_mesh</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;model://</span><span class="si">{</span><span class="n">last_opened_model_name</span><span class="p">()</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">mesh_path</span><span class="p">,</span><span class="w"> </span><span class="n">model_folder</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+        <span class="n">geometry</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sdf_mesh</span>
+
+    <span class="k">elif</span> <span class="s2">&quot;path&quot;</span> <span class="ow">in</span> <span class="n">shape_item</span> <span class="ow">and</span> <span class="s2">&quot;.xml&quot;</span> <span class="ow">in</span> <span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">WARNING</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Conversion of XML shapes is not implemented,&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; please convert to yaml manually first</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] No parsable shapes found</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">link_pose</span><span class="p">,</span> <span class="n">geometry_pose</span></div>
+
+
+<div class="viewcode-block" id="read_shape_item"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.read_shape_item">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_shape_item</span><span class="p">(</span>
+    <span class="n">shape_item</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">link_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">color</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert shape item to a link with collision and visual elements</span>
+
+<span class="sd">    :param shape_item: mapping of one shape item</span>
+<span class="sd">    :param link_names: list of link names already used</span>
+<span class="sd">    :param color: None or dict of rgb values (0-1.0)</span>
+<span class="sd">    :param model_name: name of current model being converted</span>
+<span class="sd">    :return: dict of SDF link element OR None in case of error</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sdf_link_item</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># name</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;#&quot;</span> <span class="ow">in</span> <span class="n">shape_item</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">shape_item</span><span class="p">[</span><span class="s2">&quot;#&quot;</span><span class="p">]</span>
+    <span class="c1"># Unique name should be known here</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">unique_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">link_names</span><span class="p">)</span>
+    <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_link&quot;</span>
+
+    <span class="n">geometry</span><span class="p">,</span> <span class="n">link_pose</span><span class="p">,</span> <span class="n">geometry_pose</span> <span class="o">=</span> <span class="n">read_geometry</span><span class="p">(</span><span class="n">shape_item</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">geometry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Error during geometry parsing of shape:</span><span class="se">\n</span><span class="si">{</span><span class="n">shape_item</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Maybe have a default name for collision and visual instead of link name</span>
+    <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;collision&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_col&quot;</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">geometry</span><span class="o">.</span><span class="n">copy</span><span class="p">()}</span>
+    <span class="c1"># Copy to prevent textures in collision</span>
+    <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;visual&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_vis&quot;</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">geometry</span><span class="o">.</span><span class="n">copy</span><span class="p">()}</span>
+    <span class="k">if</span> <span class="n">geometry_pose</span><span class="p">:</span>
+        <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;collision&quot;</span><span class="p">][</span><span class="s2">&quot;pose&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geometry_pose</span>
+        <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;visual&quot;</span><span class="p">][</span><span class="s2">&quot;pose&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geometry_pose</span>
+    <span class="k">if</span> <span class="n">color</span><span class="p">:</span>
+        <span class="n">color_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">color</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">color_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">color_str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">color_list</span><span class="p">))</span>
+        <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;visual&quot;</span><span class="p">][</span><span class="s2">&quot;material&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ambient&quot;</span><span class="p">:</span> <span class="n">color_str</span><span class="p">}</span>
+    <span class="k">if</span> <span class="s2">&quot;heightmap&quot;</span> <span class="ow">in</span> <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;visual&quot;</span><span class="p">][</span><span class="s2">&quot;geometry&quot;</span><span class="p">]:</span>
+        <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;visual&quot;</span><span class="p">][</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;heightmap&quot;</span><span class="p">][</span><span class="s2">&quot;texture&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;diffuse&quot;</span><span class="p">:</span> <span class="s2">&quot;file://media/materials/textures/grey.png&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;normal&quot;</span><span class="p">:</span> <span class="s2">&quot;file://media/materials/textures/normal.png&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;visual&quot;</span><span class="p">][</span><span class="s2">&quot;geometry&quot;</span><span class="p">][</span><span class="s2">&quot;heightmap&quot;</span><span class="p">][</span><span class="s2">&quot;use_terrain_paging&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+    <span class="c1"># pose</span>
+    <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;pose&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_pose</span>
+
+    <span class="k">return</span> <span class="n">sdf_link_item</span></div>
+
+
+<div class="viewcode-block" id="read_shape"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.read_shape">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_shape</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">link_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">color</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert (array of) shape(s) to list of SDF links</span>
+
+<span class="sd">    :param shape: shape dict</span>
+<span class="sd">    :param link_names: list of link names already used</span>
+<span class="sd">    :param color: None or dict of rgb values (0-1.0)</span>
+<span class="sd">    :param model_name: name of current model being converted</span>
+<span class="sd">    :return: list of link elements OR None in case of error</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sdf_link</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Check if compound type has name (inserted as comment in yaml)</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;compound&quot;</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">shape</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Error during reading shape data: Both &#39;compound&#39; and &#39;group&#39; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;are defined</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">shape</span><span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]:</span>
+            <span class="n">shape_item</span> <span class="o">=</span> <span class="n">read_shape_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">link_names</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">shape_item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Error during compound shape parsing</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">sdf_link</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shape_item</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shape_item</span> <span class="o">=</span> <span class="n">read_shape_item</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">link_names</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shape_item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Error during single shape parsing</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">sdf_link</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shape_item</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sdf_link</span></div>
+
+
+<div class="viewcode-block" id="read_areas"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.read_areas">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_areas</span><span class="p">(</span><span class="n">areas</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">link_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert areas to links with a virtual area</span>
+
+<span class="sd">    :param areas: list of areas</span>
+<span class="sd">    :param link_names: list of link names already used</span>
+<span class="sd">    :param model_name: name of current model being converted</span>
+<span class="sd">    :return: list of links with a virtual area child element OR None in case of error</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sdf_link</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">areas</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Areas should be a list</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">area_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">area</span> <span class="ow">in</span> <span class="n">areas</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">area</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;near&quot;</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">uname</span> <span class="o">=</span> <span class="n">unique_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">link_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">uname</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">Name of area has changed from &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">uname</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sdf_link_item</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">uname</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">shape_item</span> <span class="ow">in</span> <span class="n">area</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]:</span>
+            <span class="n">geometry</span><span class="p">,</span> <span class="n">link_pose</span><span class="p">,</span> <span class="n">geometry_pose</span> <span class="o">=</span> <span class="n">read_geometry</span><span class="p">(</span><span class="n">shape_item</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">geometry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Error during geometry parsing of area: </span><span class="si">{</span><span class="n">uname</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">shape_name</span> <span class="o">=</span> <span class="n">unique_name</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uname</span><span class="si">}</span><span class="s2">_vv&quot;</span><span class="p">,</span> <span class="n">area_names</span><span class="p">)</span>
+            <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;virtual_volume&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">shape_name</span><span class="p">,</span> <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">geometry</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">geometry_pose</span><span class="p">:</span>
+                <span class="n">sdf_link_item</span><span class="p">[</span><span class="s2">&quot;virtual_volume&quot;</span><span class="p">][</span><span class="s2">&quot;pose&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geometry_pose</span>
+
+            <span class="n">sdf_link</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sdf_link_item</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sdf_link</span></div>
+
+
+<div class="viewcode-block" id="parse_to_xml"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.parse_to_xml">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_to_xml</span><span class="p">(</span><span class="n">xml</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">list_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extend XML with elements from a dict, list or a string.</span>
+<span class="sd">    This takes SDF attribute/element rules into account</span>
+
+<span class="sd">    :param xml: xml element</span>
+<span class="sd">    :param item: dict, list or str</span>
+<span class="sd">    :param list_name: name of list, needs to be passed on by parent for each element</span>
+<span class="sd">    :raises: Exception: incorrect usage of argument or unknown class type</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">list_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span> <span class="o">+</span> <span class="s2">&quot;(parse_to_xml) list_name should be passed on by parent in case of a list&quot;</span> <span class="o">+</span> <span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml</span><span class="p">,</span> <span class="n">list_name</span><span class="p">)</span>
+            <span class="n">parse_to_xml</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># attributes</span>
+            <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">]</span>  <span class="c1"># children that are XML attributes in all SDF elements</span>
+            <span class="k">if</span> <span class="n">xml</span><span class="o">.</span><span class="n">tag</span> <span class="o">!=</span> <span class="s2">&quot;include&quot;</span><span class="p">:</span>
+                <span class="n">attributes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>  <span class="c1"># In &#39;include&#39; name is a child element, in other elements it is an attribute</span>
+
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>  <span class="c1"># Write child as attribute</span>
+                <span class="n">xml</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>  <span class="c1"># Write child list</span>
+                <span class="n">parse_to_xml</span><span class="p">(</span><span class="n">xml</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Write child as element</span>
+                <span class="n">child</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">xml</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                <span class="n">parse_to_xml</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">xml</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">WARNING</span><span class="si">}</span><span class="s2">(parse_to_xml) Cannot not parse object type: &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_xml_to_file"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.write_xml_to_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">write_xml_to_file</span><span class="p">(</span><span class="n">xml_element</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write xml element to a file</span>
+
+<span class="sd">    :param xml_element: xml element</span>
+<span class="sd">    :param filepath: full path of file, which to write</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># generate xml string with indentation</span>
+    <span class="n">xml_dom</span> <span class="o">=</span> <span class="n">parseString</span><span class="p">(</span><span class="n">ET</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">xml_element</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+    <span class="n">pretty_xml_string</span> <span class="o">=</span> <span class="n">xml_dom</span><span class="o">.</span><span class="n">toprettyxml</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">)</span>
+
+    <span class="n">dirpath</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dirpath</span><span class="p">):</span>
+        <span class="n">makedirs</span><span class="p">(</span><span class="n">dirpath</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pretty_xml_string</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="convert_world"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.convert_world">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_world</span><span class="p">(</span><span class="n">yml</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert world yaml to sdf world dict</span>
+
+<span class="sd">    :param yml: yaml object of a world ed yaml</span>
+<span class="sd">    :param model_name: Name of the world</span>
+<span class="sd">    :param recursive: If true all included models are also converted</span>
+<span class="sd">    :return: sdf dict of the model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">light</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;directional&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;sun&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cast_shadows&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pose&quot;</span><span class="p">:</span> <span class="s2">&quot;0 0 10 0 0 0&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;diffuse&quot;</span><span class="p">:</span> <span class="s2">&quot;0.8 0.8 0.8 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;specular&quot;</span><span class="p">:</span> <span class="s2">&quot;0.2 0.2 0.2 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;direction&quot;</span><span class="p">:</span> <span class="s2">&quot;0.5 0.1 -0.9&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;attenuation&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;range&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s2">&quot;quadratic&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">},</span>
+    <span class="p">}</span>
+    <span class="n">physics</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ode&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;real_time_update_rate&quot;</span><span class="p">:</span> <span class="mf">333.0</span><span class="p">,</span>
+        <span class="s2">&quot;max_step_size&quot;</span><span class="p">:</span> <span class="mf">0.003</span><span class="p">,</span>
+        <span class="s2">&quot;ode&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;solver&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;quick&quot;</span><span class="p">,</span> <span class="s2">&quot;iters&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">},</span> <span class="s2">&quot;constraints&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;cfm&quot;</span><span class="p">:</span> <span class="mf">0.0001</span><span class="p">}},</span>
+    <span class="p">}</span>
+    <span class="n">world</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span> <span class="s2">&quot;include&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;light&quot;</span><span class="p">:</span> <span class="n">light</span><span class="p">,</span> <span class="s2">&quot;physics&quot;</span><span class="p">:</span> <span class="n">physics</span><span class="p">}</span>
+
+    <span class="n">world_include</span> <span class="o">=</span> <span class="n">world</span><span class="p">[</span><span class="s2">&quot;include&quot;</span><span class="p">]</span>
+    <span class="n">world_model</span> <span class="o">=</span> <span class="n">world</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">yml</span><span class="p">[</span><span class="s2">&quot;composition&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] composition should be a list</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">yml</span><span class="p">[</span><span class="s2">&quot;composition&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Items in composition should be a mapping</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">include</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]}</span>
+        <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">recursive</span><span class="p">:</span>
+                <span class="c1"># Todo: If there are multiple objects of the same type, then this type&#39;s SDF is created for every</span>
+                <span class="c1">#       instance of the type (for instance ids: table1 and table2 are both type TableA, so it will</span>
+                <span class="c1">#       recreate the SDF and config for TableA twice)</span>
+                <span class="n">convert_model_name</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;room&quot;</span><span class="p">,</span> <span class="s2">&quot;waypoint&quot;</span><span class="p">]:</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">convert_model</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+                <span class="n">model</span><span class="p">[</span><span class="s2">&quot;pose&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_pose</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">model</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+                <span class="n">world_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">include</span><span class="p">[</span><span class="s2">&quot;uri&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;model://</span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">include</span><span class="p">[</span><span class="s2">&quot;pose&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_pose</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">world_include</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">include</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">convert_model</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+            <span class="n">model</span><span class="p">[</span><span class="s2">&quot;pose&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_pose</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">world_model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">world</span></div>
+
+
+<div class="viewcode-block" id="convert_model"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.convert_model">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_model</span><span class="p">(</span><span class="n">yml</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert model yaml to sdf model dict</span>
+
+<span class="sd">    :param yml: yaml object of a world ed yaml</span>
+<span class="sd">    :param model_name: Name of the model</span>
+<span class="sd">    :return: sdf dict of the model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span> <span class="s2">&quot;static&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">:</span> <span class="p">[]}</span>  <span class="c1"># All default parameters should be added here</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;color&quot;</span> <span class="ow">in</span> <span class="n">yml</span><span class="p">:</span>
+        <span class="n">color</span><span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">yml</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">][</span><span class="s2">&quot;red&quot;</span><span class="p">]</span>
+        <span class="n">color</span><span class="p">[</span><span class="s2">&quot;green&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">yml</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">][</span><span class="s2">&quot;green&quot;</span><span class="p">]</span>
+        <span class="n">color</span><span class="p">[</span><span class="s2">&quot;blue&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">yml</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">][</span><span class="s2">&quot;blue&quot;</span><span class="p">]</span>
+
+    <span class="n">link_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s2">&quot;shape&quot;</span> <span class="ow">in</span> <span class="n">yml</span><span class="p">:</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">read_shape</span><span class="p">(</span><span class="n">yml</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">],</span> <span class="n">link_names</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Error during shape parsing</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">model</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;areas&quot;</span> <span class="ow">in</span> <span class="n">yml</span><span class="p">:</span>
+        <span class="n">areas</span> <span class="o">=</span> <span class="n">read_areas</span><span class="p">(</span><span class="n">yml</span><span class="p">[</span><span class="s2">&quot;areas&quot;</span><span class="p">],</span> <span class="n">link_names</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">areas</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Error during areas parsing</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">model</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">areas</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">model</span></div>
+
+
+<div class="viewcode-block" id="convert_model_data"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.convert_model_data">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_model_data</span><span class="p">(</span>
+    <span class="n">model_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Mapping</span><span class="p">,</span> <span class="n">List</span><span class="p">],</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert model data to SDF with the name &#39;model_name&#39; in directory &#39;model_dir&#39;.</span>
+<span class="sd">    Most of the times model_dir=ROOT/model_name for a ROOT in ED_MODEL_PATH</span>
+
+<span class="sd">    :param model_data: yaml data of the model</span>
+<span class="sd">    :param model_name: Name of the model</span>
+<span class="sd">    :param model_dir: Directory of the model.</span>
+<span class="sd">    :param recursive: If true all included models are also converted</span>
+<span class="sd">    :return: Good: 0, Error: 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># declare sdf dict including sdf version</span>
+    <span class="n">sdf_version</span> <span class="o">=</span> <span class="mf">1.6</span>
+    <span class="n">sdf</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">sdf_version</span><span class="p">)}</span>
+
+    <span class="c1"># determine file_type</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;composition&quot;</span> <span class="ow">in</span> <span class="n">model_data</span><span class="p">:</span>
+            <span class="n">sdf</span><span class="p">[</span><span class="s2">&quot;world&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert_world</span><span class="p">(</span><span class="n">model_data</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sdf</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert_model</span><span class="p">(</span><span class="n">model_data</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] (CONVERSION) </span><span class="si">{</span><span class="n">e</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="c1"># convert combination of dicts and lists to ET Elements</span>
+    <span class="n">xml</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;sdf&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parse_to_xml</span><span class="p">(</span><span class="n">xml</span><span class="p">,</span> <span class="n">sdf</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] (XML) </span><span class="si">{</span><span class="n">e</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="c1"># write to sdf file</span>
+    <span class="n">sdf_filename</span> <span class="o">=</span> <span class="s2">&quot;model.sdf&quot;</span>
+    <span class="n">sdf_model_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">sdf_filename</span><span class="p">)</span>
+
+    <span class="c1">##</span>
+    <span class="c1"># Generate model.config</span>
+    <span class="n">model_config_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="s2">&quot;model.config&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">model_config_path</span><span class="p">):</span>  <span class="c1"># SDF model already exist, edit model.config and rename sdf files if needed</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_config_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">config_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">)</span>
+
+        <span class="n">config_root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">config_string</span><span class="p">)</span>
+
+        <span class="c1"># set name and description</span>
+        <span class="n">config_sdfs</span> <span class="o">=</span> <span class="n">config_root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;sdf&quot;</span><span class="p">)</span>
+        <span class="c1"># if all([config_sdf.attrib[&#39;version&#39;] != str(sdf_version) for config_sdf in config_sdfs]):</span>
+        <span class="c1">#         config_sdf.text = sdf_filename</span>
+        <span class="n">newest_sdf</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">config_sdfs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">newest_sdf_version</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">newest_sdf</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">sdf_version</span> <span class="o">&gt;</span> <span class="n">newest_sdf_version</span><span class="p">:</span>  <span class="c1"># Converting a newer version</span>
+            <span class="k">if</span> <span class="n">newest_sdf</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="n">sdf_filename</span><span class="p">:</span>  <span class="c1"># Rename current newest version, if the same</span>
+                <span class="n">newest_sdf_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;model-</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">newest_sdf_version</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.sdf&quot;</span>
+                <span class="n">rename</span><span class="p">(</span><span class="n">sdf_model_path</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">newest_sdf_filename</span><span class="p">))</span>
+                <span class="n">newest_sdf</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">newest_sdf_filename</span>
+            <span class="n">new_sdf</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;sdf&quot;</span><span class="p">)</span>
+            <span class="n">config_root</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">config_root</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">newest_sdf</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">new_sdf</span><span class="p">)</span>
+            <span class="n">new_sdf</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">sdf_version</span><span class="p">))</span>
+            <span class="n">new_sdf</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">sdf_filename</span>
+        <span class="k">elif</span> <span class="n">sdf_version</span> <span class="o">==</span> <span class="n">newest_sdf_version</span><span class="p">:</span>  <span class="c1"># Converting the same version, just make sure the path is correct</span>
+            <span class="k">if</span> <span class="n">newest_sdf</span><span class="o">.</span><span class="n">text</span> <span class="o">!=</span> <span class="n">sdf_filename</span><span class="p">:</span>
+                <span class="n">rename</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">newest_sdf</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="n">sdf_model_path</span><span class="p">)</span>
+                <span class="n">newest_sdf</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">sdf_filename</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Converting not to the newest version</span>
+            <span class="n">sdf_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;model-</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">sdf_version</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.sdf&quot;</span>
+            <span class="n">sdf_model_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">sdf_filename</span><span class="p">)</span>
+            <span class="c1"># Check if older version exists in model.config</span>
+            <span class="n">current_sdf</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">config_sdfs</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">sdf_version</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current_sdf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Version doesn&#39;t exist yet, so add it</span>
+                <span class="n">current_sdf</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;sdf&quot;</span><span class="p">)</span>
+                <span class="n">current_sdf</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sdf_version</span><span class="p">)</span>
+                <span class="n">current_sdf</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">sdf_filename</span>
+                <span class="c1"># Add tag before the first newer version, so at old index of the first newer version</span>
+                <span class="n">first_newer_version_sdf</span> <span class="o">=</span> <span class="p">[</span><span class="n">sdf</span> <span class="k">for</span> <span class="n">sdf</span> <span class="ow">in</span> <span class="n">config_sdfs</span> <span class="k">if</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">sdf</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">sdf_version</span><span class="p">)][</span>
+                    <span class="o">-</span><span class="mi">1</span>
+                <span class="p">]</span>
+                <span class="n">index_of_newer_version</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">config_root</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">first_newer_version_sdf</span><span class="p">)</span>
+                <span class="n">config_root</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index_of_newer_version</span><span class="p">,</span> <span class="n">current_sdf</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">current_sdf</span><span class="o">.</span><span class="n">text</span> <span class="o">!=</span> <span class="n">sdf_filename</span><span class="p">:</span>
+                <span class="n">rename</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">current_sdf</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="n">sdf_model_path</span><span class="p">)</span>
+                <span class="n">current_sdf</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">sdf_filename</span>
+
+        <span class="c1"># Always write model name for the case a model has been moved, so its name needs to changed.</span>
+        <span class="n">config_root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">model_name</span>
+        <span class="n">config_root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">model_name</span>
+
+        <span class="n">write_xml_to_file</span><span class="p">(</span><span class="n">config_root</span><span class="p">,</span> <span class="n">model_config_path</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># SDF model doesn&#39;t exist yet</span>
+        <span class="n">test_model_path</span> <span class="o">=</span> <span class="n">get_model_path</span><span class="p">(</span><span class="s2">&quot;test_sdf&quot;</span><span class="p">,</span> <span class="s2">&quot;sdf&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">test_model_path</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">Can&#39;t find &#39;test_sdf&#39; model. &quot;</span>
+                <span class="s2">&quot;Which is used for generation of &#39;model.config&#39;&quot;</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;model.config not generated. Gazebo will not be able to find the model: &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+
+        <span class="n">test_config_path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">test_model_path</span><span class="p">),</span> <span class="s2">&quot;model.config&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">test_config_path</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">model.config path: &#39;</span><span class="si">{</span><span class="n">test_config_path</span><span class="si">}</span><span class="s2">&#39; doesn&#39;t exist&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;model.config not generated. Gazebo will not be able to find the model: &#39;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="mi">1</span>
+
+        <span class="c1"># xml parsing doesn&#39;t ignore whitespace, so reading the file manually</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">test_config_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">config_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">)</span>
+
+        <span class="n">config_root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">config_string</span><span class="p">)</span>
+
+        <span class="c1"># set name and description</span>
+        <span class="n">config_root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">model_name</span>
+        <span class="n">config_root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">model_name</span>
+        <span class="n">config_sdf</span> <span class="o">=</span> <span class="n">config_root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;sdf&quot;</span><span class="p">)</span>
+        <span class="n">config_sdf</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sdf_version</span><span class="p">)</span>
+        <span class="n">config_sdf</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">sdf_filename</span>
+
+        <span class="c1"># write model.config</span>
+        <span class="n">write_xml_to_file</span><span class="p">(</span><span class="n">config_root</span><span class="p">,</span> <span class="n">model_config_path</span><span class="p">)</span>
+
+    <span class="c1"># Write SDF file</span>
+    <span class="n">write_xml_to_file</span><span class="p">(</span><span class="n">xml</span><span class="p">,</span> <span class="n">sdf_model_path</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">OKGREEN</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] Successfully converted to SDF</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="convert_model_file"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.convert_model_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_model_file</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a model to SDF based on a model file</span>
+
+<span class="sd">    :param model_name: name of the model</span>
+<span class="sd">    :param model_file: path of the model file</span>
+<span class="sd">    :param recursive: If true all included models are also converted</span>
+<span class="sd">    :return: Good: 0, Error: 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model_dir</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model_file</span><span class="p">)</span>
+
+    <span class="c1"># read yaml file</span>
+    <span class="k">with</span> <span class="n">last_model_file</span><span class="p">(</span><span class="n">model_file</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">yml</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] (YAML) </span><span class="si">{</span><span class="n">e</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">convert_model_data</span><span class="p">(</span><span class="n">yml</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">model_dir</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="convert_model_name"><a class="viewcode-back" href="../../api/ed_object_models/conversion_sdf/index.html#ed_object_models.conversion_sdf.convert_model_name">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_model_name</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a model to SDF based on the model name.</span>
+
+<span class="sd">    :param model_name: Name of the model, model_name/model.yaml should exist in ED_MODEL_PATH</span>
+<span class="sd">    :param recursive: If true all included models are also converted</span>
+<span class="sd">    :return: Good: 0, Error: 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># strip trailing slash</span>
+    <span class="k">if</span> <span class="n">model_name</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># get model path</span>
+    <span class="n">model_file</span> <span class="o">=</span> <span class="n">get_model_path</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="s2">&quot;yaml&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">model_file</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">FAIL</span><span class="si">}{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">BOLD</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">] No model path found</span><span class="si">{</span><span class="n">bcolors</span><span class="o">.</span><span class="n">ENDC</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">convert_model_file</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_file</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

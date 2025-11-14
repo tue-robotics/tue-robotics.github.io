@@ -1,0 +1,222 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robot_skills.arm.gripper &mdash; robot_skills 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            robot_skills
+              <img src="../../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">robot_skills</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robot_skills.arm.gripper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robot_skills.arm.gripper</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">PyKDL</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">kdl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">actionlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">GoalStatus</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tue_manipulation_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">GripperCommandAction</span><span class="p">,</span> <span class="n">GripperCommandGoal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tue_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">GripperCommand</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">robot_skills.robot_part</span><span class="w"> </span><span class="kn">import</span> <span class="n">RobotPart</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ed.entity</span><span class="w"> </span><span class="kn">import</span> <span class="n">Entity</span>
+
+
+<div class="viewcode-block" id="GripperState"><a class="viewcode-back" href="../../../api/robot_skills/arm/gripper/index.html#robot_skills.arm.gripper.GripperState">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GripperState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specifies a State either OPEN or CLOSE</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">OPEN</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
+    <span class="n">CLOSE</span> <span class="o">=</span> <span class="s2">&quot;close&quot;</span></div>
+
+
+<div class="viewcode-block" id="Gripper"><a class="viewcode-back" href="../../../api/robot_skills/arm/gripper/index.html#robot_skills.arm.gripper.Gripper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Gripper</span><span class="p">(</span><span class="n">RobotPart</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A gripper used for manipulating objects in the environment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        constructor</span>
+
+<span class="sd">        :param robot_name: robot_name</span>
+<span class="sd">        :param tf_buffer: tf2_ros.Buffer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Gripper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="o">=</span><span class="n">tf_buffer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># TODO: remove occupied by, an interface should be stateless. Store this information elsewhere.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_occupied_by</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Gripper.send_goal"><a class="viewcode-back" href="../../../api/robot_skills/arm/gripper/index.html#robot_skills.arm.gripper.Gripper.send_goal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;send_goal() not implemented for </span><span class="si">{}</span><span class="s2"> gripper: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">occupied_by</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Entity</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The &#39;occupied_by&#39; property will return the current entity that is in the gripper of this arm.</span>
+
+<span class="sd">        :return: robot_skills.util.entity, ED entity</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_occupied_by</span>
+
+    <span class="nd">@occupied_by</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">occupied_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Entity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the entity which occupies the arm.</span>
+
+<span class="sd">        :param value: robot_skills.util.entity, ED entity</span>
+<span class="sd">        :return: no return</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_occupied_by</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="ParrallelGripper"><a class="viewcode-back" href="../../../api/robot_skills/arm/gripper/index.html#robot_skills.arm.gripper.ParrallelGripper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ParrallelGripper</span><span class="p">(</span><span class="n">Gripper</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A gripper with two fingers which closes by pressing the fingers together</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gripper_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        constructor</span>
+
+<span class="sd">        :param robot_name: robot_name</span>
+<span class="sd">        :param tf_buffer: tf2_ros.Buffer</span>
+<span class="sd">        :param gripper_name: string to identify the gripper</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ParrallelGripper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">robot_name</span><span class="o">=</span><span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="o">=</span><span class="n">tf_buffer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gripper_name</span> <span class="o">=</span> <span class="n">gripper_name</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gripper_name</span> <span class="o">+</span> <span class="s1">&#39;/grasp_offset/&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">kdl</span><span class="o">.</span><span class="n">Frame</span><span class="p">(</span><span class="n">kdl</span><span class="o">.</span><span class="n">Rotation</span><span class="o">.</span><span class="n">RPY</span><span class="p">(</span><span class="n">offset</span><span class="p">[</span><span class="s2">&quot;roll&quot;</span><span class="p">],</span> <span class="n">offset</span><span class="p">[</span><span class="s2">&quot;pitch&quot;</span><span class="p">],</span> <span class="n">offset</span><span class="p">[</span><span class="s2">&quot;yaw&quot;</span><span class="p">]),</span>
+                                        <span class="n">kdl</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">offset</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">offset</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">offset</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]))</span>
+
+        <span class="c1"># Init gripper actionlib</span>
+        <span class="n">ac_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_param</span><span class="p">(</span><span class="s1">&#39;skills/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gripper_name</span> <span class="o">+</span> <span class="s1">&#39;/ac_gripper&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_gripper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_simple_action_client</span><span class="p">(</span><span class="n">ac_name</span><span class="p">,</span> <span class="n">GripperCommandAction</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ParrallelGripper.send_goal"><a class="viewcode-back" href="../../../api/robot_skills/arm/gripper/index.html#robot_skills.arm.gripper.ParrallelGripper.send_goal">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_goal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">max_torque</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="c1">#Todo: should send goal be universal for all grippers?</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a GripperCommand to the gripper of this arm and wait for finishing</span>
+
+<span class="sd">        :param state: open or close (GripperState)</span>
+<span class="sd">        :type state: str (GripperState)</span>
+<span class="sd">        :param timeout: timeout in seconds; timeout of 0.0 is not allowed</span>
+<span class="sd">        :param max_torque: How much torque [Nm] to apply, only applied when closing the gripper</span>
+<span class="sd">        :return: True of False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">goal</span> <span class="o">=</span> <span class="n">GripperCommandGoal</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;open&quot;</span><span class="p">:</span>
+            <span class="n">goal</span><span class="o">.</span><span class="n">command</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">GripperCommand</span><span class="o">.</span><span class="n">OPEN</span>
+        <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;close&quot;</span><span class="p">:</span>
+            <span class="n">goal</span><span class="o">.</span><span class="n">command</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">GripperCommand</span><span class="o">.</span><span class="n">CLOSE</span>
+            <span class="n">goal</span><span class="o">.</span><span class="n">command</span><span class="o">.</span><span class="n">max_torque</span> <span class="o">=</span> <span class="n">max_torque</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s1">&#39;State shoulde be open or close, now it is </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ac_gripper</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="n">goal</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">goal</span><span class="o">.</span><span class="n">command</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="n">GripperState</span><span class="o">.</span><span class="n">OPEN</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">occupied_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;ParrallelGripper.send_goal open is called but there is still an entity with id &#39;</span><span class="si">%s</span><span class="s2">&#39; </span><span class="se">\</span>
+<span class="s2">                occupying the gripper, removing this entity from the robot interface.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">occupied_by</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">occupied_by</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">goal_status</span> <span class="o">=</span> <span class="n">GoalStatus</span><span class="o">.</span><span class="n">SUCCEEDED</span>
+        <span class="k">if</span> <span class="n">timeout</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ac_gripper</span><span class="o">.</span><span class="n">wait_for_result</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+            <span class="n">goal_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ac_gripper</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">goal_status</span> <span class="o">==</span> <span class="n">GoalStatus</span><span class="o">.</span><span class="n">SUCCEEDED</span></div>
+
+<div class="viewcode-block" id="ParrallelGripper.selfreset"><a class="viewcode-back" href="../../../api/robot_skills/arm/gripper/index.html#robot_skills.arm.gripper.ParrallelGripper.selfreset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">selfreset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_goal</span><span class="p">(</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

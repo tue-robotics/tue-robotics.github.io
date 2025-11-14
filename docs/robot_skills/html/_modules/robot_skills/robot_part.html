@@ -1,0 +1,358 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>robot_skills.robot_part &mdash; robot_skills 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=525cde36"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            robot_skills
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">robot_skills</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">robot_skills.robot_part</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for robot_skills.robot_part</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Maintainer: Janno Lunenburg &lt;jannolunenburg@gmail.com&gt;</span>
+
+<span class="c1"># System</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">actionlib</span>
+<span class="c1"># ROS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">tf2_ros</span><span class="w"> </span><span class="kn">import</span> <span class="n">Buffer</span>
+
+<span class="c1"># Determine simulation mode</span>
+<span class="n">SIM_MODE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ROBOT_REAL&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span>
+
+
+<div class="viewcode-block" id="RobotPart"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RobotPart</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Base class for robot parts &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_name</span><span class="p">,</span> <span class="n">tf_buffer</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        :param robot_name: string with robot name</span>
+<span class="sd">        :param tf_buffer: tf buffer object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">=</span> <span class="n">robot_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tf_buffer</span> <span class="o">=</span> <span class="n">tf_buffer</span>  <span class="c1"># type: Buffer</span>
+
+        <span class="c1"># Body parts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">functionalities</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ros_connections</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__diagnostics_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># This is set to False by subscribe_hardware_status, because then apparently there is a meaningful check</span>
+        <span class="c1"># If no such check exists, then assume it&#39;s operational unless overridden in subclass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operational</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="RobotPart.close"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the robot part</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="RobotPart.add_part"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.add_part">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_part</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partname</span><span class="p">,</span> <span class="n">part</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a component part to the robot part. This is added to the parts dict and set as an attribute</span>
+
+<span class="sd">        :param partname: name of the bodypart</span>
+<span class="sd">        :param part: bodypart object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="n">partname</span><span class="p">]</span> <span class="o">=</span> <span class="n">part</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partname</span><span class="p">,</span> <span class="n">part</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RobotPart.load_param"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.load_param">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads a parameter from the parameter server, namespaced by robot name</span>
+
+<span class="sd">        :param param_name: parameter name</span>
+<span class="sd">        :param default: default value for when parameter unavailable</span>
+<span class="sd">        :return: loaded parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">param_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">rospy</span><span class="o">.</span><span class="n">get_param</span><span class="p">(</span><span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RobotPart.wait_for_connections"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.wait_for_connections">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">log_failing_connections</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Waits for the connections until they are connected</span>
+
+<span class="sd">        :param timeout: timeout in seconds</span>
+<span class="sd">        :param log_failing_connections: (bool) whether to log errors if not connected. This is useful when checking</span>
+<span class="sd">            multiple robot parts in a loop</span>
+<span class="sd">        :return: bool indicating whether all connections are connected</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Rate</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+
+        <span class="c1"># Loop until the timeout</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">t</span><span class="p">:</span>
+
+            <span class="c1"># If shutdown: return immediately without any further checks or prints</span>
+            <span class="k">if</span> <span class="n">rospy</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="c1"># If everything is connected: return True</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__ros_connections</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="c1"># Check all connections</span>
+            <span class="n">new_connections</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">connection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ros_connections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Checking </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+                <span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="c1"># Check actionlib connection</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">actionlib</span><span class="o">.</span><span class="n">SimpleActionClient</span><span class="p">):</span>
+                    <span class="n">connected</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">wait_for_server</span><span class="p">(</span><span class="n">rospy</span><span class="o">.</span><span class="n">Duration</span><span class="p">(</span><span class="mf">0.01</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">):</span>
+                    <span class="c1"># Check service connection</span>
+                    <span class="c1"># Need to use try-except in case of service since this throws an exception if not connected.</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">connection</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+                        <span class="n">connected</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">):</span>
+                    <span class="n">connected</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">get_num_connections</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Don&#39;t know what to do with a </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">connection</span><span class="p">)))</span>
+                <span class="c1"># If connected, remove from the list</span>
+                <span class="k">if</span> <span class="n">connected</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Connected to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+                    <span class="c1"># self.__ros_connections = {name: connection</span>
+                    <span class="c1">#                           for name, connection in self.__ros_connections.items() if name != k}</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_connections</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">connection</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__ros_connections</span> <span class="o">=</span> <span class="n">new_connections</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">log_failing_connections</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">connection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ros_connections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> not connected timely&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="RobotPart.create_simple_action_client"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.create_simple_action_client">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_simple_action_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">action_type</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a simple actionlib client and waits for the action server</span>
+
+<span class="sd">        :param name: string with the name of the action in the correct namespace</span>
+<span class="sd">        :param action_type: action type of this action</span>
+<span class="sd">        :return: the action client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ac</span> <span class="o">=</span> <span class="n">actionlib</span><span class="o">.</span><span class="n">SimpleActionClient</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">action_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_connection</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ac</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ac</span></div>
+
+<div class="viewcode-block" id="RobotPart.create_service_client"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.create_service_client">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_service_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">srv_type</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a service client and waits for the server</span>
+<span class="sd">        :param name: string with the name of the service in the correct namespace</span>
+<span class="sd">        :param srv_type: service type</span>
+<span class="sd">        :return: the service client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">srv</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">srv_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_connection</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">srv</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">srv</span></div>
+
+<div class="viewcode-block" id="RobotPart.create_subscriber"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.create_subscriber">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_subscriber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a Subscriber and add to the connections to check</span>
+
+<span class="sd">        :param name: string with the name topic to subscribe</span>
+<span class="sd">        :param args: other args passed to rospy.Subscriber</span>
+<span class="sd">        :param kwargs: other keyword args passed to rospy.Subscriber</span>
+<span class="sd">        :return: the Subscriber</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sub</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">Subscriber</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_connection</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">sub</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sub</span></div>
+
+<div class="viewcode-block" id="RobotPart._add_connection"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart._add_connection">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">_add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">connection</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a connection to the internal dict with connections that is used when initializing the robot object.</span>
+
+<span class="sd">        :param name: name of the connection</span>
+<span class="sd">        :param connection: connection to add. This might be a ServiceProxy, ActionClient or Subscriber</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ros_connections</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">connection</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">operational</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether this bodypart&#39;s hardware is operational</span>
+<span class="sd">        If the associated hardware is not yet up, has an error etc, the bodypart is not operational. Note: in</span>
+<span class="sd">        in simulation: operational is always true</span>
+
+<span class="sd">        :rtype: bool True is part is ready to do work, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">SIM_MODE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operational</span>
+
+<div class="viewcode-block" id="RobotPart.subscribe_hardware_status"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.subscribe_hardware_status">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">subscribe_hardware_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start to check if the bodypart is operational. To do so, subscribe to the hardware status/diagnostics</span>
+
+<span class="sd">        :param name: check on the level of the diagnostic_msgs/DiagnosticStatus with this name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operational</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__diagnostics_name</span> <span class="o">=</span> <span class="n">name</span></div>
+
+<div class="viewcode-block" id="RobotPart.unsubscribe_hardware_status"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.unsubscribe_hardware_status">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">unsubscribe_hardware_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When process_hardware_status sees that self.__diagnostics_name evaluates to False,</span>
+<span class="sd">            it will not process the diagnostics and ignore them</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__diagnostics_name</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="RobotPart.process_hardware_status"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.process_hardware_status">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_hardware_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">diagnostic_dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        hardware_status callback to determine if the bodypart is operational</span>
+
+<span class="sd">        :param diagnostic_dict: dictionary[str, diagnostic_msgs.msg.DiagnosticStatus]</span>
+<span class="sd">        :return: no return</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__diagnostics_name</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">diag</span> <span class="o">=</span> <span class="n">diagnostic_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__diagnostics_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">diag</span><span class="p">:</span>
+            <span class="c1"># (Logwarn throttle: show this message once every day (24 * 3600 seconds)</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn_throttle</span><span class="p">(</span><span class="mf">86400.0</span><span class="p">,</span> <span class="s1">&#39;no diagnostic msg received for the </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__diagnostics_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO: diagnostic_msgs.DiagnosticStatus.OK instead of our own enumeration.</span>
+            <span class="c1"># 0. Stale</span>
+            <span class="c1"># 1. Idle</span>
+            <span class="c1"># 2. Operational</span>
+            <span class="c1"># 3. Homing</span>
+            <span class="c1"># 4. Error</span>
+            <span class="k">if</span> <span class="n">diag</span><span class="o">.</span><span class="n">level</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_operational</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_operational</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RobotPart.reset"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.reset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset body part and all its components, this function should not be overwritten.</span>
+
+<span class="sd">        :return: Succes</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selfreset</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">partname</span><span class="p">,</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Resetting </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">partname</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_name</span> <span class="o">==</span> <span class="s1">&#39;hero&#39;</span> <span class="ow">and</span> <span class="n">partname</span> <span class="o">==</span> <span class="s1">&#39;torso&#39;</span><span class="p">:</span> <span class="c1"># Todo: get rid of this custom thing.</span>
+                <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;Skipping reset of </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">partname</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">part</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="RobotPart.selfreset"><a class="viewcode-back" href="../../api/robot_skills/robot_part/index.html#robot_skills.robot_part.RobotPart.selfreset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">selfreset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset of the body part itself. This function may be overwritten.</span>
+<span class="sd">        Returns: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

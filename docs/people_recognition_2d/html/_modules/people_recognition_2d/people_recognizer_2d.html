@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>people_recognition_2d.people_recognizer_2d &mdash; people_recognition_2d 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=f6245a2f"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            people_recognition_2d
+              <img src="../../_static/techunited.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">people_recognition_2d</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">people_recognition_2d.people_recognizer_2d</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for people_recognition_2d.people_recognizer_2d</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Python modules</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="c1"># ROS modules</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">rospy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cv_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">CvBridge</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">image_recognition_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Recognition</span><span class="p">,</span> <span class="n">FaceProperties</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">image_recognition_msgs.srv</span><span class="w"> </span><span class="kn">import</span> <span class="n">Recognize</span><span class="p">,</span> <span class="n">GetFaceProperties</span>
+<span class="c1"># Image recognition repository modules</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">image_recognition_util</span><span class="w"> </span><span class="kn">import</span> <span class="n">image_writer</span>
+<span class="c1"># People recognition repository modules</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">people_recognition_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Person2D</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rospy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServiceException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sensor_msgs.msg</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">RegionOfInterest</span>
+
+
+<div class="viewcode-block" id="_get_and_wait_for_service"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d._get_and_wait_for_service">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">_get_and_wait_for_service</span><span class="p">(</span><span class="n">srv_name</span><span class="p">,</span> <span class="n">srv_class</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to start and wait for dependent service</span>
+
+<span class="sd">    :param: srv_name: Service name</span>
+<span class="sd">    :param: srv_class: Service class</span>
+<span class="sd">    :return: started ServiceProxy object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">rospy</span><span class="o">.</span><span class="n">ServiceProxy</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srv_name</span><span class="p">),</span> <span class="n">srv_class</span><span class="p">)</span>
+    <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Waiting for service </span><span class="si">{}</span><span class="s2"> ...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service</span><span class="o">.</span><span class="n">resolved_name</span><span class="p">))</span>
+    <span class="n">service</span><span class="o">.</span><span class="n">wait_for_service</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">service</span></div>
+
+
+<div class="viewcode-block" id="_get_service_response"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d._get_service_response">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">_get_service_response</span><span class="p">(</span><span class="n">srv</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method to get service response with checks</span>
+
+<span class="sd">    :param: srv: service</span>
+<span class="sd">    :param: args: Input arguments of the service request</span>
+<span class="sd">    :return: response</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">srv</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logwarn</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> service call failed: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srv</span><span class="o">.</span><span class="n">resolved_name</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+        <span class="k">raise</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="PeopleRecognizer2D"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PeopleRecognizer2D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pose_estimation_srv_name</span><span class="p">,</span> <span class="n">face_recognition_srv_name</span><span class="p">,</span>
+                 <span class="n">face_properties_srv_name</span><span class="p">,</span> <span class="n">color_extractor_srv_name</span><span class="p">,</span>
+                 <span class="n">enable_age_gender_detection</span><span class="p">,</span> <span class="n">enable_shirt_color_extraction</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pose_estimation_srv</span> <span class="o">=</span> <span class="n">_get_and_wait_for_service</span><span class="p">(</span><span class="n">pose_estimation_srv_name</span><span class="p">,</span> <span class="n">Recognize</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_face_recognition_srv</span> <span class="o">=</span> <span class="n">_get_and_wait_for_service</span><span class="p">(</span><span class="n">face_recognition_srv_name</span><span class="p">,</span> <span class="n">Recognize</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_enable_age_gender_detection</span> <span class="o">=</span> <span class="n">enable_age_gender_detection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_enable_shirt_color_extraction</span> <span class="o">=</span> <span class="n">enable_shirt_color_extraction</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_age_gender_detection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_face_properties_srv</span> <span class="o">=</span> <span class="n">_get_and_wait_for_service</span><span class="p">(</span><span class="n">face_properties_srv_name</span><span class="p">,</span> <span class="n">GetFaceProperties</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_shirt_color_extraction</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_extractor_srv</span> <span class="o">=</span> <span class="n">_get_and_wait_for_service</span><span class="p">(</span><span class="n">color_extractor_srv_name</span><span class="p">,</span> <span class="n">Recognize</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bridge</span> <span class="o">=</span> <span class="n">CvBridge</span><span class="p">()</span>
+
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;People recognizer 2D initialized&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PeopleRecognizer2D._get_recognitions_with_label"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D._get_recognitions_with_label">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_recognitions_with_label</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">recognitions</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_is_label_recognition</span><span class="p">(</span><span class="n">recognition</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">recognition</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">probabilities</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="n">label</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">probability</span> <span class="o">&gt;</span> <span class="n">recognition</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">unknown_probability</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">recognitions</span> <span class="k">if</span> <span class="n">_is_label_recognition</span><span class="p">(</span><span class="n">r</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer2D._get_face_rois_ids_pose_estimation"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D._get_face_rois_ids_pose_estimation">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_face_rois_ids_pose_estimation</span><span class="p">(</span><span class="n">recognitions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get ROIs of faces from pose estimation using the nose, left ear</span>
+<span class="sd">        and right ear</span>
+
+<span class="sd">        :param: recognitions from pose estimation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nose_recognitions</span> <span class="o">=</span> <span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_get_recognitions_with_label</span><span class="p">(</span><span class="s2">&quot;Nose&quot;</span><span class="p">,</span> <span class="n">recognitions</span><span class="p">)</span>
+        <span class="n">left_ear_recognitions</span> <span class="o">=</span> <span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_get_recognitions_with_label</span><span class="p">(</span><span class="s2">&quot;LEar&quot;</span><span class="p">,</span> <span class="n">recognitions</span><span class="p">)</span>
+        <span class="n">right_ear_recognitions</span> <span class="o">=</span> <span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_get_recognitions_with_label</span><span class="p">(</span><span class="s2">&quot;REar&quot;</span><span class="p">,</span> <span class="n">recognitions</span><span class="p">)</span>
+
+        <span class="n">rois</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">group_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">nose_recognition</span> <span class="ow">in</span> <span class="n">nose_recognitions</span><span class="p">:</span>
+            <span class="c1"># We assume a vertical head here</span>
+            <span class="n">left_size</span> <span class="o">=</span> <span class="mi">50</span>
+            <span class="n">right_size</span> <span class="o">=</span> <span class="mi">50</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">left_ear_recognition</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+                    <span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">left_ear_recognitions</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">group_id</span> <span class="o">==</span> <span class="n">nose_recognition</span><span class="o">.</span><span class="n">group_id</span><span class="p">)</span>
+
+                <span class="n">left_size</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">left_ear_recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">-</span> <span class="n">nose_recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span><span class="p">,</span>
+                                       <span class="n">left_ear_recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">-</span> <span class="n">nose_recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">right_ear_recognition</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+                    <span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">right_ear_recognitions</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">group_id</span> <span class="o">==</span> <span class="n">nose_recognition</span><span class="o">.</span><span class="n">group_id</span><span class="p">)</span>
+
+                <span class="n">right_size</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">right_ear_recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">-</span> <span class="n">nose_recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span><span class="p">,</span>
+                                        <span class="n">right_ear_recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">-</span> <span class="n">nose_recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="n">size</span> <span class="o">=</span> <span class="n">left_size</span> <span class="o">+</span> <span class="n">right_size</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">size</span><span class="p">)</span>
+
+            <span class="n">rois</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RegionOfInterest</span><span class="p">(</span>
+                <span class="n">x_offset</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">nose_recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">-</span> <span class="mf">.5</span> <span class="o">*</span> <span class="n">width</span><span class="p">)),</span>
+                <span class="n">y_offset</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">nose_recognition</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">-</span> <span class="mf">.5</span> <span class="o">*</span> <span class="n">height</span><span class="p">)),</span>
+                <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+                <span class="n">height</span><span class="o">=</span><span class="n">height</span>
+            <span class="p">))</span>
+            <span class="n">group_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nose_recognition</span><span class="o">.</span><span class="n">group_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rois</span><span class="p">,</span> <span class="n">group_ids</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer2D._get_body_parts_pose_estimation"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D._get_body_parts_pose_estimation">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_body_parts_pose_estimation</span><span class="p">(</span><span class="n">group_id</span><span class="p">,</span> <span class="n">recognitions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of all bodyparts associated with a particular group ID</span>
+
+<span class="sd">        :param: group_id: The group ID of the bodyparts to be fetched</span>
+<span class="sd">        :param: recognitions: All bodyparts received from pose estimation</span>
+<span class="sd">        :return: List of body_parts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">recognitions</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">group_id</span> <span class="o">==</span> <span class="n">group_id</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer2D._get_container_recognition"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D._get_container_recognition">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_container_recognition</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span> <span class="n">recognitions</span><span class="p">,</span> <span class="n">padding_factor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Associate pose estimation ROI with best pose estimation face ROI</span>
+
+<span class="sd">        :param: roi: pose estimation face roi</span>
+<span class="sd">        :param: recognitions: face recognitions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">+</span> <span class="mf">.5</span> <span class="o">*</span> <span class="n">roi</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">+</span> <span class="mf">.5</span> <span class="o">*</span> <span class="n">roi</span><span class="o">.</span><span class="n">height</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_point_in_roi</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">roi</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">+</span> <span class="n">roi</span><span class="o">.</span><span class="n">width</span> <span class="ow">and</span> <span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">&lt;=</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">+</span> <span class="n">roi</span><span class="o">.</span><span class="n">height</span>
+
+        <span class="n">best</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">recognitions</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">recognitions</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">_point_in_roi</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">roi</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">best</span><span class="p">:</span>
+                        <span class="n">avg_x</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">+</span> <span class="mf">.5</span> <span class="o">*</span> <span class="n">r</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">width</span>
+                        <span class="n">avg_y</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">+</span> <span class="mf">.5</span> <span class="o">*</span> <span class="n">r</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">height</span>
+                        <span class="n">best_avg_x</span> <span class="o">=</span> <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">+</span> <span class="mf">.5</span> <span class="o">*</span> <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">width</span>
+                        <span class="n">best_avg_y</span> <span class="o">=</span> <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">+</span> <span class="mf">.5</span> <span class="o">*</span> <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">height</span>
+                        <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">avg_x</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="n">avg_y</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">best_avg_x</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="n">best_avg_y</span> <span class="o">-</span> <span class="n">y</span><span class="p">):</span>
+                            <span class="k">continue</span>
+                    <span class="n">best</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">best</span><span class="p">:</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="n">Recognition</span><span class="p">(</span><span class="n">roi</span><span class="o">=</span><span class="n">roi</span><span class="p">)</span>
+
+        <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">-</span> <span class="n">padding_factor</span> <span class="o">*</span> <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
+        <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">-</span> <span class="n">padding_factor</span> <span class="o">*</span> <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+        <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">padding_factor</span><span class="p">)</span>
+        <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="n">best</span><span class="o">.</span><span class="n">roi</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">padding_factor</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">best</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer2D._get_best_label_from_categorical_distribution"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D._get_best_label_from_categorical_distribution">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_best_label_from_categorical_distribution</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+        <span class="n">name_probabilities</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">probabilities</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">probability</span> <span class="o">&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">unknown_probability</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name_probabilities</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">probability</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer2D._image_from_roi"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D._image_from_roi">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_image_from_roi</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">roi</span><span class="p">):</span>
+        <span class="c1"># ROI needs to be at least 1 pixel in size</span>
+        <span class="k">return</span> <span class="n">image</span><span class="p">[</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span><span class="p">:</span><span class="n">roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="n">roi</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+               <span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span><span class="p">:</span><span class="n">roi</span><span class="o">.</span><span class="n">x_offset</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="n">roi</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer2D._get_best_label"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D._get_best_label">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_best_label</span><span class="p">(</span><span class="n">recognition</span><span class="p">):</span>
+        <span class="n">best_p</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">recognition</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">probabilities</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">probability</span> <span class="o">&gt;</span> <span class="n">recognition</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">unknown_probability</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">best_p</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">probability</span> <span class="o">&lt;</span> <span class="n">best_p</span><span class="o">.</span><span class="n">probability</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">best_p</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="k">if</span> <span class="n">best_p</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">best_p</span><span class="o">.</span><span class="n">label</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer2D._face_properties_to_label"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D._face_properties_to_label">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_face_properties_to_label</span><span class="p">(</span><span class="n">face_properties</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">=</span><span class="si">{}</span><span class="s2"> (age=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;MALE&quot;</span> <span class="k">if</span> <span class="n">face_properties</span><span class="o">.</span><span class="n">gender</span> <span class="o">==</span> <span class="n">FaceProperties</span><span class="o">.</span><span class="n">MALE</span> <span class="k">else</span> <span class="s2">&quot;FEMALE&quot;</span><span class="p">,</span>
+                                       <span class="n">face_properties</span><span class="o">.</span><span class="n">gender_confidence</span><span class="p">,</span>
+                                       <span class="n">face_properties</span><span class="o">.</span><span class="n">age</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer2D._shirt_colors_to_label"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D._shirt_colors_to_label">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_shirt_colors_to_label</span><span class="p">(</span><span class="n">shirt_colors</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert shirt colors array to label string</span>
+
+<span class="sd">        :param: shirt_colors: Array to colors</span>
+<span class="sd">        :return: string label</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot; shirt colors:&quot;</span>
+        <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">shirt_colors</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">label</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer2D._shirt_roi_from_face_roi"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D._shirt_roi_from_face_roi">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_shirt_roi_from_face_roi</span><span class="p">(</span><span class="n">face_roi</span><span class="p">,</span> <span class="n">image_shape</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a ROI for a face, shift the ROI to the person&#39;s shirt. Assuming the person is upright :/</span>
+
+<span class="sd">        :param face_roi: RegionOfInterest</span>
+<span class="sd">        :param image_shape: tuple of the image shape</span>
+<span class="sd">        :return: RegionOfInterest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shirt_roi</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">face_roi</span><span class="p">)</span>
+        <span class="n">shirt_roi</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">face_roi</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">shirt_roi</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">face_roi</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">shirt_roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">face_roi</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">)</span>
+        <span class="n">shirt_roi</span><span class="o">.</span><span class="n">y_offset</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">shirt_roi</span><span class="o">.</span><span class="n">y_offset</span><span class="p">,</span> <span class="n">image_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">shirt_roi</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;face_roi: </span><span class="si">{}</span><span class="s2">, shirt_roi: </span><span class="si">{}</span><span class="s2">, img.shape: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">face_roi</span><span class="p">,</span> <span class="n">shirt_roi</span><span class="p">,</span> <span class="n">image_shape</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">shirt_roi</span></div>
+
+<div class="viewcode-block" id="PeopleRecognizer2D.recognize"><a class="viewcode-back" href="../../api/people_recognition_2d/people_recognizer_2d/index.html#people_recognition_2d.people_recognizer_2d.PeopleRecognizer2D.recognize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">recognize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_msg</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image_msg</span><span class="p">,</span> <span class="n">Image</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bridge</span><span class="o">.</span><span class="n">imgmsg_to_cv2</span><span class="p">(</span><span class="n">image_msg</span><span class="p">)</span>
+
+        <span class="n">image_annotations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">people</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Pose estimation and face recognition service calls</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;Starting pose and face recognition...&quot;</span><span class="p">)</span>
+        <span class="n">start_recognize</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">pose_estimation_response</span> <span class="o">=</span> <span class="n">_get_service_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pose_estimation_srv</span><span class="p">,</span> <span class="n">image_msg</span><span class="p">)</span>
+        <span class="n">face_recognition_response</span> <span class="o">=</span> <span class="n">_get_service_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_face_recognition_srv</span><span class="p">,</span> <span class="n">image_msg</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">logdebug</span><span class="p">(</span><span class="s2">&quot;Recognize took </span><span class="si">%.4f</span><span class="s2"> seconds&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_recognize</span><span class="p">)</span>
+        <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_get_face_rois_ids_pose_estimation...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Extract face ROIs and their corresponding group ids from recognitions of pose estimation</span>
+        <span class="n">pose_estimation_face_rois</span><span class="p">,</span> <span class="n">pose_estimation_face_group_ids</span> <span class="o">=</span> <span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_get_face_rois_ids_pose_estimation</span><span class="p">(</span>
+            <span class="n">pose_estimation_response</span><span class="o">.</span><span class="n">recognitions</span>
+        <span class="p">)</span>
+
+        <span class="n">body_parts_array</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_get_body_parts_pose_estimation</span><span class="p">(</span><span class="n">group_id</span><span class="p">,</span> <span class="n">pose_estimation_response</span><span class="o">.</span><span class="n">recognitions</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">group_id</span> <span class="ow">in</span> <span class="n">pose_estimation_face_group_ids</span>
+        <span class="p">]</span>
+
+        <span class="n">face_recognitions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_get_container_recognition</span><span class="p">(</span><span class="n">pose_estimation_face_roi</span><span class="p">,</span> <span class="n">face_recognition_response</span><span class="o">.</span><span class="n">recognitions</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">pose_estimation_face_roi</span> <span class="ow">in</span> <span class="n">pose_estimation_face_rois</span>
+        <span class="p">]</span>
+
+        <span class="n">face_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_get_best_label</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">face_recognitions</span><span class="p">]</span>
+
+        <span class="c1"># Face properties service call</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_age_gender_detection</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_get_face_properties...&quot;</span><span class="p">)</span>
+            <span class="n">face_image_msg_array</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_bridge</span><span class="o">.</span><span class="n">cv2_to_imgmsg</span><span class="p">(</span><span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_image_from_roi</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">roi</span><span class="p">),</span> <span class="s2">&quot;bgr8&quot;</span><span class="p">)</span> <span class="k">for</span>
+                                    <span class="n">r</span> <span class="ow">in</span> <span class="n">face_recognitions</span><span class="p">]</span>
+            <span class="n">face_properties_response</span> <span class="o">=</span> <span class="n">_get_service_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_face_properties_srv</span><span class="p">,</span> <span class="n">face_image_msg_array</span><span class="p">)</span>
+            <span class="n">face_properties_array</span> <span class="o">=</span> <span class="n">face_properties_response</span><span class="o">.</span><span class="n">properties_array</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">face_properties_array</span> <span class="o">=</span> <span class="p">[</span><span class="n">FaceProperties</span><span class="p">()]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">face_recognitions</span><span class="p">)</span>
+
+        <span class="c1"># Color Extractor service call</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_shirt_color_extraction</span><span class="p">:</span>
+            <span class="n">rospy</span><span class="o">.</span><span class="n">loginfo</span><span class="p">(</span><span class="s2">&quot;_get_color_extractor...&quot;</span><span class="p">)</span>
+            <span class="n">shirt_colors_array</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">face_recognitions</span><span class="p">:</span>
+                <span class="n">shirt_roi</span> <span class="o">=</span> <span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_shirt_roi_from_face_roi</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">roi</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">shirt_image_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bridge</span><span class="o">.</span><span class="n">cv2_to_imgmsg</span><span class="p">(</span><span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_image_from_roi</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">shirt_roi</span><span class="p">))</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">color_extractor_response</span> <span class="o">=</span> <span class="n">_get_service_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_extractor_srv</span><span class="p">,</span> <span class="n">shirt_image_msg</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">ServiceException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">rospy</span><span class="o">.</span><span class="n">logerr</span><span class="p">(</span><span class="s2">&quot;Color extractor service request failed: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                    <span class="n">shirt_colors</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">shirt_colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span>
+                                    <span class="n">color_extractor_response</span><span class="o">.</span><span class="n">recognitions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">categorical_distribution</span><span class="o">.</span><span class="n">probabilities</span><span class="p">]</span>
+                <span class="n">shirt_colors_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shirt_colors</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shirt_colors_array</span> <span class="o">=</span> <span class="p">[[]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">face_recognitions</span><span class="p">)</span>
+
+        <span class="c1"># Prepare image annotation labels and People message</span>
+        <span class="k">for</span> <span class="n">face_label</span><span class="p">,</span> <span class="n">face_properties</span><span class="p">,</span> <span class="n">shirt_colors</span><span class="p">,</span> <span class="n">body_parts</span><span class="p">,</span> <span class="n">face_recognition</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">face_labels</span><span class="p">,</span>
+                                                                                           <span class="n">face_properties_array</span><span class="p">,</span>
+                                                                                           <span class="n">shirt_colors_array</span><span class="p">,</span>
+                                                                                           <span class="n">body_parts_array</span><span class="p">,</span>
+                                                                                           <span class="n">face_recognitions</span><span class="p">):</span>
+
+            <span class="n">temp_label</span> <span class="o">=</span> <span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_face_properties_to_label</span><span class="p">(</span><span class="n">face_properties</span><span class="p">)</span> <span class="o">+</span> \
+                         <span class="n">PeopleRecognizer2D</span><span class="o">.</span><span class="n">_shirt_colors_to_label</span><span class="p">(</span><span class="n">shirt_colors</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">face_label</span><span class="p">:</span>
+                <span class="n">image_annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">face_label</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">temp_label</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">image_annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_label</span><span class="p">)</span>
+
+            <span class="n">people</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Person2D</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">face_label</span><span class="p">,</span>
+                                   <span class="n">age</span><span class="o">=</span><span class="n">face_properties</span><span class="o">.</span><span class="n">age</span><span class="p">,</span>
+                                   <span class="n">gender</span><span class="o">=</span><span class="n">face_properties</span><span class="o">.</span><span class="n">gender</span><span class="p">,</span>
+                                   <span class="n">gender_confidence</span><span class="o">=</span><span class="n">face_properties</span><span class="o">.</span><span class="n">gender_confidence</span><span class="p">,</span>
+                                   <span class="n">shirt_colors</span><span class="o">=</span><span class="n">shirt_colors</span><span class="p">,</span>
+                                   <span class="n">body_parts</span><span class="o">=</span><span class="n">body_parts</span><span class="p">,</span>
+                                   <span class="n">face</span><span class="o">=</span><span class="n">face_recognition</span><span class="p">))</span>
+
+        <span class="n">cv_image</span> <span class="o">=</span> <span class="n">image_writer</span><span class="o">.</span><span class="n">get_annotated_cv_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span>
+                                                       <span class="n">recognitions</span><span class="o">=</span><span class="n">face_recognitions</span><span class="p">,</span>
+                                                       <span class="n">labels</span><span class="o">=</span><span class="n">image_annotations</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">people</span><span class="p">,</span> <span class="n">cv_image</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, tue-robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

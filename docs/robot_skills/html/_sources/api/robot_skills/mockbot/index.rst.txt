@@ -1,0 +1,623 @@
+robot_skills.mockbot
+====================
+
+.. py:module:: robot_skills.mockbot
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_skills.mockbot.mockbot
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.mockbot.AlteredMagicMock
+   robot_skills.mockbot.MockedRobotPart
+   robot_skills.mockbot.Arm
+   robot_skills.mockbot.Gripper
+   robot_skills.mockbot.HandoverDetector
+   robot_skills.mockbot.Base
+   robot_skills.mockbot.Hmi
+   robot_skills.mockbot.EButton
+   robot_skills.mockbot.Head
+   robot_skills.mockbot.Perception
+   robot_skills.mockbot.Lights
+   robot_skills.mockbot.Speech
+   robot_skills.mockbot.Torso
+   robot_skills.mockbot.ED
+   robot_skills.mockbot.MockedTfBuffer
+   robot_skills.mockbot.Mockbot
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   robot_skills.mockbot.random_kdl_vector
+   robot_skills.mockbot.random_kdl_frame
+   robot_skills.mockbot.mock_query
+   robot_skills.mockbot.old_query
+
+
+Module Contents
+---------------
+
+.. py:function:: random_kdl_vector()
+
+.. py:function:: random_kdl_frame()
+
+.. py:function:: mock_query(description, grammar, target, timeout)
+
+.. py:function:: old_query(spec, choices, timeout=10)
+
+.. py:class:: AlteredMagicMock(*args, **kw)
+
+   Bases: :py:obj:`mock.MagicMock`
+
+
+   MagicMock is a subclass of Mock with default implementations
+   of most of the magic methods. You can use MagicMock without having to
+   configure the magic methods yourself.
+
+   If you use the `spec` or `spec_set` arguments then *only* magic
+   methods that exist in the spec will be created.
+
+   Attributes and the return value of a `MagicMock` will also be `MagicMocks`.
+
+
+   .. py:method:: assert_called_with(*args, **kwargs)
+
+      Assert that the mock was called with the specified arguments.
+
+      Raises an AssertionError if the args and keyword args passed in are
+      different to the last call to the mock.
+
+
+
+   .. py:method:: assert_any_call(*args, **kwargs)
+
+      Assert the mock has been called with the specified arguments.
+
+      The assert passes if the mock has *ever* been called, unlike
+      `assert_called_with` and `assert_called_once_with` that only pass if
+      the call is the most recent one.
+
+
+
+   .. py:method:: equal_or_more_arguments(expected, actual)
+      :staticmethod:
+
+
+      Check whether the actual call contains at least the arguments and keyword arguments of the expected call.
+      But still return true if the actual call contains more (keyword) arguments than expected
+
+
+
+.. py:class:: MockedRobotPart(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`object`
+
+
+   .. py:attribute:: robot_name
+
+
+   .. py:attribute:: tf_buffer
+
+
+   .. py:attribute:: load_param
+
+
+   .. py:attribute:: wait_for_connections
+
+
+   .. py:attribute:: create_simple_action_client
+
+
+   .. py:attribute:: create_service_client
+
+
+   .. py:attribute:: create_subscriber
+
+
+   .. py:attribute:: _add_connection
+
+
+   .. py:attribute:: operational
+
+
+   .. py:attribute:: subscribe_hardware_status
+
+
+   .. py:attribute:: unsubscribe_hardware_status
+
+
+   .. py:attribute:: process_hardware_status
+
+
+   .. py:attribute:: reset
+
+
+.. py:class:: Arm(robot_name, tf_buffer, get_joint_states, name)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: arm_name
+
+
+   .. py:attribute:: get_joint_states
+
+
+   .. py:attribute:: _operational
+      :value: True
+
+
+
+   .. py:attribute:: _base_offset
+
+
+   .. py:attribute:: default_configurations
+
+
+   .. py:attribute:: default_trajectories
+
+
+   .. py:attribute:: has_joint_goal
+
+
+   .. py:attribute:: has_joint_trajectory
+
+
+   .. py:attribute:: cancel_goals
+
+
+   .. py:attribute:: close
+
+
+   .. py:attribute:: send_goal
+
+
+   .. py:attribute:: send_joint_goal
+
+
+   .. py:attribute:: send_joint_trajectory
+
+
+   .. py:attribute:: reset
+
+
+   .. py:attribute:: _send_joint_trajectory
+
+
+   .. py:attribute:: _publish_marker
+
+
+   .. py:attribute:: wait_for_motion_done
+
+
+   .. py:attribute:: gripper
+
+
+   .. py:attribute:: handover_detector
+
+
+   .. py:method:: collect_gripper_types(gripper_type)
+
+
+   .. py:property:: base_offset
+
+
+.. py:class:: Gripper(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: occupied_by
+      :value: None
+
+
+
+   .. py:attribute:: send_goal
+
+
+.. py:class:: HandoverDetector(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: handover_to_human
+
+
+   .. py:attribute:: handover_to_robot
+
+
+.. py:class:: Base(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: move
+
+
+   .. py:attribute:: turn_towards
+
+
+   .. py:attribute:: force_drive
+
+
+   .. py:attribute:: get_location
+
+
+   .. py:attribute:: set_initial_pose
+
+
+   .. py:attribute:: wait_for_motion_done
+
+
+   .. py:attribute:: go
+
+
+   .. py:attribute:: reset_costmap
+
+
+   .. py:attribute:: cancel_goal
+
+
+   .. py:attribute:: analyzer
+
+
+   .. py:attribute:: global_planner
+
+
+   .. py:attribute:: local_planner
+
+
+.. py:class:: Hmi(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: query
+
+
+   .. py:attribute:: show_image
+
+
+   .. py:attribute:: show_image_from_msg
+
+
+   .. py:attribute:: old_query
+
+
+   .. py:attribute:: reset
+
+
+   .. py:attribute:: restart_dragonfly
+
+
+.. py:class:: EButton(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: close
+
+
+   .. py:attribute:: _listen
+
+
+   .. py:attribute:: read_ebutton
+
+
+.. py:class:: Head(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: reset
+
+
+   .. py:attribute:: close
+
+
+   .. py:attribute:: set_pan_tilt
+
+
+   .. py:attribute:: send_goal
+
+
+   .. py:attribute:: cancel_goal
+
+
+   .. py:attribute:: wait
+
+
+   .. py:attribute:: getGoal
+
+
+   .. py:attribute:: atGoal
+
+
+   .. py:attribute:: look_at_standing_person
+
+
+   .. py:attribute:: look_at_point
+
+
+   .. py:attribute:: look_at_ground_in_front_of_robot
+
+
+   .. py:attribute:: setPanTiltGoal
+
+
+   .. py:attribute:: setLookAtGoal
+
+
+   .. py:attribute:: cancelGoal
+
+
+   .. py:attribute:: wait_for_motion_done
+
+
+   .. py:attribute:: _setHeadReferenceGoal
+
+
+   .. py:attribute:: __feedbackCallback
+
+
+   .. py:attribute:: __doneCallback
+
+
+.. py:class:: Perception(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: reset
+
+
+   .. py:attribute:: close
+
+
+   .. py:attribute:: learn_person
+
+
+   .. py:attribute:: detect_faces
+
+
+   .. py:attribute:: detect_face
+
+
+   .. py:attribute:: get_best_face_recognition
+
+
+   .. py:attribute:: get_rgb_depth_caminfo
+
+
+   .. py:attribute:: project_roi
+
+
+   .. py:attribute:: locate_handle_client
+
+
+.. py:class:: Lights(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: close
+
+
+   .. py:attribute:: set_color
+
+
+   .. py:attribute:: set_color_rgba_msg
+
+
+   .. py:attribute:: on
+
+
+   .. py:attribute:: off
+
+
+.. py:class:: Speech(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: close
+
+
+   .. py:attribute:: speak
+
+
+.. py:class:: Torso(robot_name, tf_buffer, get_joint_states, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:attribute:: get_joint_states
+
+
+   .. py:attribute:: close
+
+
+   .. py:attribute:: send_goal
+
+
+   .. py:attribute:: _send_goal
+
+
+   .. py:attribute:: high
+
+
+   .. py:attribute:: medium
+
+
+   .. py:attribute:: low
+
+
+   .. py:attribute:: reset
+
+
+   .. py:attribute:: wait
+
+
+   .. py:attribute:: cancel_goal
+
+
+   .. py:attribute:: _receive_torso_measurement
+
+
+   .. py:attribute:: get_position
+
+
+   .. py:attribute:: wait_for_motion_done
+
+
+.. py:class:: ED(robot_name, tf_buffer, *args, **kwargs)
+
+   Bases: :py:obj:`MockedRobotPart`
+
+
+   .. py:method:: generate_random_entity(uuid=None, etype=None)
+      :staticmethod:
+
+
+
+   .. py:attribute:: _dynamic_entities
+
+
+   .. py:attribute:: _static_entities
+
+
+   .. py:attribute:: get_closest_entity
+
+
+   .. py:attribute:: get_entity
+
+
+   .. py:attribute:: reset
+
+
+   .. py:attribute:: navigation
+
+
+   .. py:attribute:: update_entity
+
+
+   .. py:attribute:: get_closest_possible_person_entity
+
+
+   .. py:attribute:: get_closest_laser_entity
+
+
+   .. py:attribute:: get_entity_info
+
+
+   .. py:attribute:: wait_for_connections
+
+
+   .. py:attribute:: _person_names
+      :value: []
+
+
+
+   .. py:method:: get_entities(etype='', center_point=VectorStamped(kdl.Vector(), rospy.Time(), 'map'), radius=0, uuid='', ignore_z=False)
+
+
+   .. py:property:: _entities
+
+
+   .. py:method:: segment_kinect(*args, **kwargs)
+
+
+   .. py:method:: update_kinect(*args, **kwargs)
+
+
+   .. py:method:: classify(uuids, types=None, unknown_threshold=0.0)
+
+
+   .. py:method:: detect_people(rgb, depth, cam_info)
+
+
+.. py:class:: MockedTfBuffer
+
+   Bases: :py:obj:`mock.MagicMock`
+
+
+   MagicMock is a subclass of Mock with default implementations
+   of most of the magic methods. You can use MagicMock without having to
+   configure the magic methods yourself.
+
+   If you use the `spec` or `spec_set` arguments then *only* magic
+   methods that exist in the spec will be created.
+
+   Attributes and the return value of a `MagicMock` will also be `MagicMocks`.
+
+
+   .. py:method:: can_transform(*args, **kwargs)
+      :staticmethod:
+
+
+
+   .. py:method:: transform(point_stamped, frame_id, timeout=rospy.Duration(0.0), new_type=None)
+      :staticmethod:
+
+
+
+.. py:class:: Mockbot(*args, **kwargs)
+
+   Bases: :py:obj:`robot_skills.robot.Robot`
+
+
+   Interface to all parts of Mockbot. When initializing Mockbot, you can choose a list of components
+   which wont be needed
+
+   # I want a blind and mute Mockbot!
+   >>> Mockbot(['perception', 'speech'])  # doctest: +SKIP
+
+   # I want a full fledged, awesome Mockbot
+   >>> Mockbot()  # doctest: +SKIP
+
+   Constructor
+
+   :param robot_name: Name of the robot
+   :param tf_buffer: tf2_ros.Buffer object
+   :param base_link_frame: Frame id of the base_link (default: {robot_name}/base_link
+   :param connection_timeout: timeout to wait for ROS connections
+
+
+   .. py:attribute:: publish_target
+
+
+   .. py:attribute:: tf_buffer_transform_pose
+
+
+   .. py:attribute:: close
+
+
+   .. py:attribute:: get_joint_states
+
+
+   .. py:attribute:: pub_target
+
+
+   .. py:attribute:: grasp_offset
+
+
+   .. py:method:: __enter__()
+
+
+   .. py:method:: __exit__(exception_type, exception_val, trace)
+
+
+.. py:data:: mockbot
+

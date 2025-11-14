@@ -1,0 +1,144 @@
+robot_skills.lights
+===================
+
+.. py:module:: robot_skills.lights
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   robot_skills.lights.LISTENING
+   robot_skills.lights.SPEAKING
+   robot_skills.lights.RESET
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   robot_skills.lights.LightsInterface
+   robot_skills.lights.TueLights
+   robot_skills.lights.Lights
+
+
+Module Contents
+---------------
+
+.. py:data:: LISTENING
+
+.. py:data:: SPEAKING
+
+.. py:data:: RESET
+
+.. py:class:: LightsInterface(robot_name, tf_buffer)
+
+   Bases: :py:obj:`robot_skills.robot_part.RobotPart`
+
+
+   Base class for robot parts
+
+   Interface to the robot's lights. To use this, a deriving class needs to be defined that implements _send_color_msg.
+
+   :param robot_name: robot_name
+   :param tf_buffer: tf2_ros.Buffer
+
+
+   .. py:method:: set_color(r, g, b, a=1.0)
+
+      Set the color of the lights of the robot in RGBA values
+
+      :param r: red value 0.0-1.0
+      :param g: green value 0.0-1.0
+      :param b: blue value 0.0-1.0
+      :param a: alpha value 0.0-1.0
+      :return: no return
+
+
+
+   .. py:method:: set_color_rgba_msg(rgba)
+
+      Set the color of the robot by a std_msgs.msg.ColorRGBA
+
+      :param rgba: std_msgs.msg.ColorRGBA
+      :return: no return
+
+
+
+   .. py:method:: _send_color_msg(rgba_msg)
+      :abstractmethod:
+
+
+      Sends the color message to the robot hardware. This function needs to be implemented by deriving classes.
+
+      :param rgba_msg: message to send
+
+
+
+   .. py:method:: selfreset()
+
+      Set the lights to blue
+
+      :return: no return
+
+
+
+.. py:class:: TueLights(robot_name, tf_buffer)
+
+   Bases: :py:obj:`LightsInterface`
+
+
+   Base class for robot parts
+
+   Interface to the robot's lights. This uses the TU/e-specific RGBLightCommand message type.
+
+   :param robot_name: robot_name
+   :param tf_buffer: tf buffer object
+
+
+   .. py:attribute:: _publisher
+
+
+   .. py:method:: _send_color_msg(rgba_msg)
+
+      Sends the color message to the robot hardware. This uses the RGBLightCommand message
+
+      :param rgba_msg: message to send
+
+
+
+   .. py:method:: taste_the_rainbow(duration=5.0)
+
+      Show awesome rainbow on the real amigo robot
+
+      :param duration: (float) Indicates the total duration of the rainbow
+
+
+
+.. py:class:: Lights(robot_name, tf_buffer, topic)
+
+   Bases: :py:obj:`LightsInterface`
+
+
+   Base class for robot parts
+
+   Interface to the robot's lights. This uses the TU/e-specific RGBLightCommand message type.
+
+   :param robot_name: robot_name
+   :param tf_buffer: tf buffer object
+   :param topic: topic where to publish the messages
+
+
+   .. py:attribute:: _publisher
+
+
+   .. py:method:: _send_color_msg(rgba_msg)
+
+      Sends the color message to the robot hardware. This uses the RGBLightCommand message
+
+      :param rgba_msg: message to send
+
+
+

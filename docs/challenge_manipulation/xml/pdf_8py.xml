@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="pdf_8py" kind="file" language="Python">
+    <compoundname>pdf.py</compoundname>
+    <innernamespace refid="namespacepdf">pdf</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1" refid="namespacepdf" refkind="compound"><highlight class="comment">#!/usr/bin/python</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>__future__<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>print_function</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>rospy</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>xhtml2pdf<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>pisa</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>os</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>robot_skills<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>world_model_ed</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">from</highlight><highlight class="normal"><sp/>PIL<sp/></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>Image</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>cStringIO<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>StringIO</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>numpy<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>np</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">import</highlight><highlight class="normal"><sp/>datetime</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17" refid="namespacepdf_1ad9f1d3b9c821263fb6ad8662535417a3" refkind="member"><highlight class="normal">report<sp/>=<sp/></highlight><highlight class="stringliteral">&apos;&apos;&apos;</highlight></codeline>
+<codeline lineno="18"><highlight class="stringliteral">#<sp/>H1</highlight></codeline>
+<codeline lineno="19"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="20"><highlight class="stringliteral">##<sp/>H2</highlight></codeline>
+<codeline lineno="21"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="22"><highlight class="stringliteral">Test<sp/>list</highlight></codeline>
+<codeline lineno="23"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="24"><highlight class="stringliteral">-<sp/>item<sp/>1</highlight></codeline>
+<codeline lineno="25"><highlight class="stringliteral">-<sp/>item<sp/>2</highlight></codeline>
+<codeline lineno="26"><highlight class="stringliteral">-<sp/>item<sp/>3</highlight></codeline>
+<codeline lineno="27"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&apos;&apos;&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30" refid="namespacepdf_1a85f2ba468c446ab0de1085b4890e56b8" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacepdf_1a85f2ba468c446ab0de1085b4890e56b8" kindref="member">html2pdf</ref>(sourceHtml,<sp/>outputFilename):</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">with</highlight><highlight class="normal"><sp/>open(outputFilename,<sp/></highlight><highlight class="stringliteral">&quot;w+b&quot;</highlight><highlight class="normal">)<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>resultFile:</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pisaStatus<sp/>=<sp/>pisa.CreatePDF(</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sourceHtml,</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dest=resultFile)</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>pisaStatus.err</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="namespacepdf_1a6ceb1bd2d6ff645e14bc65045303347f" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacepdf_1a6ceb1bd2d6ff645e14bc65045303347f" kindref="member">save_entity_image_to_file</ref>(world_model_ed,<sp/>entityID):</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">#<sp/>ed<sp/>request</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/>info<sp/>=<sp/>world_model_ed.get_entity_info(entityID)</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>len(info.measurement_image_unmasked)<sp/>==<sp/>0:</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logerr(</highlight><highlight class="stringliteral">&quot;Received<sp/>empty<sp/>image<sp/>for<sp/>%s<sp/>from<sp/>ED.&quot;</highlight><highlight class="normal">,<sp/>entityID)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">None</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>byte_array<sp/>=<sp/>bytearray(info.measurement_image_unmasked)</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stream<sp/>=<sp/>StringIO.StringIO(byte_array)</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image<sp/>=<sp/>Image.open(stream)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">except</highlight><highlight class="normal"><sp/>Exception<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>e:</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logerr(</highlight><highlight class="stringliteral">&quot;Failed<sp/>to<sp/>load<sp/>image<sp/>from<sp/>entity<sp/>%s&quot;</highlight><highlight class="normal">,<sp/>entityID)</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logerr(</highlight><highlight class="stringliteral">&quot;Failed<sp/>to<sp/>load<sp/>image<sp/>...<sp/>Try<sp/>installing<sp/>the<sp/>latest<sp/>version<sp/>of<sp/>PILLOW:<sp/>sudo<sp/>apt-get<sp/>install<sp/>python-imaging&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logerr(e)</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">None</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image_data<sp/>=<sp/>np.asarray(image)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image_data_bw<sp/>=<sp/>image_data.max(axis=2)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>non_empty_columns<sp/>=<sp/>np.where(image_data_bw.max(axis=0)&gt;0)[0]</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>non_empty_rows<sp/>=<sp/>np.where(image_data_bw.max(axis=1)&gt;0)[0]</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cropBox<sp/>=<sp/>(min(non_empty_rows),<sp/>max(non_empty_rows),<sp/>min(non_empty_columns),<sp/>max(non_empty_columns))</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image_data_new<sp/>=<sp/>image_data[cropBox[0]:cropBox[1]+1,<sp/>cropBox[2]:cropBox[3]+1<sp/>,<sp/>:]</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cropped_image<sp/>=<sp/>Image.fromarray(image_data_new)</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">except</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logerr(</highlight><highlight class="stringliteral">&quot;Could<sp/>not<sp/>crop<sp/>image,<sp/>I<sp/>will<sp/>use<sp/>the<sp/>original<sp/>image<sp/>as<sp/>cropped<sp/>image&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cropped_image<sp/>=<sp/>image</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/>file_name<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;images/%s.jpg&quot;</highlight><highlight class="normal">%entityID</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;/&quot;</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>file_name<sp/></highlight><highlight class="keywordflow">and</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">not</highlight><highlight class="normal"><sp/>os.path.exists(os.path.dirname(file_name)):</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>os.makedirs(os.path.dirname(file_name))</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>cropped_image.save(file_name)</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.loginfo(</highlight><highlight class="stringliteral">&quot;Saving<sp/>image<sp/>to<sp/>&apos;%s&apos;&quot;</highlight><highlight class="normal"><sp/>%<sp/>file_name)</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>file_name</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81" refid="namespacepdf_1a690e6b741bef5ba4beeaf6ccfa149a1d" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">def<sp/></highlight><highlight class="normal"><ref refid="namespacepdf_1a690e6b741bef5ba4beeaf6ccfa149a1d" kindref="member">entities_to_pdf</ref>(world_model_ed,<sp/>entities,<sp/>name,<sp/>directory<sp/>=<sp/>&quot;/home/amigo/usb&quot;):</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/>html<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&lt;html&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;head&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;title&gt;%s&lt;/title&gt;&quot;</highlight><highlight class="normal">%name</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;/head&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;body&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;h1&gt;%s&lt;/h1&gt;&quot;</highlight><highlight class="normal">%name</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>entity<sp/></highlight><highlight class="keywordflow">in</highlight><highlight class="normal"><sp/>entities:</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>len(entity.uuid)<sp/>==<sp/>32<sp/></highlight><highlight class="keywordflow">and</highlight><highlight class="normal"><sp/>entity.etype<sp/>!=<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>image<sp/>=<sp/><ref refid="namespacepdf_1a6ceb1bd2d6ff645e14bc65045303347f" kindref="member">save_entity_image_to_file</ref>(world_model_ed,<sp/>entity.uuid)</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>print(</highlight><highlight class="stringliteral">&quot;Created<sp/>entry<sp/>for<sp/>%s<sp/>(%s)&quot;</highlight><highlight class="normal">%(entity.uuid,<sp/>entity.etype))</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;table<sp/>border=&apos;1&apos;&gt;&lt;tr&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>image:</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;td&gt;&lt;img<sp/>src=&apos;%s&apos;<sp/>alt=&apos;%s&apos;<sp/>/&gt;&lt;/td&gt;&quot;</highlight><highlight class="normal">%(image,<sp/>entity.uuid)</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;td&gt;!!<sp/>NO<sp/>IMAGE<sp/>FOR<sp/>&apos;%s&apos;<sp/>!!&lt;/td&gt;&quot;</highlight><highlight class="normal">%entity.uuid</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;td&gt;&lt;center&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;h2&gt;%s&lt;/h2&gt;&quot;</highlight><highlight class="normal">%entity.uuid</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;p&gt;&lt;b&gt;Type:<sp/>&lt;/b&gt;%s&lt;/p&gt;&quot;</highlight><highlight class="normal">%entity.etype</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;p&gt;&lt;b&gt;Position<sp/>(x,y,z):<sp/>&lt;/b&gt;(%.2f,%.2f,%.2f)&lt;/p&gt;&quot;</highlight><highlight class="normal">%(entity.pose.frame.p.x(),<sp/>entity.frame.p.y(),<sp/>entity.frame.p.z())</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;/center&gt;&lt;/td&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;/tr&gt;&lt;/table&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;br<sp/>/&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;/body&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>html<sp/>+=<sp/></highlight><highlight class="stringliteral">&quot;&lt;/html&gt;&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>date_str<sp/>=<sp/>datetime.datetime.now().strftime(</highlight><highlight class="stringliteral">&quot;%Y_%m_%d_%H_%M&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>filename<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;%s_%s.pdf&quot;</highlight><highlight class="normal">%(name,<sp/>date_str)</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacepdf_1a85f2ba468c446ab0de1085b4890e56b8" kindref="member">html2pdf</ref>(html,<sp/></highlight><highlight class="stringliteral">&quot;%s/%s&quot;</highlight><highlight class="normal">%(directory,<sp/>filename))</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">except</highlight><highlight class="normal"><sp/>IOError<sp/></highlight><highlight class="keyword">as</highlight><highlight class="normal"><sp/>ioerror:</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logerr(ioerror)</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rospy.logwarn(</highlight><highlight class="stringliteral">&quot;Writing<sp/>to<sp/>local<sp/>file<sp/>instead&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacepdf_1a85f2ba468c446ab0de1085b4890e56b8" kindref="member">html2pdf</ref>(html,<sp/></highlight><highlight class="stringliteral">&quot;%s&quot;</highlight><highlight class="normal">%filename)</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacepdf_1a85f2ba468c446ab0de1085b4890e56b8" kindref="member">html2pdf</ref>(html,<sp/></highlight><highlight class="stringliteral">&quot;%s/%s&quot;</highlight><highlight class="normal">%(os.path.expanduser(</highlight><highlight class="stringliteral">&quot;~&quot;</highlight><highlight class="normal">),<sp/>filename))</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>__name__<sp/>==<sp/></highlight><highlight class="stringliteral">&apos;__main__&apos;</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>rospy.init_node(</highlight><highlight class="stringliteral">&quot;testpdf&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>pisa.showLogging()</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128" refid="namespacepdf_1a45ba90247e0c8eac78a36454e0c6f2be" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>ed<sp/>=<sp/>world_model_ed.ED(</highlight><highlight class="stringliteral">&quot;amigo&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;nbanana&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacepdf_1a690e6b741bef5ba4beeaf6ccfa149a1d" kindref="member">entities_to_pdf</ref>(ed,<sp/>ed.get_entities(),<sp/></highlight><highlight class="stringliteral">&quot;all_entities&quot;</highlight><highlight class="normal">)</highlight></codeline>
+    </programlisting>
+    <location file="src/pdf.py"/>
+  </compounddef>
+</doxygen>
