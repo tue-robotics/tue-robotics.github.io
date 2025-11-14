@@ -12,8 +12,8 @@ defaults:
     shell: bash
 
 jobs:
-  deployment:
-    name: deployment
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -48,15 +48,26 @@ jobs:
       - name: Script
         run: .ci/script.bash
       - name: Before Deploy
-        if: ${{ (github.event_name == 'schedule' || github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master' }}
         run: .ci/pre_deploy.bash
-      - name: Deploy
-        if: ${{ (github.event_name == 'schedule' || github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master' }}
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          destination_dir: .
-          exclude_assets: '.github,.ci'
-          enable_jekyll: true
-          force_orphan: true
+          path: docs/
+
+  deploy:
+    name: Deployment
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      actions: read # To read the artifact from the previous job
+      id-token: write
+      pages: write
+    if: ${{ (github.event_name == 'schedule' || github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master' }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
