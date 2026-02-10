@@ -28,7 +28,13 @@ mkdir -p _site
 
 # Copy Jekyll site files to _site
 echo -e "\e[35m\e[1mCopying Jekyll site files to _site/\e[0m"
-cp -r _config.yml _includes _layouts _posts _sass assets css *.html feed.xml _site/
+shopt -s nullglob  # Ensure glob patterns expand to nothing if no matches
+for item in _config.yml _includes _layouts _posts _sass assets css feed.xml *.html; do
+    if [ -e "$item" ]; then
+        cp -r "$item" _site/
+    fi
+done
+shopt -u nullglob  # Restore default behavior
 
 # Copy generated documentation from Docker container to _site/docs
 echo -e "\e[35m\e[1mdocker cp tue-env:${TUE_ENV_WS_DIR}/docs _site/\e[0m"
