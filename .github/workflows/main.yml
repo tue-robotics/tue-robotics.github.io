@@ -37,7 +37,7 @@ jobs:
           key: ${{ runner.os }}-pip-${{ steps.get-date.outputs.date }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      - name: Install
+      - name: Install API docs deps
         run: |
           GITHUB_REF=${GITHUB_REF#refs/heads/}
           GITHUB_REF=${GITHUB_REF#refs/tags/}
@@ -45,15 +45,22 @@ jobs:
           mkdir -p ${HOME}/.ssh
           ssh-keyscan -t rsa -H "github.com" 2>&1 | tee -a "${HOME}"/.ssh/known_hosts
           .ci/install.bash --branch=${BRANCH} --gh-token="${{ github.token }}" --sl=ed --sl=geolib2 --sl=rgbd # (In)direct deps of ed_object_models, but we don't need to build it
-      - name: Script
+      - name: Generate API docs
         run: .ci/script.bash
-      - name: Before Deploy
+      - name: Before API docs deploy
         run: .ci/pre_deploy.bash
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site/
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v4
         with:
-          path: docs/
+          path: _site/
 
   deploy:
     name: Deployment
