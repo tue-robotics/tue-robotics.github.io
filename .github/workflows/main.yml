@@ -49,11 +49,18 @@ jobs:
         run: .ci/script.bash
       - name: Before Deploy
         run: .ci/pre_deploy.bash
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site/
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v4
         with:
-          path: docs/
+          path: _site/
 
   deploy:
     name: Deployment
